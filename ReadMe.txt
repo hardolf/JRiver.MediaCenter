@@ -1,7 +1,7 @@
 
 These solutions contain plug-ins, visualizations and other extensions for the JRiver Media Center
 
-Developed for JRiver Media Center 24
+Developed for JRiver Media Center 24 and newer
 
 Development environment: Microsoft Visual Studio 2017, 2019, ... , C#
 
