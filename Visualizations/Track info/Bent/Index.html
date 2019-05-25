@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Hardolf track info for Media Center</title>
+    <link rel="stylesheet" href="Styles.css">
+    <script src="JavaScript.js" type="text/javascript"></script>
+</head>
+
+<body background="bg.jpg" onload="onBodyLoad();">
+
+    <!-- 2 rows, 3 columns -->
+    <div class="mainDiv">
+        <div class="titleDiv" title="Album">
+            TRACKINFO_INSERT_ALBUM
+        </div>
+        <div class="titleDiv" title="Artist">
+            TRACKINFO_INSERT_ARTIST
+        </div>
+        <div class="titleDiv" title="Title">
+            TRACKINFO_INSERT_TITLE
+        </div>
+
+        <div class="contentDiv">
+            <div class="leftDiv">
+                <img src="TRACKINFO_INSERT_IMAGE" id="cover" title="Artist: TRACKINFO_INSERT_ARTIST&#013;&#010;Album: TRACKINFO_INSERT_ALBUM"/>
+                <!--<img src="Sample200x198.bmp" id="cover" title="TRACKINFO_INSERT_ARTIST TRACKINFO_INSERT_ALBUM"/>-->
+                <!--<img src="Sample704x698.bmp" id="cover" title="TRACKINFO_INSERT_ARTIST TRACKINFO_INSERT_ALBUM"/>-->
+            </div>
+            <div class="centerDiv">
+                <!-- 10 rows, 2 columns -->
+                <div class="infoDiv">
+                    <div class="infoLeftDiv">Title</div><div class="infoRightDiv">TRACKINFO_INSERT_TITLE</div>
+                </div>
+                <div class="infoDiv">
+                    <div class="infoLeftDiv">Artist</div><div class="infoRightDiv">TRACKINFO_INSERT_ARTIST</div>
+                </div>
+                <div class="infoDiv">
+                    <div class="infoLeftDiv">Album</div><div class="infoRightDiv">TRACKINFO_INSERT_ALBUM</div>
+                </div>
+                <div class="infoDiv">
+                    <div class="infoLeftDiv">Year</div><div class="infoRightDiv">TRACKINFO_INSERT_YEAR</div>
+                </div>
+                <div class="infoDiv">
+                    <div class="infoLeftDiv">Genre</div><div class="infoRightDiv">TRACKINFO_INSERT_GENRE</div>
+                </div>
+                <div class="infoDiv">
+                    <div class="infoLeftDiv">Playlists</div><div class="infoRightDiv">TRACKINFO_INSERT_PLAYLISTS</div>
+                </div>
+                <div class="infoDiv">
+                    <div class="infoLeftDiv">Format</div><div class="infoRightDiv">TRACKINFO_INSERT_FORMAT, TRACKINFO_INSERT_BITRATE kbps</div>
+                </div>
+                <div class="infoDiv">
+                    <div class="infoLeftDiv">Length</div><div class="infoRightDiv">TRACKINFO_INSERT_DURATION</div>
+                </div>
+                <div class="infoDiv">
+                    <div class="infoLeftDiv">File size</div><div class="infoRightDiv">TRACKINFO_INSERT_SIZE</div>
+                </div>
+                <div class="infoDiv">
+                    <div class="infoLeftDiv">File name</div><div class="infoRightDiv">TRACKINFO_INSERT_FILENAME</div>
+                </div>
+            </div>
+            <div id="lyricTextDiv" class="rightDiv" title="Lyrics">
+                <font id="lyricText" class="text2">TRACKINFO_INSERT_LYRICS</font>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

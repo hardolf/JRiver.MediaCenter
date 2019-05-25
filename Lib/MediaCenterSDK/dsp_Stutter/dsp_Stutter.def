@@ -1,0 +1,8 @@
+; dsp_Stutter.def : Declares the module parameters for the DLL.
+
+LIBRARY      "dsp_Stutter"
+DESCRIPTION  'dsp_Stutter Windows Dynamic Link Library'
+
+EXPORTS
+	DllRegisterServer	PRIVATE
+	GetDSPPlugin

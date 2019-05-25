@@ -1,0 +1,120 @@
+﻿
+.text1, .titleDiv {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: bold
+}
+
+.text2 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+}
+
+a:active {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #2F71AF;
+    text-decoration: none
+}
+
+a:hover {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #2F71AF;
+    text-decoration: none
+}
+
+a:link {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #0E408A;
+    text-decoration: none
+}
+
+a:visited {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #021662;
+    text-decoration: none
+}
+
+a:visited:hover {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #2F71AF;
+    text-decoration: none
+}
+
+div {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #2F71AF;
+    text-align: left;
+    text-decoration: none margin: 0px;
+    vertical-align: top;
+    /* Test */
+    /*border-color: blue;
+    border-style: solid;
+    border-width: 1px;*/
+}
+
+img {
+    height: 300px;
+}
+
+.centerDiv {
+    display: table-cell;
+    width: 300px;
+}
+
+.centerDiv {
+    padding: 9px;
+}
+
+.contentDiv {
+    display: table-row;
+    padding: 3px;
+}
+
+.leftDiv {
+    display: table-cell;
+    padding: 9px;
+}
+
+.infoDiv {
+    display: table;
+    padding-bottom: 9px;
+}
+
+.infoLeftDiv {
+    display: table-cell;
+    max-width: 60px;
+    min-width: 60px;
+    width: 60px;
+}
+
+.infoRightDiv {
+    display: table-cell;
+    max-width: 295px;
+    word-wrap: break-word;
+}
+
+.mainDiv {
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.rightDiv {
+    height: 300px;
+    overflow: auto;
+    padding: 9px;
+    width: auto;
+}
+
+.titleDiv {
+    display: table-cell;
+    overflow: visible;
+    padding: 9px;
+    text-wrap: normal;
+}

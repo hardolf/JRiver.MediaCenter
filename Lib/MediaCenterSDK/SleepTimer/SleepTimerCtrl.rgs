@@ -1,0 +1,34 @@
+HKCR
+{
+	SleepTimer.SleepTimerCtrl.1 = s 'J. River Sleep Timer Control'
+	{
+		CLSID = s '{1F277DBB-337E-4C61-B936-DE1105CBA323}'
+	}
+	SleepTimer.SleepTimerCtrl = s 'J. River Sleep Timer Control'
+	{
+		CLSID = s '{1F277DBB-337E-4C61-B936-DE1105CBA323}'
+		CurVer = s 'SleepTimer.SleepTimerCtrl.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {1F277DBB-337E-4C61-B936-DE1105CBA323} = s 'J. River Sleep Timer Control'
+		{
+			ProgID = s 'SleepTimer.SleepTimerCtrl.1'
+			VersionIndependentProgID = s 'SleepTimer.SleepTimerCtrl'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			ForceRemove 'Control'
+			ForceRemove 'Insertable'
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 102'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '131473'
+			}
+			'TypeLib' = s '{2EB12243-1F68-4048-AF58-EBA639AA911B}'
+			'Version' = s '1.0'
+		}
+	}
+}

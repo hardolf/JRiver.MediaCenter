@@ -1,0 +1,76 @@
+// MyEncoder.idl : IDL source for MyEncoder.dll
+//
+// Copyright (C) 2002-2008 J. River, Inc. All rights reserved
+// Go to www.jrmediacenter.com to download lates version of J. River Media Center
+// Use in commercial applications requires written permission
+// This software is provided "as is", with no warranty.
+
+// This file will be processed by the MIDL tool to
+// produce the type library (MyEncoder.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(F4A6C190-1072-471C-81CF-6BA2E0B878C8),
+	
+		helpstring("IMyImpl Interface"),
+		pointer_default(unique)
+	]
+	interface IMyImpl : IUnknown
+	{
+		[helpstring("method Start")] HRESULT Start(long *error);
+		[helpstring("method Stop")] HRESULT Stop();
+		[helpstring("method Options")] HRESULT Options(long *error);
+		[propget, helpstring("property DestinationFile")] HRESULT DestinationFile([out, retval] BSTR *pVal);
+		[propput, helpstring("property DestinationFile")] HRESULT DestinationFile([in] BSTR newVal);
+		[propget, helpstring("property SourceFile")] HRESULT SourceFile([out, retval] BSTR *pVal);
+		[propput, helpstring("property SourceFile")] HRESULT SourceFile([in] BSTR newVal);
+		[propget, helpstring("property QualityList")] HRESULT QualityList([out, retval] BSTR *pVal);
+		[propget, helpstring("property Quality")] HRESULT Quality([out, retval] BSTR *pVal);
+		[propput, helpstring("property Quality")] HRESULT Quality([in] BSTR newVal);
+		[helpstring("method SetName")] HRESULT SetName(BSTR Name);
+	};
+
+[
+	uuid(3B8032B2-6073-4E9B-97AC-977BB9C8758D),
+	version(1.0),
+	helpstring("MyEncoder 1.0 Type Library")
+]
+library MYENCODERLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(0035F4B8-FD31-49EA-A51A-B4FC5BB23E56),
+		helpstring("_IMyImplEvents Interface")
+	]
+	interface _IMyImplEvents : IUnknown
+	{
+		[helpstring("method Finished")] HRESULT Finished();
+		[helpstring("method Failure")] HRESULT Failure(long error, BSTR *errstring);
+		[helpstring("method Progress")] HRESULT Progress(long position);
+	};
+
+	[
+		uuid(39045225-0E7F-4367-A75A-5E86B5E1B380),
+		helpstring("_IMyBufferInputImpl Interface")
+	]
+	interface _IMyBufferInputImpl : IUnknown
+	{
+		[helpstring("method InitBufferInput")] HRESULT InitBufferInput(void *pWaveFormat, BOOL bRawWaveData, long approximateTotalSize, long *error);
+		[helpstring("method EncodeBuffer")] HRESULT EncodeBuffer(unsigned char *buffer, long buflen, long *error);
+		[helpstring("method FinishBufferInput")] HRESULT FinishBufferInput();
+	};
+
+	[
+		uuid(5950775D-D626-4615-BB01-572E409B1F9E),
+		helpstring("MyImpl Class")
+	]
+	coclass MyImpl
+	{
+		[default] interface IMyImpl;
+		[default, source] interface _IMyImplEvents;
+	};
+};

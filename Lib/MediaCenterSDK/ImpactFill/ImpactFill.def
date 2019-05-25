@@ -1,0 +1,14 @@
+; ImpactFill.def : Declares the module parameters.
+; Copyright (C) 2002-2008 J. River, Inc. All rights reserved
+; Go to www.jrmediacenter.com to download lates version of J. River Media Center
+; Use in commercial applications requires written permission
+; This software is provided "as is", with no warranty.
+
+
+LIBRARY      "ImpactFill.DLL"
+
+EXPORTS
+	DllCanUnloadNow     @1 PRIVATE
+	DllGetClassObject   @2 PRIVATE
+	DllRegisterServer   @3 PRIVATE
+	DllUnregisterServer	@4 PRIVATE

@@ -1,0 +1,234 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D91DA58C-6415-43EF-B177-7BA28ACE7E01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MediaCenter.LyricsFinder</RootNamespace>
+    <AssemblyName>LyricsFinderCore</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>LyricsFinderCore.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkProfile />
+    <SccProjectName>Svn</SccProjectName>
+    <SccLocalPath>Svn</SccLocalPath>
+    <SccAuxPath>Svn</SccAuxPath>
+    <SccProvider>SubversionScc</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RegisterForComInterop>true</RegisterForComInterop>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
+    <DocumentationFile>bin\Debug\LyricsFinderCore.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ComponentModel.Annotations.4.5.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BitmapForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BitmapForm.Designer.cs">
+      <DependentUpon>BitmapForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LyricsFinderCore.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LyricsFinderCore.Designer.cs">
+      <DependentUpon>LyricsFinderCore.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LyricsFinderCore.Private.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LyricsFinderCore.Process.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LyricForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LyricForm.Designer.cs">
+      <DependentUpon>LyricForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Helpers\ErrorHandling.cs" />
+    <Compile Include="Model\Helpers\Logging.cs" />
+    <Compile Include="Model\Helpers\PrivateConfigurationSectionHandlers.cs" />
+    <Compile Include="Model\LyricsFinderData.cs" />
+    <Compile Include="LyricServiceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LyricServiceForm.Designer.cs">
+      <DependentUpon>LyricServiceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LyricServices\AbstractLyricService.cs" />
+    <Compile Include="Model\CreditType.cs" />
+    <Compile Include="Model\Helpers\Utility.cs" />
+    <Compile Include="Model\LyricsResultEnum.cs" />
+    <Compile Include="Model\GridColumnEnum.cs" />
+    <Compile Include="Model\LyricServices\FoundLyricType.cs" />
+    <Compile Include="Model\McRestService\McCommandEnum.cs" />
+    <Compile Include="Model\McRestService\McGetImageResponse.cs" />
+    <Compile Include="Model\McRestService\McMplItem.cs" />
+    <Compile Include="Model\McRestService\McMplResponse.cs" />
+    <Compile Include="Model\McRestService\McResponse.cs" />
+    <Compile Include="Model\McRestService\McRestService.cs" />
+    <Compile Include="Model\McRestService\McResponseDescendents.cs" />
+    <Compile Include="Model\WorkerUserState.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="StartStopButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="StartStopButton.Designer.cs">
+      <DependentUpon>StartStopButton.cs</DependentUpon>
+    </Compile>
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App.template.config" />
+    <None Include="App.private.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="LyricsFinderCore.snk" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BitmapForm.resx">
+      <DependentUpon>BitmapForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LyricsFinderCore.resx">
+      <DependentUpon>LyricsFinderCore.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LyricForm.resx">
+      <DependentUpon>LyricForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LyricServiceForm.resx">
+      <DependentUpon>LyricServiceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StartStopButton.resx">
+      <DependentUpon>StartStopButton.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\AddTable.bmp" />
+    <EmbeddedResource Include="Resource\Close.bmp" />
+    <EmbeddedResource Include="Resource\Delete.bmp" />
+    <EmbeddedResource Include="Resource\EditInformation.bmp" />
+    <EmbeddedResource Include="Resource\FillDown.bmp" />
+    <EmbeddedResource Include="Resource\FillUp.bmp" />
+    <EmbeddedResource Include="Resource\Logo.ico" />
+    <EmbeddedResource Include="Resource\Save.bmp" />
+    <EmbeddedResource Include="Resource\Start.bmp" />
+    <EmbeddedResource Include="Resource\Stop.bmp" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Utility\Utility.csproj">
+      <Project>{ef9766a5-0c6d-425f-be2d-3cd51a6720d2}</Project>
+      <Name>Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /y App.private.config $(TargetFileName).private.config
+del /q App*.config
+</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>if not exist ..\..\App.private.config copy ..\..\App.template.config ..\..\App.private.config
+</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

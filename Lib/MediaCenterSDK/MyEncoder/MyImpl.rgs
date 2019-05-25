@@ -1,0 +1,25 @@
+HKCR
+{
+	MyEncoder.MyImpl.1 = s 'MyImpl Class'
+	{
+		CLSID = s '{5950775D-D626-4615-BB01-572E409B1F9E}'
+	}
+	MyEncoder.MyImpl = s 'MyImpl Class'
+	{
+		CLSID = s '{5950775D-D626-4615-BB01-572E409B1F9E}'
+		CurVer = s 'MyEncoder.MyImpl.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {5950775D-D626-4615-BB01-572E409B1F9E} = s 'MyImpl Class'
+		{
+			ProgID = s 'MyEncoder.MyImpl.1'
+			VersionIndependentProgID = s 'MyEncoder.MyImpl'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{3B8032B2-6073-4E9B-97AC-977BB9C8758D}'
+		}
+	}
+}

@@ -1,0 +1,42 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MediaCenter.LyricsFinder.Model.LyricServices.Properties" GeneratedClassName="Settings">
+    <Profiles />
+    <Settings>
+        <Setting Name="Company" Type="System.String" Scope="Application">
+            <Value Profile="(Default)">Chart Lyrics</Value>
+        </Setting>
+        <Setting Name="CreditTextFormat" Type="System.String" Scope="Application">
+            <Value Profile="(Default)">
+
+--------------------------------------------------
+Lyrics found in {ServiceName} on {Date}
+{Company} - {CreditUrl}
+{ServiceName} - {ServiceUrl}
+--------------------------------------------------</Value>
+        </Setting>
+        <Setting Name="CreditUrl" Type="System.String" Scope="Application">
+            <Value Profile="(Default)">http://www.chartlyrics.com</Value>
+        </Setting>
+        <Setting Name="DailyQuota" Type="System.Int32" Scope="Application">
+            <Value Profile="(Default)">0</Value>
+        </Setting>
+        <Setting Name="DateFormat" Type="System.String" Scope="Application">
+            <Value Profile="(Default)">yyyy.MM.dd</Value>
+        </Setting>
+        <Setting Name="QuotaResetTimeZone" Type="System.String" Scope="Application">
+            <Value Profile="(Default)">UTC</Value>
+        </Setting>
+        <Setting Name="ServiceName" Type="System.String" Scope="Application">
+            <Value Profile="(Default)">ChartLyrics</Value>
+        </Setting>
+        <Setting Name="ServiceUrl" Type="System.String" Scope="Application">
+            <Value Profile="(Default)">http://api.chartlyrics.com/apiv1.asmx?WSDL</Value>
+        </Setting>
+        <Setting Name="Token" Type="System.String" Scope="Application">
+            <Value Profile="(Default)" />
+        </Setting>
+        <Setting Name="UserId" Type="System.String" Scope="Application">
+            <Value Profile="(Default)" />
+        </Setting>
+    </Settings>
+</SettingsFile>

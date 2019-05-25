@@ -1,0 +1,35 @@
+HKCR
+{
+	ImpactFill.ImpactFill.1 = s 'ImpactFill Class'
+	{
+		CLSID = s '{DD362372-A4AD-466A-B497-6E93587CE070}'
+		'Insertable'
+	}
+	ImpactFill.ImpactFill = s 'ImpactFill Class'
+	{
+		CLSID = s '{DD362372-A4AD-466A-B497-6E93587CE070}'
+		CurVer = s 'ImpactFill.ImpactFill.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {DD362372-A4AD-466A-B497-6E93587CE070} = s 'ImpactFill Class'
+		{
+			ProgID = s 'ImpactFill.ImpactFill.1'
+			VersionIndependentProgID = s 'ImpactFill.ImpactFill'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			ForceRemove 'Control'
+			ForceRemove 'Insertable'
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 101'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '131473'
+			}
+			'TypeLib' = s '{016A2AD7-4440-4150-99A5-523BA780AC0E}'
+			'Version' = s '1.0'
+		}
+	}
+}

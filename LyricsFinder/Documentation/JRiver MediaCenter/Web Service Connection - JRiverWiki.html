@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html dir="ltr" class="client-js" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Web Service Connection - JRiverWiki</title>
+<script>document.documentElement.className = document.documentElement.className.replace( /(^|\s)client-nojs(\s|$)/, "$1client-js$2" );</script>
+<script>(window.RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"Web_Service_Connection","wgTitle":"Web Service Connection","wgCurRevisionId":11020,"wgRevisionId":11020,"wgArticleId":2619,"wgIsArticle":true,"wgIsRedirect":false,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":[],"wgBreakFrames":false,"wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgMonthNamesShort":["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"wgRelevantPageName":"Web_Service_Connection","wgRelevantArticleId":2619,"wgRequestId":"dee0bad071b1a91e726a7630","wgIsProbablyEditable":false,"wgRestrictionEdit":[],"wgRestrictionMove":[]});mw.loader.implement("user.options",function($,jQuery,require,module){mw.user.options.set({"variant":"en"});});mw.loader.implement("user.tokens",function ( $, jQuery, require, module ) {
+mw.user.tokens.set({"editToken":"+\\","patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});/*@nomin*/;
+
+});mw.loader.load(["mediawiki.page.startup"]);});</script>
+<link rel="stylesheet" href="Web%20Service%20Connection%20-%20JRiverWiki_files/load.css">
+<!--[if IE 6]><link rel="stylesheet" href="/skins/MonoBook/IE60Fixes.css?303" media="screen"/><![endif]--><!--[if IE 7]><link rel="stylesheet" href="/skins/MonoBook/IE70Fixes.css?303" media="screen"/><![endif]-->
+<style>
+.mw-collapsible-toggle{float:right;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;user-select:none}  .mw-content-ltr .mw-collapsible-toggle,.mw-content-rtl .mw-content-ltr .mw-collapsible-toggle{float:right} .mw-content-rtl .mw-collapsible-toggle,.mw-content-ltr .mw-content-rtl .mw-collapsible-toggle{float:left}.mw-customtoggle,.mw-collapsible-toggle{cursor:pointer} caption .mw-collapsible-toggle,.mw-content-ltr caption .mw-collapsible-toggle,.mw-content-rtl caption .mw-collapsible-toggle,.mw-content-rtl .mw-content-ltr caption .mw-collapsible-toggle,.mw-content-ltr .mw-content-rtl caption .mw-collapsible-toggle{float:none} li .mw-collapsible-toggle,.mw-content-ltr li .mw-collapsible-toggle,.mw-content-rtl li .mw-collapsible-toggle,.mw-content-rtl .mw-content-ltr li .mw-collapsible-toggle,.mw-content-ltr .mw-content-rtl li .mw-collapsible-toggle{float:none} .mw-collapsible-toggle-li{list-style:none}
+.collapseButton{ float:right; font-weight:normal; text-align:right;width:auto}  #gradient,.gradient,.gradient-horizontal{background-image:url(http://images1.wikia.nocookie.net/templates/images/1/14/Gradient-1pixel-horizontal.png)}.gradient-vertical{background-image:url(http://images1.wikia.nocookie.net/templates/images/1/14/Gradient-1pixel-horizontal.png)} .allpagesredirect{font-style:italic}.allpagesredirect:after{color:#808080;content:" (redirect)" }.watchlistredir{font-style:italic} .infobox{border:1px solid #aaaaaa;background-color:#f9f9f9;color:black;margin-bottom:0.5em;margin-left:1em;padding:0.2em;float:right;clear:right}.infobox td,.infobox th{vertical-align:top}.infobox caption{font-size:larger;margin-left:inherit}.infobox.bordered{border-collapse:collapse}.infobox.bordered td,.infobox.bordered th{border:1px solid #aaaaaa}.infobox.bordered .borderless td,.infobox.bordered .borderless th{border:0} .forumheader{border:1px solid #aaa;margin-top:1em;padding:12px}.forumlist td.forum_edited a{color:black;text-decoration:none}.forumlist td.forum_title a{padding-left:20px}.forumlist td.forum_title a.forum_new{font-weight:bold;background:url(//wiki.jriver.com/images/4/4e/Forum_new.gif) center left no-repeat;padding-left:20px}.forumlist td.forum_title a.forum_new:visited{font-weight:normal;background:none;padding-left:20px}.forumlist th.forum_title{padding-left:20px} div.tright,div.tleft{border:1px solid silver}div.thumbinner{background:inherit;border:none;color:inherit}#article div.thumb{color:inherit} div.babelbox{float:right;margin-left:1em;margin-bottom:0.5em;width:246px;border:1px solid #99B3FF;padding:2px 0 2px 0}.lang-blockN,.lang-block0,.lang-block1,.lang-block2,.lang-block3{margin:2px 4px 2px 4px; width:238px;border-collapse:collapse}td.lang-codeN,td.lang-code0,td.lang-code1,td.lang-code2,td.lang-code3{text-align:center;font-size:14pt;width:45px;height:45px}td.lang-descriptionN,td.lang-description0,td.lang-description1,td.lang-description2,td.lang-description3{font-size:8pt;padding:4pt;line-height:1.25em}.lang-block0{border:1px solid #FFB3B3}td.lang-code0{background-color:#FFB3B3;color:black}td.lang-description0{background-color:#FFE0E8;color:black}.lang-block1,.lang-block2,.lang-block3{border:1px solid #99B3FF}td.lang-code1,td.lang-code2,td.lang-code3{background-color:#99B3FF;color:black}td.lang-description1,td.lang-description2,td.lang-description3{background-color:#E0E8FF;color:black}.lang-blockN{border:1px solid #6EF7A7}td.lang-codeN{background-color:#6EF7A7;color:black}td.lang-descriptionN{background-color:#C5FCDC;color:black}  .ambox{width:80%;margin:0 auto;border:1px #AAA solid;border-left:10px solid #228b22;border-collapse:collapse;background-color:#EEE} .ambox-blue{border-left:10px solid #1e90ff; }.ambox-red{border-left:10px solid #b22222; }.ambox-orange{border-left:10px solid #f28500; }.ambox-yellow{border-left:10px solid #f4c430; }.ambox-purple{border-left:10px solid #9932cc; }.ambox-gray{border-left:10px solid #bba; }.ambox-green{border-left:10px solid #228b22; } .ambox-smalltext{font-size:smaller;margin-top:0.5em;margin-left:0.8em} .ambox-image{ width:60px;padding:2px 0px 2px 0.5em; text-align:center}@media print{.ambox{display:none}}  .references-small{font-size:90%} table.userbox{float:left;margin:0.2em;padding:0;border-width:1px;border-style:solid}table.userbox td.left,table.userbox td.right{text-align:center;vertical-align:middle;font-size:1.6em;padding:0}table.userbox td.main{padding:0 4px;vertical-align:middle;line-height:125%;font-size:0.9em}table.userbox{border-color:#aaa;background:#f8f8f8}table.userbox td.left,table.userbox td.right{background:#d8d8d8}
+.postedit-container{margin:0 auto;position:fixed;top:0;height:0;left:50%;z-index:1000;font-size:13px}.postedit-container:hover{cursor:pointer}.postedit{position:relative;top:0.6em;left:-50%;padding:.6em 3.6em .6em 1.1em;line-height:1.5625em;color:#626465;background-color:#f4f4f4;border:1px solid #dcd9d9;text-shadow:0 0.0625em 0 rgba(255,255,255,0.5);border-radius:5px;box-shadow:0 2px 5px 0 #ccc;-webkit-transition:all 0.25s ease-in-out;-moz-transition:all 0.25s ease-in-out;-ms-transition:all 0.25s ease-in-out;-o-transition:all 0.25s ease-in-out;transition:all 0.25s ease-in-out}.skin-monobook .postedit{top:6em !important}.postedit-faded{opacity:0}.postedit-icon{padding-left:41px;  line-height:25px;background-repeat:no-repeat;background-position:8px 50%}.postedit-icon-checkmark{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAB9ElEQVR4AZWRA3AYURQArxrVHtW2bdu2bdu2zdi2bdu2bWxs7zeehZaw4f70kbs+zI3e/nWK+RWx3aOFlrL56Sy5SxrruG69hlv6OyK+mz+8KDSXdXembj0ispT7tjs4ZTIbpYBvxGSGKzZTeFrb7W/meN002swFs0U8ttpHTkF2BvCqWQrW35929bTsKm5Zb+SEwWwcY8wAngB9m7Z+d+rIPZ/npdy12M5p47n8dXsCYAf0qPy06eGMdktuDu9Qf+JmKl3SWM91qzVcN9tAbEYkwMaq0tyb1m/To5kP170el/BK8/qa6sJr70ydf+T/Uu5ab+Oo/lS0AkUBpIFWlZ9WPhxpse/PHO7YbOOczjL0vZV2lNxPPtG73dYXM+xvm2znrOl83tidoqCwMBgYXsPFB0on5S6pr+eK5TKuW67lgvaKvF8mL1dtfTL32FHxRdyx3cQpg7m4x9sCXKkTIzA4LDH44zWdzaUf71hv5rTG4uyzcusybxSX7aThbMQ8XgCYAp3rzTTQOiIh9PNlzY3FSuZxrzjme1Y7uGS6kjsWO4jPjM4FVjRZsvD4kO9XtTZzQn82NyzWc0B7AmZh6gA/hOYSGhfw9YbOVnarj+S7800AL2BIsxUAbWNToj7bhBuQmZcOsFdoKUC74rGheCwXmqAIQTc9jQcrADIAAAAASUVORK5CYII=);background-image:url(/resources/src/mediawiki.action/images/green-checkmark.png?d94f1)!ie;background-position:left}.postedit-close{position:absolute;padding:0 .8em;right:0;top:0;font-size:1.25em;font-weight:bold;line-height:2.3em;color:black;text-shadow:0 0.0625em 0 white;text-decoration:none;opacity:0.2;filter:alpha(opacity=20)}.postedit-close:hover{color:black;text-decoration:none;opacity:0.4;filter:alpha(opacity=40)}</style><meta name="ResourceLoaderDynamicStyles" content="">
+<link rel="stylesheet" href="Web%20Service%20Connection%20-%20JRiverWiki_files/load_002.css">
+<script async="" src="Web%20Service%20Connection%20-%20JRiverWiki_files/load_002.php"></script>
+<meta name="generator" content="MediaWiki 1.27.4">
+<link rel="shortcut icon" href="https://wiki.jriver.com/favicon.ico">
+<link rel="search" type="application/opensearchdescription+xml" href="https://wiki.jriver.com/opensearch_desc.php" title="JRiverWiki (en)">
+<link rel="EditURI" type="application/rsd+xml" href="https://wiki.jriver.com/api.php?action=rsd">
+<link rel="alternate" type="application/atom+xml" title="JRiverWiki Atom feed" href="https://wiki.jriver.com/index.php?title=Special:RecentChanges&amp;feed=atom">
+<script src="Web%20Service%20Connection%20-%20JRiverWiki_files/load.php"></script></head>
+<body class="mediawiki ltr sitedir-ltr ns-0 ns-subject page-Web_Service_Connection rootpage-Web_Service_Connection skin-monobook action-view">
+<div id="globalWrapper">
+		<div id="column-content">
+			<div id="content" class="mw-body" role="main">
+				<a id="top"></a>
+				
+				<div class="mw-indicators">
+</div>
+				<h1 id="firstHeading" class="firstHeading" lang="en">Web Service Connection</h1>
+				
+				<div id="bodyContent" class="mw-body-content">
+					<div id="siteSub">From JRiverWiki</div>
+					<div id="contentSub"></div>
+										<div id="jump-to-nav" class="mw-jump">Jump to: <a href="#column-one">navigation</a>, <a href="#searchInput">search</a></div>
+
+					<!-- start content -->
+					<div id="mw-content-text" dir="ltr" class="mw-content-ltr" lang="en"><p>To connect to the <a href="https://wiki.jriver.com/index.php/Web_Service_Interface" title="Web Service Interface">Web Service Interface</a>, JRiver recommends the following flow.  Please note that <a href="https://wiki.jriver.com/index.php/Gizmo" title="Gizmo">Gizmo</a> uses a similar approach.
+</p><p><b>Ask the user for an access key</b>
+</p><p>An access key will be six case-sensitive letters.  No digits or symbols are used.
+</p><p><br>
+<b>Lookup server addresses from access key</b>
+</p><p>Call the web service (replace [Access Key] with the actual access key):<br>
+<a rel="nofollow" class="external free" href="http://webplay.jriver.com/libraryserver/lookup?id=">http://webplay.jriver.com/libraryserver/lookup?id=</a>[Access Key]
+</p><p>It is recommended that you use a short timeout.
+</p><p><br>
+<b>Optionally wake computers</b>
+</p><p>Loop the IP addresses returned and send a wake request to each 
+MAC address returned.  The details of creating magic packets for wake 
+requests is beyond the scope of this document.  For Java code, this 
+might help: <a rel="nofollow" class="external free" href="http://www.jibble.org/wake-on-lan/">http://www.jibble.org/wake-on-lan/</a>
+</p><p><br>
+<b>Try connecting to each IP address</b>
+</p><p>Loop the IP addresses returned, and attempt to connect to:
+http://[Returned IP Address]:[Returned Port]/MCWS/v1/Alive
+</p><p>Be sure to loop the addresses in order so that you first attempt 
+to connect on the LAN and only fallback to the WAN if necessary.
+</p><p>Use a short timeout, usually 2 to 5 seconds.
+</p><p>Parse the response and make sure the access key matches the access key entered by the user.
+</p><p>Also, check the library version and program version as necessary.
+</p><p><br>
+<b>Authenticate</b>
+</p><p>Call the web service function:
+MCWS/v1/Authenticate
+</p><p>Provide the saved username and password if you have one.
+</p><p>If authentication does not succeeed, ask the user for their username and password.  Then repeat.
+</p><p>Store the token returned and include it in all future calls.
+</p><p><br>
+<b>Use MCWS</b>
+</p><p>You can start using the web service at this point.  Include the 
+token in each call using &amp;Token=[Token Received During 
+Authentication].
+</p><p><br>
+<b>Tips</b>
+</p><p>Most all web service responses use the same XML response format. 
+ Create a single object to represent the response you can use for all 
+calls.
+</p>
+<!-- 
+NewPP limit report
+Cached time: 20190509174740
+Cache expiry: 86400
+Dynamic content: false
+CPU time usage: 0.004 seconds
+Real time usage: 0.005 seconds
+Preprocessor visited node count: 2/1000000
+Preprocessor generated node count: 6/1000000
+Post‐expand include size: 0/2097152 bytes
+Template argument size: 0/2097152 bytes
+Highest expansion depth: 1/40
+Expensive parser function count: 0/100
+-->
+
+<!-- 
+Transclusion expansion time report (%,ms,calls,template)
+100.00%    0.000      1 - -total
+-->
+
+<!-- Saved in parser cache with key wiki:pcache:idhash:2619-0!*!0!*!*!*!* and timestamp 20190509174740 and revision id 11020
+ -->
+</div><div class="printfooter">
+Retrieved from "<a dir="ltr" href="http://wiki.jriver.com/index.php?title=Web_Service_Connection&amp;oldid=11020">http://wiki.jriver.com/index.php?title=Web_Service_Connection&amp;oldid=11020</a>"</div>
+					<div id="catlinks" class="catlinks catlinks-allhidden" data-mw="interface"></div>					<!-- end content -->
+										<div class="visualClear"></div>
+				</div>
+			</div>
+		</div>
+		<div id="column-one">
+			<h2>Navigation menu</h2>
+					<div id="p-cactions" class="portlet" role="navigation">
+			<h3>Views</h3>
+
+			<div class="pBody">
+				<ul>
+				<li id="ca-nstab-main" class="selected"><a href="https://wiki.jriver.com/index.php/Web_Service_Connection" title="View the content page [Alt+Shift+c]" accesskey="c">Page</a></li>
+				<li id="ca-talk" class="new"><a href="https://wiki.jriver.com/index.php?title=Talk:Web_Service_Connection&amp;action=edit&amp;redlink=1" rel="discussion" title="Discussion about the content page [Alt+Shift+t]" accesskey="t">Discussion</a></li>
+				<li id="ca-viewsource"><a href="https://wiki.jriver.com/index.php?title=Web_Service_Connection&amp;action=edit" title="This page is protected.
+You can view its source [Alt+Shift+e]" accesskey="e">View source</a></li>
+				<li id="ca-history"><a href="https://wiki.jriver.com/index.php?title=Web_Service_Connection&amp;action=history" title="Past revisions of this page [Alt+Shift+h]" accesskey="h">History</a></li>
+				</ul>
+							</div>
+		</div>
+				<div class="portlet" id="p-personal" role="navigation">
+				<h3>Personal tools</h3>
+
+				<div class="pBody">
+					<ul>
+													<li id="pt-login"><a href="https://wiki.jriver.com/index.php?title=Special:UserLogin&amp;returnto=Web+Service+Connection" title="You are encouraged to log in; however, it is not mandatory [Alt+Shift+o]" accesskey="o">Log in</a></li>
+											</ul>
+				</div>
+			</div>
+			<div class="portlet" id="p-logo" role="banner">
+				<a href="https://wiki.jriver.com/index.php/Main_Page" class="mw-wiki-logo" title="Visit the main page"></a>
+			</div>
+				<div class="generated-sidebar portlet" id="p-navigation" role="navigation">
+		<h3>Navigation</h3>
+		<div class="pBody">
+							<ul>
+											<li id="n-Interact-Forum"><a href="http://yabb.jriver.com/interact/index.php" rel="nofollow">Interact Forum</a></li>
+											<li id="n-mainpage"><a href="https://wiki.jriver.com/index.php/Main_Page" title="Visit the main page [Alt+Shift+z]" accesskey="z">Main Page</a></li>
+											<li id="n-User-Manual"><a href="https://wiki.jriver.com/index.php/Media_Center">User Manual</a></li>
+											<li id="n-portal"><a href="https://wiki.jriver.com/index.php/JRiverWiki:Community_portal" title="About the project, what you can do, where to find things">Community portal</a></li>
+											<li id="n-recentchanges"><a href="https://wiki.jriver.com/index.php/Special:RecentChanges" title="A list of recent changes in the wiki [Alt+Shift+r]" accesskey="r">Recent changes</a></li>
+									</ul>
+					</div>
+		</div>
+			<div id="p-search" class="portlet" role="search">
+			<h3><label for="searchInput">Search</label></h3>
+
+			<div id="searchBody" class="pBody">
+				<form action="/index.php" id="searchform">
+					<input type="hidden" name="title" value="Special:Search">
+					<input type="search" name="search" placeholder="Search" title="Search JRiverWiki [Alt+Shift+f]" accesskey="f" id="searchInput">
+					<input type="submit" name="go" value="Go" title="Go to a page with this exact name if it exists" id="searchGoButton" class="searchButton">&nbsp;
+						<input type="submit" name="fulltext" value="Search" title="Search the pages for this text" id="mw-searchButton" class="searchButton">
+				</form>
+
+							</div>
+		</div>
+			<div class="portlet" id="p-tb" role="navigation">
+			<h3>Tools</h3>
+
+			<div class="pBody">
+				<ul>
+											<li id="t-whatlinkshere"><a href="https://wiki.jriver.com/index.php/Special:WhatLinksHere/Web_Service_Connection" title="A list of all wiki pages that link here [Alt+Shift+j]" accesskey="j">What links here</a></li>
+											<li id="t-recentchangeslinked"><a href="https://wiki.jriver.com/index.php/Special:RecentChangesLinked/Web_Service_Connection" title="Recent changes in pages linked from this page [Alt+Shift+k]" accesskey="k">Related changes</a></li>
+											<li id="t-specialpages"><a href="https://wiki.jriver.com/index.php/Special:SpecialPages" title="A list of all special pages [Alt+Shift+q]" accesskey="q">Special pages</a></li>
+											<li id="t-print"><a href="https://wiki.jriver.com/index.php?title=Web_Service_Connection&amp;printable=yes" rel="alternate" title="Printable version of this page [Alt+Shift+p]" accesskey="p">Printable version</a></li>
+											<li id="t-permalink"><a href="https://wiki.jriver.com/index.php?title=Web_Service_Connection&amp;oldid=11020" title="Permanent link to this revision of the page">Permanent link</a></li>
+											<li id="t-info"><a href="https://wiki.jriver.com/index.php?title=Web_Service_Connection&amp;action=info" title="More information about this page">Page information</a></li>
+									</ul>
+							</div>
+		</div>
+			</div><!-- end of the left (by default at least) column -->
+		<div class="visualClear"></div>
+					<div id="footer" role="contentinfo">
+						<div id="f-poweredbyico">
+									<a href="https://www.mediawiki.org/"><img src="Web%20Service%20Connection%20-%20JRiverWiki_files/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" srcset="/resources/assets/poweredby_mediawiki_132x47.png 1.5x, /resources/assets/poweredby_mediawiki_176x62.png 2x" width="88" height="31"></a>
+							</div>
+					<ul id="f-list">
+									<li id="lastmod"> This page was last modified on 10 May 2014, at 18:24.</li>
+									<li id="privacy"><a href="https://wiki.jriver.com/index.php/JRiverWiki:Privacy_policy" title="JRiverWiki:Privacy policy">Privacy policy</a></li>
+									<li id="about"><a href="https://wiki.jriver.com/index.php/JRiverWiki:About" title="JRiverWiki:About">About JRiverWiki</a></li>
+									<li id="disclaimer"><a href="https://wiki.jriver.com/index.php/JRiverWiki:General_disclaimer" title="JRiverWiki:General disclaimer">Disclaimers</a></li>
+							</ul>
+		</div>
+		</div>
+		<script>(window.RLQ=window.RLQ||[]).push(function(){mw.loader.state({"user":"ready","user.groups":"ready"});mw.loader.load(["mediawiki.action.view.postEdit","site","mediawiki.user","mediawiki.hidpi","mediawiki.page.ready"]);});</script><script>(window.RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgBackendResponseTime":132});});</script>
+</body></html>

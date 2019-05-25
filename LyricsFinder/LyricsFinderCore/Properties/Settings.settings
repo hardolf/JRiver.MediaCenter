@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MediaCenter.LyricsFinder.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="McWebServiceConnectAttempts" Type="System.Int16" Scope="Application">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="McNoLyricsSearchList" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">No Lyrics Found</Value>
+    </Setting>
+    <Setting Name="MouseMoveOpenLyricsForm" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="LocalAppDataFile" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</Value>
+    </Setting>
+    <Setting Name="UpgradeSettings" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="LyricsFormSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">400, 500</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

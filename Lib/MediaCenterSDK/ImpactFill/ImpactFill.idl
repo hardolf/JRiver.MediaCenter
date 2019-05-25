@@ -1,0 +1,46 @@
+// ImpactFill.idl : IDL source for ImpactFill.dll
+// Copyright (C) 2002-2008 J. River, Inc. All rights reserved
+// Go to www.jrmediacenter.com to download lates version of J. River Media Center
+// Use in commercial applications requires written permission
+// This software is provided "as is", with no warranty.
+
+// This file will be processed by the MIDL tool to
+// produce the type library (ImpactFill.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+#include "olectl.h"
+	
+
+	[
+		object,
+		uuid(DC9DF95E-C7B5-4DC5-8756-0BED3B8B6ABC),
+		dual,
+		helpstring("IImpactFill Interface"),
+		pointer_default(unique)
+	]
+	interface IImpactFill : IDispatch
+	{
+	[id(1), helpstring("method Init")] HRESULT Init([in] IDispatch* pMJ);
+	[id(2), helpstring("method Terminate")] HRESULT Terminate(void);
+	};
+
+[
+	uuid(016A2AD7-4440-4150-99A5-523BA780AC0E),
+	version(1.0),
+	helpstring("ImpactFill 1.0 Type Library")
+]
+library IMPACTFILLLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(DD362372-A4AD-466A-B497-6E93587CE070),
+		helpstring("ImpactFill Class")
+	]
+	coclass ImpactFill
+	{
+		[default] interface IImpactFill;
+	};
+};

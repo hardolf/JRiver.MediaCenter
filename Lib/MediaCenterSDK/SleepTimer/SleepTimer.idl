@@ -1,0 +1,46 @@
+// SleepTimer.idl : IDL source for SleepTimer.dll
+// Copyright (C) 2002-2008 J. River, Inc. All rights reserved
+// Go to www.jrmediacenter.com to download lates version of J. River Media Center
+// Use in commercial applications requires written permission
+// This software is provided "as is", with no warranty.
+
+
+// This file will be processed by the MIDL tool to
+// produce the type library (SleepTimer.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+#include "olectl.h"
+	
+
+	[
+		object,
+		uuid(E12D9E7F-B55D-4F87-904A-2DE8E261DC3F),
+		dual,
+		helpstring("ISleepTimerCtrl Interface"),
+		pointer_default(unique)
+	]
+	interface ISleepTimerCtrl : IDispatch
+	{
+		[id(1), helpstring("method Init")] HRESULT Init([in] LPDISPATCH pDisp);
+	};
+
+[
+	uuid(2EB12243-1F68-4048-AF58-EBA639AA911B),
+	version(1.0),
+	helpstring("SleepTimer 1.0 Type Library")
+]
+library SLEEPTIMERLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(1F277DBB-337E-4C61-B936-DE1105CBA323),
+		helpstring("J. River Sleep Timer Control")
+	]
+	coclass SleepTimerCtrl
+	{
+		[default] interface ISleepTimerCtrl;
+	};
+};
