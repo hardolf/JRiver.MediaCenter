@@ -34,4 +34,4 @@ Source: "Build\LyricServices\*";            DestDir: "{app}";        Flags: igno
 
 [Icons]
 Name: "{group}\Lyrics Finder for JRiver Media Center"; Filename: "{app}\LyricsFinderExe.exe"
-Name: "{group}\{cm:UninstallProgram, Lyrics Finder}"; Filename: "{uninstallexe}"
+Name: "{group}\{cm:UninstallProgram, Lyrics Finder standalone}"; Filename: "{uninstallexe}"

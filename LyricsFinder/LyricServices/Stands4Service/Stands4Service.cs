@@ -27,47 +27,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     {
 
         /// <summary>
-        /// Result type from STANDS4 service.
-        /// </summary>
-        [Serializable, XmlType("result")]
-        private class StandsResultType
-        {
-
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-            [XmlElement("song")]
-            public string Song { get; set; }
-
-            [XmlElement("song-link")]
-            public Uri SongLink { get; set; }
-
-            [XmlElement("artist")]
-            public string Artist { get; set; }
-
-            [XmlElement("artist-link")]
-            public Uri ArtistLink { get; set; }
-
-            [XmlElement("album")]
-            public string Album { get; set; }
-
-            [XmlElement("album-link")]
-            public Uri AlbumLink { get; set; }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-
-        }
-
-
-
-        /// <summary>
-        /// Results root type from STANDS4 service.
-        /// </summary>
-        [ClassInterface(ClassInterfaceType.None)]
-        [Serializable, XmlRoot(ElementName = "results", IsNullable = false)]
-        private class StandsResultsType : List<StandsResultType>
-        {
-        }
-
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LyricsStandsService"/> class.
         /// </summary>
         public Stands4Service()
@@ -167,9 +126,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             // Avoid analyzer warning CA1812
             _ = new StandsResultType();
-            _ = new StandsResultsType();
+            _ = new StandsResultListType();
 
-            var results = txt.XmlDeserializeFromString<StandsResultsType>();
+            var results = txt.XmlDeserializeFromString<StandsResultListType>();
 
             // We got results back from the service.
             // Now, do any of them match our playlist item (song)?
@@ -213,6 +172,49 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             return this;
         }
 
+    }
+
+
+
+    /// <summary>
+    /// Result type from STANDS4 service.
+    /// </summary>
+    [ClassInterface(ClassInterfaceType.None)]
+    [Serializable, XmlType("result")]
+    public class StandsResultType
+    {
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        [XmlElement("song")]
+        public string Song { get; set; }
+
+        [XmlElement("song-link")]
+        public SerializableUri SongLink { get; set; }
+
+        [XmlElement("artist")]
+        public string Artist { get; set; }
+
+        [XmlElement("artist-link")]
+        public SerializableUri ArtistLink { get; set; }
+
+        [XmlElement("album")]
+        public string Album { get; set; }
+
+        [XmlElement("album-link")]
+        public SerializableUri AlbumLink { get; set; }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
+    }
+
+
+
+    /// <summary>
+    /// Results root type from STANDS4 service.
+    /// </summary>
+    [ClassInterface(ClassInterfaceType.None)]
+    [Serializable, XmlRoot(ElementName = "results", IsNullable = false)]
+    public class StandsResultListType : List<StandsResultType>
+    {
     }
 
 }

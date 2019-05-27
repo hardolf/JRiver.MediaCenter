@@ -145,8 +145,8 @@ namespace MediaCenter.LyricsFinder.Model
             ret.Replace("{Company}", Company);
             ret.Replace("{Date}", CreditDate.ToString(DateFormat, CultureInfo.InvariantCulture));
             ret.Replace("{ServiceName}", ServiceName);
-            ret.Replace("{CreditUrl}", CreditUrl.ToString());
-            ret.Replace("{ServiceUrl}", ServiceUrl.ToString());
+            ret.Replace("{CreditUrl}", CreditUrl?.ToString() ?? string.Empty);
+            ret.Replace("{ServiceUrl}", ServiceUrl?.ToString() ?? string.Empty);
             ret.Replace("{Copyright}", Copyright);
 
             return ret.ToString().LfToCrLf();

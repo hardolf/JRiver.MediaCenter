@@ -106,10 +106,13 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>set _tdir=..\..\..\Installation\Build\Plugin
+
 del /q "%25_tdir%25\*.*"
-xcopy /e /v /y "$(TargetDir)*.*" "%25_tdir%25\"
-xcopy /e /v /y "..\..\..\LyricsFinderCore\$(OutDir)LyricsFinderCore*.config" .
-xcopy /e /v /y "..\..\..\LyricsFinderCore\$(OutDir)LyricsFinderCore*.*" "%25_tdir%25\"
+
+xcopy /e /i /v /y "$(TargetDir)*.*" "%25_tdir%25\"
+xcopy /e /i /v /y "..\..\..\LyricsFinderCore\$(OutDir)LyricsFinderCore*.config" .
+xcopy /e /i /v /y "..\..\..\LyricsFinderCore\$(OutDir)LyricsFinderCore*.*" "%25_tdir%25\"
+
 del /q "%25_tdir%25\App*.config"
 del /q "%25_tdir%25\*CodeAnalysis*.*"
 del /q App*.config
@@ -118,6 +121,10 @@ if exist "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "C:\Program Files (x86)\
 
 
 </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>del /q "$(TargetDir)*.*"
+</PreBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -59,6 +59,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 	ProjectSection(SolutionItems) = preProject
 		LyricsFinder\ReadMe - Developer.txt = LyricsFinder\ReadMe - Developer.txt
 		LyricsFinder\ReadMe.txt = LyricsFinder\ReadMe.txt
+		LyricsFinder\Documentation\ReleasNotes.html = LyricsFinder\Documentation\ReleasNotes.html
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web Service Connection - JRiverWiki_files", "Web Service Connection - JRiverWiki_files", "{B55FC127-0DC0-40A2-98FC-ABAC808CA8BB}"
@@ -86,8 +87,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JRiver MediaCenter", "JRive
 		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki.html = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki.html
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LyricsFinder", "LyricsFinder", "{24CA6E59-5F69-405B-A2FE-65B5CD384CBF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageInspection", "SharedComponents\MessageInspection\MessageInspection.csproj", "{4AB4E2BF-2216-43DF-865E-3E3E3B8B37C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utility", "SharedComponents\Utility\Utility.csproj", "{EF9766A5-0C6D-425F-BE2D-3CD51A6720D2}"
@@ -109,6 +108,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusiXmatchService", "LyricsFinder\LyricServices\MusiXmatchService\MusiXmatchService.csproj", "{8554F018-9DD0-4D3D-A66E-39C1935931A4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusiXmatchServiceHardolf", "LyricsFinder\LyricServices\MusiXmatchServiceHardolf\MusiXmatchServiceHardolf.csproj", "{8882ABBD-3D8C-43F7-A591-4B03BEB4D33D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{0091BD82-6FC4-42A3-92CD-FA2413362A28}"
+	ProjectSection(SolutionItems) = preProject
+		Images\LyricsFinder_Detail.png = Images\LyricsFinder_Detail.png
+		Images\LyricsFinder_Main.png = Images\LyricsFinder_Main.png
+		Images\MediaCenter_Main.png = Images\MediaCenter_Main.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -176,7 +182,6 @@ Global
 		{B55FC127-0DC0-40A2-98FC-ABAC808CA8BB} = {8B35A66F-D566-465E-9032-BA72579349B6}
 		{34E4541E-ABA9-4D00-8A2D-BE8443460BFD} = {8B35A66F-D566-465E-9032-BA72579349B6}
 		{8B35A66F-D566-465E-9032-BA72579349B6} = {220577E8-650B-47CE-A642-FA01D3919A00}
-		{24CA6E59-5F69-405B-A2FE-65B5CD384CBF} = {220577E8-650B-47CE-A642-FA01D3919A00}
 		{4AB4E2BF-2216-43DF-865E-3E3E3B8B37C9} = {CA83D225-0385-4F41-89F8-40C241A34E4E}
 		{EF9766A5-0C6D-425F-BE2D-3CD51A6720D2} = {CA83D225-0385-4F41-89F8-40C241A34E4E}
 		{D73AD757-AAAB-4941-B0F9-698A990DF6C3} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}

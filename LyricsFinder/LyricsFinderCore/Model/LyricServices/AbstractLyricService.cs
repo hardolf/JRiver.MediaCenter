@@ -312,6 +312,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var settings = config.AppSettings.Settings;
             var privateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy);
 
+            if (!IsImplemented)
+                IsActive = false;
+
             Credit = new CreditType
             {
                 Company = ServiceSettingsValue(settings, "Company"),

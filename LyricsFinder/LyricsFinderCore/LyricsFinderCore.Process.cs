@@ -225,7 +225,7 @@ namespace MediaCenter.LyricsFinder
                 // Search for lyrics in each service and stop if lyrics is found
                 foreach (var service in LyricsFinderData.Services)
                 {
-                    if (!service.IsActive || service.IsQuotaExceeded) continue;
+                    if (!service.IsImplemented || !service.IsActive || service.IsQuotaExceeded) continue;
 
                     service.Process(item);
 

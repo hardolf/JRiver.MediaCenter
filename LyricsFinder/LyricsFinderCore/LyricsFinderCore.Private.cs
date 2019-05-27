@@ -373,6 +373,7 @@ namespace MediaCenter.LyricsFinder
                     ? $"Creating service instance(s) from \"{file}\"..."
                     : $"No lyric services in \"{file}\"."
                     , true);
+
                 foreach (var assyServiceType in assyLyricsServiceTypes)
                 {
                     if (!ret.Any(t => t.GetType() == assyServiceType))

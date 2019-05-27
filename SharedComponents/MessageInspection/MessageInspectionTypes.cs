@@ -13,6 +13,9 @@ using System.ServiceModel.Dispatcher;
 using System.Text.RegularExpressions;
 using System.Threading;
 
+// **********************************************************************************************************************************************
+// ***** This MessageInspection assembly must be copied to the JRiver MediaCenter program folder when the LyricsFinder is used as a plug-in *****
+// **********************************************************************************************************************************************
 
 namespace MediaCenter.SharedComponents
 {
@@ -20,7 +23,6 @@ namespace MediaCenter.SharedComponents
     /// <summary>
     ///     Configuration behavior extension element.
     /// </summary>
-    [Serializable]
     public class MessageInspectorBehaviorExtensionElement : BehaviorExtensionElement
     {
 
@@ -183,7 +185,6 @@ namespace MediaCenter.SharedComponents
     /// <summary>
     ///     Endpoint behavior.
     /// </summary>
-    [Serializable]
     public class MessageInspectorEndpointBehavior : IEndpointBehavior
     {
 
@@ -289,7 +290,6 @@ namespace MediaCenter.SharedComponents
     /// <summary>
     ///     Client message inspector.
     /// </summary>
-    [Serializable]
     public class MessageInspector : IClientMessageInspector
     {
         // Shared between all instances of the message inspector, i.e. all requests/responses during the task uptime
@@ -705,6 +705,13 @@ namespace MediaCenter.SharedComponents
 
 
 
+    /// <summary>
+    /// Utility type.
+    /// </summary>
+    /// <remarks>
+    /// <para>The <c>IsNullOrEmptyTrimmed</c> method here is a duplicate of the one in the <see cref="Utility"/> assembly.</para>
+    /// <para>We have it here too because we otherwise would have to copy the <see cref="Utility"/> assembly to the JRiver MediaCenter program folder.</para>
+    /// </remarks>
     internal static class Utility
     {
 

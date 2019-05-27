@@ -16,7 +16,7 @@ DefaultDirName={commonpf32}
 DefaultGroupName=MediaCenter LyricsFinder
 DirExistsWarning=no
 DisableDirPage=yes
-DisableProgramGroupPage=yes
+DisableProgramGroupPage=no
 MinVersion=0,6.1
 OutputBaseFilename=SetupPlugin
 OutputDir=Output
@@ -34,7 +34,7 @@ Source: "Build\LyricServices\MessageInspection.*";  DestDir: "{app}\..\..";     
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\{cm:UninstallProgram, Plugin}"; Filename: "{uninstallexe}"
+Name: "{group}\{cm:UninstallProgram, Lyrics Finder plug-in}"; Filename: "{uninstallexe}"
 
 [Registry]
 Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder";                                                                                            Flags: uninsdeletekey

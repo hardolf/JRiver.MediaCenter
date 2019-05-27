@@ -26,7 +26,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <param name="foundLyric">The found lyric.</param>
         public void Add(T foundLyric)
         {
-            if (Exists(foundLyric.LyricText, foundLyric.LyricUrl.ToString(), foundLyric.TrackingUrl.ToString()))
+            if (Exists(foundLyric.LyricText, foundLyric.LyricUrl?.ToString() ?? string.Empty, foundLyric.TrackingUrl?.ToString() ?? string.Empty))
                 return;
 
             base.Add(foundLyric);
@@ -108,8 +108,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 var ret = new StringBuilder(_lyricCreditText);
 
-                ret.Replace("{LyricUrl}", LyricUrl.ToString());
-                ret.Replace("{TrackingUrl}", TrackingUrl.ToString());
+                ret.Replace("{LyricUrl}", LyricUrl?.ToString() ?? string.Empty);
+                ret.Replace("{TrackingUrl}", TrackingUrl?.ToString() ?? string.Empty);
                 ret.Replace(Environment.NewLine + Environment.NewLine, Environment.NewLine);
 
                 return ret.ToString();

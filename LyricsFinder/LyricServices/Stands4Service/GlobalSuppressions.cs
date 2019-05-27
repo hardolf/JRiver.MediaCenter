@@ -4,3 +4,4 @@
 // a specific target and scoped to a namespace, type, member, etc.
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0019:Use pattern matching", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.Model.LyricServices.Stands4Service.Process(MediaCenter.LyricsFinder.Model.McRestService.McMplItem,System.Boolean)~MediaCenter.LyricsFinder.Model.LyricServices.AbstractLyricService")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "<Pending>", Scope = "type", Target = "~T:MediaCenter.LyricsFinder.Model.LyricServices.StandsResultListType")]

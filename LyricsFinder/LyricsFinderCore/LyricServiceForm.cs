@@ -480,10 +480,10 @@ namespace MediaCenter.LyricsFinder.Model
             // Create the rows and columns
             FillRow("Name", $"{service.Credit.ServiceName} {(service.IsActive ? "" : " - not enabled")}");
             FillRow("Company", service.Credit.Company);
-            FillRow("Company Website", service.Credit.CreditUrl.ToString());
+            FillRow("Company Website", service.Credit.CreditUrl?.ToString() ?? string.Empty);
             FillRow("Copyright text", service.Credit.Copyright);
             FillRow("Credit text format", service.Credit.CreditTextFormat);
-            FillRow("URL", service.Credit.ServiceUrl.ToString());
+            FillRow("URL", service.Credit.ServiceUrl?.ToString() ?? string.Empty);
             FillRow("User ID", service.Credit.UserId);
             FillRow("User token", service.Credit.Token);
 

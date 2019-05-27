@@ -48,7 +48,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Debug\LyricsFinderExe.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -156,10 +157,16 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>set _tdir=..\..\..\Installation\Build\Standalone
+    <PostBuildEvent>set _sdir=..\..\..\Installation\Build\LyricServices
+set _tdir=..\..\..\Installation\Build\Standalone
+
 del /q "%25_tdir%25\*.*"
-xcopy /y *.* %25_tdir%25\
-xcopy /e /v /y "..\..\..\LyricsFinderCore\$(OutDir)*.*" .
+
+xcopy /e /i /v /y *.* %25_tdir%25\
+xcopy /e /i /v /y "%25_sdir%25\*.*" .
+xcopy /e /i /v /y "..\..\..\LyricsFinderCore\$(OutDir)*.*" .
+xcopy /e /i /v /y "..\..\..\LyricsFinderCore\$(OutDir)LyricsFinderCore*.*" "%25_tdir%25\"
+
 del /q App*.config
 del /q "%25_tdir%25\App*.config"
 del /q "%25_tdir%25\*CodeAnalysis*.*"
@@ -168,6 +175,10 @@ del /q %25_tdir%25\vs*.tmp
 if exist "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "..\..\..\Installation\Standalone Installation Script.iss"
 
 </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>del /q "$(TargetDir)*.*"
+</PreBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

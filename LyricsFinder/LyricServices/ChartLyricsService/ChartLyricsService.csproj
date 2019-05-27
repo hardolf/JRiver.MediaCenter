@@ -142,8 +142,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>rem xcopy /y App.private.config $(TargetFileName).private.config
-call ..\..\..\PostBuild.cmd $(ConfigurationName) $(ProjectDir) "$(TargetName).*" Utility.*
 del /q App*.config
+call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.*
 </PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

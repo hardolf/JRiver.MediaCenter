@@ -129,7 +129,7 @@ namespace MediaCenter.LyricsFinder
             if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
 #pragma warning restore IDE0016 // Use 'throw' expression
 
-            var lyrics = (lyricsCell.Value as string) ?? string.Empty;
+            var lyrics = (lyricsCell.Value as string)?.LfToCrLf() ?? string.Empty;
 
             _callback = callback;
             _initLyrics = lyrics?.Trim() ?? string.Empty;
@@ -331,6 +331,8 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void LyricsFormTimer_Tick(object sender, EventArgs e)
         {
+            var msg = string.Empty;
+
             try
             {
                 LyricsFormTimer.Stop();
@@ -340,7 +342,9 @@ namespace MediaCenter.LyricsFinder
 
                 foreach (var service in LyricsFinderData.Services)
                 {
-                    if (!service.IsActive || service.IsQuotaExceeded) continue;
+                    if (!service.IsImplemented || !service.IsActive || service.IsQuotaExceeded) continue;
+
+                    msg = $" in \"{service?.Credit.ServiceName ?? "Unknown"}\" service";
 
                     service.Process(_McItem, true);
 
@@ -367,14 +371,14 @@ namespace MediaCenter.LyricsFinder
             {
                 // Cursor.Current = Cursors.Default;
                 UseWaitCursor = false;
-                ErrorHandling.ShowErrorHandler(ex.Message);
+                ErrorHandling.ShowErrorHandler($"Error{msg}: {ex.Message}.");
                 Close();
             }
             catch (Exception ex)
             {
                 // Cursor.Current = Cursors.Default;
                 UseWaitCursor = false;
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error{msg} in {MethodBase.GetCurrentMethod().Name} event.", ex);
                 Close();
             }
         }
