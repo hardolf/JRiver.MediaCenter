@@ -25,9 +25,8 @@ Wiki                     | https://wiki.jriver.com/
 DevZone                  | https://wiki.jriver.com/index.php/DevZone
 Plug-ins and accessories | https://accessories.jriver.com/mediacenter/accessories.php
 
-### Relevant links
 #### This site
 
 Name                     | URL
 -------------------------|--------------------------------
-Wiki                     | https://github.com/hardolf/JRiver.MediaCenter/wiki
+Wiki on GitHub           | https://github.com/hardolf/JRiver.MediaCenter/wiki
