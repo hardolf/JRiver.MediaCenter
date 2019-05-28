@@ -59,7 +59,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 	ProjectSection(SolutionItems) = preProject
 		LyricsFinder\ReadMe - Developer.txt = LyricsFinder\ReadMe - Developer.txt
 		LyricsFinder\ReadMe.txt = LyricsFinder\ReadMe.txt
-		LyricsFinder\Documentation\ReleasNotes.html = LyricsFinder\Documentation\ReleasNotes.html
+		LyricsFinder\Documentation\ReleaseNotes.html = LyricsFinder\Documentation\ReleaseNotes.html
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web Service Connection - JRiverWiki_files", "Web Service Connection - JRiverWiki_files", "{B55FC127-0DC0-40A2-98FC-ABAC808CA8BB}"
