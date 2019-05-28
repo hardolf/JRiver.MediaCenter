@@ -56,6 +56,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 	ProjectSection(SolutionItems) = preProject
 		LyricsFinder\ReadMe - Developer.txt = LyricsFinder\ReadMe - Developer.txt
 		LyricsFinder\ReadMe.txt = LyricsFinder\ReadMe.txt
+		LyricsFinder\Documentation\ReleaseNotes.html = LyricsFinder\Documentation\ReleaseNotes.html
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JRiver MediaCenter", "JRiver MediaCenter", "{5F59370C-2180-49A3-AD16-DEC035333787}"
@@ -64,8 +65,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JRiver MediaCenter", "JRive
 		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki.html = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki.html
 		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki.html = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki.html
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LyricsFinder", "LyricsFinder", "{1EF51166-E490-4B12-9C75-508127E48AD6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web Service Connection - JRiverWiki_files", "Web Service Connection - JRiverWiki_files", "{9B0215E2-1386-48FE-85EA-97BB9CCA9B42}"
 	ProjectSection(SolutionItems) = preProject
@@ -155,7 +154,6 @@ Global
 		{8882ABBD-3D8C-43F7-A591-4B03BEB4D33D} = {93B38887-18C2-4895-A8FD-D33B95D538D7}
 		{22959E1F-3471-44A8-889B-C89BAAAAAD42} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
 		{5F59370C-2180-49A3-AD16-DEC035333787} = {22959E1F-3471-44A8-889B-C89BAAAAAD42}
-		{1EF51166-E490-4B12-9C75-508127E48AD6} = {22959E1F-3471-44A8-889B-C89BAAAAAD42}
 		{9B0215E2-1386-48FE-85EA-97BB9CCA9B42} = {5F59370C-2180-49A3-AD16-DEC035333787}
 		{FB25A41D-2746-4600-8715-85DA1A8F82F1} = {5F59370C-2180-49A3-AD16-DEC035333787}
 		{D73AD757-AAAB-4941-B0F9-698A990DF6C3} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
