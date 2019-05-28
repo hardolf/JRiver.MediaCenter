@@ -290,6 +290,19 @@ namespace MediaCenter.LyricsFinder.Model
         {
             try
             {
+                // Store the visual rows with the data
+                foreach (DataGridViewRow row in LyricServiceListDataGridView.Rows)
+                {
+                    var cellChk = row.Cells[0];
+                    var cellName = row.Cells[1];
+                    var isChecked = (cellChk.Value == null) || (bool)cellChk.Value;
+                    var serviceName = (cellName.Value == null) ? string.Empty : (string)cellName.Value;
+
+                    _lyricsFinderData.Services.First(service => service.Credit.ServiceName
+                        .Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
+                        .IsActive = isChecked;
+                }
+
                 _callback(this);
             }
             catch (Exception ex)
@@ -351,9 +364,10 @@ namespace MediaCenter.LyricsFinder.Model
                         return;
                     else
                     {
-                        row.Cells[0].Value = !(bool)row.Cells[0].Value;
-                        LyricServiceListDataGridView.RefreshEdit();
-                        LyricServiceListDataGridView.NotifyCurrentCellDirty(true);
+                        var isChecked = (row.Cells[0].Value == null) || !((bool)row.Cells[0].Value);
+
+                        row.Cells[0].Value = isChecked;
+                        ShowDetails(isChecked);
                     }
                 }
                 else if (e.KeyCode == Keys.Up)
@@ -385,43 +399,11 @@ namespace MediaCenter.LyricsFinder.Model
                 if (e.ColumnIndex != 0) return; // We only look at the checkbox column here
 
                 var row = LyricServiceListDataGridView.Rows[e.RowIndex];
-                var cellChk = row.Cells[0];
+                var isChecked = (row.Cells[0].Value == null) || !((bool)row.Cells[0].Value);
 
-                cellChk.Value = cellChk.Value == null || !((bool)cellChk.Value);
-                LyricServiceListDataGridView.RefreshEdit();
-                LyricServiceListDataGridView.NotifyCurrentCellDirty(true);
-            }
-            catch (Exception ex)
-            {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
-            }
-        }
+                ShowDetails(isChecked);
 
-
-
-        /// <summary>
-        /// Handles the CellContentClick event of the LyricServiceFormDataGridView control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
-        private void LyricServiceListDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            try
-            {
-                if (!_isListReady) return;
-                if (e.ColumnIndex != 0) return; // We only look at the checkbox column here
-
-                var row = LyricServiceListDataGridView.Rows[e.RowIndex];
-                var cellChk = row.Cells[0];
-                var cellName = row.Cells[1];
-                var isChecked = cellChk.Value == null || ((bool)cellChk.Value);
-                var serviceName = (cellName.Value == null) ? string.Empty : (string)cellName.Value;
-
-                _lyricsFinderData.Services.First(service => service.Credit.ServiceName
-                    .Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
-                    .IsActive = isChecked;
-
-                ShowDetails();
+                row.Cells[0].Value = isChecked;
             }
             catch (Exception ex)
             {
@@ -441,7 +423,9 @@ namespace MediaCenter.LyricsFinder.Model
             {
                 if (!_isListReady) return;
 
-                ShowDetails();
+                var row = LyricServiceListDataGridView.CurrentRow;
+
+                ShowDetails((bool?)row.Cells[0].Value);
             }
             catch (Exception ex)
             {
@@ -453,7 +437,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <summary>
         /// Shows the details.
         /// </summary>
-        private void ShowDetails()
+        private void ShowDetails(bool? isChecked = null)
         {
             if (!_isListReady) return;
 
@@ -477,8 +461,11 @@ namespace MediaCenter.LyricsFinder.Model
             tlp.RowStyles.Clear();
             tlp.RowCount = 1;
 
+            if (isChecked == null)
+                isChecked = service.IsActive;
+
             // Create the rows and columns
-            FillRow("Name", $"{service.Credit.ServiceName} {(service.IsActive ? "" : " - not enabled")}");
+            FillRow("Name", $"{service.Credit.ServiceName} {(isChecked.Value ? "" : " - not enabled")}");
             FillRow("Company", service.Credit.Company);
             FillRow("Company Website", service.Credit.CreditUrl?.ToString() ?? string.Empty);
             FillRow("Copyright text", service.Credit.Copyright);

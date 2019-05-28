@@ -30,9 +30,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricServiceForm));
             this.LyricServiceMainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.LyricServiceListPanel = new System.Windows.Forms.Panel();
@@ -135,7 +135,6 @@
             this.LyricServiceListDataGridView.TabIndex = 0;
             this.LyricServiceListDataGridView.TabStop = false;
             this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClick);
-            this.LyricServiceListDataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellValueChanged);
             this.LyricServiceListDataGridView.SelectionChanged += new System.EventHandler(this.LyricServiceListDataGridView_SelectionChanged);
             // 
             // Active
@@ -149,8 +148,8 @@
             // Service
             // 
             this.Service.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.Service.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.Service.DefaultCellStyle = dataGridViewCellStyle1;
             this.Service.HeaderText = "Service name";
             this.Service.Name = "Service";
             this.Service.ReadOnly = true;
@@ -159,8 +158,8 @@
             // DailyCount
             // 
             this.DailyCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.DailyCount.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.DailyCount.DefaultCellStyle = dataGridViewCellStyle2;
             this.DailyCount.FillWeight = 80F;
             this.DailyCount.HeaderText = "Today";
             this.DailyCount.MinimumWidth = 60;
@@ -172,8 +171,8 @@
             // DailyMaximum
             // 
             this.DailyMaximum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.DailyMaximum.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.DailyMaximum.DefaultCellStyle = dataGridViewCellStyle3;
             this.DailyMaximum.HeaderText = "Maximum";
             this.DailyMaximum.MinimumWidth = 60;
             this.DailyMaximum.Name = "DailyMaximum";
