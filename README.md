@@ -1,5 +1,5 @@
 # JRiver.MediaCenter
-## These solutions contain plug-ins, visualizations and other extensions for the JRiver Media Center
+## These solutions contain plug-ins, track-info, visualizations and other extensions for the JRiver Media Center
 
 Developed for J. River Media Center 24 and newer
 
