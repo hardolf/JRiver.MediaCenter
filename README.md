@@ -1,7 +1,7 @@
 # JRiver.MediaCenter
 ## These solutions contain plug-ins, track-info, visualizations and other extensions for the JRiver Media Center
 
-Developed for J. River Media Center 24 and newer
+Developed for JRiver Media Center
 
 Development environment: Microsoft Visual Studio 2017, 2019, ... , C#
 
@@ -15,7 +15,7 @@ LyricsFinder.sln         | LyricsFinder solution.
 
 
 ### Relevant links
-#### J. River
+#### JRiver
 
 Name                     | URL
 -------------------------|--------------------------------
