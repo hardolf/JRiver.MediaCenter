@@ -19,7 +19,7 @@ LyricsFinder.sln         | LyricsFinder solution.
 
 Name                     | URL
 -------------------------|--------------------------------
-J. River web site        | https://www.jriver.com/
+JRiver web site          | https://www.jriver.com/
 Forum                    | https://yabb.jriver.com/interact/
 Wiki                     | https://wiki.jriver.com/
 DevZone                  | https://wiki.jriver.com/index.php/DevZone
