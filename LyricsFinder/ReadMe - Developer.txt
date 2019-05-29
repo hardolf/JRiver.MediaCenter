@@ -36,6 +36,9 @@ FANDOM LyricWiki             : http://lyrics.wikia.com/wiki/LyricWiki (Pending)
 Musixmatch                   : https://www.musixmatch.com (Account required, max. 2.000 free requests per day for 30% of the lyrics text, paid plans for full lyrics)
 STANDS4 Network Lyrics.com   : https://www.lyrics.com (Account required, max. 100 free requests per day)
 
+More lyric services may be found in the future, look here for inspiration:
+https://www.programmableweb.com/category/lyrics/api
+
 
 Relevant links
 --------------

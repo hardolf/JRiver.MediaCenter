@@ -33,6 +33,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
             };
 
             _service = new ChartLyricsService();
+            _service.RefreshServiceSettings();
         }
 
 

@@ -33,23 +33,21 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
             };
 
             _service = new LyricWikiService();
+            _service.RefreshServiceSettings();
         }
 
 
         [TestMethod]
         public void TestMethod01()
         {
-            // Not implemented yet
-            /*
             var resultService = _service.Process(_item);
 
             Assert.IsNotNull(resultService);
-            Assert.AreNotEqual(0, resultService.FoundLyricsList.Count);
-            Assert.IsNotNull(resultService.FoundLyricsList[0]);
-            Assert.IsNotNull(resultService.FoundLyricsList[0].LyricText);
-            Assert.AreNotEqual(0, resultService.FoundLyricsList[0].LyricText.Trim().Length);
-            Assert.IsTrue(resultService.FoundLyricsList[0].LyricText.ToLower().Contains("lyricwiki"));
-            */
+            Assert.AreNotEqual(0, resultService.FoundLyricList.Count);
+            Assert.IsNotNull(resultService.FoundLyricList[0]);
+            Assert.IsNotNull(resultService.FoundLyricList[0].LyricText);
+            Assert.AreNotEqual(0, resultService.FoundLyricList[0].LyricText.Trim().Length);
+            Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("LYRICWIKI"));
         }
 
     }
