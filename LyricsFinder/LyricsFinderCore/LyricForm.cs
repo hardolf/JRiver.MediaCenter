@@ -431,8 +431,7 @@ namespace MediaCenter.LyricsFinder
         /// Gets the service count.
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns>Hit count of the specified service.</returns>
         private object GetServiceCount(string serviceName)
         {
             var count = _serviceCounts.First(s => s.Key == serviceName).Value;
