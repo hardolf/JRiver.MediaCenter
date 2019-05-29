@@ -33,9 +33,9 @@ namespace MediaCenter.LyricsFinder
         private Action<LyricForm> _callback;
 
         /// <summary>
-        /// The initial lyrics from as of the form load.
+        /// The initial lyric from as of the form load.
         /// </summary>
-        private string _initLyrics = string.Empty;
+        private string _initLyric = string.Empty;
 
         /// <summary>
         /// Set to <c>true</c> if the form is a search form; otherwase set <c>false</c>.
@@ -43,9 +43,9 @@ namespace MediaCenter.LyricsFinder
         private bool _isSearch = false;
 
         /// <summary>
-        /// The final lyrics as of the form closing.
+        /// The final lyric as of the form closing.
         /// </summary>
-        private string _finalLyrics = string.Empty;
+        private string _finalLyric = string.Empty;
 
         /// <summary>
         /// The search form.
@@ -53,38 +53,43 @@ namespace MediaCenter.LyricsFinder
         private LyricForm _searchForm = null;
 
         /// <summary>
-        /// The found lyrics list with credits.
+        /// The found lyric list with credits.
         /// </summary>
-        private List<string> _foundLyricsListWithCredits = new List<string>();
+        private List<FoundLyricType> _foundLyricList = new List<FoundLyricType>();
 
         /// <summary>
         /// The Media Center item from the caller.
         /// </summary>
         private McMplItem _McItem = null;
 
+        /// <summary>
+        /// The hit count for each of the services.
+        /// </summary>
+        private Dictionary<string, int> _serviceCounts = new Dictionary<string, int>();
+
 
         /// <summary>
-        /// Gets the lyrics cell.
+        /// Gets the lyric cell.
         /// </summary>
         /// <value>
-        /// The lyrics cell.
+        /// The lyric cell.
         /// </value>
-        public DataGridViewTextBoxCell LyricsCell { get; private set; }
+        public DataGridViewTextBoxCell LyricCell { get; private set; }
 
 
         /// <summary>
-        /// Gets the lyrics.
+        /// Gets the lyric.
         /// </summary>
         /// <value>
-        /// The lyrics.
+        /// The lyric.
         /// </value>
-        public string Lyrics { get; private set; }
+        public string Lyric { get; private set; }
 
         /// <summary>
-        /// Gets or sets the lyrics finder data.
+        /// Gets or sets the lyric finder data.
         /// </summary>
         /// <value>
-        /// The lyrics finder data.
+        /// The lyric finder data.
         /// </value>
         private LyricsFinderDataType LyricsFinderData { get; set; }
 
@@ -111,7 +116,7 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Initializes a new instance of the <see cref="LyricForm" /> class.
         /// </summary>
-        /// <param name="lyricsCell">The lyrics cell.</param>
+        /// <param name="lyricCell">The lyric cell.</param>
         /// <param name="location">The location.</param>
         /// <param name="size">The size.</param>
         /// <param name="callback">The callback.</param>
@@ -120,20 +125,20 @@ namespace MediaCenter.LyricsFinder
         /// <param name="artist">The artist, only used for search.</param>
         /// <param name="album">The album, only used for search.</param>
         /// <param name="track">The track, only used for search.</param>
-        internal LyricForm(DataGridViewTextBoxCell lyricsCell, Point location, Size? size, Action<LyricForm> callback, LyricsFinderDataType lyricsFinderData, bool isSearch = false, string artist = null, string album = null, string track = null)
+        internal LyricForm(DataGridViewTextBoxCell lyricCell, Point location, Size? size, Action<LyricForm> callback, LyricsFinderDataType lyricsFinderData, bool isSearch = false, string artist = null, string album = null, string track = null)
             : this()
         {
 #pragma warning disable IDE0016 // Use 'throw' expression
-            if (lyricsCell == null) throw new ArgumentNullException(nameof(lyricsCell));
+            if (lyricCell == null) throw new ArgumentNullException(nameof(lyricCell));
             if (callback == null) throw new ArgumentNullException(nameof(callback));
             if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
 #pragma warning restore IDE0016 // Use 'throw' expression
 
-            var lyrics = (lyricsCell.Value as string)?.LfToCrLf() ?? string.Empty;
+            var lyric = (lyricCell.Value as string)?.LfToCrLf() ?? string.Empty;
 
             _callback = callback;
-            _initLyrics = lyrics?.Trim() ?? string.Empty;
-            _finalLyrics = _initLyrics;
+            _initLyric = lyric?.Trim() ?? string.Empty;
+            _finalLyric = _initLyric;
             _isSearch = isSearch;
             LyricsFinderData = lyricsFinderData;
 
@@ -141,7 +146,7 @@ namespace MediaCenter.LyricsFinder
                 Size = size.Value;
 
             // Create a pseudo MC playlist item for the search
-            var row = lyricsCell.OwningRow;
+            var row = lyricCell.OwningRow;
 
             if (isSearch)
             {
@@ -150,10 +155,10 @@ namespace MediaCenter.LyricsFinder
                 ArtistTextBox.ReadOnly = true;
                 AlbumTextBox.ReadOnly = true;
                 TrackTextBox.ReadOnly = true;
-                LyricsTextBox.ReadOnly = true;
-                LyricsFormTrackBar.Enabled = true;
-                LyricsFormTrackBar.Visible = true;
-                LyricsFormTrackBar.Select();
+                LyricTextBox.ReadOnly = true;
+                LyricFormTrackBar.Enabled = true;
+                LyricFormTrackBar.Visible = true;
+                LyricFormTrackBar.Select();
                 SearchButton.Enabled = false;
                 SearchButton.Visible = false;
                 UseWaitCursor = true;
@@ -171,10 +176,10 @@ namespace MediaCenter.LyricsFinder
                 ArtistTextBox.ReadOnly = false;
                 AlbumTextBox.ReadOnly = false;
                 TrackTextBox.ReadOnly = false;
-                LyricsTextBox.ReadOnly = false;
-                LyricsFormTrackBar.Enabled = false;
-                LyricsFormTrackBar.Visible = false;
-                LyricsTextBox.Text = _initLyrics;
+                LyricTextBox.ReadOnly = false;
+                LyricFormTrackBar.Enabled = false;
+                LyricFormTrackBar.Visible = false;
+                LyricTextBox.Text = _initLyric;
                 SearchButton.Enabled = true;
                 SearchButton.Visible = true;
                 UseWaitCursor = false;
@@ -192,10 +197,10 @@ namespace MediaCenter.LyricsFinder
             TrackTextBox.Text = _McItem.Name;
 
             Location = location;
-            LyricsCell = lyricsCell;
-            LyricsTextBox.SelectionStart = 0;
-            LyricsTextBox.SelectionLength = 0;
-            Text = lyricsCell.OwningRow.Cells[(int)GridColumnEnum.Title].Value as string;
+            LyricCell = lyricCell;
+            LyricTextBox.SelectionStart = 0;
+            LyricTextBox.SelectionLength = 0;
+            Text = lyricCell.OwningRow.Cells[(int)GridColumnEnum.Title].Value as string;
         }
 
 
@@ -218,15 +223,15 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the FormClosing event of the LyricsForm control.
+        /// Handles the FormClosing event of the LyricForm control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="FormClosingEventArgs"/> instance containing the event data.</param>
-        private void LyricsForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void LyricForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             try
             {
-                _finalLyrics = LyricsTextBox.Text.Trim();
+                _finalLyric = LyricTextBox.Text.Trim();
 
                 if (!_isSearch && (_searchForm != null))
                 {
@@ -235,22 +240,22 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 var question = (_isSearch)
-                    ? "Selected lyrics are different from the old lyrics\nDo you want to use the new selected lyrics?"
-                    : "Lyrics are changed\nDo you want to use the new lyrics?";
+                    ? "Selected lyric is different from the old lyric\nDo you want to use the new selected lyric?"
+                    : "Lyric is changed\nDo you want to use the new lyric?";
 
-                if (_finalLyrics == _initLyrics)
+                if (_finalLyric == _initLyric)
                 {
                     e.Cancel = false;
                     Result = DialogResult.No;
                 }
-                else if (_isSearch && _finalLyrics.IsNullOrEmptyTrimmed())
+                else if (_isSearch && _finalLyric.IsNullOrEmptyTrimmed())
                 {
                     e.Cancel = false;
                     Result = DialogResult.No;
                 }
                 else
                 {
-                    Result = MessageBox.Show(this, question, "Lyrics changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    Result = MessageBox.Show(this, question, "Lyric changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                     switch (Result)
                     {
@@ -260,13 +265,13 @@ namespace MediaCenter.LyricsFinder
 
                         case DialogResult.No:
                             e.Cancel = false;
-                            Lyrics = _initLyrics;
+                            Lyric = _initLyric;
                             _callback(this);
                             break;
 
                         case DialogResult.Yes:
                             e.Cancel = false;
-                            Lyrics = _finalLyrics;
+                            Lyric = _finalLyric;
                             _callback(this);
                             break;
 
@@ -285,11 +290,11 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the KeyDown event of the LyricsForm control.
+        /// Handles the KeyDown event of the LyricForm control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private void LyricsForm_KeyDown(object sender, KeyEventArgs e)
+        private void LyricForm_KeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = false;
 
@@ -302,19 +307,19 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the Load event of the LyricsForm control.
+        /// Handles the Load event of the LyricForm control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricsForm_Load(object sender, EventArgs e)
+        private void LyricForm_Load(object sender, EventArgs e)
         {
             try
             {
                 if (_isSearch)
                 {
-                    LyricsFormStatusLabel.Text = "Searching...";
+                    LyricFormStatusLabel.Text = "Searching...";
 
-                    LyricsFormTimer.Start();
+                    LyricFormTimer.Start();
                 }
             }
             catch (Exception ex)
@@ -325,20 +330,20 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the Tick event of the LyricsFormTimer control.
+        /// Handles the Tick event of the LyricFormTimer control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricsFormTimer_Tick(object sender, EventArgs e)
+        private void LyricFormTimer_Tick(object sender, EventArgs e)
         {
             var msg = string.Empty;
 
             try
             {
-                LyricsFormTimer.Stop();
+                LyricFormTimer.Stop();
 
-                // Search for all the lyrics in each service
-                _foundLyricsListWithCredits.Clear();
+                // Clear list and search for all the lyric in each service
+                _foundLyricList.Clear();
 
                 foreach (var service in LyricsFinderData.Services)
                 {
@@ -348,21 +353,30 @@ namespace MediaCenter.LyricsFinder
 
                     service.Process(_McItem, true);
 
-                    if (service.LyricsResult != LyricsResultEnum.Found) continue;
+                    if (service.LyricResult != LyricResultEnum.Found) continue;
 
-                    foreach (var foundLyrics in service.FoundLyricsList)
+                    foreach (var foundLyric in service.FoundLyricList)
                     {
-                        var newLyrics = foundLyrics.ToString();
+                        _foundLyricList.Add(foundLyric);
 
-                        _foundLyricsListWithCredits.Add(newLyrics);
+                        var serviceName = foundLyric.Service.Credit.ServiceName;
+                        var serviceCount = 0;
+
+                        if (_serviceCounts.ContainsKey(serviceName))
+                        {
+                            serviceCount = _serviceCounts.First(s => s.Key == serviceName).Value;
+                            _serviceCounts.Remove(serviceName);
+                        }
+
+                        _serviceCounts.Add(serviceName, serviceCount + 1);
                     }
                 }
 
                 // Set the trackbar and call the Scroll event handler to initialize the text box
-                LyricsFormTrackBar.Maximum = _foundLyricsListWithCredits.Count - 1;
-                LyricsFormTrackBar_Scroll(this, new EventArgs());
+                LyricFormTrackBar.Maximum = _foundLyricList.Count - 1;
+                LyricFormTrackBar_Scroll(this, new EventArgs());
 
-                LyricsFormStatusLabel.Text = $"{_foundLyricsListWithCredits.Count} lyrics found";
+                LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
 
                 LyricsFinderData.Save();
                 UseWaitCursor = false;
@@ -385,25 +399,45 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the Scroll event of the LyricsTrackBar control.
+        /// Handles the Scroll event of the LyricTrackBar control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricsFormTrackBar_Scroll(object sender, EventArgs e)
+        private void LyricFormTrackBar_Scroll(object sender, EventArgs e)
         {
             try
             {
-                if (_foundLyricsListWithCredits.Count == 0) return;
+                if (_foundLyricList.Count == 0) return;
 
-                Lyrics = LyricsTextBox.Text;
-                LyricsTextBox.Text = _foundLyricsListWithCredits[LyricsFormTrackBar.Value];
-                LyricsTextBox.Select(0, 0);
-                LyricsTextBox.SelectionLength = 0;
+                var foundLyric = _foundLyricList[LyricFormTrackBar.Value];
+                var serviceName = foundLyric.Service.Credit.ServiceName;
+
+                Lyric = LyricTextBox.Text;
+                LyricTextBox.Text = foundLyric.LyricText;
+                LyricTextBox.Select(0, 0);
+                LyricTextBox.SelectionLength = 0;
+
+                LyricFormFoundStatusLabel.Text = $"Source: {serviceName} {GetServiceCount(serviceName)}";
+                LyricFormFoundStatusLabel.BorderSides = ToolStripStatusLabelBorderSides.Left;
             }
             catch (Exception ex)
             {
                 ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
             }
+        }
+
+
+        /// <summary>
+        /// Gets the service count.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private object GetServiceCount(string serviceName)
+        {
+            var count = _serviceCounts.First(s => s.Key == serviceName).Value;
+
+            return (count > 1) ? $"({count})" : string.Empty;
         }
 
 
@@ -417,9 +451,9 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 // Create a pseudo MC playlist item for the search
-                var row = LyricsCell.OwningRow;
+                var row = LyricCell.OwningRow;
 
-                _searchForm = new LyricForm(LyricsCell, Location, Size, SearchLyricsCallback, LyricsFinderData, true, ArtistTextBox.Text, AlbumTextBox.Text, TrackTextBox.Text);
+                _searchForm = new LyricForm(LyricCell, Location, Size, SearchLyricCallback, LyricsFinderData, true, ArtistTextBox.Text, AlbumTextBox.Text, TrackTextBox.Text);
                 _searchForm.Show(this);
 
             }
@@ -430,24 +464,24 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        private void SearchLyricsCallback(LyricForm lyricsForm)
+        private void SearchLyricCallback(LyricForm lyricForm)
         {
             try
             {
                 if (!_isSearch && (_searchForm != null))
                 {
-                    switch (lyricsForm.Result)
+                    switch (lyricForm.Result)
                     {
                         case DialogResult.Cancel:
                         case DialogResult.No:
                             break;
 
                         case DialogResult.Yes:
-                            LyricsTextBox.Text = _searchForm.Lyrics;
+                            LyricTextBox.Text = _searchForm.Lyric;
                             break;
 
                         default:
-                            throw new Exception($"Unknown DialogResult: \"{lyricsForm.Result}\".");
+                            throw new Exception($"Unknown DialogResult: \"{lyricForm.Result}\".");
                     }
 
                     _searchForm = null;

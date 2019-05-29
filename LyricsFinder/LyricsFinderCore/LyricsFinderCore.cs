@@ -516,6 +516,11 @@ namespace MediaCenter.LyricsFinder
                         about.ShowDialog();
                         break;
 
+                    case nameof(HelpContentsMenuItem):
+                        var url = "https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder-User-Manual";
+                        System.Diagnostics.Process.Start(url);
+                        break;
+
                     case nameof(ToolLyricsServicesMenuItem):
                         var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback);
                         lyricsServiceForm.ShowDialog(this);

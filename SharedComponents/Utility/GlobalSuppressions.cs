@@ -5,4 +5,3 @@
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA3075:Insecure DTD processing in XML", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.Serialize.XmlDeserializeFromFile(System.String,System.Type,System.Type[])~System.Object")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA3075:Insecure DTD processing in XML", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.Serialize.XmlDeserializeFromString(System.String,System.Type,System.Type[])~System.Object")]
-

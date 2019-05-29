@@ -47,7 +47,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <value>
         /// The lyrics result.
         /// </value>
-        public LyricsResultEnum LyricsStatus { get; set; }
+        public LyricResultEnum LyricsStatus { get; set; }
 
         /// <summary>
         /// Gets or sets the lyrics text.
@@ -80,7 +80,7 @@ namespace MediaCenter.LyricsFinder.Model
         public WorkerUserState()
         {
             Items = new Dictionary<int, McMplItem>();
-            LyricsStatus = LyricsResultEnum.NotProcessedYet;
+            LyricsStatus = LyricResultEnum.NotProcessedYet;
             LyricsTextList = new List<string>();
         }
 

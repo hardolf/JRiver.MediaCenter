@@ -11,7 +11,7 @@ namespace MediaCenter.LyricsFinder.Model
     /// <summary>
     /// Enumeration of the lyric services results.
     /// </summary>
-    public enum LyricsResultEnum
+    public enum LyricResultEnum
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         NotProcessedYet,

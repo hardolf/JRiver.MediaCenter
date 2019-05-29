@@ -81,7 +81,7 @@ namespace MediaCenter.LyricsFinder
 
             foreach (var item in items)
             {
-                var initStatus = LyricsResultEnum.NotProcessedYet.ResultText();
+                var initStatus = LyricResultEnum.NotProcessedYet.ResultText();
                 var row = new DataGridViewRow();
                 var value = item.Value;
                 Bitmap img = null;
@@ -159,7 +159,7 @@ namespace MediaCenter.LyricsFinder
 
                     statusCell.Value = userState.LyricsStatus;
 
-                    if (isNewLyricsDifferent && (userState.LyricsStatus == LyricsResultEnum.Found))
+                    if (isNewLyricsDifferent && (userState.LyricsStatus == LyricResultEnum.Found))
                     {
                         IsDataChanged = true;
                         lyricsCell.Value = newLyrics;
@@ -434,7 +434,7 @@ namespace MediaCenter.LyricsFinder
 
             LyricsFinderData.Save();
 
-            var lyricsResultTest = $"{LyricsResultEnum.Found.ResultText()}|{LyricsResultEnum.ManuallyEdited.ResultText()}".ToUpperInvariant();
+            var lyricsResultTest = $"{LyricResultEnum.Found.ResultText()}|{LyricResultEnum.ManuallyEdited.ResultText()}".ToUpperInvariant();
 
             // Iterate the displayed rows and save each row, if it is found or manually edited
             for (int i = 0; i < MainDataGridView.Rows.Count; i++)
@@ -547,12 +547,12 @@ namespace MediaCenter.LyricsFinder
                 if (lyricsForm.Result == DialogResult.Yes)
                 {
                     // Display the created/changed lyrics in the list
-                    lyricsForm.LyricsCell.Value = lyricsForm.Lyrics;
+                    lyricsForm.LyricCell.Value = lyricsForm.Lyric;
 
-                    var row = lyricsForm.LyricsCell.OwningRow;
+                    var row = lyricsForm.LyricCell.OwningRow;
 
                     row.Selected = true;
-                    row.Cells[(int)GridColumnEnum.Status].Value = LyricsResultEnum.ManuallyEdited.ResultText();
+                    row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.ManuallyEdited.ResultText();
 
                     IsDataChanged = true;
                 }

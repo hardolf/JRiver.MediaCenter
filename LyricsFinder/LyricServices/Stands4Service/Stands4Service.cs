@@ -141,16 +141,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         && result.Album.Equals(item.Album, StringComparison.InvariantCultureIgnoreCase)
                         && result.Song.Equals(item.Name, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        var lyricText = ExtractLyricsText(result.SongLink);
+                        var lyricText = ExtractLyricsText(new Uri(result.SongLink));
 
-                        AddFoundLyric(lyricText, new SerializableUri(result.SongLink.ToString()));
+                        AddFoundLyric(lyricText, new SerializableUri(result.SongLink));
 
                         if (!getAll)
                             break;
                     }
                 }
 
-                if (getAll || (LyricsResult != LyricsResultEnum.Found))
+                if (getAll || (LyricResult != LyricResultEnum.Found))
                 {
                     // If not found we next try a more lax test without the album
                     foreach (var result in results)
@@ -158,9 +158,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         if (result.Artist.Equals(item.Artist, StringComparison.InvariantCultureIgnoreCase)
                             && result.Song.Equals(item.Name, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            var lyricText = ExtractLyricsText(result.SongLink);
+                            var lyricText = ExtractLyricsText(new Uri(result.SongLink));
 
-                            AddFoundLyric(lyricText, new SerializableUri(result.SongLink.ToString()));
+                            AddFoundLyric(lyricText, new SerializableUri(result.SongLink));
 
                             if (!getAll)
                                 break;
@@ -189,19 +189,19 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public string Song { get; set; }
 
         [XmlElement("song-link")]
-        public SerializableUri SongLink { get; set; }
+        public string SongLink { get; set; }
 
         [XmlElement("artist")]
         public string Artist { get; set; }
 
         [XmlElement("artist-link")]
-        public SerializableUri ArtistLink { get; set; }
+        public string ArtistLink { get; set; }
 
         [XmlElement("album")]
         public string Album { get; set; }
 
         [XmlElement("album-link")]
-        public SerializableUri AlbumLink { get; set; }
+        public string AlbumLink { get; set; }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
     }

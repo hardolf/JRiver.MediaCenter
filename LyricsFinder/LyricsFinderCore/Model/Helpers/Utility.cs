@@ -21,7 +21,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// </summary>
         /// <returns>Transformed text.</returns>
         public static string ResultText(
-            this LyricsResultEnum lyricsResult)
+            this LyricResultEnum lyricsResult)
         {
             var ret = new StringBuilder(lyricsResult.ToString());
 
