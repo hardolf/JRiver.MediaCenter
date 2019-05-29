@@ -214,11 +214,11 @@ namespace MediaCenter.LyricsFinder
 
             // Do we only look at items with no lyrics?
             if (workerState.OverwriteLyrics || item.Lyrics.IsNullOrEmptyTrimmed() || item.Lyrics.Contains(_noLyricsSearchList))
-                workerState.LyricsStatus = LyricsResultEnum.NotProcessedYet;
+                workerState.LyricsStatus = LyricResultEnum.NotProcessedYet;
             else
-                workerState.LyricsStatus = LyricsResultEnum.SkippedOldLyrics;
+                workerState.LyricsStatus = LyricResultEnum.SkippedOldLyrics;
 
-            var doSearch = !(new[] { LyricsResultEnum.Found, LyricsResultEnum.ManuallyEdited, LyricsResultEnum.SkippedOldLyrics }).Contains(workerState.LyricsStatus);
+            var doSearch = !(new[] { LyricResultEnum.Found, LyricResultEnum.ManuallyEdited, LyricResultEnum.SkippedOldLyrics }).Contains(workerState.LyricsStatus);
 
             if (doSearch)
             {
@@ -229,13 +229,13 @@ namespace MediaCenter.LyricsFinder
 
                     service.Process(item);
 
-                    workerState.LyricsStatus = service.LyricsResult;
-                    workerState.Message = $"{service.LyricsResultMessage.PadRight(19, ' ')}: {itemText}";
+                    workerState.LyricsStatus = service.LyricResult;
+                    workerState.Message = $"{service.LyricResultMessage.PadRight(19, ' ')}: {itemText}";
                     workerState.LyricsTextList.Clear();
 
-                    if (service.LyricsResult == LyricsResultEnum.Found)
+                    if (service.LyricResult == LyricResultEnum.Found)
                     {
-                        foreach (var foundLyrics in service.FoundLyricsList)
+                        foreach (var foundLyrics in service.FoundLyricList)
                         {
                             var txt = foundLyrics.ToString();
 

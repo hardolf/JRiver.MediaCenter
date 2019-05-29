@@ -17,7 +17,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <seealso cref="System.Collections.Generic.List{FoundLyricType}" />
-    internal class FoundLyricsListType<T> : List<FoundLyricType> where T : FoundLyricType, new()
+    internal class FoundLyricListType<T> : List<FoundLyricType> where T : FoundLyricType, new()
     {
 
         /// <summary>
@@ -36,18 +36,22 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Adds the specified lyric text.
         /// </summary>
+        /// <param name="service">The service.</param>
         /// <param name="lyricText">The lyric text.</param>
         /// <param name="lyricCreditText">The lyric credit text.</param>
         /// <param name="lyricUrl">The lyric URL.</param>
         /// <param name="trackingUrl">The tracking URL.</param>
-        /// <returns>Added object.</returns>
-        public T Add(string lyricText, string lyricCreditText, SerializableUri lyricUrl, SerializableUri trackingUrl)
+        /// <returns>
+        /// Added object.
+        /// </returns>
+        public T Add(AbstractLyricService service, string lyricText, string lyricCreditText, SerializableUri lyricUrl, SerializableUri trackingUrl)
         {
             var ret = new T
             {
                 LyricCreditText = lyricCreditText,
                 LyricText = lyricText,
                 LyricUrl = lyricUrl,
+                Service = service,
                 TrackingUrl = trackingUrl
             };
 
@@ -93,6 +97,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
         private string _lyricCreditText = string.Empty;
         private string _lyricText = string.Empty;
+
+
+        /// <summary>
+        /// Gets or sets the service.
+        /// </summary>
+        /// <value>
+        /// The service.
+        /// </value>
+        [XmlIgnore]
+        public AbstractLyricService Service { get; set; }
 
 
         /// <summary>

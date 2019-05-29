@@ -23,7 +23,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 {
 
     /// <summary>
-    /// Abstract lyrics service type.
+    /// Abstract lyric service type.
     /// </summary>
     [Serializable]
     public abstract class AbstractLyricService
@@ -48,35 +48,35 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual int DailyQuota { get; set; }
 
         /// <summary>
-        /// Gets or sets the internal found lyrics list.
+        /// Gets or sets the internal found lyric list.
         /// </summary>
         /// <value>
-        /// The internal found lyrics list.
+        /// The internal found lyric list.
         /// </value>
         [XmlIgnore]
-        private FoundLyricsListType<FoundLyricType> InternalFoundLyricsList { get; set; }
+        private FoundLyricListType<FoundLyricType> InternalFoundLyricList { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of the found lyrics texts.
+        /// Gets or sets a list of the found lyric texts.
         /// </summary>
         /// <value>
-        /// The list of found lyrics texts.
+        /// The list of found lyric texts.
         /// </value>
         [ComVisible(false)]
         [XmlIgnore]
-        public ReadOnlyCollection<FoundLyricType> FoundLyricsList { get; }
+        public ReadOnlyCollection<FoundLyricType> FoundLyricList { get; }
 
         /// <summary>
-        /// Gets or sets the lyrics result. If set to <c>Found</c> increments the hit counters.
+        /// Gets or sets the lyric result. If set to <c>Found</c> increments the hit counters.
         /// </summary>
         /// <value>
-        /// The lyrics result.
+        /// The lyric result.
         /// </value>
         [XmlIgnore]
-        public virtual LyricsResultEnum LyricsResult { get; set; }
+        public virtual LyricResultEnum LyricResult { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="AbstractLyricService"/> is active, i.e. should be part of the lyrics search.
+        /// Gets or sets a value indicating whether this <see cref="AbstractLyricService"/> is active, i.e. should be part of the lyric search.
         /// </summary>
         /// <value>
         ///   <c>true</c> if active; otherwise, <c>false</c>.
@@ -103,7 +103,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual bool IsQuotaExceeded { get; set; }
 
         /// <summary>
-        /// Gets or sets the quota reset time, with time zone of the lyrics server.
+        /// Gets or sets the quota reset time, with time zone of the lyric server.
         /// </summary>
         /// <value>
         /// The quota reset time.
@@ -116,13 +116,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </summary>
         /// <returns>Result message for the status.</returns>
         [XmlIgnore]
-        public virtual string LyricsResultMessage
+        public virtual string LyricResultMessage
         {
             get
             {
-                var ret = new StringBuilder(LyricsResult.ResultText());
+                var ret = new StringBuilder(LyricResult.ResultText());
 
-                if (LyricsResult == LyricsResultEnum.Found)
+                if (LyricResult == LyricResultEnum.Found)
                     ret.Append($" by service \"{Credit.ServiceName}\"");
 
                 return ret.ToString();
@@ -172,12 +172,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             Credit = new CreditType();
             DailyQuota = 0;
-            InternalFoundLyricsList = new FoundLyricsListType<FoundLyricType>();
-            FoundLyricsList = new ReadOnlyCollection<FoundLyricType>(InternalFoundLyricsList);
+            InternalFoundLyricList = new FoundLyricListType<FoundLyricType>();
+            FoundLyricList = new ReadOnlyCollection<FoundLyricType>(InternalFoundLyricList);
             IsActive = false;
             IsImplemented = false;
             IsQuotaExceeded = false;
-            LyricsResult = LyricsResultEnum.NotProcessedYet;
+            LyricResult = LyricResultEnum.NotProcessedYet;
             QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Now.Date, TimeZoneInfo.Local); // Default is midnight in the client time zone
         }
 
@@ -197,16 +197,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (!copyright.IsNullOrEmptyTrimmed())
                 Credit.Copyright = copyright;
 
-            var beforeCount = InternalFoundLyricsList.Count;
-            var ret = InternalFoundLyricsList.Add(lyricText, Credit.ToString(), lyricUrl, trackingUrl);
-            var afterCount = InternalFoundLyricsList.Count;
+            var beforeCount = InternalFoundLyricList.Count;
+            var ret = InternalFoundLyricList.Add(this, lyricText, Credit.ToString(), lyricUrl, trackingUrl);
+            var afterCount = InternalFoundLyricList.Count;
             var diff = (afterCount - beforeCount);
 
             // This construct ensures that we don't count duplicates
             HitCountToday += diff;
             HitCountTotal += diff;
 
-            LyricsResult = LyricsResultEnum.Found;
+            LyricResult = LyricResultEnum.Found;
 
             return ret;
         }
@@ -229,7 +229,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 RequestCountToday = 0;
                 HitCountToday = 0;
 
-                Logging.Log(0, $"A new quota-day has begun for lyrics service \"{Credit.ServiceName}\", request counters are reset.");
+                Logging.Log(0, $"A new quota-day has begun for lyric service \"{Credit.ServiceName}\", request counters are reset.");
             }
         }
 
@@ -277,8 +277,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns></returns>
         public virtual AbstractLyricService Process(McMplItem item, bool getAll = false)
         {
-            InternalFoundLyricsList.Clear();
-            LyricsResult = LyricsResultEnum.NotFound;
+            InternalFoundLyricList.Clear();
+            LyricResult = LyricResultEnum.NotFound;
             CheckQuota();
 
             // Skip if we are over the daily limit
@@ -287,7 +287,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 IsActive = false;
                 IsQuotaExceeded = true;
 
-                var msg = $"Lyrics service \"{Credit.ServiceName}\" is over the daily limit of {DailyQuota} requests per day. \"{Credit.ServiceName}\" is now disabled in LyricsFinder and no more requests will be sent to this service today.";
+                var msg = $"Lyric service \"{Credit.ServiceName}\" is over the daily limit of {DailyQuota} requests per day. \"{Credit.ServiceName}\" is now disabled in LyricsFinder and no more requests will be sent to this service today.";
 
                 throw new LyricsQuotaExceededException(msg);
             }
