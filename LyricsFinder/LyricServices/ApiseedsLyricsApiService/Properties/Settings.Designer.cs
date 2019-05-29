@@ -25,7 +25,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("FANDOM")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Musixmatch")]
         public string Company {
             get {
                 return ((string)(this["Company"]));
@@ -35,8 +35,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("\r\n\r\n--------------------------------------------------\r\nLyrics found in {ServiceN" +
-            "ame} on {Date}\r\n{Company} - {CreditUrl}\r\n{ServiceName} - {ServiceUrl}\r\n---------" +
-            "-----------------------------------------")]
+            "ame} on {Date}\r\n{Company} - {CreditUrl}\r\n{ServiceName} - {ServiceUrl}\r\n{Copyrigh" +
+            "t}\r\n--------------------------------------------------")]
         public string CreditTextFormat {
             get {
                 return ((string)(this["CreditTextFormat"]));
@@ -45,16 +45,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://lyrics.wikia.com/wiki/LyricWiki")]
-        public string CreditUrl {
-            get {
-                return ((string)(this["CreditUrl"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
         public int DailyQuota {
             get {
                 return ((int)(this["DailyQuota"]));
@@ -72,6 +63,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.musixmatch.com")]
+        public string CreditUrl {
+            get {
+                return ((string)(this["CreditUrl"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("UTC")]
         public string QuotaResetTimeZone {
             get {
@@ -81,7 +81,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("LyricWiki")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Musixmatch API")]
         public string ServiceName {
             get {
                 return ((string)(this["ServiceName"]));
@@ -90,7 +90,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://lyrics.wikia.com/server.php?wsdl")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://api.musixmatch.com/ws/1.1/")]
         public string ServiceUrl {
             get {
                 return ((string)(this["ServiceUrl"]));
@@ -99,7 +99,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("b28771968efd79f857e3a7e2565d2799")]
         public string Token {
             get {
                 return ((string)(this["Token"]));

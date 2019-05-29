@@ -10,11 +10,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{18FFF5D4-153F-499A-999C-52DAF742EDF4}</ProjectGuid>
+    <ProjectGuid>{469CD424-9DB1-4AAC-9A30-F1565DC27932}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MediaCenter.LyricsFinder.Model.LyricServices</RootNamespace>
-    <AssemblyName>LyricWikiService</AssemblyName>
+    <AssemblyName>ApiseedsLyricsApiService</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -49,10 +49,11 @@
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\MSTest.TestFramework.1.4.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,26 +65,17 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Connected Services\LyricWikiServiceReference\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="LyricWikiService.cs" />
+    <Compile Include="ApiseedsLyricsApiService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SharedComponents\MessageInspection\MessageInspection.csproj">
-      <Project>{4ab4e2bf-2216-43df-865e-3e3e3b8b37c9}</Project>
-      <Name>MessageInspection</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\SharedComponents\Utility\Utility.csproj">
       <Project>{ef9766a5-0c6d-425f-be2d-3cd51a6720d2}</Project>
       <Name>Utility</Name>
@@ -94,63 +86,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
+    <None Include="App.config" />
+    <None Include="App.private.config">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Connected Services\LyricWikiServiceReference\MediaCenter.LyricsFinder.Model.LyricServices.LyricWikiServiceReference.getAlbumResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\LyricWikiServiceReference\MediaCenter.LyricsFinder.Model.LyricServices.LyricWikiServiceReference.getArtistResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\LyricWikiServiceReference\MediaCenter.LyricsFinder.Model.LyricServices.LyricWikiServiceReference.getHometownResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\LyricWikiServiceReference\MediaCenter.LyricsFinder.Model.LyricServices.LyricWikiServiceReference.LyricsResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\LyricWikiServiceReference\MediaCenter.LyricsFinder.Model.LyricServices.LyricWikiServiceReference.postAlbumResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\LyricWikiServiceReference\MediaCenter.LyricsFinder.Model.LyricServices.LyricWikiServiceReference.postArtistResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\LyricWikiServiceReference\MediaCenter.LyricsFinder.Model.LyricServices.LyricWikiServiceReference.postSongResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\LyricWikiServiceReference\MediaCenter.LyricsFinder.Model.LyricServices.LyricWikiServiceReference.postSong_flagsResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\LyricWikiServiceReference\MediaCenter.LyricsFinder.Model.LyricServices.LyricWikiServiceReference.SongResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\LyricWikiServiceReference\MediaCenter.LyricsFinder.Model.LyricServices.LyricWikiServiceReference.SOTDResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Connected Services\LyricWikiServiceReference\server.wsdl" />
+    <None Include="App.template.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Connected Services\LyricWikiServiceReference\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Connected Services\LyricWikiServiceReference\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Connected Services\LyricWikiServiceReference\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Connected Services\LyricWikiServiceReference\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -165,9 +111,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rem xcopy /y App.private.config $(TargetFileName).private.config
+    <PostBuildEvent>copy /y App.private.config $(TargetFileName).private.config
 del /q App*.config
-call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.*
+call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.* Newtonsoft.Json.*
 </PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -184,7 +130,7 @@ call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.*
   </Target>
   <Import Project="..\..\..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\..\..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets')" />
   <PropertyGroup>
-    <PreBuildEvent>rem if not exist ..\..\App.private.config copy ..\..\App.template.config ..\..\App.private.config
+    <PreBuildEvent>if not exist ..\..\App.private.config copy ..\..\App.template.config ..\..\App.private.config
 </PreBuildEvent>
   </PropertyGroup>
 </Project>

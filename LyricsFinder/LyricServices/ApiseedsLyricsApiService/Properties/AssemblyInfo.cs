@@ -10,8 +10,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LyricWikiService")]
-[assembly: AssemblyDescription("Lyric Wiki service API client")]
+[assembly: AssemblyTitle("MusiXmatchService")]
+[assembly: AssemblyDescription("MusiXmatch service API client")]
 //[assembly: AssemblyConfiguration("")]
 //[assembly: AssemblyCompany("Hardolf")]
 //[assembly: AssemblyProduct("LyricsFinder")]

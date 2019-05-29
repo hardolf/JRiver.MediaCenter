@@ -348,12 +348,14 @@ healthchecksdb
 /LyricsFinder/Installation/Anonymize/
 /LyricsFinder/Installation/Build/
 /LyricsFinder/Installation/Output/
+/LyricsFinder/LyricServices/LyricWikiService/
 /LyricsFinder/LyricServices/MusiXmatchServiceHardolf/
 
 # Files
 json1.json
 json2.json
 App.private.config
+MessageInspection.xml
 
 # Extensions
 *.dll

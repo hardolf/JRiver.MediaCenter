@@ -111,7 +111,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y App.private.config $(TargetFileName).private.config
+    <PostBuildEvent>copy /y App.private.config $(TargetFileName).private.config
 del /q App*.config
 call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.* Newtonsoft.Json.*
 </PostBuildEvent>
