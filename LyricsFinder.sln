@@ -12,17 +12,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LyricsFinder", "LyricsFinde
 		LyricsFinder\ReadMe.txt = LyricsFinder\ReadMe.txt
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installation", "Installation", "{32C1A654-474C-4C1B-AC63-3B8A7ABBCAF9}"
-	ProjectSection(SolutionItems) = preProject
-		LyricsFinder\Installation\Plugin Installation Script.iss = LyricsFinder\Installation\Plugin Installation Script.iss
-		LyricsFinder\Installation\Standalone Installation Script.iss = LyricsFinder\Installation\Standalone Installation Script.iss
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{A7D95EB7-A18F-4EAF-A2EF-51AAE3219290}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Output", "Output", "{BB92B9CB-78BD-4F48-9FC0-25F7A957F64D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LyricsFinderExe", "LyricsFinder\LyricsFinderExe\LyricsFinderExe.csproj", "{DB68743B-B68D-42B3-A7AF-D0FEF868003E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E5447105-2481-44BD-835E-2C5071D7A23D} = {E5447105-2481-44BD-835E-2C5071D7A23D}
+		{E648E10A-E067-4ED3-AAB5-99C7DC589437} = {E648E10A-E067-4ED3-AAB5-99C7DC589437}
+		{8554F018-9DD0-4D3D-A66E-39C1935931A4} = {8554F018-9DD0-4D3D-A66E-39C1935931A4}
+		{469CD424-9DB1-4AAC-9A30-F1565DC27932} = {469CD424-9DB1-4AAC-9A30-F1565DC27932}
+		{EF9766A5-0C6D-425F-BE2D-3CD51A6720D2} = {EF9766A5-0C6D-425F-BE2D-3CD51A6720D2}
+		{4AB4E2BF-2216-43DF-865E-3E3E3B8B37C9} = {4AB4E2BF-2216-43DF-865E-3E3E3B8B37C9}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LyricsFinderCore", "LyricsFinder\LyricsFinderCore\LyricsFinderCore.csproj", "{D91DA58C-6415-43EF-B177-7BA28ACE7E01}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -34,7 +32,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DDC44EE3-33FF-4CF4-B583-92930DED4397}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		LyricsFinder\SharedAssemblyInfo.cs = LyricsFinder\SharedAssemblyInfo.cs
+		LyricsFinder\ReadMe.txt = LyricsFinder\ReadMe.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LyricServices", "LyricServices", "{93B38887-18C2-4895-A8FD-D33B95D538D7}"
@@ -48,45 +46,30 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusiXmatchService", "Lyrics
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stands4Service", "LyricsFinder\LyricServices\Stands4Service\Stands4Service.csproj", "{E648E10A-E067-4ED3-AAB5-99C7DC589437}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{22959E1F-3471-44A8-889B-C89BAAAAAD42}"
-	ProjectSection(SolutionItems) = preProject
-		LyricsFinder\ReadMe - Developer.txt = LyricsFinder\ReadMe - Developer.txt
-		LyricsFinder\ReadMe.txt = LyricsFinder\ReadMe.txt
-		LyricsFinder\Documentation\ReleaseNotes.html = LyricsFinder\Documentation\ReleaseNotes.html
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JRiver MediaCenter", "JRiver MediaCenter", "{5F59370C-2180-49A3-AD16-DEC035333787}"
-	ProjectSection(SolutionItems) = preProject
-		LyricsFinder\Documentation\JRiver MediaCenter\MCWS.html = LyricsFinder\Documentation\JRiver MediaCenter\MCWS.html
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki.html = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki.html
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki.html = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki.html
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web Service Connection - JRiverWiki_files", "Web Service Connection - JRiverWiki_files", "{9B0215E2-1386-48FE-85EA-97BB9CCA9B42}"
-	ProjectSection(SolutionItems) = preProject
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki_files\load.css = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki_files\load.css
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki_files\load.php = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki_files\load.php
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki_files\load_002.css = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki_files\load_002.css
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki_files\load_002.php = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki_files\load_002.php
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki_files\poweredby_mediawiki_88x31.png = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Connection - JRiverWiki_files\poweredby_mediawiki_88x31.png
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web Service Interface - JRiverWiki_files", "Web Service Interface - JRiverWiki_files", "{FB25A41D-2746-4600-8715-85DA1A8F82F1}"
-	ProjectSection(SolutionItems) = preProject
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki_files\load.css = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki_files\load.css
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki_files\load.php = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki_files\load.php
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki_files\load_002.css = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki_files\load_002.css
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki_files\load_002.php = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki_files\load_002.php
-		LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki_files\poweredby_mediawiki_88x31.png = LyricsFinder\Documentation\JRiver MediaCenter\Web Service Interface - JRiverWiki_files\poweredby_mediawiki_88x31.png
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LyricsFinderPlugin", "LyricsFinder\LyricsFinderPlugin\LyricsFinderPlugin.csproj", "{D73AD757-AAAB-4941-B0F9-698A990DF6C3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E5447105-2481-44BD-835E-2C5071D7A23D} = {E5447105-2481-44BD-835E-2C5071D7A23D}
+		{E648E10A-E067-4ED3-AAB5-99C7DC589437} = {E648E10A-E067-4ED3-AAB5-99C7DC589437}
+		{8554F018-9DD0-4D3D-A66E-39C1935931A4} = {8554F018-9DD0-4D3D-A66E-39C1935931A4}
+		{469CD424-9DB1-4AAC-9A30-F1565DC27932} = {469CD424-9DB1-4AAC-9A30-F1565DC27932}
+		{EF9766A5-0C6D-425F-BE2D-3CD51A6720D2} = {EF9766A5-0C6D-425F-BE2D-3CD51A6720D2}
+		{4AB4E2BF-2216-43DF-865E-3E3E3B8B37C9} = {4AB4E2BF-2216-43DF-865E-3E3E3B8B37C9}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utility", "SharedComponents\Utility\Utility.csproj", "{EF9766A5-0C6D-425F-BE2D-3CD51A6720D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageInspection", "SharedComponents\MessageInspection\MessageInspection.csproj", "{4AB4E2BF-2216-43DF-865E-3E3E3B8B37C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiseedsService", "LyricsFinder\LyricServices\ApiseedsService\ApiseedsService.csproj", "{469CD424-9DB1-4AAC-9A30-F1565DC27932}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Documentation", "LyricsFinder\Documentation\Documentation.csproj", "{5722AFB2-CFC2-4832-B6CF-5C89719184EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installation", "LyricsFinder\Installation\Installation.csproj", "{EB847339-4E66-4CF9-97E4-4F63B01DDED4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DB68743B-B68D-42B3-A7AF-D0FEF868003E} = {DB68743B-B68D-42B3-A7AF-D0FEF868003E}
+		{D73AD757-AAAB-4941-B0F9-698A990DF6C3} = {D73AD757-AAAB-4941-B0F9-698A990DF6C3}
+		{5722AFB2-CFC2-4832-B6CF-5C89719184EC} = {5722AFB2-CFC2-4832-B6CF-5C89719184EC}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,28 +113,31 @@ Global
 		{469CD424-9DB1-4AAC-9A30-F1565DC27932}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{469CD424-9DB1-4AAC-9A30-F1565DC27932}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{469CD424-9DB1-4AAC-9A30-F1565DC27932}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5722AFB2-CFC2-4832-B6CF-5C89719184EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5722AFB2-CFC2-4832-B6CF-5C89719184EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5722AFB2-CFC2-4832-B6CF-5C89719184EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5722AFB2-CFC2-4832-B6CF-5C89719184EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB847339-4E66-4CF9-97E4-4F63B01DDED4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB847339-4E66-4CF9-97E4-4F63B01DDED4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB847339-4E66-4CF9-97E4-4F63B01DDED4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB847339-4E66-4CF9-97E4-4F63B01DDED4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{32C1A654-474C-4C1B-AC63-3B8A7ABBCAF9} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
-		{A7D95EB7-A18F-4EAF-A2EF-51AAE3219290} = {32C1A654-474C-4C1B-AC63-3B8A7ABBCAF9}
-		{BB92B9CB-78BD-4F48-9FC0-25F7A957F64D} = {32C1A654-474C-4C1B-AC63-3B8A7ABBCAF9}
 		{DB68743B-B68D-42B3-A7AF-D0FEF868003E} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
 		{D91DA58C-6415-43EF-B177-7BA28ACE7E01} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
 		{93B38887-18C2-4895-A8FD-D33B95D538D7} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
 		{E5447105-2481-44BD-835E-2C5071D7A23D} = {93B38887-18C2-4895-A8FD-D33B95D538D7}
 		{8554F018-9DD0-4D3D-A66E-39C1935931A4} = {93B38887-18C2-4895-A8FD-D33B95D538D7}
 		{E648E10A-E067-4ED3-AAB5-99C7DC589437} = {93B38887-18C2-4895-A8FD-D33B95D538D7}
-		{22959E1F-3471-44A8-889B-C89BAAAAAD42} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
-		{5F59370C-2180-49A3-AD16-DEC035333787} = {22959E1F-3471-44A8-889B-C89BAAAAAD42}
-		{9B0215E2-1386-48FE-85EA-97BB9CCA9B42} = {5F59370C-2180-49A3-AD16-DEC035333787}
-		{FB25A41D-2746-4600-8715-85DA1A8F82F1} = {5F59370C-2180-49A3-AD16-DEC035333787}
 		{D73AD757-AAAB-4941-B0F9-698A990DF6C3} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
 		{EF9766A5-0C6D-425F-BE2D-3CD51A6720D2} = {2CD38DE1-D147-4D89-B9A3-7A2121B8FCF8}
 		{4AB4E2BF-2216-43DF-865E-3E3E3B8B37C9} = {2CD38DE1-D147-4D89-B9A3-7A2121B8FCF8}
 		{469CD424-9DB1-4AAC-9A30-F1565DC27932} = {93B38887-18C2-4895-A8FD-D33B95D538D7}
+		{5722AFB2-CFC2-4832-B6CF-5C89719184EC} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
+		{EB847339-4E66-4CF9-97E4-4F63B01DDED4} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C6AD8E8-9745-4BBC-928D-B3CC9DDD774A}

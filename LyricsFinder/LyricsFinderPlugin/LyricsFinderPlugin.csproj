@@ -60,7 +60,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
+    <Compile Include="..\Installation\Properties\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
@@ -113,10 +113,6 @@ xcopy /e /i /v /y "..\..\..\LyricsFinderCore\$(OutDir)LyricsFinderCore*.*" "%25_
 del /q "%25_tdir%25\App*.config"
 del /q "%25_tdir%25\*CodeAnalysis*.*"
 del /q App*.config
-
-if exist "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "..\..\..\Installation\Plugin Installation Script.iss"
-
-
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

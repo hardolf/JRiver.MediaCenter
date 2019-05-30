@@ -28,9 +28,10 @@ UsePreviousAppDir=no
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "Build\Standalone\*";               DestDir: "{app}";        Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "Build\LyricServices\*";            DestDir: "{app}";        Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "Build\Standalone\*";         DestDir: "{app}";                 Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "Build\LyricServices\*";      DestDir: "{app}";                 Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\Documentation\Build\*";   DestDir: "{app}\Documentation";   Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\Lyrics Finder for JRiver Media Center"; Filename: "{app}\LyricsFinderExe.exe"

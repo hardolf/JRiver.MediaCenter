@@ -74,7 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
+    <Compile Include="..\Installation\Properties\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ExamineRot.cs" />
@@ -171,9 +171,6 @@ del /q App*.config
 del /q "%25_tdir%25\App*.config"
 del /q "%25_tdir%25\*CodeAnalysis*.*"
 del /q %25_tdir%25\vs*.tmp
-
-if exist "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "..\..\..\Installation\Standalone Installation Script.iss"
-
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

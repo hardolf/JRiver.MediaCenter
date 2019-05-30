@@ -28,10 +28,11 @@ UsePreviousAppDir=no
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "Build\Plugin\*";                           DestDir: "{app}";                 Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "Build\LyricServices\*";                    DestDir: "{app}";                 Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "Build\LyricServices\MessageInspection.*";  DestDir: "{app}\..\..";           Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "Build\Plugin\*";                            DestDir: "{app}";                 Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "Build\LyricServices\*";                     DestDir: "{app}";                 Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "Build\LyricServices\MessageInspection.*";   DestDir: "{app}\..\..";           Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\Documentation\Build\*";                  DestDir: "{app}\Documentation";   Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram, Lyrics Finder plug-in}"; Filename: "{uninstallexe}"

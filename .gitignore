@@ -345,16 +345,18 @@ healthchecksdb
 #################################################
 
 # Folders
+/LyricsFinder/Documentation/Build/
 /LyricsFinder/Installation/Anonymize/
 /LyricsFinder/Installation/Build/
 /LyricsFinder/Installation/Output/
+/LyricsFinder/Installation/Release/
 /LyricsFinder/LyricServices/LyricWikiService/
 /LyricsFinder/LyricServices/MusiXmatchServiceHardolf/
 
 # Files
 json1.json
 json2.json
-App.private.config
+*private.config
 MessageInspection.xml
 
 # Extensions
