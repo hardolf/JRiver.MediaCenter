@@ -64,19 +64,30 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var json = string.Empty;
             HttpWebResponse rsp = null;
 
-            using (rsp = req.GetResponse() as HttpWebResponse)
+            try
             {
-                if (rsp == null)
-                    throw new NullReferenceException("Response is null");
-                if (rsp.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
-
-                using (var rspStream = rsp.GetResponseStream())
+                using (rsp = req.GetResponse() as HttpWebResponse)
                 {
-                    var reader = new StreamReader(rspStream, Encoding.UTF8);
+                    if (rsp == null)
+                        throw new NullReferenceException("Response is null");
+                    if (rsp.StatusCode != HttpStatusCode.OK)
+                        throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
 
-                    json = reader.ReadToEnd();
+                    using (var rspStream = rsp.GetResponseStream())
+                    {
+                        var reader = new StreamReader(rspStream, Encoding.UTF8);
+
+                        json = reader.ReadToEnd();
+                    }
                 }
+            }
+            catch (WebException ex)
+            {
+                // Is this a normal situation? i.e. if the song was not found, the remote server returns HTML error 404
+                if (ex.Message.Contains("404"))
+                    return this;
+                else
+                    throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex); 
             }
 
             // Deserialize the returned JSON

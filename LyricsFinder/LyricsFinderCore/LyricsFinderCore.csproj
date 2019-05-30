@@ -158,7 +158,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="App.template.config" />
+    <None Include="App.template.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="App.private.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -232,12 +234,21 @@
   <PropertyGroup>
     <PostBuildEvent>set _tdir=..\..\..\Installation\Build\LyricServices
 del /q "%25_tdir%25\*.*"
-copy /y App.private.config $(TargetFileName).private.config
+
+copy /y App.template.config $(TargetFileName).template.config
+
+if "$(ConfigurationName)" equ "Release" (
+    copy /y App.template.config $(TargetFileName).private.config
+) else (
+    copy /y App.private.config $(TargetFileName).private.config
+)
+
 del /q App*.config
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>if not exist ..\..\App.private.config copy ..\..\App.template.config ..\..\App.private.config
+    <PreBuildEvent>del /s /q "$(TargetDir)*.*"
+if not exist ..\..\App.private.config copy ..\..\App.template.config ..\..\App.private.config
 </PreBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

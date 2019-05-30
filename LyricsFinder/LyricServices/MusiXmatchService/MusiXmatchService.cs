@@ -64,32 +64,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var req = WebRequest.Create(url) as HttpWebRequest;
             var json = string.Empty;
 
-            using (var rsp = req.GetResponse() as HttpWebResponse)
+            try
             {
-                if (rsp == null)
-                    throw new NullReferenceException("Response is null");
-                if (rsp.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
-
-                using (var rspStream = rsp.GetResponseStream())
-                {
-                    var reader = new StreamReader(rspStream, Encoding.UTF8);
-
-                    json = reader.ReadToEnd();
-                }
-            }
-
-            // Deserialize the returned JSON
-            var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
-            var tracks = searchDyn.message.body.track_list;
-
-            // Now we get the lyrics for each search result
-            foreach (var track in tracks)
-            {
-                urlString = $"{credit.ServiceUrl}track.lyrics.get?apikey={credit.Token}&track_id={track?.track?.track_id ?? 0}&commontrack_id={track?.track?.commontrack_id ?? 0}";
-                url = new SerializableUri(Uri.EscapeUriString(urlString));
-                req = WebRequest.Create(url) as HttpWebRequest;
-
                 using (var rsp = req.GetResponse() as HttpWebResponse)
                 {
                     if (rsp == null)
@@ -103,6 +79,44 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                         json = reader.ReadToEnd();
                     }
+                }
+            }
+            catch (WebException ex)
+            {
+                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex);
+            }
+
+            // Deserialize the returned JSON
+            var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
+            var tracks = searchDyn.message.body.track_list;
+
+            // Now we get the lyrics for each search result
+            foreach (var track in tracks)
+            {
+                urlString = $"{credit.ServiceUrl}track.lyrics.get?apikey={credit.Token}&track_id={track?.track?.track_id ?? 0}&commontrack_id={track?.track?.commontrack_id ?? 0}";
+                url = new SerializableUri(Uri.EscapeUriString(urlString));
+                req = WebRequest.Create(url) as HttpWebRequest;
+
+                try
+                {
+                    using (var rsp = req.GetResponse() as HttpWebResponse)
+                    {
+                        if (rsp == null)
+                            throw new NullReferenceException("Response is null");
+                        if (rsp.StatusCode != HttpStatusCode.OK)
+                            throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
+
+                        using (var rspStream = rsp.GetResponseStream())
+                        {
+                            var reader = new StreamReader(rspStream, Encoding.UTF8);
+
+                            json = reader.ReadToEnd();
+                        }
+                    }
+                }
+                catch (WebException ex)
+                {
+                    throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex);
                 }
 
                 // Deserialize the returned JSON

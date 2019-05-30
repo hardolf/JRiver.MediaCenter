@@ -149,17 +149,24 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
             if (userName.Length > 0)
                 req.Credentials = new NetworkCredential(userName, password);
 
-            using (var rsp = req.GetResponse() as HttpWebResponse)
+            try
             {
-                if (rsp == null)
-                    throw new NullReferenceException("Response is null");
-                if (rsp.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
-
-                using (var rspStream = rsp.GetResponseStream())
+                using (var rsp = req.GetResponse() as HttpWebResponse)
                 {
-                    ret = new Bitmap(rspStream);
+                    if (rsp == null)
+                        throw new NullReferenceException("Response is null");
+                    if (rsp.StatusCode != HttpStatusCode.OK)
+                        throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
+
+                    using (var rspStream = rsp.GetResponseStream())
+                    {
+                        ret = new Bitmap(rspStream);
+                    }
                 }
+            }
+            catch (WebException ex)
+            {
+                throw new Exception($"\"The call to MediaCenter MCWS failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex);
             }
 
             return ret;
@@ -188,18 +195,25 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
             if (userName.Length > 0)
                 req.Credentials = new NetworkCredential(userName, password);
 
-            using (var rsp = req.GetResponse() as HttpWebResponse)
+            try
             {
-                if (rsp == null)
-                    throw new NullReferenceException("Response is null");
-                if (rsp.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
-
-                using (var rspStream = rsp.GetResponseStream())
+                using (var rsp = req.GetResponse() as HttpWebResponse)
                 {
-                    var reader = new StreamReader(rspStream, Encoding.UTF8);
-                    ret = reader.ReadToEnd();
+                    if (rsp == null)
+                        throw new NullReferenceException("Response is null");
+                    if (rsp.StatusCode != HttpStatusCode.OK)
+                        throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
+
+                    using (var rspStream = rsp.GetResponseStream())
+                    {
+                        var reader = new StreamReader(rspStream, Encoding.UTF8);
+                        ret = reader.ReadToEnd();
+                    }
                 }
+            }
+            catch (WebException ex)
+            {
+                throw new Exception($"\"The call to MediaCenter MCWS failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex);
             }
 
             return ret;

@@ -331,6 +331,7 @@ namespace MediaCenter.LyricsFinder
 
         /// <summary>
         /// Handles the Tick event of the LyricFormTimer control.
+        /// Used when searching for lyrics.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -342,14 +343,14 @@ namespace MediaCenter.LyricsFinder
             {
                 LyricFormTimer.Stop();
 
-                // Clear list and search for all the lyric in each service
+                // Clear list and search for all the lyrics in each lyric service
                 _foundLyricList.Clear();
 
                 foreach (var service in LyricsFinderData.Services)
                 {
                     if (!service.IsImplemented || !service.IsActive || service.IsQuotaExceeded) continue;
 
-                    msg = $" in \"{service?.Credit.ServiceName ?? "Unknown"}\" service";
+                    msg = $" in \"{service?.Credit.ServiceName ?? "Unknown service"}\" service";
 
                     service.Process(_McItem, true);
 
@@ -362,6 +363,7 @@ namespace MediaCenter.LyricsFinder
                         var serviceName = foundLyric.Service.Credit.ServiceName;
                         var serviceCount = 0;
 
+                        // Keep track of the number of hits for each lyric service
                         if (_serviceCounts.ContainsKey(serviceName))
                         {
                             serviceCount = _serviceCounts.First(s => s.Key == serviceName).Value;
@@ -371,6 +373,9 @@ namespace MediaCenter.LyricsFinder
                         _serviceCounts.Add(serviceName, serviceCount + 1);
                     }
                 }
+
+                // No more service-specific error details
+                msg = string.Empty;
 
                 // Set the trackbar and call the Scroll event handler to initialize the text box
                 LyricFormTrackBar.Maximum = _foundLyricList.Count - 1;
@@ -412,10 +417,11 @@ namespace MediaCenter.LyricsFinder
                 var foundLyric = _foundLyricList[LyricFormTrackBar.Value];
                 var serviceName = foundLyric.Service.Credit.ServiceName;
 
-                Lyric = LyricTextBox.Text;
-                LyricTextBox.Text = foundLyric.LyricText;
+                LyricTextBox.Text = foundLyric.ToString();
                 LyricTextBox.Select(0, 0);
                 LyricTextBox.SelectionLength = 0;
+
+                Lyric = LyricTextBox.Text;
 
                 LyricFormFoundStatusLabel.Text = $"Source: {serviceName} {GetServiceCount(serviceName)}";
                 LyricFormFoundStatusLabel.BorderSides = ToolStripStatusLabelBorderSides.Left;

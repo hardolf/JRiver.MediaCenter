@@ -91,7 +91,9 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="App.template.config" />
+    <None Include="App.template.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -111,7 +113,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y App.private.config $(TargetFileName).private.config
+    <PostBuildEvent>copy /y App.template.config $(TargetFileName).template.config
+
+if "$(ConfigurationName)" equ "Release" (
+    copy /y App.template.config $(TargetFileName).private.config
+) else (
+    copy /y App.private.config $(TargetFileName).private.config
+)
+
 del /q App*.config
 call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.* Newtonsoft.Json.*
 </PostBuildEvent>
@@ -130,7 +139,8 @@ call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.* 
   </Target>
   <Import Project="..\..\..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\..\..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets')" />
   <PropertyGroup>
-    <PreBuildEvent>if not exist ..\..\App.private.config copy ..\..\App.template.config ..\..\App.private.config
+    <PreBuildEvent>del /s /q "$(TargetDir)*.*"
+if not exist ..\..\App.private.config copy ..\..\App.template.config ..\..\App.private.config
 </PreBuildEvent>
   </PropertyGroup>
 </Project>

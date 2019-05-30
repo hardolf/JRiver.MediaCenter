@@ -110,18 +110,25 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var req = WebRequest.Create(url) as HttpWebRequest;
             var txt = string.Empty;
 
-            using (var rsp = req.GetResponse() as HttpWebResponse)
+            try
             {
-                if (rsp == null)
-                    throw new NullReferenceException("Response is null");
-                if (rsp.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
-
-                using (var rspStream = rsp.GetResponseStream())
+                using (var rsp = req.GetResponse() as HttpWebResponse)
                 {
-                    var reader = new StreamReader(rspStream, Encoding.UTF8);
-                    txt = reader.ReadToEnd();
+                    if (rsp == null)
+                        throw new NullReferenceException("Response is null");
+                    if (rsp.StatusCode != HttpStatusCode.OK)
+                        throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
+
+                    using (var rspStream = rsp.GetResponseStream())
+                    {
+                        var reader = new StreamReader(rspStream, Encoding.UTF8);
+                        txt = reader.ReadToEnd();
+                    }
                 }
+            }
+            catch (WebException ex)
+            {
+                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex);
             }
 
             // Avoid analyzer warning CA1812
