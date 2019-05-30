@@ -112,7 +112,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{0091BD
 		Images\MediaCenter_Main.png = Images\MediaCenter_Main.png
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiseedsLyricsApiService", "LyricsFinder\LyricServices\ApiseedsLyricsApiService\ApiseedsLyricsApiService.csproj", "{469CD424-9DB1-4AAC-9A30-F1565DC27932}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiseedsService", "LyricsFinder\LyricServices\ApiseedsService\ApiseedsService.csproj", "{469CD424-9DB1-4AAC-9A30-F1565DC27932}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -14,7 +14,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
     {
 
         private McMplItem _item;
-        private ApiseedsLyricsApiService _service;
+        private ApiseedsService _service;
 
 
         [TestCleanup]
@@ -32,7 +32,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 Name = "Sultans of Swing"
             };
 
-            _service = new ApiseedsLyricsApiService();
+            _service = new ApiseedsService();
             _service.RefreshServiceSettings();
         }
 
@@ -47,7 +47,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
             Assert.IsNotNull(resultService.FoundLyricList[0]);
             Assert.IsNotNull(resultService.FoundLyricList[0].LyricText);
             Assert.AreNotEqual(0, resultService.FoundLyricList[0].LyricText.Trim().Length);
-            Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("MUSIXMATCH"));
+            Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("APISEEDS"));
         }
 
     }

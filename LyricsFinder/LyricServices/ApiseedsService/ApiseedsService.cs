@@ -23,13 +23,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// </summary>
     /// <seealso cref="AbstractLyricService" />
     [Serializable]
-    public class ApiseedsLyricsApiService : AbstractLyricService
+    public class ApiseedsService : AbstractLyricService
     {
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApiseedsLyricsApiService"/> class.
+        /// Initializes a new instance of the <see cref="ApiseedsService"/> class.
         /// </summary>
-        public ApiseedsLyricsApiService()
+        public ApiseedsService()
             : base()
         {
             IsImplemented = true;
@@ -81,26 +81,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             // Deserialize the returned JSON
             var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
-            var tracks = searchDyn.message.body.track_list;
+            var lyricText = (string)searchDyn.result.track.text;
+            var copyright = searchDyn.result.copyright;
+            var copyrightText = Utility.JoinTrimmedStrings(".\r\n", (string)copyright.notice, (string)copyright.artist, (string)copyright.text) + ".";
 
-            // Now we get the lyrics for each search result
-            foreach (var track in tracks)
-            {
-                // Deserialize the returned JSON
-                var lyricDyn = JsonConvert.DeserializeObject<dynamic>(json);
-                var lyricDynBody = lyricDyn.message.body;
-
-                if ((lyricDynBody == null) || (lyricDynBody.Count == 0))
-                    continue;
-
-                var lyricDynEl = lyricDynBody.lyrics;
-                var lyricText = (string)lyricDynEl.lyrics_body;
-
-                AddFoundLyric(lyricText, lyricDynEl.backlink_url, lyricDynEl.html_tracking_url, (string)lyricDynEl.lyrics_copyright);
-
-                if (!getAll)
-                    break;
-            }
+            AddFoundLyric(lyricText, null, null, copyrightText);
 
             return this;
         }

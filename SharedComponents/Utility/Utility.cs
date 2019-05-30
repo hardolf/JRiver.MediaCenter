@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -15,6 +16,42 @@ namespace MediaCenter.SharedComponents
     /// </summary>
     public static class Utility
     {
+
+        /// <summary>
+        /// Joins the strings.
+        /// </summary>
+        /// <param name="separator">The separator.</param>
+        /// <param name="strings">The strings.</param>
+        /// <returns>Joined string.</returns>
+        /// <remarks>
+        /// <para>This function is an improved version of the <see cref="string.Join"/> method.</para>
+        /// <para>It removes any duplicate trailing separators.</para>
+        /// </remarks>
+        public static string JoinTrimmedStrings(string separator, params string[] strings)
+        {
+            if (separator.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(separator));
+            if (strings.IsNullOrEmpty()) throw new ArgumentNullException(nameof(separator));
+
+            var ret = new StringBuilder();
+            var trimmedSeparator = separator.Trim();
+
+            foreach (var str in strings)
+            {
+                var s = str.Trim();
+
+                if (ret.Length > 0)
+                    ret.Append(separator);
+
+                // Remove any trailing separators
+                if (s.EndsWith(trimmedSeparator, StringComparison.InvariantCultureIgnoreCase))
+                    s = s.Substring(0, s.LastIndexOf(trimmedSeparator, StringComparison.InvariantCultureIgnoreCase));
+
+                ret.Append(s);
+            }
+
+            return ret.ToString();
+        }
+
 
         /// <summary>
         /// Determines whether the input string contains one or more of the strings in the specified compare list.
@@ -44,6 +81,34 @@ namespace MediaCenter.SharedComponents
             var ret = $"{assy.Location}.config";
 
             return ret;
+        }
+
+
+        /// <summary>
+        /// Determines whether the array is null or empty.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr">The array.</param>
+        /// <returns>
+        /// 	<c>true</c> if the array is null or empty; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsNullOrEmpty<T>(this T[] arr)
+        {
+            return arr == null || arr.Length == 0;
+        }
+
+
+        /// <summary>
+        /// Determines whether the list is null or empty.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr">The list.</param>
+        /// <returns>
+        /// 	<c>true</c> if the list is null or empty; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsNullOrEmpty<T>(this IList<T> arr)
+        {
+            return arr == null || arr.Count == 0;
         }
 
 
