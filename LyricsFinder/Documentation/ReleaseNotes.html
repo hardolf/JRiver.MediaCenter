@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-    <title>LyricsFinder</title>
+    <title>ReleaseNotes</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style>
         div {
@@ -17,22 +17,75 @@
 </head>
 
 <body>
-    <h1>LyricsFinder</h1>
+    <h1>Release notes for Hardolf extensions to the JRiver Media Center</h1>
 
-    <p>The LyricsFinder finds lyrics for the currently playing songs in the "Playing Now" list in the JRiver Media Center.</p>
-    <p>The LyricsFinder can be used as a standalone program and/or as a plug-in for the JRiver Media Center.</p>
+    <h2>Table of Contents</h2>
 
-    <p>Visit the project repository on GitHub: <a href="https://github.com/hardolf/JRiver.MediaCenter/tree/master/LyricsFinder" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/tree/master/LyricsFinder</a></p>
+    <ul>
+        <li><a href="#LyricsFinder">LyricsFinder</a></li>
+        <li><a href="#TrackInfoVisualization">Track info visualization</a></li>
+        <li><a href="#VersionHistory">Version history</a></li>
+    </ul>
+
+
+    <h2 id="LyricsFinder">LyricsFinder</h2>
+
+    <p>
+        The LyricsFinder looks for lyrics in public lyric web services.
+        Lookup is done for all - or just one at a time - of the current songs in the "Playing Now" list in the JRiver Media Center.<br />
+        The LyricsFinder can be used as a standalone program and/or as a plug-in for the JRiver Media Center.<br />
+        The found lyrics are saved in the songs' tags.
+    </p>
+
+    <p>Visit the project repository on GitHub: <a href="https://github.com/hardolf/JRiver.MediaCenter" target="_blank">https://github.com/hardolf/JRiver.MediaCenter</a> (LyricsFinder.sln and LyricsFinder subfolder)</p>
     <p>Wiki with user manual: <a href="https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder</a></p>
     <p>Bug reports: <a href="https://github.com/hardolf/JRiver.MediaCenter/projects/3" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/projects/3</a></p>
     <p>Download area with source code and binaries: <a href="https://github.com/hardolf/JRiver.MediaCenter/releases" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/releases</a></p>
 
-    <h1>Version history</h1>
+    <h3>Installation</h3>
+
+    <p>Follow these steps:</p>
+    <ol>
+        <li>Unpack the setup ZIP file for the version in question</li>
+        <li>Look in the ReadMe.txt file</li>
+        <li>If installing he plug-in, the JRiver Media Center should not be running</li>
+        <li>Run the Setup.exe file</li>
+    </ol>
+
+    <p>During the installation, you must make a couple of decisions:</p>
+    <ul>
+        <li>Full or custom installation? i.e. plug-in, standalone and documentation - or just some of them?</li>
+        <li>If more than one JRiver Media Center is installed, which one should have the plug-in? (like in "Highlander": "There can be only one")</li>
+    </ul>
+
+
+    <h2 id="TrackInfoVisualization">Track info visualization</h2>
+
+    <p>The Cover, Details and Lyrics track info is a simple track info page for the "Playing Now" view in JRiver Media Center.</p>
+
+    <p>
+        Visit the project repository on GitHub: <a href="https://github.com/hardolf/JRiver.MediaCenter" target="_blank">https://github.com/hardolf/JRiver.MediaCenter</a> (Visualizations/Track info/Bent/)
+    </p>
+    <p>Wiki with user manual: <a href="https://github.com/hardolf/JRiver.MediaCenter/wiki/Track-Info-Visualizations" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/wiki/Track-Info-Visualizations</a></p>
+    <p>Bug reports: <a href="https://github.com/hardolf/JRiver.MediaCenter/projects/3" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/projects/3</a></p>
+    <!--    <p>Download area with source code and binaries: <a href="https://github.com/hardolf/JRiver.MediaCenter/releases" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/releases</a></p>-->
+
+    <h3>Installation</h3>
+
+    <p>Follow these steps:</p>
+    <ol>
+        <li>Get the files in the above mentioned GitHub repository folder "Bent"</li>
+        <li>Copy the files to a new folder in your JRiver Media Center program folder, e.g. C:\Program Files (x86)\J River\Media Center 24\Visualizations\Track Info\xxxxxxx\ (you decide the folder name)</li>
+        <li>Play a tune...That's it!</li>
+    </ol>
+
+
+    <h1 id="VersionHistory">Version history</h1>
 
     <p>The version history outlines the releases since the first version of the LyricsFinder for JRiver Media Center.</p>
 
     <div>
-        <h1>Release Notes - LyricsFinder - Version 1.0.0</h1>
+        <h2>LyricsFinder version 1.0.0</h2>
 
         <p>This is the first release.</p>
         <p>Download with source code and 32-bit binaries for Windows: <a href="https://github.com/hardolf/JRiver.MediaCenter/releases/tag/v1.0.0" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/releases/tag/v1.0.0</a></p>
