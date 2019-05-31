@@ -20,7 +20,7 @@ JRiver Media Center 24 or newer, using its builtin REST Web service (MCWS).
 Compatibility
 -------------
 The LyricsFinder is expected to be compatible with future versions of JRiver Media Center, as long as these feature the REST Web service (MCWS).
-The plugin should also be compatible with future versions of JRiver Media Center. The only requirement is editing and compiling the Plugin Installation Script.iss file.
+The plugin should also be compatible with future versions of JRiver Media Center. There is code in the Setup.iss file that finds any installed instances of the MediaCenter.
 
 
 Development environment

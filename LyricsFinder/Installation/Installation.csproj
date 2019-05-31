@@ -58,8 +58,7 @@
     <None Include="Release\Setup1.0.0.zip" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Plugin Installation Script.iss" />
-    <Content Include="Standalone Installation Script.iss" />
+    <Content Include="Setup.iss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Build\LyricServices\" />
@@ -75,8 +74,7 @@ set _exe=C:\Program Files (x86)\Inno Setup 6\ISCC.exe
 del /q %25_odir%25\Setup*.exe
 
 if "$(ConfigurationName)" equ "Release" (
-    if exist "%25_exe%25" "%25_exe%25" "..\..\Plugin Installation Script.iss"
-    if exist "%25_exe%25" "%25_exe%25" "..\..\Standalone Installation Script.iss"
+    if exist "%25_exe%25" "%25_exe%25" "..\..\Setup.iss"
 
     Installation.exe
 )
