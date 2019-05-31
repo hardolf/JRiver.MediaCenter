@@ -1,5 +1,13 @@
+The LyricsFinder finds lyrics for the currently playing songs in the "Playing Now" list.
+The found lyrics are saved in the songs' tags.
+The LyricsFinder can be used as a standalone program and/or as a plug-in for the JRiver Media Center.
 
-The LyricsFinder solution contains a standalone program and a plug-in for the JRiver Media Center
+This ReadMe file is just an introduction.
+For more developer details, please see:
+
+- The LyricsFinder wiki      : https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder.
+- Solution source code       : https://github.com/hardolf/JRiver.MediaCenter (LyricsFinder.sln and LyricsFinder subfolder)
+
 
 Features
 --------
@@ -20,7 +28,7 @@ JRiver Media Center 23 or newer, using its builtin REST Web service (MCWS).
 Compatibility
 -------------
 The LyricsFinder is expected to be compatible with future versions of JRiver Media Center, as long as these feature the REST Web service (MCWS).
-The plugin should also be compatible with future versions of JRiver Media Center. There is code in the Setup.iss file that finds any installed instances of the MediaCenter.
+The plugin should also be compatible with future versions of JRiver Media Center because there is code in the Setup.iss file that finds any installed instances of the MediaCenter on the target machine.
 
 
 Development environment
@@ -40,18 +48,8 @@ More lyric services may be found in the future, look here for inspiration:
 https://www.programmableweb.com/category/lyrics/api
 
 
-Relevant links
---------------
-JRiver                       : https://www.jriver.com/
-Forum                        : https://yabb.jriver.com/interact/
-Wiki                         : https://wiki.jriver.com/
-DevZone                      : https://wiki.jriver.com/index.php/DevZone
-Plug-ins and accessories     : https://accessories.jriver.com/mediacenter/accessories.php
-Inno Setup Compiler          : http://www.jrsoftware.org/
-
-
-Projects
---------
+Solution projects
+-----------------
 Documentation                : Documentation project holding the ReadMe notes etc.
 Installation                 : Installation project responsible for building the release packages.
 LyricServices\*              : Lyric service projects, one for each service, no "hard" references but loaded by LyricsFinderCore at runtime.
@@ -65,8 +63,9 @@ Utility                      : General utility module.
 Installation
 ------------
 Unpack and run the installation program:
-End user                     : ...\MediaCenter\LyricsFinder\Installation\Release\Setup.zip
-Developer                    : ...\MediaCenter\LyricsFinder\Installation\Output\Setup.exe
+
+- End user                   : ...\MediaCenter\LyricsFinder\Installation\Release\Setup.zip
+- Developer                  : ...\MediaCenter\LyricsFinder\Installation\Output\Setup.exe
 
 
 Installation notes
@@ -74,3 +73,13 @@ Installation notes
 The Setup.exe automatically finds any installed JRiver Media Center versions and the user can select which one to install the plug-in to.
 Only one version of JRiver Media Center can be "plugged-in" on the same machine, as the plug-in is registered via COM.
 The standalone program connects to the JRiver Media Center version matching the URL in the standalone program's configuration.
+
+
+Relevant links
+--------------
+JRiver                       : https://www.jriver.com/
+Forum                        : https://yabb.jriver.com/interact/
+Wiki                         : https://wiki.jriver.com/
+DevZone                      : https://wiki.jriver.com/index.php/DevZone
+Plug-ins and accessories     : https://accessories.jriver.com/mediacenter/accessories.php
+Inno Setup Compiler          : http://www.jrsoftware.org/
