@@ -5,12 +5,12 @@
 [Setup]
 AlwaysShowDirOnReadyPage=yes
 ;ArchitecturesInstallIn64BitMode=x64
-AppName=Lyrics Finder Plugin for JRiver Media Center
+AppName=LyricsFinder for JRiver Media Center
 AppPublisher=Hardolf
 AppPublisherURL=www.hardolf.dk
 AppSupportURL=www.hardolf.dk
 AppUpdatesURL=www.hardolf.dk
-AppVerName=Lyrics Finder Plugin Version 1.0.0.0
+AppVersion=1.0.0
 Compression=lzma2/max
 DefaultDirName={commonpf32}
 DefaultGroupName=MediaCenter LyricsFinder
@@ -37,15 +37,16 @@ Source: "..\Documentation\Build\*";                  DestDir: "{app}\Documentati
 
 
 [Icons]
-Name: "{group}\{cm:UninstallProgram, Lyrics Finder plug-in}";      Filename: "{uninstallexe}";              Components: plugin
-Name: "{group}\Lyrics Finder for JRiver Media Center";             Filename: "{app}\LyricsFinderExe.exe";   Components:        standalone
-Name: "{group}\{cm:UninstallProgram, Lyrics Finder standalone}";   Filename: "{uninstallexe}";              Components:        standalone
+Name: "{group}\Documentation";                                     Filename: "https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder";   Components: plugin standalone
+Name: "{group}\Lyrics Finder for JRiver Media Center";             Filename: "{app}\LyricsFinderExe.exe";                                         Components:        standalone
+Name: "{group}\{cm:UninstallProgram, Lyrics Finder}";              Filename: "{uninstallexe}";                                                    Components: plugin standalone
+
 
 [Registry]
 Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder";                                                                                            Flags: uninsdeletekey;   Components: plugin
 Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: dword;  ValueName: "IVersion";   ValueData: "00000001";                         Flags: uninsdeletekey;   Components: plugin
 Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Company";    ValueData: "Hardolf";                          Flags: uninsdeletekey;   Components: plugin
-Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Version";    ValueData: "1.0.0.0";                          Flags: uninsdeletekey;   Components: plugin
+Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Version";    ValueData: "1.0.0";                            Flags: uninsdeletekey;   Components: plugin
 Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "URL";        ValueData: "www.hardolf.dk";                   Flags: uninsdeletekey;   Components: plugin
 Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Copyright";  ValueData: "Copyright (c) Hardolf 2019";       Flags: uninsdeletekey;   Components: plugin
 Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: dword;  ValueName: "PluginMode"; ValueData: "00000001";                         Flags: uninsdeletekey;   Components: plugin
@@ -185,6 +186,6 @@ begin
   // Skip pages that shouldn't be shown
   if (PageID = McVersionPage.ID) then
   begin
-    Result := not IsComponentSelected('plugin');
+    Result := not WizardIsComponentSelected('plugin');
   end;
 end;

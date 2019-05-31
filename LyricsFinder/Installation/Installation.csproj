@@ -68,10 +68,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>set _odir=..\..\Output
-set _exe=C:\Program Files (x86)\Inno Setup 6\ISCC.exe
+    <PostBuildEvent>set _exe=C:\Program Files (x86)\Inno Setup 6\ISCC.exe
+set _tdir=..\..\Build
 
-del /q %25_odir%25\Setup*.exe
+del /s /q "%25_tdir%25\Microsoft.VisualStudio.TestPlatform*.*"
+
 
 if "$(ConfigurationName)" equ "Release" (
     if exist "%25_exe%25" "%25_exe%25" "..\..\Setup.iss"
@@ -79,5 +80,11 @@ if "$(ConfigurationName)" equ "Release" (
     Installation.exe
 )
 </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>set _odir=..\..\Output
+
+del /s /q %25_odir%25\*.*
+</PreBuildEvent>
   </PropertyGroup>
 </Project>

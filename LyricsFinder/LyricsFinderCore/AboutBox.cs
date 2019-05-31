@@ -172,6 +172,17 @@ namespace MediaCenter.LyricsFinder
             Close();
         }
 
+        /// <summary>
+        /// Handles the LinkClicked event of the ReleaseNotesLinkLabel control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="LinkLabelLinkClickedEventArgs"/> instance containing the event data.</param>
+        private void ReleaseNotesLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Navigate to a URL.
+            System.Diagnostics.Process.Start("ReleaseNotes.html");
+        }
+
     }
 
 }

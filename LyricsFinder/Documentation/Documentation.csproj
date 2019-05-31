@@ -79,15 +79,24 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>set _tdir=..\..\Build
+set _ddir=..\..\Build\Documentation
+set _mdir=JRiver MediaCenter
+
+if exist "%25_ddir%25" rd /s /q "%25_ddir%25"
+md "%25_ddir%25"
+md "%25_ddir%25\%25_mdir%25"
+
+xcopy /e /i /v /y "..\..\%25_mdir%25\*.*" "%25_ddir%25\%25_mdir%25\"
+copy "..\..\ReadMe.txt" "%25_tdir%25\"
+copy "..\..\ReadMe*.*" "%25_ddir%25\"
+copy "..\..\ReleaseNotes*.*" "%25_tdir%25\"
+copy "..\..\ReleaseNotes*.*" "%25_ddir%25\"
+</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>set _tdir=..\..\Build
 
 del /s /q %25_tdir%25\*.*
-if exist "%25_tdir%25\JRiver Mediacenter\" rd /s /q "%25_tdir%25\JRiver Mediacenter\"
-
-md "%25_tdir%25\JRiver Mediacenter\"
-
-xcopy /e /i /v /y "..\..\JRiver Mediacenter\*.*" "%25_tdir%25\JRiver Mediacenter\"
-copy "..\..\ReadMe*.*" "%25_tdir%25\"
-copy "..\..\ReleaseNotes*.*" "%25_tdir%25\"
-</PostBuildEvent>
+</PreBuildEvent>
   </PropertyGroup>
 </Project>
