@@ -14,7 +14,7 @@ Uses the JRiver Media Center REST Web service (MCWS), thus allowing the LyricsFi
 
 Prerequisites
 -------------
-JRiver Media Center 24 or newer, using its builtin REST Web service (MCWS).
+JRiver Media Center 23 or newer, using its builtin REST Web service (MCWS).
 
 
 Compatibility
@@ -31,8 +31,8 @@ Inno Setup Compiler 6.0.2 (only needed for changes of the setup program, e.g. if
 
 Current lyrics services
 -----------------------
+Apiseeds Lyrics API          : https://apiseeds.com (Account required, no other restrictions)
 Chart Lyrics                 : http://www.chartlyrics.com (No restrictions)
-FANDOM LyricWiki             : http://lyrics.wikia.com/wiki/LyricWiki (Pending)
 Musixmatch                   : https://www.musixmatch.com (Account required, max. 2.000 free requests per day for 30% of the lyrics text, paid plans for full lyrics)
 STANDS4 Network Lyrics.com   : https://www.lyrics.com (Account required, max. 100 free requests per day)
 
@@ -52,7 +52,9 @@ Inno Setup Compiler          : http://www.jrsoftware.org/
 
 Projects
 --------
-LyricServices\*              : Lyric service projects, one for each service.
+Documentation                : Documentation project holding the ReadMe notes etc.
+Installation                 : Installation project responsible for building the release packages.
+LyricServices\*              : Lyric service projects, one for each service, no "hard" references but loaded by LyricsFinderCore at runtime.
 LyricsFinderPlugin           : Plugin for JRiver Media Center.
 LyricsFinderCore             : Core project used by both standalone and plugin.
 LyricsFinderExe              : Standalone program, does not need the plugin.
@@ -62,9 +64,13 @@ Utility                      : General utility module.
 
 Installation
 ------------
-Run the relevant installation program:
+Unpack and run the installation program:
+End user                     : ...\MediaCenter\LyricsFinder\Installation\Release\Setup.zip
+Developer                    : ...\MediaCenter\LyricsFinder\Installation\Output\Setup.exe
 
-LyricsFinderPlugin           : ...\MediaCenter\LyricsFinder\Installation\Output\SetupPlugin.exe
-LyricsFinderExe              : ...\MediaCenter\LyricsFinder\Installation\Output\SetupStandalone.exe
 
-The plugin installation into other versions than JRiver Media Center 24 requires another edit and compile of the SetupPlugin program, using the Inno Setup Compiler.
+Installation notes
+------------------
+The Setup.exe automatically finds any installed JRiver Media Center versions and the user can select which one to install the plug-in to.
+Only one version of JRiver Media Center can be "plugged-in" on the same machine, as the plug-in is registered via COM.
+The standalone program connects to the JRiver Media Center version matching the URL in the standalone program's configuration.

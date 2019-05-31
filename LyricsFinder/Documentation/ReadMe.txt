@@ -16,7 +16,7 @@ Features
 
 Prerequisites
 -------------
-JRiver Media Center 24 or newer, using its builtin REST Web service (MCWS).
+JRiver Media Center 23 or newer, using its builtin REST Web service (MCWS).
 
 
 Compatibility
@@ -26,8 +26,8 @@ The LyricsFinder is expected to be compatible with future versions of JRiver Med
 
 Current lyrics services
 -----------------------
+Apiseeds Lyrics API          : https://apiseeds.com (Account required, no other restrictions)
 Chart Lyrics                 : http://www.chartlyrics.com (No restrictions)
-FANDOM LyricWiki             : http://lyrics.wikia.com/wiki/LyricWiki (Pending)
 Musixmatch                   : https://www.musixmatch.com (Account required, max. 2.000 free requests per day for 30% of the lyrics text, paid plans for full lyrics)
 STANDS4 Network Lyrics.com   : https://www.lyrics.com (Account required, max. 100 free requests per day)
 
@@ -41,9 +41,13 @@ Wiki                         : https://wiki.jriver.com/
 
 Installation
 ------------
-Run the relevant installation program:
+1. Download the LyricsFinder : https://github.com/hardolf/JRiver.MediaCenter/releases
+2. Unpack the ZIP file       : Setup.zip
+3. Run the setup file        : Setup.exe
 
-LyricsFinderPlugin           : ...\MediaCenter\LyricsFinder\Installation\Output\SetupPlugin.exe
-LyricsFinderExe              : ...\MediaCenter\LyricsFinder\Installation\Output\SetupStandalone.exe
 
-On plugin installation into other versions than JRiver Media Center 24, please see the remarks on the Inno Setup Compiler in "ReadMe - Developer.txt".
+Installation notes
+------------------
+The Setup.exe automatically finds any installed JRiver Media Center versions and the user can select which one to install the plug-in to.
+Only one version of JRiver Media Center can be "plugged-in" on the same machine, as the plug-in is registered via COM.
+The standalone program connects to the JRiver Media Center version matching the URL in the standalone program's configuration.
