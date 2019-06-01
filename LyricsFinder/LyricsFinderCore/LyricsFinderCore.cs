@@ -141,9 +141,6 @@ namespace MediaCenter.LyricsFinder
             }
 
             InitializeComponent();
-
-            // We don't like exceptions in constructors, so we let a timer do the rest of the initializations
-            InitTimer.Start();
         }
 
 
@@ -216,23 +213,6 @@ namespace MediaCenter.LyricsFinder
         /*********************/
         /***** Delegates *****/
         /*********************/
-
-
-        /// <summary>
-        /// Handles the Tick event of the InitTimer control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        /// <remarks>
-        /// We don't like exceptions in constructors, so we let a timer do the rest of the initializations.
-        /// </remarks>
-        private void InitTimer_Tick(object sender, EventArgs e)
-        {
-            InitTimer.Stop();
-
-
-            // The timer is only used once, so don't start it again here!
-        }
 
 
         /// <summary>

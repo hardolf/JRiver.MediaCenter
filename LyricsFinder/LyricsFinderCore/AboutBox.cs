@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.SharedComponents;
 
 
@@ -33,13 +35,6 @@ namespace MediaCenter.LyricsFinder
             AllowTransparency = false;
 
             _assembly = entryAssembly ?? throw new ArgumentNullException(nameof(entryAssembly));
-
-            Text = $"About {AssemblyTitle}";
-            ProductNameLabel.Text = AssemblyProduct;
-            VersionLabel.Text = $"Version {AssemblyVersion}";
-            CopyrightLabel.Text = AssemblyCopyright;
-            CompanyNameLabel.Text = AssemblyCompany;
-            DescriptionTextBox.Text = AssemblyDescription;
         }
 
 
@@ -163,14 +158,45 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the Load event of the AboutBox control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void AboutBox_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                Text = $"About {AssemblyTitle}";
+                ProductNameLabel.Text = AssemblyProduct;
+                VersionLabel.Text = $"Version {AssemblyVersion}";
+                CopyrightLabel.Text = AssemblyCopyright;
+                CompanyNameLabel.Text = AssemblyCompany;
+                DescriptionTextBox.Text = AssemblyDescription;
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the Click event of the CloseButton control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void CloseButton_Click(object sender, EventArgs e)
         {
-            Close();
+            try
+            {
+                Close();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+            }
         }
+
 
         /// <summary>
         /// Handles the LinkClicked event of the ReleaseNotesLinkLabel control.
@@ -179,8 +205,17 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="LinkLabelLinkClickedEventArgs"/> instance containing the event data.</param>
         private void ReleaseNotesLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            // Navigate to a URL.
-            System.Diagnostics.Process.Start("ReleaseNotes.html");
+            try
+            {
+                var filePath = Path.Combine(Path.GetDirectoryName(_assembly.Location), "ReleaseNotes.html");
+
+                // Navigate to a URL.
+                System.Diagnostics.Process.Start(filePath);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+            }
         }
 
     }

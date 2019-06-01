@@ -80,12 +80,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Track info\Cover, Details and Lyrics\bg.jpg" />
-    <Content Include="Track info\Cover, Details and Lyrics\Index.html" />
-    <Content Include="Track info\Cover, Details and Lyrics\JavaScript.js" />
-    <Content Include="Track info\Cover, Details and Lyrics\Sample200x198.bmp" />
-    <Content Include="Track info\Cover, Details and Lyrics\Sample704x698.bmp" />
-    <Content Include="Track info\Cover, Details and Lyrics\Styles.css" />
+    <Content Include="Track info\CoverDetailsLyrics\bg.jpg" />
+    <Content Include="Track info\CoverDetailsLyrics\Index.html" />
+    <Content Include="Track info\CoverDetailsLyrics\JavaScript.js" />
+    <Content Include="Track info\CoverDetailsLyrics\Sample200x198.bmp" />
+    <Content Include="Track info\CoverDetailsLyrics\Sample704x698.bmp" />
+    <Content Include="Track info\CoverDetailsLyrics\Styles.css" />
     <Content Include="Track info\Detailed\bg.jpg" />
     <Content Include="Track info\Detailed\Cover.html" />
     <Content Include="Track info\Detailed\Index.html" />

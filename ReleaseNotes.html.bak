@@ -21,11 +21,13 @@
 
     <h2>Table of Contents</h2>
 
-    <ul>
-        <li><a href="#LyricsFinder">LyricsFinder</a></li>
-        <li><a href="#TrackInfoVisualization">Track info visualization</a></li>
-        <li><a href="#VersionHistory">Version history</a></li>
-    </ul>
+    <div>
+        <ul style="font-weight: bolder; line-height: 150%;">
+            <li><a href="#LyricsFinder">LyricsFinder</a></li>
+            <li><a href="#TrackInfoVisualization">Track info visualization</a></li>
+            <li><a href="#VersionHistory">Version history</a></li>
+        </ul>
+    </div>
 
 
     <h2 id="LyricsFinder">LyricsFinder</h2>
@@ -62,9 +64,9 @@
     <h2 id="TrackInfoVisualization">Track info visualization</h2>
 
     <p>The Cover, Details and Lyrics track info is a simple track info page for the "Playing Now" view in JRiver Media Center.</p>
-
+    <p>It displays - as the name implies - Cover, Details and Lyrics for the song currently being played.</p>
     <p>
-        Visit the project repository on GitHub: <a href="https://github.com/hardolf/JRiver.MediaCenter" target="_blank">https://github.com/hardolf/JRiver.MediaCenter</a> (Visualizations/Track info/Bent/)
+        Visit the project repository on GitHub: <a href="https://github.com/hardolf/JRiver.MediaCenter" target="_blank">https://github.com/hardolf/JRiver.MediaCenter</a> (Visualizations/Track info/Cover, Details and Lyrics/)
     </p>
     <p>Wiki with user manual: <a href="https://github.com/hardolf/JRiver.MediaCenter/wiki/Track-Info-Visualizations" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/wiki/Track-Info-Visualizations</a></p>
     <p>Bug reports: <a href="https://github.com/hardolf/JRiver.MediaCenter/projects/3" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/projects/3</a></p>
@@ -74,8 +76,8 @@
 
     <p>Follow these steps:</p>
     <ol>
-        <li>Get the files in the above mentioned GitHub repository folder "Bent"</li>
-        <li>Copy the files to a new folder in your JRiver Media Center program folder, e.g. C:\Program Files (x86)\J River\Media Center 24\Visualizations\Track Info\xxxxxxx\ (you decide the folder name)</li>
+        <li>Get the files in the above mentioned GitHub repository folder "Cover, Details and Lyrics"</li>
+        <li>Copy the files to a new folder in your JRiver Media Center program folder, e.g. "C:\Program Files (x86)\J River\Media Center 24\Visualizations\Track Info\Cover, Details and Lyrics\" (you decide the last folder name)</li>
         <li>Play a tune...That's it!</li>
     </ol>
 
@@ -87,7 +89,7 @@
     <div>
         <h2>LyricsFinder version 1.0.0</h2>
 
-        <p>This is the first release.</p>
+        <p>June 2019. This is the first release.</p>
         <p>Download with source code and 32-bit binaries for Windows: <a href="https://github.com/hardolf/JRiver.MediaCenter/releases/tag/v1.0.0" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/releases/tag/v1.0.0</a></p>
 
         <p>Lyric services in this version:</p>
@@ -98,6 +100,14 @@
             <li>STANDS4 Network Lyrics.com - <a href="https://www.lyrics.com" target="_blank">https://www.lyrics.com</a></li>
         </ul>
     </div>
+
+    <div>
+        <h2>Cover, Details and Lyrics track info version 1.0.0</h2>
+
+        <p>June 2019. This is the first release.</p>
+        <p>Download: <a href="https://github.com/hardolf/JRiver.MediaCenter/releases/tag/v1.0.0" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/releases/tag/v1.0.0</a></p>
+    </div>
+
 </body>
 
 </html>

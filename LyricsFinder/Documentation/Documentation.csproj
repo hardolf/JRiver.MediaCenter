@@ -56,6 +56,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\ReleaseNotes.html">
+      <Link>ReleaseNotes.html</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="JRiver MediaCenter\MCWS.html" />
     <Content Include="JRiver MediaCenter\Web Service Connection - JRiverWiki.html" />
     <Content Include="JRiver MediaCenter\Web Service Connection - JRiverWiki_files\load.css" />
@@ -69,9 +73,10 @@
     <Content Include="JRiver MediaCenter\Web Service Interface - JRiverWiki_files\load_002.css" />
     <Content Include="JRiver MediaCenter\Web Service Interface - JRiverWiki_files\load_002.php" />
     <Content Include="JRiver MediaCenter\Web Service Interface - JRiverWiki_files\poweredby_mediawiki_88x31.png" />
-    <Content Include="ReadMe - Developer.txt" />
-    <Content Include="ReadMe.txt" />
-    <Content Include="ReleaseNotes.html">
+    <Content Include="ReadMe - Developer.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ReadMe.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -89,10 +94,10 @@ md "%25_ddir%25"
 md "%25_ddir%25\%25_mdir%25"
 
 xcopy /e /i /v /y "..\..\%25_mdir%25\*.*" "%25_ddir%25\%25_mdir%25\"
-copy "..\..\ReadMe.txt" "%25_tdir%25\"
-copy "..\..\ReadMe*.*" "%25_ddir%25\"
-copy "..\..\ReleaseNotes*.*" "%25_tdir%25\"
-copy "..\..\ReleaseNotes*.*" "%25_ddir%25\"
+copy "ReadMe.txt" "%25_tdir%25\"
+copy "ReadMe*.*" "%25_ddir%25\"
+copy "ReleaseNotes*.*" "%25_tdir%25\"
+copy "ReleaseNotes*.*" "%25_ddir%25\"
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

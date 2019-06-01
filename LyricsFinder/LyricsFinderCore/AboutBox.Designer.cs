@@ -203,6 +203,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "AboutBox";
             this.TransparencyKey = System.Drawing.Color.Teal;
+            this.Load += new System.EventHandler(this.AboutBox_Load);
             this.AboutBoxPanel.ResumeLayout(false);
             this.AboutBoxLayoutPanel.ResumeLayout(false);
             this.AboutBoxLayoutPanel.PerformLayout();

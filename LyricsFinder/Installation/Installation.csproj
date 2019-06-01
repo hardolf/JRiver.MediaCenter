@@ -69,7 +69,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>set _exe=C:\Program Files (x86)\Inno Setup 6\ISCC.exe
-set _sdir=..\..\..\Documentation
+set _sdir=..\..\..\Documentation\$(OutDir)
 set _tdir=..\..\Build
 
 del /s /q "%25_tdir%25\Microsoft.VisualStudio.TestPlatform*.*"

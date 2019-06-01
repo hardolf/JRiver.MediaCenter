@@ -296,12 +296,19 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
         private void LyricForm_KeyDown(object sender, KeyEventArgs e)
         {
-            e.Handled = false;
-
-            if (e.KeyCode == Keys.Escape)
+            try
             {
-                e.Handled = true;
-                Close();
+                e.Handled = false;
+
+                if (e.KeyCode == Keys.Escape)
+                {
+                    e.Handled = true;
+                    Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
             }
         }
 

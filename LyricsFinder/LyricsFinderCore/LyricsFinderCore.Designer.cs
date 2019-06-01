@@ -40,12 +40,12 @@ namespace MediaCenter.LyricsFinder
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricsFinderCore));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.MainContainer = new System.Windows.Forms.ToolStripContainer();
             this.BottomMenu = new System.Windows.Forms.MenuStrip();
             this.StartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
@@ -76,14 +76,13 @@ namespace MediaCenter.LyricsFinder
             this.ToolTestMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DataChangedTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.HelpContentsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.HelpSepMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.HelpAboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TopSubMenu = new System.Windows.Forms.MenuStrip();
             this.TopSubMenuTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ProcessWorker = new System.ComponentModel.BackgroundWorker();
-            this.InitTimer = new System.Windows.Forms.Timer(this.components);
-            this.HelpSepMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.HelpContentsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainContainer.BottomToolStripPanel.SuspendLayout();
             this.MainContainer.ContentPanel.SuspendLayout();
             this.MainContainer.TopToolStripPanel.SuspendLayout();
@@ -238,8 +237,8 @@ namespace MediaCenter.LyricsFinder
             // 
             // Key
             // 
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight;
-            this.Key.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight;
+            this.Key.DefaultCellStyle = dataGridViewCellStyle1;
             this.Key.HeaderText = "Key";
             this.Key.Name = "Key";
             this.Key.ReadOnly = true;
@@ -256,10 +255,10 @@ namespace MediaCenter.LyricsFinder
             // 
             // Artist
             // 
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle8.Padding = new System.Windows.Forms.Padding(1);
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Artist.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(1);
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Artist.DefaultCellStyle = dataGridViewCellStyle2;
             this.Artist.HeaderText = "Artist";
             this.Artist.Name = "Artist";
             this.Artist.ReadOnly = true;
@@ -267,10 +266,10 @@ namespace MediaCenter.LyricsFinder
             // 
             // Album
             // 
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle9.Padding = new System.Windows.Forms.Padding(1);
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Album.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle3.Padding = new System.Windows.Forms.Padding(1);
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Album.DefaultCellStyle = dataGridViewCellStyle3;
             this.Album.HeaderText = "Album";
             this.Album.Name = "Album";
             this.Album.ReadOnly = true;
@@ -278,10 +277,10 @@ namespace MediaCenter.LyricsFinder
             // 
             // Title
             // 
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle10.Padding = new System.Windows.Forms.Padding(1);
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Title.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle4.Padding = new System.Windows.Forms.Padding(1);
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Title.DefaultCellStyle = dataGridViewCellStyle4;
             this.Title.HeaderText = "Title";
             this.Title.Name = "Title";
             this.Title.ReadOnly = true;
@@ -290,20 +289,20 @@ namespace MediaCenter.LyricsFinder
             // Lyrics
             // 
             this.Lyrics.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle11.Padding = new System.Windows.Forms.Padding(1);
-            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Lyrics.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle5.Padding = new System.Windows.Forms.Padding(1);
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Lyrics.DefaultCellStyle = dataGridViewCellStyle5;
             this.Lyrics.HeaderText = "Lyrics";
             this.Lyrics.Name = "Lyrics";
             this.Lyrics.ReadOnly = true;
             // 
             // Status
             // 
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle12.Padding = new System.Windows.Forms.Padding(1);
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Status.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle6.Padding = new System.Windows.Forms.Padding(1);
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Status.DefaultCellStyle = dataGridViewCellStyle6;
             this.Status.HeaderText = "Status";
             this.Status.Name = "Status";
             this.Status.ReadOnly = true;
@@ -458,6 +457,19 @@ namespace MediaCenter.LyricsFinder
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
+            // HelpContentsMenuItem
+            // 
+            this.HelpContentsMenuItem.Name = "HelpContentsMenuItem";
+            this.HelpContentsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.HelpContentsMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.HelpContentsMenuItem.Text = "&Help contents";
+            this.HelpContentsMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            // 
+            // HelpSepMenuItem1
+            // 
+            this.HelpSepMenuItem1.Name = "HelpSepMenuItem1";
+            this.HelpSepMenuItem1.Size = new System.Drawing.Size(207, 6);
+            // 
             // HelpAboutMenuItem
             // 
             this.HelpAboutMenuItem.Name = "HelpAboutMenuItem";
@@ -500,24 +512,6 @@ namespace MediaCenter.LyricsFinder
             this.ProcessWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ProcessWorker_DoWork);
             this.ProcessWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.ProcessWorker_ProgressChanged);
             this.ProcessWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ProcessWorker_RunWorkerCompleted);
-            // 
-            // InitTimer
-            // 
-            this.InitTimer.Interval = 10;
-            this.InitTimer.Tick += new System.EventHandler(this.InitTimer_Tick);
-            // 
-            // HelpSepMenuItem1
-            // 
-            this.HelpSepMenuItem1.Name = "HelpSepMenuItem1";
-            this.HelpSepMenuItem1.Size = new System.Drawing.Size(207, 6);
-            // 
-            // HelpContentsMenuItem
-            // 
-            this.HelpContentsMenuItem.Name = "HelpContentsMenuItem";
-            this.HelpContentsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.HelpContentsMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.HelpContentsMenuItem.Text = "&Help contents";
-            this.HelpContentsMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
             // 
             // LyricsFinderCore
             // 
@@ -586,7 +580,6 @@ namespace MediaCenter.LyricsFinder
         private System.Windows.Forms.DataGridViewTextBoxColumn Title;
         private System.Windows.Forms.DataGridViewTextBoxColumn Lyrics;
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
-        private System.Windows.Forms.Timer InitTimer;
         private System.Windows.Forms.ToolStripMenuItem HelpContentsMenuItem;
         private System.Windows.Forms.ToolStripSeparator HelpSepMenuItem1;
     }
