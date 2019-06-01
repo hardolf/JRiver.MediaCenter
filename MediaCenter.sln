@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		README.md = README.md
 		ReadMe.txt = ReadMe.txt
+		ReleaseNotes.html = ReleaseNotes.html
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedComponents", "SharedComponents", "{CA83D225-0385-4F41-89F8-40C241A34E4E}"

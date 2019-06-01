@@ -80,12 +80,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Track info\Bent\bg.jpg" />
-    <Content Include="Track info\Bent\Index.html" />
-    <Content Include="Track info\Bent\JavaScript.js" />
-    <Content Include="Track info\Bent\Sample200x198.bmp" />
-    <Content Include="Track info\Bent\Sample704x698.bmp" />
-    <Content Include="Track info\Bent\Styles.css" />
+    <Content Include="Track info\Cover, Details and Lyrics\bg.jpg" />
+    <Content Include="Track info\Cover, Details and Lyrics\Index.html" />
+    <Content Include="Track info\Cover, Details and Lyrics\JavaScript.js" />
+    <Content Include="Track info\Cover, Details and Lyrics\Sample200x198.bmp" />
+    <Content Include="Track info\Cover, Details and Lyrics\Sample704x698.bmp" />
+    <Content Include="Track info\Cover, Details and Lyrics\Styles.css" />
     <Content Include="Track info\Detailed\bg.jpg" />
     <Content Include="Track info\Detailed\Cover.html" />
     <Content Include="Track info\Detailed\Index.html" />

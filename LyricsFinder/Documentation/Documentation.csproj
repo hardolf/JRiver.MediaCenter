@@ -71,7 +71,9 @@
     <Content Include="JRiver MediaCenter\Web Service Interface - JRiverWiki_files\poweredby_mediawiki_88x31.png" />
     <Content Include="ReadMe - Developer.txt" />
     <Content Include="ReadMe.txt" />
-    <Content Include="ReleaseNotes.html" />
+    <Content Include="ReleaseNotes.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Build\" />
