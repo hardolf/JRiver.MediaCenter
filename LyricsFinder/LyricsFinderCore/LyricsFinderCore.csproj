@@ -222,12 +222,6 @@
     <Analyzer Include="..\..\packages\Microsoft.NetFramework.Analyzers.2.9.2\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SharedComponents\Utility\Utility.csproj">
-      <Project>{ef9766a5-0c6d-425f-be2d-3cd51a6720d2}</Project>
-      <Name>Utility</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +229,16 @@
       <Link>ReleaseNotes.html</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SharedComponents\MessageInspection\MessageInspection.csproj">
+      <Project>{4ab4e2bf-2216-43df-865e-3e3e3b8b37c9}</Project>
+      <Name>MessageInspection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SharedComponents\Utility\Utility.csproj">
+      <Project>{ef9766a5-0c6d-425f-be2d-3cd51a6720d2}</Project>
+      <Name>Utility</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
