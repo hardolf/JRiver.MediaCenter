@@ -360,5 +360,6 @@ json2.json
 MessageInspection.xml
 
 # Extensions
+*.bak
 *.dll
 *.exe

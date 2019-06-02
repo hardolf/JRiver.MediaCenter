@@ -27,6 +27,9 @@ Plug-ins and accessories | https://accessories.jriver.com/mediacenter/accessorie
 
 #### This site
 
-Name                     | URL
--------------------------|--------------------------------
-Wiki on GitHub           | https://github.com/hardolf/JRiver.MediaCenter/wiki
+Name                                        | URL
+--------------------------------------------|-----------------------------------------------------------
+Wiki on GitHub with user manual             | https://github.com/hardolf/JRiver.MediaCenter/wiki
+Bug reports                                 | https://github.com/hardolf/JRiver.MediaCenter/projects/3
+Developer issues                            | https://github.com/hardolf/JRiver.MediaCenter/projects/2
+Download area with source code and binaries | https://github.com/hardolf/JRiver.MediaCenter/releases
