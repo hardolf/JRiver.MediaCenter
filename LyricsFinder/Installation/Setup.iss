@@ -35,30 +35,43 @@ Source: "Build\LyricServices\*";                     DestDir: "{app}";          
 Source: "Build\LyricServices\MessageInspection.*";   DestDir: "{app}\..\..";           Flags: ignoreversion recursesubdirs createallsubdirs;   Components: plugin standalone
 Source: "..\Documentation\Build\*";                  DestDir: "{app}\Documentation";   Flags: ignoreversion recursesubdirs createallsubdirs;   Components: documentation
 
-
 [Icons]
 Name: "{group}\Documentation";                                     Filename: "https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder";   Components: plugin standalone
 Name: "{group}\Lyrics Finder for JRiver Media Center";             Filename: "{app}\LyricsFinderExe.exe";                                         Components:        standalone
 Name: "{group}\{cm:UninstallProgram, Lyrics Finder}";              Filename: "{uninstallexe}";                                                    Components: plugin standalone
 
-
 [Registry]
-Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder";                                                                                            Flags: uninsdeletekey;   Components: plugin
-Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: dword;  ValueName: "IVersion";   ValueData: "00000001";                         Flags: uninsdeletekey;   Components: plugin
-Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Company";    ValueData: "Hardolf";                          Flags: uninsdeletekey;   Components: plugin
-Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Version";    ValueData: "1.0.0";                            Flags: uninsdeletekey;   Components: plugin
-Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "URL";        ValueData: "www.hardolf.dk";                   Flags: uninsdeletekey;   Components: plugin
-Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Copyright";  ValueData: "Copyright (c) Hardolf 2019";       Flags: uninsdeletekey;   Components: plugin
-Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: dword;  ValueName: "PluginMode"; ValueData: "00000001";                         Flags: uninsdeletekey;   Components: plugin
-Root: HKLM; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "ProdID";     ValueData: "MediaCenter.LyricsFinder.Plugin";  Flags: uninsdeletekey;   Components: plugin
+Root: HKLM32; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder";                                                                                            Flags: uninsdeletekey;   Components: plugin;  Check: IsMc32
+Root: HKLM32; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: dword;  ValueName: "IVersion";   ValueData: "00000001";                         Flags: uninsdeletekey;   Components: plugin;  Check: IsMc32
+Root: HKLM32; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Company";    ValueData: "Hardolf";                          Flags: uninsdeletekey;   Components: plugin;  Check: IsMc32
+Root: HKLM32; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Version";    ValueData: "1.0.0";                            Flags: uninsdeletekey;   Components: plugin;  Check: IsMc32
+Root: HKLM32; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "URL";        ValueData: "www.hardolf.dk";                   Flags: uninsdeletekey;   Components: plugin;  Check: IsMc32
+Root: HKLM32; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Copyright";  ValueData: "Copyright (c) Hardolf 2019";       Flags: uninsdeletekey;   Components: plugin;  Check: IsMc32
+Root: HKLM32; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: dword;  ValueName: "PluginMode"; ValueData: "00000001";                         Flags: uninsdeletekey;   Components: plugin;  Check: IsMc32
+Root: HKLM32; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "ProdID";     ValueData: "MediaCenter.LyricsFinder.Plugin";  Flags: uninsdeletekey;   Components: plugin;  Check: IsMc32
+
+Root: HKLM64; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder";                                                                                            Flags: uninsdeletekey;   Components: plugin;  Check: IsMc64
+Root: HKLM64; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: dword;  ValueName: "IVersion";   ValueData: "00000001";                         Flags: uninsdeletekey;   Components: plugin;  Check: IsMc64
+Root: HKLM64; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Company";    ValueData: "Hardolf";                          Flags: uninsdeletekey;   Components: plugin;  Check: IsMc64
+Root: HKLM64; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Version";    ValueData: "1.0.0";                            Flags: uninsdeletekey;   Components: plugin;  Check: IsMc64
+Root: HKLM64; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "URL";        ValueData: "www.hardolf.dk";                   Flags: uninsdeletekey;   Components: plugin;  Check: IsMc64
+Root: HKLM64; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "Copyright";  ValueData: "Copyright (c) Hardolf 2019";       Flags: uninsdeletekey;   Components: plugin;  Check: IsMc64
+Root: HKLM64; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: dword;  ValueName: "PluginMode"; ValueData: "00000001";                         Flags: uninsdeletekey;   Components: plugin;  Check: IsMc64
+Root: HKLM64; Subkey: "SOFTWARE\J. River\Media Center {code:GetMcVersion}\Plugins\Interface\LyricsFinder"; ValueType: string; ValueName: "ProdID";     ValueData: "MediaCenter.LyricsFinder.Plugin";  Flags: uninsdeletekey;   Components: plugin;  Check: IsMc64
 
 [Run]
-Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe"; Parameters: "/codebase   LyricsFinderCore.dll";     WorkingDir: "{app}\"; StatusMsg: "Registering Plugin Core";   Flags:runascurrentuser;   Components: plugin standalone
-Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe"; Parameters: "/codebase   LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; StatusMsg: "Registering Plugin";        Flags:runascurrentuser;   Components: plugin
+Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe";   Parameters: "/codebase   LyricsFinderCore.dll";     WorkingDir: "{app}\"; StatusMsg: "Registering Plugin Core";   Flags:runascurrentuser;   Components: plugin standalone;  Check: IsMc32
+Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe";   Parameters: "/codebase   LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; StatusMsg: "Registering Plugin";        Flags:runascurrentuser;   Components: plugin;             Check: IsMc32
+
+Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe"; Parameters: "/codebase   LyricsFinderCore.dll";     WorkingDir: "{app}\"; StatusMsg: "Registering Plugin Core";   Flags:runascurrentuser;   Components: plugin standalone;  Check: IsMc64
+Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe"; Parameters: "/codebase   LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; StatusMsg: "Registering Plugin";        Flags:runascurrentuser;   Components: plugin;             Check: IsMc64
 
 [UninstallRun]
-Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe"; Parameters: "/unregister LyricsFinderCore.dll";     WorkingDir: "{app}\"; StatusMsg: "UnRegistering Plugin Core"; Flags:runascurrentuser;   Components: plugin standalone
-Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe"; Parameters: "/unregister LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; StatusMsg: "UnRegistering Plugin";      Flags:runascurrentuser;   Components: plugin
+Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe";   Parameters: "/unregister LyricsFinderCore.dll";     WorkingDir: "{app}\"; StatusMsg: "UnRegistering Plugin Core"; Flags:runascurrentuser;   Components: plugin standalone;  Check: IsMc32
+Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe";   Parameters: "/unregister LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; StatusMsg: "UnRegistering Plugin";      Flags:runascurrentuser;   Components: plugin;             Check: IsMc32
+
+Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe"; Parameters: "/unregister LyricsFinderCore.dll";     WorkingDir: "{app}\"; StatusMsg: "UnRegistering Plugin Core"; Flags:runascurrentuser;   Components: plugin standalone;  Check: IsMc64
+Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe"; Parameters: "/unregister LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; StatusMsg: "UnRegistering Plugin";      Flags:runascurrentuser;   Components: plugin;             Check: IsMc64
 
 [Components]
 Name: "plugin";          Description: "LyricsFinder plug-in";               Types: full custom
@@ -71,13 +84,12 @@ Name: "custom";   Description: "Custom installation";   Flags: iscustom
 
 [code]
 const
-  RootKey = HKEY_LOCAL_MACHINE;
   RootKeyName = 'HKEY_LOCAL_MACHINE';
-  SubFolder = 'Plugins\LyricsFinder';
   MainSubKey = 'SOFTWARE\J. River\Media Core\Installations';
   PathValueName = 'Path';
-  SearchKey = 'Media Center';
   SearchKeyVersionPos = 13;
+  SearchKey = 'Media Center';
+  SubFolder = 'Plugins\LyricsFinder';
 var
   InstallDir: String;
   McInstDirs: TArrayOfString;
@@ -85,7 +97,7 @@ var
   McVersion: String;
   McVersionPage: TInputOptionWizardPage;
 
-procedure FindInstalledMcVersions();
+procedure FindInstalledMcVersions(Is64: Boolean);
 var
   AIdx: Integer;
   KIdx: Integer;
@@ -95,31 +107,52 @@ var
   SubKeyNames: TArrayOfString;
   Text: String;
   Version: String;
+  SubKeysOK: Boolean;
+  RegValueOK: Boolean;
+  ArchitectureName: String;
 begin
-  if RegGetSubkeyNames(RootKey, MainSubKey, SubKeyNames) then begin
+  if (Is64) then begin
+    ArchitectureName := '64-bit';
+    SubKeysOK := RegGetSubkeyNames(HKLM64, MainSubKey, SubKeyNames);
+  end
+  else begin
+    ArchitectureName := '32-bit';
+    SubKeysOK := RegGetSubkeyNames(HKLM32, MainSubKey, SubKeyNames);
+  end;
+
+  if SubKeysOK then begin
     for KIdx := 0 to GetArrayLength(SubKeyNames) - 1 do begin
       SubKeyName := SubKeyNames[KIdx];
       StartPos := Pos(LowerCase(SearchKey), LowerCase(SubKeyName));
       if StartPos > 0 then begin
         Text := Copy(SubKeyName, StartPos, Length(SubKeyName) - StartPos + 1);
-        Version := Copy(SubKeyName, StartPos + SearchKeyVersionPos, Length(SubKeyName) - StartPos - SearchKeyVersionPos + 1);
+        Version := Copy(SubKeyName, StartPos + SearchKeyVersionPos, Length(SubKeyName) - StartPos - SearchKeyVersionPos + 1) + ' (' + ArchitectureName + ')';
         AIdx := GetArrayLength(McInstDirs);
         SetArrayLength(McInstDirs, AIdx + 1);
         SetArrayLength(McInstVersions, AIdx + 1);
 
-        if RegQueryStringValue(RootKey, MainSubKey + '\' + SubKeyName, PathValueName, Path) then begin
+        if (Is64) then RegValueOK := RegQueryStringValue(HKLM64, MainSubKey + '\' + SubKeyName, PathValueName, Path)
+        else RegValueOK := RegQueryStringValue(HKLM32, MainSubKey + '\' + SubKeyName, PathValueName, Path);
+
+        if RegValueOK then begin
           if Copy(Path, Length(Path), 1) = '\' then Delete(Path, Length(Path), 1);
           McInstDirs[AIdx] := Path;
           McInstVersions[AIdx] := Version;
         end
         else begin
-          MsgBox(Format('Installed Media Center path value not found in registry: "%s\%s\%s"', [RootKeyName, MainSubKey + '\' + SubKeyName, PathValueName]), mbError, MB_OK);
+          MsgBox(Format('Installed Media Center path value not found in %s registry: "%s\%s\%s"', [ArchitectureName, RootKeyName, MainSubKey + '\' + SubKeyName, PathValueName]), mbError, MB_OK);
           Abort();
         end; 
         // MsgBox(Format('%d : %s : %s : %d : %s : "%s"', [KIdx, Text, Version, AIdx, McInstVersions[AIdx], Path]), mbInformation, MB_OK);
       end;
     end;
   end;
+end;
+
+procedure FindAllInstalledMcVersions();
+begin
+  FindInstalledMcVersions(False);
+  FindInstalledMcVersions(True);
 end;
 
 function GetMcVersion(Param: String): String;
@@ -130,7 +163,7 @@ end;
 function InitializeSetup(): Boolean;
 begin
   McVersion := '24';
-  FindInstalledMcVersions();
+  FindAllInstalledMcVersions();
 
   if GetArrayLength(McInstDirs) < 1 then begin
     MsgBox('You must install JRiver Media Center before you can install the LyricsFinder plugin.', mbError, MB_OK);
@@ -162,6 +195,16 @@ begin
   end;
 end;
 
+function IsMc32(): Boolean;
+begin
+  Result := Pos('32-bit', LowerCase(McVersion)) > 0;
+end;
+
+function IsMc64(): Boolean;
+begin
+  Result := not IsMc32();
+end;
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 var
   Idx: Integer;
@@ -170,7 +213,7 @@ begin
   if CurPageID = McVersionPage.ID then begin
     for Idx := 0 to GetArrayLength(McInstVersions) - 1 do begin
       if McVersionPage.Values[Idx] = True then begin
-        McVersion := McInstVersions[Idx];
+        McVersion := Copy(McInstVersions[Idx], 1, 2);
         InstallDir := Format('%s\%s', [McInstDirs[Idx], SubFolder]);
       end;
     end;
