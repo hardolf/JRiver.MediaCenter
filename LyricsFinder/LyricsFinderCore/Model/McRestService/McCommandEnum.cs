@@ -21,6 +21,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         PlayByIndex,
         Playlist,
         PlayPause,
+        Stop,
         SetInfo
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 

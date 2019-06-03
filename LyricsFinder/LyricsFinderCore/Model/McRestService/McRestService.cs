@@ -114,6 +114,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                     break;
 
                 case McCommandEnum.PlayPause:
+                case McCommandEnum.Stop:
                     sb.Append($"/Playback/{command}?Token={McWsToken}");
                     break;
 
@@ -347,6 +348,22 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static McMplResponse PlayPause()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlayPause);
+            var rsp = DoTextRequest(requestUrl);
+            var ret = new McMplResponse(rsp);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Stops the playing.
+        /// </summary>
+        /// <returns>
+        ///   <see cref="McMplResponse" /> object.
+        /// </returns>
+        public static McMplResponse PlayStop()
+        {
+            var requestUrl = CreateRequestUrl(McCommandEnum.Stop);
             var rsp = DoTextRequest(requestUrl);
             var ret = new McMplResponse(rsp);
 

@@ -121,7 +121,7 @@
     <value>353, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="StartStopButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="SearchAllStartStopButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADiSURBVDhPY0AHAgV8/7df2fYfyiUdgAygyBCQ5sLrduQb
@@ -131,7 +131,7 @@
         aSRbMwhQpJl0wMAAAAqspGmOTfvLAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="StartStopButton.ImageStart" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="SearchAllStartStopButton.ImageStart" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADiSURBVDhPY0AHAgV8/7df2fYfyiUdgAygyBCQ5sLrduQb
@@ -141,7 +141,7 @@
         aSRbMwhQpJl0wMAAAAqspGmOTfvLAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="StartStopButton.ImageStop" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="SearchAllStartStopButton.ImageStop" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAAASCwAAEgsAAAAAAAAAAAAA/wD//wD/
         /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
@@ -186,7 +186,7 @@
   <metadata name="TopMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>249, 17</value>
   </metadata>
-  <data name="MenuStartStopButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="ToolsSearchAllStartStopButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFZSURBVDhP5ZE9SEJRGIZdChqirTFaWiIhKIqWCIJwcgkh
@@ -198,7 +198,7 @@
         CyiXT/0u+JeRyb4Auv7poYTA0W8AAAAASUVORK5CYII=
 </value>
   </data>
-  <data name="MenuStartStopButton.ImageStart" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="ToolsSearchAllStartStopButton.ImageStart" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
         wwAADsMBx2+oZAAAAOJJREFUOE9jQAcCBXz/t1/Z9h/KJR2ADKDIEJDmwut25BsCM4BsQ0Ca8q7a/s+6
@@ -208,7 +208,41 @@
         CqykaY5N+8sAAAAASUVORK5CYII=
 </value>
   </data>
-  <data name="MenuStartStopButton.ImageStop" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="ToolsSearchAllStartStopButton.ImageStop" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFZSURBVDhP5ZE9SEJRGIZdChqirTFaWiIhKIqWCIJwcgkh
+        oUkIghQaijIqsLr9IpQYhmJml/BSioJllP1Qg5WQCBWGuJhkUIjQTfN6i7d7pDFOe73zeZ73fN8n+2Mx
+        +j+x6Cti1pOHgeMxwWYxuv6MIdsTBi0pDFtT+H76cwh8l/zA7YOI0H0RB9cC/GEB7pAAezAHuWqbLiDN
+        8UcR4bhYArnzAtYCeaz4ecyxCdQpN+kC8u2bpIjDiICt0wLMEshwrxhzvEBrjKKmy0oXkJkvYyI8F1Lz
+        /jvmdwicgc6chmrkBNXtJrqALCwYFeA8LmDZ9wa9I4t+UxrqmQQUA7uoalmiC8i2vVcCzHs5TLIZaFcl
+        mIlDqY+gs8+NikaGLiCn2jjiMe2MQWeMQD1+JjV70aFxobXHhrIGA11A7tymCaCp14f6bhdqFfbS3JXN
+        CyiXT/0u+JeRyb4Auv7poYTA0W8AAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="ToolsPlayStartStopButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFZSURBVDhP5ZE9SEJRGIZdChqirTFaWiIhKIqWCIJwcgkh
+        oUkIghQaijIqsLr9IpQYhmJml/BSioJllP1Qg5WQCBWGuJhkUIjQTfN6i7d7pDFOe73zeZ73fN8n+2Mx
+        +j+x6Cti1pOHgeMxwWYxuv6MIdsTBi0pDFtT+H76cwh8l/zA7YOI0H0RB9cC/GEB7pAAezAHuWqbLiDN
+        8UcR4bhYArnzAtYCeaz4ecyxCdQpN+kC8u2bpIjDiICt0wLMEshwrxhzvEBrjKKmy0oXkJkvYyI8F1Lz
+        /jvmdwicgc6chmrkBNXtJrqALCwYFeA8LmDZ9wa9I4t+UxrqmQQUA7uoalmiC8i2vVcCzHs5TLIZaFcl
+        mIlDqY+gs8+NikaGLiCn2jjiMe2MQWeMQD1+JjV70aFxobXHhrIGA11A7tymCaCp14f6bhdqFfbS3JXN
+        CyiXT/0u+JeRyb4Auv7poYTA0W8AAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="ToolsPlayStartStopButton.ImageStart" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        wwAADsMBx2+oZAAAAOJJREFUOE9jQAcCBXz/t1/Z9h/KJR2ADKDIEJDmwut25BsCM4BsQ0Ca8q7a/s+6
+        aPU/9aw56YaANKSds/ifeNL0f/RRw/8h+/VJMwSkOOaY8f/QA/r//Xdr/3ffqv7fYb0y8YaAFAbu0f3v
+        uU3zv9MG1f/WKxX+myyW+a8zVxJsCFQZbgBS5LJR7b/NasX/pkvl/uvNl/yvPkuMNBeYL5f/r79A+r/m
+        LPH/SlOFSQ8D7Tni/1Wni/yXmyRImmYQAGmQnyz0X6qfn3TNIADSJN7NS55mEABpJFszCFCkmXTAwAAA
+        CqykaY5N+8sAAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="ToolsPlayStartStopButton.ImageStop" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
         YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFZSURBVDhP5ZE9SEJRGIZdChqirTFaWiIhKIqWCIJwcgkh

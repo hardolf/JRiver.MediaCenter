@@ -264,7 +264,7 @@ namespace MediaCenter.LyricsFinder
                 }
                 catch (Exception ex)
                 {
-                    ErrorHandling.ErrorLog("Failed to load the lyric services, initializina a new set of services.", ex);
+                    ErrorHandling.ErrorLog("Failed to load the lyric services, initializing a new set of services.", ex);
 
                     LyricsFinderData = new LyricsFinderDataType(dataFile);
                 }
@@ -410,7 +410,7 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Plays the item in the Playing Now list by the selected row index.
         /// </summary>
-        private void Play()
+        private void PlayOrPause()
         {
             var dgv = MainDataGridView;
 
@@ -426,6 +426,15 @@ namespace MediaCenter.LyricsFinder
 
                 _playingIndex = selectedIndex;
             }
+        }
+
+
+        /// <summary>
+        /// Stops playing any item.
+        /// </summary>
+        private void PlayStop()
+        {
+            McRestService.PlayStop();
         }
 
 

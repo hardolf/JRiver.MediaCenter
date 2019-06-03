@@ -188,11 +188,6 @@ namespace MediaCenter.LyricsFinder
                     msg = "initializing start/stop button delegates";
                     Logging.Log(0, msg.Substring(0, 1).ToUpperInvariant() + msg.Substring(1) + "...");
 
-                    MenuStartStopButton.Starting += MenuStartStopButton_Starting;
-                    MenuStartStopButton.Stopping += MenuStartStopButton_Stopping;
-                    StartStopButton.Starting += StartStopButton_Starting;
-                    StartStopButton.Stopping += StartStopButton_Stopping;
-
                     msg = "initializing the Media Center MCWS connection";
                     Logging.Log(0, msg.Substring(0, 1).ToUpperInvariant() + msg.Substring(1) + "...");
 
@@ -231,7 +226,7 @@ namespace MediaCenter.LyricsFinder
                 if (e.KeyCode == Keys.Enter)
                 {
                     e.Handled = true;
-                    Play();
+                    PlayOrPause();
                 }
 
                 if (e.Control && (e.KeyCode == Keys.S))
@@ -276,13 +271,24 @@ namespace MediaCenter.LyricsFinder
                 {
                     ShowShortcuts(true);
 
-                    StartStopButton.TextStart += "  (Alt+S)";
-                    StartStopButton.TextStop += "  (Alt+S)";
-                    MenuStartStopButton.TextStart += "  Alt+S";
-                    MenuStartStopButton.TextStop += "  Alt+S";
+                    ToolsPlayStartStopButton.TextStart += "           Alt+P";
+                    ToolsPlayStartStopButton.TextStop += "           Alt+P";
+                    ToolsSearchAllStartStopButton.TextStart += "   Alt+S";
+                    ToolsSearchAllStartStopButton.TextStop += "   Alt+S";
+                    SearchAllStartStopButton.TextStart += "   (Alt+S)";
+                    SearchAllStartStopButton.TextStop += "   (Alt+S)";
                 }
                 else
                     ShowShortcuts(false);
+
+                ToolsPlayStartStopButton.Stop();
+
+                ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_Starting;
+                ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_Stopping;
+                ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
+                ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
+                SearchAllStartStopButton.Starting += StartStopButton_Starting;
+                SearchAllStartStopButton.Stopping += StartStopButton_Stopping;
 
                 ProcessWorker.RunWorkerAsync();
             }
@@ -303,7 +309,7 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 if (e.ColumnIndex != 5)
-                    Play();
+                    PlayOrPause();
             }
             catch (Exception ex)
             {
@@ -501,16 +507,16 @@ namespace MediaCenter.LyricsFinder
                         System.Diagnostics.Process.Start(url);
                         break;
 
-                    case nameof(ToolLyricsServicesMenuItem):
+                    case nameof(ToolsLyricsServicesMenuItem):
                         var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback);
                         lyricsServiceForm.ShowDialog(this);
                         break;
 
-                    case nameof(ToolShowLogMenuItem):
+                    case nameof(ToolsShowLogMenuItem):
                         Logging.ShowLog();
                         break;
 
-                    case nameof(ToolTestMenuItem):
+                    case nameof(ToolsTestMenuItem):
                         // MessageBox.Show($"{Properties.Settings.Default.McWebServiceUser}", "Menu item selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         break;
 
@@ -671,8 +677,8 @@ namespace MediaCenter.LyricsFinder
                     //StatusMessage(msg);
                 }
 
-                StartStopButton.Stop();
-                StartStopButton.Checked = false;
+                SearchAllStartStopButton.Stop();
+                SearchAllStartStopButton.Checked = false;
             }
             catch (Exception ex)
             {
@@ -695,12 +701,12 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                if (!MenuStartStopButton.IsRunning)
+                if (!ToolsSearchAllStartStopButton.IsRunning)
                 {
                     if (IsDataChanged && (DialogResult.No == MessageBox.Show("Data is changed and will be lost if you proceed\nDo you want to proceed.?", "Proceed?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)))
                         return;
 
-                    MenuStartStopButton.Start();
+                    ToolsSearchAllStartStopButton.Start();
                 }
 
                 _progressPercentage = 0;
@@ -727,8 +733,8 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                if (MenuStartStopButton.IsRunning)
-                    MenuStartStopButton.Stop();
+                if (ToolsSearchAllStartStopButton.IsRunning)
+                    ToolsSearchAllStartStopButton.Stop();
 
                 if (ProcessWorker.WorkerSupportsCancellation)
                     ProcessWorker.CancelAsync();
@@ -741,18 +747,20 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the Starting event of the ToolStartStopButton control.
+        /// Handles the Starting event of the ToolsPlayStartStopButton control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void MenuStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private void ToolsPlayStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
 
-                if (!StartStopButton.IsRunning)
-                    StartStopButton.Start();
+                var dvg = MainDataGridView;
+
+                if (dvg.SelectedRows.Count > 0)
+                    PlayOrPause();
             }
             catch (Exception ex)
             {
@@ -762,18 +770,59 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the Stopping event of the ToolStartStopButton control.
+        /// Handles the Stopping event of the ToolsPlayStartStopButton control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void MenuStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private void ToolsPlayStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
 
-                if (StartStopButton.IsRunning)
-                    StartStopButton.Stop();
+                PlayStop();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Starting event of the ToolsSearchAllStartStopButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
+        private void ToolsSearchAllStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        {
+            try
+            {
+                if (_isDesignTime) return;
+
+                if (!SearchAllStartStopButton.IsRunning)
+                    SearchAllStartStopButton.Start();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Stopping event of the ToolsSearchAllStartStopButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
+        private void ToolsSearchAllStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        {
+            try
+            {
+                if (_isDesignTime) return;
+
+                if (SearchAllStartStopButton.IsRunning)
+                    SearchAllStartStopButton.Stop();
             }
             catch (Exception ex)
             {
