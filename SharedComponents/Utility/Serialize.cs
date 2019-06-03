@@ -175,8 +175,8 @@ namespace MediaCenter.SharedComponents
         {
             if (filePath == null)
                 throw new ArgumentNullException(nameof(filePath));
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException($"File not found: \"{filePath}\"");
+            if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+                throw new DirectoryNotFoundException($"Directory not found for the file to write: \"{filePath}\"");
 
             XmlSerializer serializer;
 
