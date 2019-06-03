@@ -113,6 +113,10 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                     sb.Append($"/Playback/{command}?Token={McWsToken}&Action=MPL");
                     break;
 
+                case McCommandEnum.PlayPause:
+                    sb.Append($"/Playback/{command}?Token={McWsToken}");
+                    break;
+
                 case McCommandEnum.SetInfo:
                     sb.Append($"/File/{command}?Token={McWsToken}&File={key}&FileType=Key&Formatted=1&Field={field}&Value={value}");
                     break;
@@ -327,6 +331,22 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static McMplResponse PlayByIndex(int index)
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlayByIndex, index);
+            var rsp = DoTextRequest(requestUrl);
+            var ret = new McMplResponse(rsp);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Pauses the playing.
+        /// </summary>
+        /// <returns>
+        ///   <see cref="McMplResponse" /> object.
+        /// </returns>
+        public static McMplResponse PlayPause()
+        {
+            var requestUrl = CreateRequestUrl(McCommandEnum.PlayPause);
             var rsp = DoTextRequest(requestUrl);
             var ret = new McMplResponse(rsp);
 

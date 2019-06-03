@@ -33,6 +33,7 @@ namespace MediaCenter.LyricsFinder
 
         private int _currentMouseColumnIndex = -1;
         private int _currentMouseRowIndex = -1;
+        private int _playingIndex = -1;
         private static int _progressPercentage = -1;
 
         private readonly string _logHeader = "".PadRight(80, '-');
@@ -416,8 +417,14 @@ namespace MediaCenter.LyricsFinder
             if (dgv.SelectedRows.Count > 0)
             {
                 var selectedRow = dgv.SelectedRows[0];
+                var selectedIndex = selectedRow.Index;
 
-                McRestService.PlayByIndex(selectedRow.Index);
+                if (selectedIndex == _playingIndex)
+                    McRestService.PlayPause();
+                else
+                    McRestService.PlayByIndex(selectedIndex);
+
+                _playingIndex = selectedIndex;
             }
         }
 
