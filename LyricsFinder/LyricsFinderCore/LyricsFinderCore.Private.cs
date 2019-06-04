@@ -232,7 +232,7 @@ namespace MediaCenter.LyricsFinder
                 Logging.Log(_progressPercentage, $"Testing if we may write to a file in the local data directory \"{tmpFile}\"...", true);
                 using (var st = File.Create(tmpFile))
 
-                Logging.Log(_progressPercentage, $"Testing if we may delete the test file in the local data directory \"{tmpFile}\"...", true);
+                    Logging.Log(_progressPercentage, $"Testing if we may delete the test file in the local data directory \"{tmpFile}\"...", true);
                 File.Delete(tmpFile);
             }
             catch (Exception ex)
@@ -369,7 +369,7 @@ namespace MediaCenter.LyricsFinder
                    .Where(t => t.IsSubclassOf(typeof(AbstractLyricService)));
 
                 // Create service instance(s)
-                Logging.Log(_progressPercentage, 
+                Logging.Log(_progressPercentage,
                     ((assyLyricsServiceTypes != null) && (assyLyricsServiceTypes.Count<Type>() > 0))
                     ? $"Creating service instance(s) from \"{file}\"..."
                     : $"No lyric services in \"{file}\"."
@@ -412,20 +412,19 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         private void PlayOrPause()
         {
-            var dgv = MainDataGridView;
+            var rows = MainDataGridView.SelectedRows;
 
-            if (dgv.SelectedRows.Count > 0)
-            {
-                var selectedRow = dgv.SelectedRows[0];
-                var selectedIndex = selectedRow.Index;
+            if (rows.Count < 1)
+                return;
 
-                if (selectedIndex == _playingIndex)
-                    McRestService.PlayPause();
-                else
-                    McRestService.PlayByIndex(selectedIndex);
+            var rowIdx = rows[0].Index;
 
-                _playingIndex = selectedIndex;
-            }
+            if (rowIdx == _playingIndex)
+                McRestService.PlayPause();
+            else
+                McRestService.PlayByIndex(rowIdx);
+
+            _playingIndex = rowIdx;
         }
 
 

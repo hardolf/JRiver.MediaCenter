@@ -211,6 +211,67 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the ItemClicked event of the ContextMenu control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ToolStripItemClickedEventArgs"/> instance containing the event data.</param>
+        private void ContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            try
+            {
+                if (_isDesignTime) return;
+
+                var rows = MainDataGridView.SelectedRows;
+
+                if (rows.Count < 1)
+                    return;
+
+                var colIdx = (int)GridColumnEnum.Lyrics;
+                var rowIdx = rows[0].Index;
+
+                if (e.ClickedItem == ContextEditMenuItem)
+                    _lyricsForm = ShowLyrics(colIdx, rowIdx);
+                else if (e.ClickedItem == ContextPlayPauseMenuItem)
+                {
+                    if (!ToolsPlayStartStopButton.IsRunning)
+                        ToolsPlayStartStopButton.PerformClick();
+                    else
+                        PlayOrPause();
+                }
+                else if (e.ClickedItem == ContextPlayStopMenuItem)
+                    ToolsPlayStartStopButton.Stop();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Opening event of the ContextMenu control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
+        private void ContextMenu_Opening(object sender, CancelEventArgs e)
+        {
+            try
+            {
+                if (_isDesignTime) return;
+                if (MainDataGridView.SelectedRows.Count < 1)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the KeyDown event of the LyricsFinderCore control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -226,13 +287,17 @@ namespace MediaCenter.LyricsFinder
                 if (e.KeyCode == Keys.Enter)
                 {
                     e.Handled = true;
-                    PlayOrPause();
+                    ToolsPlayStartStopButton.PerformClick();
                 }
-
-                if (e.Control && (e.KeyCode == Keys.S))
+                else if (e.Control && (e.KeyCode == Keys.S))
                 {
                     e.Handled = true;
                     Save();
+                }
+                else if (e.KeyCode == Keys.Space)
+                {
+                    e.Handled = true;
+                    PlayOrPause();
                 }
             }
             catch (Exception ex)
@@ -308,8 +373,8 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                if (e.ColumnIndex != 5)
-                    PlayOrPause();
+                if (e.ColumnIndex != (int)GridColumnEnum.Lyrics)
+                    ToolsPlayStartStopButton.PerformClick();
             }
             catch (Exception ex)
             {
@@ -330,20 +395,32 @@ namespace MediaCenter.LyricsFinder
                 if (_isDesignTime) return;
                 if ((_lyricsForm != null) && _lyricsForm.Visible) return;
 
-                switch (e.ColumnIndex)
+                var rows = MainDataGridView.Rows;
+
+                if (rows.Count > 1)
+                    rows[e.RowIndex].Selected = true;
+
+                if (e.Clicks > 1) return;
+
+                if (e.Button == MouseButtons.Right)
+                    ContextMenu.Show(Cursor.Position, ToolStripDropDownDirection.Default);
+                else
                 {
-                    case (int)GridColumnEnum.Artist:
-                    case (int)GridColumnEnum.Album:
-                    case (int)GridColumnEnum.Title:
-                    case (int)GridColumnEnum.Cover:
-                        break;
+                    switch (e.ColumnIndex)
+                    {
+                        case (int)GridColumnEnum.Artist:
+                        case (int)GridColumnEnum.Album:
+                        case (int)GridColumnEnum.Title:
+                        case (int)GridColumnEnum.Cover:
+                            break;
 
-                    case (int)GridColumnEnum.Lyrics:
-                        _lyricsForm = ShowLyrics(e.ColumnIndex, e.RowIndex);
-                        break;
+                        case (int)GridColumnEnum.Lyrics:
+                            _lyricsForm = ShowLyrics(e.ColumnIndex, e.RowIndex);
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
 
                 _currentMouseColumnIndex = e.ColumnIndex;

@@ -120,45 +120,6 @@
   <metadata name="BottomMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>353, 17</value>
   </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="SearchAllStartStopButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADiSURBVDhPY0AHAgV8/7df2fYfyiUdgAygyBCQ5sLrduQb
-        AjOAbENAmvKu2v7Pumj1P/WsOemGgDSknbP4n3jS9H/0UcP/Ifv1STMEpDjmmPH/0AP6//13a/9336r+
-        32G9MvGGgBQG7tH977lN87/TBtX/1isV/psslvmvM1cSbAhUGW4AUuSyUe2/zWrF/6ZL5f7rzZf8rz5L
-        jDQXmC+X/6+/QPq/5izx/0pThUkPA+054v9Vp4v8l5skSJpmEABpkJ8s9F+qn590zSAA0iTezUueZhAA
-        aSRbMwhQpJl0wMAAAAqspGmOTfvLAAAAAElFTkSuQmCC
-</value>
-  </data>
-  <data name="SearchAllStartStopButton.ImageStart" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADiSURBVDhPY0AHAgV8/7df2fYfyiUdgAygyBCQ5sLrduQb
-        AjOAbENAmvKu2v7Pumj1P/WsOemGgDSknbP4n3jS9H/0UcP/Ifv1STMEpDjmmPH/0AP6//13a/9336r+
-        32G9MvGGgBQG7tH977lN87/TBtX/1isV/psslvmvM1cSbAhUGW4AUuSyUe2/zWrF/6ZL5f7rzZf8rz5L
-        jDQXmC+X/6+/QPq/5izx/0pThUkPA+054v9Vp4v8l5skSJpmEABpkJ8s9F+qn590zSAA0iTezUueZhAA
-        aSRbMwhQpJl0wMAAAAqspGmOTfvLAAAAAElFTkSuQmCC
-</value>
-  </data>
-  <data name="SearchAllStartStopButton.ImageStop" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAAASCwAAEgsAAAAAAAAAAAAA/wD//wD/
-        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
-        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
-        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
-        /wD//wD//wD//wD//wD/45p1tmI5sFwzp1MqnUggkj4WiTQNgi0GgSwF/wD//wD//wD//wD//wD//wD/
-        /wD/45dw87yg16GDzo1twXxZr2tIp2JAm1g3gSwF/wD//wD//wD//wD//wD//wD//wD/55t0+cmv9bWU
-        7aN+5pVs2oVZznlOrGVDhTAJ/wD//wD//wD//wD//wD//wD//wD/6p54+dC7+L2h9LCQ75955pJo3IRZ
-        tGtIizYP/wD//wD//wD//wD//wD//wD//wD/76N9+9fI+Met97eY8quI7Z965pRtvndVkj4W/wD//wD/
-        /wD//wD//wD//wD//wD/86iB++HT+c66+L+l87OU8qiF65960I1smkYe/wD//wD//wD//wD//wD//wD/
-        /wD/9q2G++Xa+9rK+cqz+MKo9raY87OR3KOHok4l/wD//wD//wD//wD//wD//wD//wD/+rCK/OHV++LU
-        +tjG+c25+cqz+cas9budqlUt/wD//wD//wD//wD//wD//wD//wD//bON+rCK9q2G86iB76N96p5455t0
-        45dw45p1/wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
-        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
-        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
-</value>
-  </data>
   <metadata name="MainStatus.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
@@ -186,6 +147,7 @@
   <metadata name="TopMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>249, 17</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="ToolsSearchAllStartStopButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -257,10 +219,72 @@
   <metadata name="TopSubMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>610, 17</value>
   </metadata>
+  <metadata name="Key.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Cover.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Artist.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Album.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Title.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Lyrics.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="Status.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <metadata name="MainToolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>129, 17</value>
   </metadata>
   <metadata name="ProcessWorker.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>477, 17</value>
   </metadata>
+  <metadata name="ContextMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>735, 17</value>
+  </metadata>
+  <data name="SearchAllStartStopButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADiSURBVDhPY0AHAgV8/7df2fYfyiUdgAygyBCQ5sLrduQb
+        AjOAbENAmvKu2v7Pumj1P/WsOemGgDSknbP4n3jS9H/0UcP/Ifv1STMEpDjmmPH/0AP6//13a/9336r+
+        32G9MvGGgBQG7tH977lN87/TBtX/1isV/psslvmvM1cSbAhUGW4AUuSyUe2/zWrF/6ZL5f7rzZf8rz5L
+        jDQXmC+X/6+/QPq/5izx/0pThUkPA+054v9Vp4v8l5skSJpmEABpkJ8s9F+qn590zSAA0iTezUueZhAA
+        aSRbMwhQpJl0wMAAAAqspGmOTfvLAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="SearchAllStartStopButton.ImageStart" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADiSURBVDhPY0AHAgV8/7df2fYfyiUdgAygyBCQ5sLrduQb
+        AjOAbENAmvKu2v7Pumj1P/WsOemGgDSknbP4n3jS9H/0UcP/Ifv1STMEpDjmmPH/0AP6//13a/9336r+
+        32G9MvGGgBQG7tH977lN87/TBtX/1isV/psslvmvM1cSbAhUGW4AUuSyUe2/zWrF/6ZL5f7rzZf8rz5L
+        jDQXmC+X/6+/QPq/5izx/0pThUkPA+054v9Vp4v8l5skSJpmEABpkJ8s9F+qn590zSAA0iTezUueZhAA
+        aSRbMwhQpJl0wMAAAAqspGmOTfvLAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="SearchAllStartStopButton.ImageStop" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAAASCwAAEgsAAAAAAAAAAAAA/wD//wD/
+        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
+        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
+        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
+        /wD//wD//wD//wD//wD/45p1tmI5sFwzp1MqnUggkj4WiTQNgi0GgSwF/wD//wD//wD//wD//wD//wD/
+        /wD/45dw87yg16GDzo1twXxZr2tIp2JAm1g3gSwF/wD//wD//wD//wD//wD//wD//wD/55t0+cmv9bWU
+        7aN+5pVs2oVZznlOrGVDhTAJ/wD//wD//wD//wD//wD//wD//wD/6p54+dC7+L2h9LCQ75955pJo3IRZ
+        tGtIizYP/wD//wD//wD//wD//wD//wD//wD/76N9+9fI+Met97eY8quI7Z965pRtvndVkj4W/wD//wD/
+        /wD//wD//wD//wD//wD/86iB++HT+c66+L+l87OU8qiF65960I1smkYe/wD//wD//wD//wD//wD//wD/
+        /wD/9q2G++Xa+9rK+cqz+MKo9raY87OR3KOHok4l/wD//wD//wD//wD//wD//wD//wD/+rCK/OHV++LU
+        +tjG+c25+cqz+cas9budqlUt/wD//wD//wD//wD//wD//wD//wD//bON+rCK9q2G86iB76N96p5455t0
+        45dw45p1/wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
+        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
+        /wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD//wD/
+</value>
+  </data>
 </root>
