@@ -15,6 +15,8 @@ Modified: 2019.05.25 by Hardolf.
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -346,10 +348,6 @@ namespace MediaCenter.LyricsFinder
                 else
                     ShowShortcuts(false);
 
-                ToolsPlayStartStopButton.Stop();
-
-                ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_Starting;
-                ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_Stopping;
                 ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
                 ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
                 SearchAllStartStopButton.Starting += StartStopButton_Starting;
@@ -524,9 +522,68 @@ namespace MediaCenter.LyricsFinder
             {
                 // Set the Artist, Album and Track columns' width to a 5th of the total width
                 // The Lyrics column is set to "Fill", so it will adjust itself
-                MainDataGridView.Columns[2].Width = (int)(MainDataGridView.Width / (1.5 * fraction));
-                MainDataGridView.Columns[3].Width = (int)(MainDataGridView.Width / (1 * fraction));
-                MainDataGridView.Columns[4].Width = (int)(MainDataGridView.Width / (1 * fraction));
+                MainDataGridView.Columns[(int)GridColumnEnum.Artist].Width = (int)(MainDataGridView.Width / (1.5 * fraction));
+                MainDataGridView.Columns[(int)GridColumnEnum.Album].Width = (int)(MainDataGridView.Width / (1 * fraction));
+                MainDataGridView.Columns[(int)GridColumnEnum.Title].Width = (int)(MainDataGridView.Width / (1 * fraction));
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Tick event of the McStatusTimer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        /// <remarks>The timer polls Media Center for playing items, if any, and sets the PlayImage accordingly.</remarks>
+        private void McStatusTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                McStatusTimer.Stop();
+
+                var rows = MainDataGridView.Rows;
+                var mcInfo = McRestService.Info();
+                var playIdx = int.Parse(mcInfo.PlayingNowPosition, NumberStyles.None, CultureInfo.InvariantCulture);
+
+                if ((playIdx >= 0) && (playIdx < rows.Count))
+                {
+                    var row = rows[playIdx];
+                    var cell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+                    var blank = new Bitmap(16, 16);
+
+                    blank.MakeTransparent();
+
+                    // Clear all other bitmaps than the one in playIdx
+                    foreach (DataGridViewRow r in rows)
+                    {
+                        if (r.Index == playIdx)
+                            continue;
+
+                        var c = r.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+
+                        if (c.Value != blank)
+                            c.Value = blank;
+                    }
+
+                    if (mcInfo.Status.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        cell.Value = Properties.Resources.Play;
+                    }
+                    else if (mcInfo.Status.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        cell.Value = Properties.Resources.Pause;
+                    }
+                    else
+                    {
+                        cell.Value = blank;
+                    }
+                }
+
+                McStatusTimer.Start();
             }
             catch (Exception ex)
             {

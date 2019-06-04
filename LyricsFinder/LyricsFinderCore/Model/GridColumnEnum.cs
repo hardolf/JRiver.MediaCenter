@@ -15,6 +15,7 @@ namespace MediaCenter.LyricsFinder.Model
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         Key,
+        PlayImage,
         Cover,
         Artist,
         Album,

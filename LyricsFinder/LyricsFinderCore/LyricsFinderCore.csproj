@@ -229,6 +229,9 @@
       <Link>ReleaseNotes.html</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resource\Pause.png" />
+    <Content Include="Resource\Play.png" />
+    <None Include="Pause.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SharedComponents\MessageInspection\MessageInspection.csproj">

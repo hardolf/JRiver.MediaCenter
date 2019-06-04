@@ -105,6 +105,10 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                     sb.Append($"/File/{command}?Token={McWsToken}&File={key}&FileType=Key&Type=Thumbnail&ThumbnailSize=Large&Format=jpg");
                     break;
 
+                case McCommandEnum.Info:
+                    sb.Append($"/Playback/{command}?Token={McWsToken}");
+                    break;
+
                 case McCommandEnum.PlayByIndex:
                     sb.Append($"/Playback/{command}?Token={McWsToken}&Index={key}");
                     break;
@@ -296,6 +300,20 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
             var requestUrl = CreateRequestUrl(McCommandEnum.Playlist);
             var rsp = DoTextRequest(requestUrl);
             var ret = new McMplResponse(rsp);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Get the playback info.
+        /// </summary>
+        /// <returns></returns>
+        public static McInfoResponse Info()
+        {
+            var requestUrl = CreateRequestUrl(McCommandEnum.Info);
+            var rsp = DoTextRequest(requestUrl);
+            var ret = new McInfoResponse(rsp);
 
             return ret;
         }

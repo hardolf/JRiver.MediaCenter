@@ -193,6 +193,26 @@ namespace MediaCenter.LyricsFinder
         #region Public Methods
 
         /// <summary>
+        /// Gets the starting event subscribers.
+        /// </summary>
+        /// <returns></returns>
+        public Delegate[] GetStartingEventSubscribers()
+        {
+            return Starting?.GetInvocationList() ?? Array.Empty<Delegate>();
+        }
+
+
+        /// <summary>
+        /// Gets the stopping event subscribers.
+        /// </summary>
+        /// <returns></returns>
+        public Delegate[] GetStoppingEventSubscribers()
+        {
+            return Stopping?.GetInvocationList() ?? Array.Empty<Delegate>(); ;
+        }
+
+
+        /// <summary>
         /// Starts this instance.
         /// </summary>
         public void Start()

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -118,14 +119,36 @@ namespace MediaCenter.LyricsFinder
                 else
                     img = value.Image;
 
-                row.CreateCells(dgv, value.Key, img, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
+                var bmp = new Bitmap(16, 16);
+
+                bmp.MakeTransparent();
+
+                row.CreateCells(dgv, value.Key, bmp, img, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
                 row.Height = dgv.Columns[(int)GridColumnEnum.Cover].Width;
 
                 dgv.Rows.Add(row);
             }
 
-            if (dgv.Rows.Count > 0)
-                dgv.Rows[0].Selected = true;
+            if (_playingIndex >= 0)
+            {
+                if (dgv.Rows.Count >= _playingIndex + 1)
+                {
+                    dgv.Rows[_playingIndex].Selected = true;
+                    dgv.FirstDisplayedScrollingRowIndex = (_playingIndex > 2) ? _playingIndex - 3 : 0;
+
+                    ToolsPlayStartStopButton.Start();
+                }
+            }
+            else
+                ToolsPlayStartStopButton.Stop();
+
+            if (ToolsPlayStartStopButton.GetStartingEventSubscribers().Length == 0)
+                ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_Starting;
+
+            if (ToolsPlayStartStopButton.GetStoppingEventSubscribers().Length == 0)
+                ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_Stopping;
+
+            McStatusTimer.Start();
 
             var x = IsDataChanged; // Force display of data change, if necessary
         }
@@ -404,6 +427,19 @@ namespace MediaCenter.LyricsFinder
             // Ensure the default of not overwriting (i.e. skipping) existing lyrics
             OverwriteMenuItem.Checked = false;
             MenuItem_Click(OverwriteMenuItem, new EventArgs());
+        }
+
+
+        /// <summary>
+        /// Get the Media Center information and take som action with it.
+        /// </summary>
+        private void McInfo()
+        {
+            var mcInfo = McRestService.Info();
+
+            _playingIndex = (mcInfo.Status.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase))
+                ? int.Parse(mcInfo.PlayingNowPosition, NumberStyles.None, CultureInfo.InvariantCulture)
+                : -1;
         }
 
 

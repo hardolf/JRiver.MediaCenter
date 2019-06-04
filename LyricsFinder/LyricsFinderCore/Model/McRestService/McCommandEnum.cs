@@ -18,6 +18,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         Alive,
         Authenticate,
         GetImage,
+        Info,
         PlayByIndex,
         Playlist,
         PlayPause,

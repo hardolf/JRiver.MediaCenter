@@ -129,6 +129,108 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
     }
 
 
+    /// <summary>
+    /// JRiver MediaCenter REST Web service response type for the Info command.
+    /// </summary>
+    /// <seealso cref="MediaCenter.LyricsFinder.Model.McRestService.McResponse" />
+    [Serializable]
+    internal class McInfoResponse : McResponse
+    {
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        [XmlElement]
+        public string Album { get; set; }
+
+        [XmlElement]
+        public string Artist { get; set; }
+
+        [XmlElement]
+        public string Bitdepth { get; set; }
+
+        [XmlElement]
+        public string Bitrate { get; set; }
+
+        [XmlElement]
+        public string DurationMS { get; set; }
+
+        [XmlElement]
+        public string Channels { get; set; }
+
+        [XmlElement]
+        public string Chapter { get; set; }
+
+        [XmlElement]
+        public string ElapsedTimeDisplay { get; set; }
+
+        [XmlElement]
+        public string FileKey { get; set; }
+
+        [XmlElement]
+        public string ImageURL { get; set; }
+
+        [XmlElement]
+        public string Name { get; set; }
+
+        [XmlElement]
+        public string NextFileKey { get; set; }
+
+        [XmlElement]
+        public string PlayingNowChangeCounter { get; set; }
+
+        [XmlElement]
+        public string PlayingNowPosition { get; set; }
+
+        [XmlElement]
+        public string PlayingNowPositionDisplay { get; set; }
+
+        [XmlElement]
+        public string PlayingNowTracks { get; set; }
+
+        [XmlElement]
+        public string PositionDisplay { get; set; }
+
+        [XmlElement]
+        public string PositionMS { get; set; }
+
+        [XmlElement]
+        public string RemainingTimeDisplay { get; set; }
+
+        [XmlElement]
+        public string SampleRate { get; set; }
+
+        [XmlElement]
+        public string State { get; set; }
+
+        [XmlElement]
+        public string Status { get; set; }
+
+        [XmlElement]
+        public string TotalTimeDisplay { get; set; }
+
+        [XmlElement]
+        public string Volume { get; set; }
+
+        [XmlElement]
+        public string VolumeDisplay { get; set; }
+
+        [XmlElement]
+        public string ZoneID { get; set; }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="McAliveResponse"/> class.
+        /// </summary>
+        /// <param name="xml">The XML string.</param>
+        public McInfoResponse(string xml)
+            : base(xml)
+        {
+            this.FillPropertiesFromItems();
+        }
+
+    }
+
+
 
     /// <summary>
     /// JRiver MediaCenter REST Web service response type for the SetInfo command.
