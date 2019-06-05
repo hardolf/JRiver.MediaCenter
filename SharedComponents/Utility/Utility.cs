@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Forms;
 
 namespace MediaCenter.SharedComponents
 {
@@ -16,6 +16,27 @@ namespace MediaCenter.SharedComponents
     /// </summary>
     public static class Utility
     {
+
+        /// <summary>
+        /// Gets the total text from all the text boxes in the parent control.
+        /// </summary>
+        /// <param name="parentControl">The parent control.</param>
+        /// <returns>
+        /// Appended string with all the text boxes' trimmed texts, with CR+LF as separators.
+        /// </returns>
+        /// <remarks>This routine can be used as a simple "serialization" function.</remarks>
+        public static string GetAllTextBoxesText(this Control parentControl)
+        {
+            var ret = new StringBuilder();
+
+            foreach (var ctl in parentControl.Controls)
+            {
+                if (ctl is TextBox txt) ret.AppendLine($"{txt.Name}: {txt.Text.Trim()}");
+            }
+
+            return ret.ToString();
+        }
+
 
         /// <summary>
         /// Joins the strings.

@@ -112,6 +112,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual bool IsQuotaExceeded { get; set; }
 
         /// <summary>
+        /// Gets or sets the private settings.
+        /// </summary>
+        /// <value>
+        /// The private settings.
+        /// </value>
+        [XmlIgnore]
+        public virtual LyricServicesPrivateConfigurationSectionHandler PrivateSettings { get; set; }
+
+        /// <summary>
         /// Gets or sets the quota reset time, with time zone of the lyric server.
         /// </summary>
         /// <value>
@@ -319,7 +328,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var assy = Assembly.GetAssembly(GetType());
             var config = ConfigurationManager.OpenExeConfiguration(assy.Location);
             var settings = config.AppSettings.Settings;
-            var privateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, DataDirectory);
+
+            PrivateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, DataDirectory);
 
             if (!IsImplemented)
                 IsActive = false;
@@ -333,11 +343,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 DateFormat = ServiceSettingsValue(settings, "DateFormat"),
                 ServiceName = ServiceSettingsValue(settings, "ServiceName"),
                 ServiceUrl = new SerializableUri(ServiceSettingsValue(settings, "ServiceUrl")),
-                Token = privateSettings.Token,
-                UserId = privateSettings.UserId
+                Token = PrivateSettings.Token,
+                UserId = PrivateSettings.UserId
             };
 
-            var dailyQuotaString = privateSettings.DailyQuota;
+            var dailyQuotaString = PrivateSettings.DailyQuota;
 
             DailyQuota = (dailyQuotaString.IsNullOrEmptyTrimmed())
                 ? 0

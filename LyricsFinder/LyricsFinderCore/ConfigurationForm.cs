@@ -10,6 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using MediaCenter.SharedComponents;
+
+
 namespace MediaCenter.LyricsFinder
 {
 
@@ -78,12 +81,12 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                var newText = McAccessKeyTextBox.Text.Trim() + McWsPasswordTextBox.Text.Trim() + McWsUrlTextBox.Text.Trim() + McWsUsernameTextBox.Text.Trim();
+                var newText = ConfigurationLayoutPanel.GetAllTextBoxesText();
                 var question = "Do you want to use the new values?";
                 var result = DialogResult.No;
 
                 if (newText != _initialText)
-                    result = MessageBox.Show(this, question, "Values changed", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                    result = MessageBox.Show(this, question, "Values are changed", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
                 switch (result)
                 {
@@ -103,7 +106,6 @@ namespace MediaCenter.LyricsFinder
                     default:
                         break;
                 }
-
             }
             catch (Exception ex)
             {
@@ -129,7 +131,7 @@ namespace MediaCenter.LyricsFinder
                 McWsUrlTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl;
                 McWsUsernameTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName;
 
-                _initialText = McAccessKeyTextBox.Text.Trim() + McWsPasswordTextBox.Text.Trim() + McWsUrlTextBox.Text.Trim() + McWsUsernameTextBox.Text.Trim();
+                _initialText = ConfigurationLayoutPanel.GetAllTextBoxesText();
             }
             catch (Exception ex)
             {

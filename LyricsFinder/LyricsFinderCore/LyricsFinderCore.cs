@@ -579,9 +579,8 @@ namespace MediaCenter.LyricsFinder
                         Save();
                         break;
 
-                    // TODO: Implement close when running standalone.
                     case nameof(FileExitMenuItem):
-                        // Close();
+                        // Close(); // Not done here, in stanalone it is done in LyricsFinderExe, in plug-in it is done by Media Center
                         break;
 
                     case nameof(HelpAboutMenuItem):

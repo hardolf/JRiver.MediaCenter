@@ -27,6 +27,9 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         private const string _UserIdPropertyName = "userId";
 
         [NonSerialized]
+        private Configuration _privateConfiguration;
+
+        [NonSerialized]
         private AppSettingsSection _configurationSection;
 
 
@@ -99,11 +102,12 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                         {
                             ExeConfigFilename = privateConfigFile
                         };
-                        var privateConfig = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+
+                       _privateConfiguration = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
 
                         using (new AddinCustomConfigResolveHelper(LyricServiceAssembly))
                         {
-                            _configurationSection = privateConfig.GetSection(Utility.AppSettingsSectionName) as AppSettingsSection;
+                            _configurationSection = _privateConfiguration.GetSection(Utility.AppSettingsSectionName) as AppSettingsSection;
                         }
                     }
                     catch (Exception ex)
@@ -135,6 +139,37 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 DataDirectory = dataDirectory,
                 LyricServiceAssembly = assembly
             };
+        }
+
+
+        /// <summary>
+        /// Saves this instance.
+        /// </summary>
+        /// <param name="dailyQuota">The daily quota.</param>
+        /// <param name="token">The token.</param>
+        /// <param name="userId">The user identifier.</param>
+        public void Save(string dailyQuota = null, string token = null, string userId = null)
+        {
+            SaveProperty(_dailyQuotaPropertyName, dailyQuota);
+            SaveProperty(_tokenPropertyName, token);
+            SaveProperty(_UserIdPropertyName, userId);
+
+            _privateConfiguration.Save(ConfigurationSaveMode.Modified);
+        }
+
+
+        /// <summary>
+        /// Saves the property.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        private void SaveProperty(string key, string value)
+        {
+            if (!value.IsNullOrEmptyTrimmed())
+            {
+                _privateConfiguration.AppSettings.Settings.Remove(key);
+                _privateConfiguration.AppSettings.Settings.Add(key, value);
+            }
         }
 
     }
@@ -258,19 +293,29 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="serviceUrl">The service URL.</param>
         /// <param name="username">The username.</param>
         /// <param name="password">The password.</param>
-        public static void Save(string accessKey, string serviceUrl, string username, string password)
+        public static void Save(string accessKey = null, string serviceUrl = null, string username = null, string password = null)
         {
-            _privateConfiguration.AppSettings.Settings.Remove(_mcWebServiceAccessKeyPropertyName);
-            _privateConfiguration.AppSettings.Settings.Remove(_mcWebServicePasswordPropertyName);
-            _privateConfiguration.AppSettings.Settings.Remove(_mcWebServiceUrlPropertyName);
-            _privateConfiguration.AppSettings.Settings.Remove(_mcWebServiceUserNamePropertyName);
-
-            _privateConfiguration.AppSettings.Settings.Add(_mcWebServiceAccessKeyPropertyName, accessKey);
-            _privateConfiguration.AppSettings.Settings.Add(_mcWebServicePasswordPropertyName, password);
-            _privateConfiguration.AppSettings.Settings.Add(_mcWebServiceUrlPropertyName, serviceUrl);
-            _privateConfiguration.AppSettings.Settings.Add(_mcWebServiceUserNamePropertyName, username);
+            SaveProperty(_mcWebServiceAccessKeyPropertyName, accessKey);
+            SaveProperty(_mcWebServiceUrlPropertyName, serviceUrl);
+            SaveProperty(_mcWebServiceUserNamePropertyName, username);
+            SaveProperty(_mcWebServicePasswordPropertyName, password);
 
             _privateConfiguration.Save(ConfigurationSaveMode.Modified);
+        }
+
+
+        /// <summary>
+        /// Saves the property.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        private static void SaveProperty(string key, string value)
+        {
+            if (!value.IsNullOrEmptyTrimmed())
+            {
+                _privateConfiguration.AppSettings.Settings.Remove(key);
+                _privateConfiguration.AppSettings.Settings.Add(key, value);
+            }
         }
 
     }

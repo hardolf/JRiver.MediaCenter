@@ -135,6 +135,7 @@
             this.LyricServiceListDataGridView.TabIndex = 0;
             this.LyricServiceListDataGridView.TabStop = false;
             this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClick);
+            this.LyricServiceListDataGridView.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.LyricServiceListDataGridView_RowValidating);
             this.LyricServiceListDataGridView.SelectionChanged += new System.EventHandler(this.LyricServiceListDataGridView_SelectionChanged);
             // 
             // Active

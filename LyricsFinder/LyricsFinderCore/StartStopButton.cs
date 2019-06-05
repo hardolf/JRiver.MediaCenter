@@ -208,7 +208,7 @@ namespace MediaCenter.LyricsFinder
         /// <returns></returns>
         public Delegate[] GetStoppingEventSubscribers()
         {
-            return Stopping?.GetInvocationList() ?? Array.Empty<Delegate>(); ;
+            return Stopping?.GetInvocationList() ?? Array.Empty<Delegate>();
         }
 
 

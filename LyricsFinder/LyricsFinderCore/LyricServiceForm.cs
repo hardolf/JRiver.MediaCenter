@@ -27,6 +27,8 @@ namespace MediaCenter.LyricsFinder.Model
 
         private bool _isListReady = false;
 
+        private string _initialText = string.Empty;
+
         private LyricsFinderDataType _lyricsFinderData = null;
 
 
@@ -114,11 +116,30 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
+        /// Handles the Click event of the CloseButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void CloseButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Close();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
         /// Fills the row.
         /// </summary>
         /// <param name="caption">The caption.</param>
         /// <param name="value">The value.</param>
-        private void FillRow(string caption, string value)
+        /// <param name="isEditAllowed">if set to <c>true</c> value edit is allowed; else it is read-only.</param>
+        private void FillRow(string caption, string value, bool isEditAllowed = false)
         {
             var tlp = LyricServiceDetailsTableLayoutPanel;
             var rowIdx = -1;
@@ -138,13 +159,14 @@ namespace MediaCenter.LyricsFinder.Model
             lblHeader.Text = caption;
 
             txtValue.AutoSize = true;
-            txtValue.BorderStyle = BorderStyle.None;
+            txtValue.BorderStyle = (isEditAllowed) ? BorderStyle.FixedSingle : BorderStyle.None;
             txtValue.Multiline = true;
             txtValue.Name = $"ValueTextbox{rowIdx}";
-            txtValue.ReadOnly = true;
+            txtValue.ReadOnly = !isEditAllowed;
             txtValue.ScrollBars = ScrollBars.None;
+            txtValue.TabIndex = rowIdx;
             txtValue.TabStop = false;
-            txtValue.Text = value + " ";
+            txtValue.Text = value;
             txtValue.WordWrap = false;
 
             AutoSizeTextBox(txtValue);
@@ -202,20 +224,45 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
-        /// Handles the Click event of the CloseButton control.
+        /// Validates the details panel and determines whether data is changed.
+        /// If they are, the user is asked whether to save, and if so, save the data.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void CloseButton_Click(object sender, EventArgs e)
+        /// <returns>
+        ///   <c>true</c> if the row change should be canceled; otherwise, <c>false</c>.
+        /// </returns>
+        private bool IsValidateCancel()
         {
-            try
+            if (!_isListReady) return false;
+
+            var newText = LyricServiceDetailsTableLayoutPanel.GetAllTextBoxesText();
+            var question = "Do you want to use the new values?";
+            var result = DialogResult.No;
+            var ret = false;
+
+            if (newText != _initialText)
+                result = MessageBox.Show(this, question, "Values are changed", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+            switch (result)
             {
-                Close();
+                case DialogResult.Cancel:
+                    ret = true;
+                    break;
+
+                case DialogResult.No:
+                    ret = false;
+                    break;
+
+                case DialogResult.Yes:
+                    ret = false;
+                    // Save the changes
+                    SaveSelectedService();
+                    break;
+
+                default:
+                    break;
             }
-            catch (Exception ex)
-            {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
-            }
+
+            return ret;
         }
 
 
@@ -321,45 +368,39 @@ namespace MediaCenter.LyricsFinder.Model
         {
             try
             {
+                e.Handled = true;
+
                 var dgv = LyricServiceListDataGridView;
                 var row = dgv.SelectedRows[0];
                 var serviceIdx = -1;
                 var service = GetSelectedService(out serviceIdx);
 
-                e.Handled = false;
-
                 if (e.KeyCode == Keys.Escape)
                 {
-                    e.Handled = true;
                     Close();
                 }
                 else if (e.KeyCode == Keys.Down)
                 {
-                    e.Handled = true;
-                    if (row.Index >= dgv.RowCount - 1)
-                        return;
-                    else
-                        dgv.Rows[row.Index + 1].Selected = true;
+                    if (row.Index >= dgv.RowCount - 1) return;
+                    if (IsValidateCancel()) return;
+                    dgv.Rows[row.Index + 1].Selected = true;
                 }
-                else if ((e.KeyCode == Keys.End) || (e.KeyCode == Keys.PageDown))
+                else if ((!(ActiveControl is TextBox) && (e.KeyCode == Keys.End)) || (e.KeyCode == Keys.PageDown))
                 {
-                    e.Handled = true;
                     if (row.Index >= dgv.RowCount - 1)
                         return;
                     else
                         dgv.Rows[dgv.RowCount - 1].Selected = true;
                 }
-                else if ((e.KeyCode == Keys.Home) || (e.KeyCode == Keys.PageUp))
+                else if ((!(ActiveControl is TextBox) && (e.KeyCode == Keys.Home)) || (e.KeyCode == Keys.PageUp))
                 {
-                    e.Handled = true;
                     if (row.Index <= 0)
                         return;
                     else
                         dgv.Rows[0].Selected = true;
                 }
-                else if (e.KeyCode == Keys.Space)
+                else if (!(ActiveControl is TextBox) && (e.KeyCode == Keys.Space))
                 {
-                    e.Handled = true;
                     if (row.Index < 0)
                         return;
                     else
@@ -372,12 +413,12 @@ namespace MediaCenter.LyricsFinder.Model
                 }
                 else if (e.KeyCode == Keys.Up)
                 {
-                    e.Handled = true;
-                    if (row.Index <= 0)
-                        return;
-                    else
-                        dgv.Rows[row.Index - 1].Selected = true;
+                    if (row.Index <= 0) return;
+                    if (IsValidateCancel()) return;
+                    dgv.Rows[row.Index - 1].Selected = true;
                 }
+                else
+                    e.Handled = false;
             }
             catch (Exception ex)
             {
@@ -413,6 +454,24 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
+        /// Handles the RowValidating event of the LyricServiceListDataGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellCancelEventArgs"/> instance containing the event data.</param>
+        private void LyricServiceListDataGridView_RowValidating(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            try
+            {
+                e.Cancel = IsValidateCancel();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the SelectionChanged event of the LyricServiceFormDataGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -431,6 +490,56 @@ namespace MediaCenter.LyricsFinder.Model
             {
                 ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
             }
+        }
+
+
+        /// <summary>
+        /// Saves the selected service.
+        /// </summary>
+        private void SaveSelectedService()
+        {
+            AbstractLyricService service = null;
+            var serviceIdx = -1;
+            string quota = null;
+            string token = null;
+            string userId = null;
+            var tlp = LyricServiceDetailsTableLayoutPanel;
+
+            service = GetSelectedService(out serviceIdx);
+
+            if (service == null) return;
+
+            for (int i = 0; i < tlp.Controls.Count; i++)
+            {
+                var ctl = tlp.Controls[i];
+
+                if (ctl is TextBox txt)
+                {
+                    if (txt.ReadOnly) continue;
+
+                    var lbl = tlp.Controls[i - 1]; // There is always a label before the text box
+
+                    if (lbl.Text.ToUpperInvariant().Contains("QUOTA"))
+                    {
+                        quota = txt.Text;
+                        service.DailyQuota = int.Parse(quota, NumberStyles.None, CultureInfo.InvariantCulture);
+                    }
+
+                    if (lbl.Text.ToUpperInvariant().Contains("TOKEN"))
+                    {
+                        token = txt.Text;
+                        service.Credit.Token = token;
+                    }
+
+                    if (lbl.Text.ToUpperInvariant().Contains("USERID"))
+                    {
+                        userId = txt.Text;
+                        service.Credit.UserId = userId;
+                    }
+                }
+            }
+
+            service.PrivateSettings.Save(quota, token, userId);
         }
 
 
@@ -471,8 +580,8 @@ namespace MediaCenter.LyricsFinder.Model
             FillRow("Copyright text", service.Credit.Copyright);
             FillRow("Credit text format", service.Credit.CreditTextFormat);
             FillRow("URL", service.Credit.ServiceUrl?.ToString() ?? string.Empty);
-            FillRow("User ID", service.Credit.UserId);
-            FillRow("User token", service.Credit.Token);
+            FillRow("User ID", service.Credit.UserId, true);
+            FillRow("User token", service.Credit.Token, true);
 
             if (service.DailyQuota > 0)
             {
@@ -505,6 +614,9 @@ namespace MediaCenter.LyricsFinder.Model
 
             tlp.Controls.Add(btnClose, 1, tlp.RowCount - 1);
 
+            AcceptButton = btnClose;
+            CancelButton = btnClose;
+
             // Enable or disable the move-buttons and do auto-scroll
             MoveDownButton.Enabled = false;
             MoveUpButton.Enabled = false;
@@ -528,6 +640,8 @@ namespace MediaCenter.LyricsFinder.Model
             tlp.Select();
             Refresh();
             tlp.ResumeLayout(true);
+
+            _initialText = tlp.GetAllTextBoxesText();
             _isListReady = true;
         }
 
