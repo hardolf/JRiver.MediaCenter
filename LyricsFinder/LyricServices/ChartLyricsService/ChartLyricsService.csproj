@@ -143,12 +143,6 @@
   <PropertyGroup>
     <PostBuildEvent>rem copy /y App.template.config $(TargetFileName).template.config
 
-if "$(ConfigurationName)" equ "Release" (
-rem    copy /y App.template.config $(TargetFileName).private.config
-) else (
-rem    copy /y App.private.config $(TargetFileName).private.config
-)
-
 del /q App*.config
 call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.*
 </PostBuildEvent>
@@ -168,7 +162,6 @@ call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.*
   <Import Project="..\..\..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\..\..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets')" />
   <PropertyGroup>
     <PreBuildEvent>del /s /q "$(TargetDir)*.*"
-rem if not exist ..\..\App.private.config copy ..\..\App.template.config ..\..\App.private.config
 </PreBuildEvent>
   </PropertyGroup>
 </Project>

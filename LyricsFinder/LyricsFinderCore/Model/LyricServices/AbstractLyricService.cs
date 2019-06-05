@@ -48,6 +48,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual int DailyQuota { get; set; }
 
         /// <summary>
+        /// Gets or sets the data directory.
+        /// </summary>
+        /// <value>
+        /// The data directory.
+        /// </value>
+        [XmlIgnore]
+        public virtual string DataDirectory { get; set; }
+
+        /// <summary>
         /// Gets or sets the internal found lyric list.
         /// </summary>
         /// <value>
@@ -310,7 +319,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var assy = Assembly.GetAssembly(GetType());
             var config = ConfigurationManager.OpenExeConfiguration(assy.Location);
             var settings = config.AppSettings.Settings;
-            var privateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy);
+            var privateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, DataDirectory);
 
             if (!IsImplemented)
                 IsActive = false;

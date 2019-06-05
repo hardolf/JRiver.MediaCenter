@@ -84,6 +84,12 @@
     <Compile Include="BitmapForm.Designer.cs">
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ConfigurationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfigurationForm.Designer.cs">
+      <DependentUpon>ConfigurationForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ErrorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -161,9 +167,6 @@
     <None Include="App.template.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="App.private.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="LyricsFinderCore.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -179,6 +182,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ConfigurationForm.resx">
+      <DependentUpon>ConfigurationForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ErrorForm.resx">
       <DependentUpon>ErrorForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -231,7 +237,6 @@
     </Content>
     <Content Include="Resource\Pause.png" />
     <Content Include="Resource\Play.png" />
-    <None Include="Pause.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SharedComponents\MessageInspection\MessageInspection.csproj">
@@ -250,18 +255,11 @@ del /q "%25_tdir%25\*.*"
 
 copy /y App.template.config $(TargetFileName).template.config
 
-if "$(ConfigurationName)" equ "Release" (
-    copy /y App.template.config $(TargetFileName).private.config
-) else (
-    copy /y App.private.config $(TargetFileName).private.config
-)
-
 del /q App*.config
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>del /s /q "$(TargetDir)*.*"
-if not exist ..\..\App.private.config copy ..\..\App.template.config ..\..\App.private.config
 </PreBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -27,6 +27,10 @@ namespace MediaCenter.LyricsFinder
     partial class LyricsFinderCore
     {
 
+        /**********************************/
+        /***** Private misc. routines *****/
+        /**********************************/
+
         private bool _isConnectedToMc = false;
         private bool _isDesignTime = false;
         private bool _isGridDataChanged = false; // Do not change this in code, always change the <c>IsDataChanged</c> property instead.
@@ -206,6 +210,86 @@ namespace MediaCenter.LyricsFinder
         }
 
 
+        private void Init()
+        {
+            if (!_isDesignTime)
+            {
+                var msg = string.Empty;
+
+                try
+                {
+                    // Init the log. This must be done as the very first thing, before trying to write to the log.
+                    msg = "LyricsFinder for JRiver Media Center started" + (_isStandAlone ? " standalone." : " from Media Center.");
+                    InitLogging(new[] { _logHeader, msg });
+
+                    msg = "initializing local data";
+                    Logging.Log(_progressPercentage, msg + "...", true);
+                    InitLocalData();
+
+                    msg = "initializing the private configuration handler";
+                    Logging.Log(_progressPercentage, msg + "...", true);
+                    LyricsFinderCorePrivateConfigurationSectionHandler.Init(Assembly.GetExecutingAssembly(), DataDirectory);
+
+                    msg = "checking if private configuration needed";
+                    Logging.Log(_progressPercentage, msg + "...", true);
+                    if (!(Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey)
+                        && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl)
+                        && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName)
+                        && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword)))
+                    {
+                        var frm = new ConfigurationForm("The LyricsFinder is not configured yet");
+
+                        frm.ShowDialog(this);
+                    }
+
+                    msg = "initializing key events";
+                    Logging.Log(_progressPercentage, msg + "...", true);
+                    InitKeyDownEvent();
+
+                    msg = "loading form settings";
+                    Logging.Log(_progressPercentage, msg + "...", true);
+                    LoadFormSettings();
+
+                    msg = "initializing shortcuts";
+                    Logging.Log(_progressPercentage, msg + "...", true);
+                    if (_isStandAlone)
+                    {
+                        ShowShortcuts(true);
+
+                        ToolsPlayStartStopButton.TextStart += "           Alt+P";
+                        ToolsPlayStartStopButton.TextStop += "           Alt+P";
+                        ToolsSearchAllStartStopButton.TextStart += "   Alt+S";
+                        ToolsSearchAllStartStopButton.TextStop += "   Alt+S";
+                        SearchAllStartStopButton.TextStart += "   (Alt+S)";
+                        SearchAllStartStopButton.TextStop += "   (Alt+S)";
+                    }
+                    else
+                        ShowShortcuts(false);
+
+                    msg = "initializing start/stop button delegates";
+                    Logging.Log(_progressPercentage, msg + "...", true);
+                    ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
+                    ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
+                    SearchAllStartStopButton.Starting += StartStopButton_Starting;
+                    SearchAllStartStopButton.Stopping += StartStopButton_Stopping;
+
+                    msg = "initializing the Media Center MCWS connection";
+                    Logging.Log(_progressPercentage, msg + "...", true);
+
+                    McRestService.Init(
+                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey,
+                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl,
+                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName,
+                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword);
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandling.ShowAndLogErrorHandler($"Error {msg} in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                }
+            }
+        }
+
+
         /// <summary>
         /// Initializes the key down event for the UserControl and all its child controls recursively.
         /// </summary>
@@ -236,20 +320,19 @@ namespace MediaCenter.LyricsFinder
         private void InitLocalData()
         {
             var dataFile = string.Empty;
-            var dataDir = string.Empty;
             var tmpFile = string.Empty;
 
             try
             {
                 Logging.Log(_progressPercentage, "Preparing load of local data...", true);
                 dataFile = Path.GetFullPath(Environment.ExpandEnvironmentVariables(Properties.Settings.Default.LocalAppDataFile));
-                dataDir = Path.GetDirectoryName(dataFile);
-                tmpFile = Path.Combine(dataDir, dataFile + ".tmp");
+                DataDirectory = Path.GetDirectoryName(dataFile);
+                tmpFile = Path.Combine(DataDirectory, dataFile + ".tmp");
 
                 // Try to create the data folder if necessary
-                Logging.Log(_progressPercentage, $"Testing if local data directory \"{dataDir}\" is present, else creating it...", true);
-                if (!Directory.Exists(dataDir))
-                    Directory.CreateDirectory(dataDir);
+                Logging.Log(_progressPercentage, $"Testing if local data directory \"{DataDirectory}\" is present, else creating it...", true);
+                if (!Directory.Exists(DataDirectory))
+                    Directory.CreateDirectory(DataDirectory);
 
                 // Test if we may write files in the data folder
                 Logging.Log(_progressPercentage, $"Testing if we may write to a file in the local data directory \"{tmpFile}\"...", true);
@@ -260,7 +343,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                _statusWarning = $"Failed writing to the data folder \"{dataDir}\": {ex.Message}";
+                _statusWarning = $"Failed writing to the data folder \"{DataDirectory}\": {ex.Message}";
                 ErrorHandling.ShowAndLogErrorHandler(_statusWarning, ex, _progressPercentage);
                 StatusMessage("Warning");
             }
@@ -268,7 +351,6 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 Logging.Log(_progressPercentage, $"Initializing dynamic lyric services...", true);
-
                 var services = InitLyricServices();
 
                 // Prepare the load
@@ -303,6 +385,7 @@ namespace MediaCenter.LyricsFinder
                 Logging.Log(_progressPercentage, "Refreshing lyric services from their configurations...", true);
                 foreach (var service in LyricsFinderData.Services)
                 {
+                    service.DataDirectory = DataDirectory;
                     service.RefreshServiceSettings();
                 }
 
@@ -437,7 +520,10 @@ namespace MediaCenter.LyricsFinder
         {
             var mcInfo = McRestService.Info();
 
-            _playingIndex = (mcInfo.Status.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase))
+            if (mcInfo == null)
+                throw new Exception("No Info response from Media Center.");
+
+            _playingIndex = (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
                 ? int.Parse(mcInfo.PlayingNowPosition, NumberStyles.None, CultureInfo.InvariantCulture)
                 : -1;
         }

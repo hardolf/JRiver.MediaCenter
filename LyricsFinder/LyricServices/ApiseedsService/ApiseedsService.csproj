@@ -87,10 +87,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="App.private.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="App.template.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -115,12 +111,6 @@
   <PropertyGroup>
     <PostBuildEvent>copy /y App.template.config $(TargetFileName).template.config
 
-if "$(ConfigurationName)" equ "Release" (
-    copy /y App.template.config $(TargetFileName).private.config
-) else (
-    copy /y App.private.config $(TargetFileName).private.config
-)
-
 del /q App*.config
 call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.* Newtonsoft.Json.*
 </PostBuildEvent>
@@ -140,7 +130,6 @@ call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.* 
   <Import Project="..\..\..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\..\..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets')" />
   <PropertyGroup>
     <PreBuildEvent>del /s /q "$(TargetDir)*.*"
-if not exist ..\..\App.private.config copy ..\..\App.template.config ..\..\App.private.config
 </PreBuildEvent>
   </PropertyGroup>
 </Project>

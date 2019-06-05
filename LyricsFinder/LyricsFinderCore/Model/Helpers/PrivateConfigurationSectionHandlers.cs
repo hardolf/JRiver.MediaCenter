@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+
+using MediaCenter.SharedComponents;
 
 
 namespace MediaCenter.LyricsFinder.Model.Helpers
@@ -19,8 +22,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     public class LyricServicesPrivateConfigurationSectionHandler
     {
 
-        private const string _privateConfigFileExt = ".private.config";
-        private const string _sectionName = "appSettings";
         private const string _dailyQuotaPropertyName = "dailyQuota";
         private const string _tokenPropertyName = "token";
         private const string _UserIdPropertyName = "userId";
@@ -44,6 +45,14 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// The Media Center MCWS service daily quota.
         /// </value>
         public string DailyQuota => Instance?.Settings[_dailyQuotaPropertyName]?.Value ?? string.Empty;
+
+        /// <summary>
+        /// Gets or sets the data directory.
+        /// </summary>
+        /// <value>
+        /// The data directory.
+        /// </value>
+        private string DataDirectory { get; set; }
 
         /// <summary>
         /// Gets the Media Center MCWS service token.
@@ -76,7 +85,10 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 // Get the configuration section handler fom file only once
                 if (_configurationSection == null)
                 {
-                    var privateConfigFile = (LyricServiceAssembly?.Location ?? "") + _privateConfigFileExt;
+                    var privateConfigFile = Utility.GetPrivateSettingsFilePath(LyricServiceAssembly, DataDirectory);
+
+                    if (privateConfigFile.IsNullOrEmptyTrimmed())
+                        return null;
 
                     // Avoid analyzer warning CA1812
                     _ = new ValueConfigurationElement();
@@ -91,16 +103,16 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
                         using (new AddinCustomConfigResolveHelper(LyricServiceAssembly))
                         {
-                            _configurationSection = privateConfig.GetSection(_sectionName) as AppSettingsSection;
+                            _configurationSection = privateConfig.GetSection(Utility.AppSettingsSectionName) as AppSettingsSection;
                         }
                     }
                     catch (Exception ex)
                     {
-                        throw new ConfigurationErrorsException($"Error getting configuration section \"{_sectionName}\" in \"{privateConfigFile}\". Calling assembly: {LyricServiceAssembly.FullName}.", ex);
+                        throw new ConfigurationErrorsException($"Error getting configuration section \"{Utility.AppSettingsSectionName}\" in \"{privateConfigFile}\". Calling assembly: {LyricServiceAssembly.FullName}.", ex);
                     }
 
                     if ((LicenseManager.UsageMode != LicenseUsageMode.Designtime) && !(_configurationSection != null))
-                        throw new ConfigurationErrorsException($"Configuration section \"{_sectionName}\" is not defined in \"{privateConfigFile}\".");
+                        throw new ConfigurationErrorsException($"Configuration section \"{Utility.AppSettingsSectionName}\" is not defined in \"{privateConfigFile}\".");
                 }
 
                 return _configurationSection;
@@ -112,13 +124,15 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// Creates the lyric services private configuration section handler.
         /// </summary>
         /// <param name="assembly">The lyric service assembly.</param>
+        /// <param name="dataDirectory">The data directory.</param>
         /// <returns>
         ///   <see cref="LyricServicesPrivateConfigurationSectionHandler" /> object.
         /// </returns>
-        public static LyricServicesPrivateConfigurationSectionHandler CreateLyricServicesPrivateConfigurationSectionHandler(Assembly assembly)
+        public static LyricServicesPrivateConfigurationSectionHandler CreateLyricServicesPrivateConfigurationSectionHandler(Assembly assembly, string dataDirectory)
         {
             return new LyricServicesPrivateConfigurationSectionHandler
             {
+                DataDirectory = dataDirectory,
                 LyricServiceAssembly = assembly
             };
         }
@@ -135,14 +149,15 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     public static class LyricsFinderCorePrivateConfigurationSectionHandler
     {
 
-        private const string _privateConfigFileExt = ".private.config";
-        private const string _sectionName = "appSettings";
         private const string _mcWebServiceAccessKeyPropertyName = "mcWebServiceAccessKey";
         private const string _mcWebServicePasswordPropertyName = "mcWebServicePassword";
         private const string _mcWebServiceUrlPropertyName = "mcWebServiceUrl";
         private const string _mcWebServiceUserNamePropertyName = "mcWebServiceUserName";
 
+        private static Configuration _privateConfiguration;
         private static AppSettingsSection _configurationSection;
+        private static Assembly _assembly;
+        private static string _dataDirectory;
 
 
         /// <summary>
@@ -191,8 +206,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 // Get the configuration section handler fom file only once
                 if (_configurationSection == null)
                 {
-                    var assy = Assembly.GetExecutingAssembly();
-                    var privateConfigFile = (assy?.Location ?? "") + _privateConfigFileExt;
+                    var privateConfigFile = Utility.GetPrivateSettingsFilePath(_assembly, _dataDirectory);
 
                     // Avoid analyzer warning CA1812
                     _ = new ValueConfigurationElement();
@@ -203,24 +217,60 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                         {
                             ExeConfigFilename = privateConfigFile
                         };
-                        var privateConfig = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
 
-                        using (new AddinCustomConfigResolveHelper(assy))
+                        _privateConfiguration = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+
+                        using (new AddinCustomConfigResolveHelper(_assembly))
                         {
-                            _configurationSection = privateConfig.GetSection(_sectionName) as AppSettingsSection;
+                            _configurationSection = _privateConfiguration.GetSection(Utility.AppSettingsSectionName) as AppSettingsSection;
                         }
                     }
                     catch (Exception ex)
                     {
-                        throw new ConfigurationErrorsException($"Error getting configuration section \"{_sectionName}\" in \"{privateConfigFile}\".", ex);
+                        throw new ConfigurationErrorsException($"Error getting configuration section \"{Utility.AppSettingsSectionName}\" in \"{privateConfigFile}\".", ex);
                     }
 
                     if ((LicenseManager.UsageMode != LicenseUsageMode.Designtime) && !(_configurationSection != null))
-                        throw new ConfigurationErrorsException($"Configuration section \"{_sectionName}\" is not defined in \"{privateConfigFile}\".");
+                        throw new ConfigurationErrorsException($"Configuration section \"{Utility.AppSettingsSectionName}\" is not defined in \"{privateConfigFile}\".");
                 }
 
                 return _configurationSection;
             }
+        }
+
+
+        /// <summary>
+        /// Initializes the LyricsFinder private configuration handler.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <param name="dataDirectory">The data directory.</param>
+        public static void Init(Assembly assembly, string dataDirectory)
+        {
+            _assembly = assembly;
+            _dataDirectory = dataDirectory;
+        }
+
+
+        /// <summary>
+        /// Saves this instance.
+        /// </summary>
+        /// <param name="accessKey">The access key.</param>
+        /// <param name="serviceUrl">The service URL.</param>
+        /// <param name="username">The username.</param>
+        /// <param name="password">The password.</param>
+        public static void Save(string accessKey, string serviceUrl, string username, string password)
+        {
+            _privateConfiguration.AppSettings.Settings.Remove(_mcWebServiceAccessKeyPropertyName);
+            _privateConfiguration.AppSettings.Settings.Remove(_mcWebServicePasswordPropertyName);
+            _privateConfiguration.AppSettings.Settings.Remove(_mcWebServiceUrlPropertyName);
+            _privateConfiguration.AppSettings.Settings.Remove(_mcWebServiceUserNamePropertyName);
+
+            _privateConfiguration.AppSettings.Settings.Add(_mcWebServiceAccessKeyPropertyName, accessKey);
+            _privateConfiguration.AppSettings.Settings.Add(_mcWebServicePasswordPropertyName, password);
+            _privateConfiguration.AppSettings.Settings.Add(_mcWebServiceUrlPropertyName, serviceUrl);
+            _privateConfiguration.AppSettings.Settings.Add(_mcWebServiceUserNamePropertyName, username);
+
+            _privateConfiguration.Save(ConfigurationSaveMode.Modified);
         }
 
     }

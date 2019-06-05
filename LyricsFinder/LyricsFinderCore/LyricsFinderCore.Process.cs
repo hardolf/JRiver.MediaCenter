@@ -21,6 +21,10 @@ namespace MediaCenter.LyricsFinder
     partial class LyricsFinderCore
     {
 
+        /************************************/
+        /***** Private process routines *****/
+        /************************************/
+
         /// <summary>
         /// Connects to the MediaCenter.
         /// </summary>

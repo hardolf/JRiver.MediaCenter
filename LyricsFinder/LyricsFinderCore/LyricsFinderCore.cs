@@ -44,6 +44,10 @@ namespace MediaCenter.LyricsFinder
     public partial class LyricsFinderCore : UserControl
     {
 
+        /**********************/
+        /***** Properties *****/
+        /**********************/
+
         /// <summary>
         /// Gets or sets the authentication.
         /// </summary>
@@ -51,6 +55,14 @@ namespace MediaCenter.LyricsFinder
         /// The authentication.
         /// </value>
         private McAuthenticationResponse Authentication { get; set; }
+
+        /// <summary>
+        /// Gets or sets the data directory.
+        /// </summary>
+        /// <value>
+        /// The data directory.
+        /// </value>
+        public string DataDirectory { get; set; }
 
         /// <summary>
         /// Gets or sets the entry assembly.
@@ -100,6 +112,10 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         internal LyricsFinderDataType LyricsFinderData { get; private set; }
 
+
+        /************************/
+        /***** Constructors *****/
+        /************************/
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LyricsFinderCore"/> class.
@@ -159,118 +175,9 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        private void Init()
-        {
-            if (!_isDesignTime)
-            {
-                // Init the log. This must be done as the very first thing, before trying to write to the log.
-                var msg = "LyricsFinder for JRiver Media Center started" + (_isStandAlone ? " standalone." : " from Media Center.");
-
-                InitLogging(new[] { _logHeader, msg });
-
-                try
-                {
-                    // Logging.Log(_progressPercentage, $"Active configuration file: \"{config.FilePath}\"...", true);
-
-                    msg = "initializing local data";
-                    Logging.Log(0, msg.Substring(0, 1).ToUpperInvariant() + msg.Substring(1) + "...");
-
-                    InitLocalData();
-
-                    msg = "initializing key events";
-                    Logging.Log(0, msg.Substring(0, 1).ToUpperInvariant() + msg.Substring(1) + "...");
-
-                    InitKeyDownEvent();
-
-                    msg = "loading form settings";
-                    Logging.Log(0, msg.Substring(0, 1).ToUpperInvariant() + msg.Substring(1) + "...");
-
-                    LoadFormSettings();
-
-                    msg = "initializing start/stop button delegates";
-                    Logging.Log(0, msg.Substring(0, 1).ToUpperInvariant() + msg.Substring(1) + "...");
-
-                    msg = "initializing the Media Center MCWS connection";
-                    Logging.Log(0, msg.Substring(0, 1).ToUpperInvariant() + msg.Substring(1) + "...");
-
-                    McRestService.Init(
-                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey,
-                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl,
-                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName,
-                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword);
-                }
-                catch (Exception ex)
-                {
-                    ErrorHandling.ShowAndLogErrorHandler($"Error {msg} in {MethodBase.GetCurrentMethod().Name} event.", ex);
-                }
-            }
-        }
-
-
         /*********************/
         /***** Delegates *****/
         /*********************/
-
-
-        /// <summary>
-        /// Handles the ItemClicked event of the ContextMenu control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ToolStripItemClickedEventArgs"/> instance containing the event data.</param>
-        private void ContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            try
-            {
-                if (_isDesignTime) return;
-
-                var rows = MainDataGridView.SelectedRows;
-
-                if (rows.Count < 1)
-                    return;
-
-                var colIdx = (int)GridColumnEnum.Lyrics;
-                var rowIdx = rows[0].Index;
-
-                if (e.ClickedItem == ContextEditMenuItem)
-                    _lyricsForm = ShowLyrics(colIdx, rowIdx);
-                else if (e.ClickedItem == ContextPlayPauseMenuItem)
-                {
-                    if (!ToolsPlayStartStopButton.IsRunning)
-                        ToolsPlayStartStopButton.PerformClick();
-                    else
-                        PlayOrPause();
-                }
-                else if (e.ClickedItem == ContextPlayStopMenuItem)
-                    ToolsPlayStartStopButton.Stop();
-            }
-            catch (Exception ex)
-            {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the Opening event of the ContextMenu control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
-        private void ContextMenu_Opening(object sender, CancelEventArgs e)
-        {
-            try
-            {
-                if (_isDesignTime) return;
-                if (MainDataGridView.SelectedRows.Count < 1)
-                {
-                    e.Cancel = true;
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
-            }
-        }
 
 
         /// <summary>
@@ -334,26 +241,68 @@ namespace MediaCenter.LyricsFinder
                 StatusLog(msg);
                 StatusMessage(msg);
 
-                if (_isStandAlone)
-                {
-                    ShowShortcuts(true);
-
-                    ToolsPlayStartStopButton.TextStart += "           Alt+P";
-                    ToolsPlayStartStopButton.TextStop += "           Alt+P";
-                    ToolsSearchAllStartStopButton.TextStart += "   Alt+S";
-                    ToolsSearchAllStartStopButton.TextStop += "   Alt+S";
-                    SearchAllStartStopButton.TextStart += "   (Alt+S)";
-                    SearchAllStartStopButton.TextStop += "   (Alt+S)";
-                }
-                else
-                    ShowShortcuts(false);
-
-                ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
-                ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
-                SearchAllStartStopButton.Starting += StartStopButton_Starting;
-                SearchAllStartStopButton.Stopping += StartStopButton_Stopping;
-
                 ProcessWorker.RunWorkerAsync();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the ItemClicked event of the ContextMenu control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ToolStripItemClickedEventArgs"/> instance containing the event data.</param>
+        private void MainContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            try
+            {
+                if (_isDesignTime) return;
+
+                var rows = MainDataGridView.SelectedRows;
+
+                if (rows.Count < 1)
+                    return;
+
+                var colIdx = (int)GridColumnEnum.Lyrics;
+                var rowIdx = rows[0].Index;
+
+                if (e.ClickedItem == ContextEditMenuItem)
+                    _lyricsForm = ShowLyrics(colIdx, rowIdx);
+                else if (e.ClickedItem == ContextPlayPauseMenuItem)
+                {
+                    if (!ToolsPlayStartStopButton.IsRunning)
+                        ToolsPlayStartStopButton.PerformClick();
+                    else
+                        PlayOrPause();
+                }
+                else if (e.ClickedItem == ContextPlayStopMenuItem)
+                    ToolsPlayStartStopButton.Stop();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Opening event of the ContextMenu control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
+        private void MainContextMenu_Opening(object sender, CancelEventArgs e)
+        {
+            try
+            {
+                if (_isDesignTime) return;
+                if (MainDataGridView.SelectedRows.Count < 1)
+                {
+                    e.Cancel = true;
+                    return;
+                }
             }
             catch (Exception ex)
             {
@@ -401,7 +350,7 @@ namespace MediaCenter.LyricsFinder
                 if (e.Clicks > 1) return;
 
                 if (e.Button == MouseButtons.Right)
-                    ContextMenu.Show(Cursor.Position, ToolStripDropDownDirection.Default);
+                    MainContextMenu.Show(Cursor.Position, ToolStripDropDownDirection.Default);
                 else
                 {
                     switch (e.ColumnIndex)
@@ -538,7 +487,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        /// <remarks>The timer polls Media Center for playing items, if any, and sets the PlayImage accordingly.</remarks>
+        /// <remarks>The timer polls Media Center for the playing item, if any, and sets the PlayImage accordingly.</remarks>
         private void McStatusTimer_Tick(object sender, EventArgs e)
         {
             try
@@ -547,40 +496,44 @@ namespace MediaCenter.LyricsFinder
 
                 var rows = MainDataGridView.Rows;
                 var mcInfo = McRestService.Info();
-                var playIdx = int.Parse(mcInfo.PlayingNowPosition, NumberStyles.None, CultureInfo.InvariantCulture);
 
-                if ((playIdx >= 0) && (playIdx < rows.Count))
+                if (mcInfo != null)
                 {
-                    var row = rows[playIdx];
-                    var cell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
-                    var blank = new Bitmap(16, 16);
+                    var playIdx = int.Parse(mcInfo.PlayingNowPosition, NumberStyles.None, CultureInfo.InvariantCulture);
 
-                    blank.MakeTransparent();
-
-                    // Clear all other bitmaps than the one in playIdx
-                    foreach (DataGridViewRow r in rows)
+                    if ((playIdx >= 0) && (playIdx < rows.Count))
                     {
-                        if (r.Index == playIdx)
-                            continue;
+                        var row = rows[playIdx];
+                        var cell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+                        var blank = new Bitmap(16, 16);
 
-                        var c = r.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+                        blank.MakeTransparent();
 
-                        if (c.Value != blank)
-                            c.Value = blank;
-                    }
+                        // Clear all other bitmaps than the one in playIdx
+                        foreach (DataGridViewRow r in rows)
+                        {
+                            if (r.Index == playIdx)
+                                continue;
 
-                    if (mcInfo.Status.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        cell.Value = Properties.Resources.Play;
-                    }
-                    else if (mcInfo.Status.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        cell.Value = Properties.Resources.Pause;
-                    }
-                    else
-                    {
-                        cell.Value = blank;
-                    }
+                            var c = r.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+
+                            if (c.Value != blank)
+                                c.Value = blank;
+                        }
+
+                        if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                        {
+                            cell.Value = Properties.Resources.Play;
+                        }
+                        else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                        {
+                            cell.Value = Properties.Resources.Pause;
+                        }
+                        else
+                        {
+                            cell.Value = blank;
+                        }
+                    } 
                 }
 
                 McStatusTimer.Start();
@@ -644,6 +597,11 @@ namespace MediaCenter.LyricsFinder
                     case nameof(ToolsLyricsServicesMenuItem):
                         var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback);
                         lyricsServiceForm.ShowDialog(this);
+                        break;
+
+                    case nameof(ToolsMcWsConnectionpMenuItem):
+                        var frm = new ConfigurationForm("LyricsFinder connection setup");
+                        frm.ShowDialog(this);
                         break;
 
                     case nameof(ToolsShowLogMenuItem):
