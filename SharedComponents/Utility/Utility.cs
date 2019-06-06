@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -17,6 +18,25 @@ namespace MediaCenter.SharedComponents
     /// </summary>
     public static class Utility
     {
+
+        /// <summary>
+        /// Make the TextBox fit its contents.
+        /// </summary>
+        /// <param name="textBox">The text box.</param>
+        /// <remarks>
+        /// Source: http://csharphelper.com/blog/2018/02/resize-a-textbox-to-fit-its-text-in-c/ 
+        /// </remarks>
+        public static void AutoSizeTextBox(this TextBox textBox)
+        {
+            const int x_margin = 0;
+            const int y_margin = 2;
+
+            Size size = TextRenderer.MeasureText(textBox.Text, textBox.Font);
+
+            textBox.ClientSize =
+                new Size(size.Width + x_margin, size.Height + y_margin);
+        }
+
 
         /// <summary>
         /// Gets the total text from all the text boxes in the parent control.

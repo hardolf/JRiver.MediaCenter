@@ -252,19 +252,7 @@ namespace MediaCenter.LyricsFinder
 
                     msg = "initializing shortcuts";
                     Logging.Log(_progressPercentage, msg + "...", true);
-                    if (_isStandAlone)
-                    {
-                        ShowShortcuts(true);
-
-                        ToolsPlayStartStopButton.TextStart += "           Alt+P";
-                        ToolsPlayStartStopButton.TextStop += "           Alt+P";
-                        ToolsSearchAllStartStopButton.TextStart += "   Alt+S";
-                        ToolsSearchAllStartStopButton.TextStop += "   Alt+S";
-                        SearchAllStartStopButton.TextStart += "   (Alt+S)";
-                        SearchAllStartStopButton.TextStop += "   (Alt+S)";
-                    }
-                    else
-                        ShowShortcuts(false);
+                    ShowShortcuts(_isStandAlone);
 
                     msg = "initializing start/stop button delegates";
                     Logging.Log(_progressPercentage, msg + "...", true);

@@ -74,10 +74,9 @@
             this.LyricServiceMainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.LyricServiceMainTableLayoutPanel.Name = "LyricServiceMainTableLayoutPanel";
             this.LyricServiceMainTableLayoutPanel.RowCount = 2;
-            this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 110F));
             this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.LyricServiceMainTableLayoutPanel.Size = new System.Drawing.Size(483, 106);
+            this.LyricServiceMainTableLayoutPanel.Size = new System.Drawing.Size(483, 116);
             this.LyricServiceMainTableLayoutPanel.TabIndex = 1;
             // 
             // LyricServiceListPanel
@@ -86,7 +85,7 @@
             this.LyricServiceListPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricServiceListPanel.Location = new System.Drawing.Point(3, 3);
             this.LyricServiceListPanel.Name = "LyricServiceListPanel";
-            this.LyricServiceListPanel.Size = new System.Drawing.Size(477, 94);
+            this.LyricServiceListPanel.Size = new System.Drawing.Size(477, 104);
             this.LyricServiceListPanel.TabIndex = 14;
             // 
             // LyricServiceListContainer
@@ -96,7 +95,7 @@
             // LyricServiceListContainer.ContentPanel
             // 
             this.LyricServiceListContainer.ContentPanel.Controls.Add(this.LyricServiceListDataGridView);
-            this.LyricServiceListContainer.ContentPanel.Size = new System.Drawing.Size(453, 94);
+            this.LyricServiceListContainer.ContentPanel.Size = new System.Drawing.Size(453, 104);
             this.LyricServiceListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricServiceListContainer.LeftToolStripPanelVisible = false;
             this.LyricServiceListContainer.Location = new System.Drawing.Point(0, 0);
@@ -105,7 +104,7 @@
             // LyricServiceListContainer.RightToolStripPanel
             // 
             this.LyricServiceListContainer.RightToolStripPanel.Controls.Add(this.LyricServiceListRightToolbar);
-            this.LyricServiceListContainer.Size = new System.Drawing.Size(477, 94);
+            this.LyricServiceListContainer.Size = new System.Drawing.Size(477, 104);
             this.LyricServiceListContainer.TabIndex = 5;
             this.LyricServiceListContainer.Text = "Lyrics services";
             this.LyricServiceListContainer.TopToolStripPanelVisible = false;
@@ -131,7 +130,7 @@
             this.LyricServiceListDataGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.LyricServiceListDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.LyricServiceListDataGridView.ShowEditingIcon = false;
-            this.LyricServiceListDataGridView.Size = new System.Drawing.Size(453, 94);
+            this.LyricServiceListDataGridView.Size = new System.Drawing.Size(453, 104);
             this.LyricServiceListDataGridView.TabIndex = 0;
             this.LyricServiceListDataGridView.TabStop = false;
             this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClick);
@@ -230,7 +229,7 @@
             this.LyricServiceDetailsTableLayoutPanel.ColumnCount = 2;
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 103);
+            this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 113);
             this.LyricServiceDetailsTableLayoutPanel.Name = "LyricServiceDetailsTableLayoutPanel";
             this.LyricServiceDetailsTableLayoutPanel.RowCount = 1;
             this.LyricServiceDetailsTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());

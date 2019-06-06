@@ -593,6 +593,10 @@ namespace MediaCenter.LyricsFinder
                         System.Diagnostics.Process.Start(url);
                         break;
 
+                    case nameof(HelpLookForUpdatesMenuItem):
+                        Model.Helpers.Utility.UpdateCheck(EntryAssembly.GetName().Version, true);
+                        break;
+
                     case nameof(ToolsLyricsServicesMenuItem):
                         var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback);
                         lyricsServiceForm.ShowDialog(this);

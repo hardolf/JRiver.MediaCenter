@@ -236,12 +236,30 @@ namespace MediaCenter.LyricsFinder
                 var path = string.Empty;
 
                 if (sender == ProjectLinkLabel)
-                    path = "https://github.com/hardolf/JRiver.MediaCenter";
+                    path = Model.Helpers.Utility.RepositoryUrl.ToString();
                 else if (sender == ReleaseNotesLinkLabel)
                     path = Path.Combine(Path.GetDirectoryName(_assembly.Location), "ReleaseNotes.html");
 
                 // Navigate to a URL.
                 System.Diagnostics.Process.Start(path);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Click event of the UpdateCheckButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void UpdateCheckButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Model.Helpers.Utility.UpdateCheck(_assembly.GetName().Version, true);
             }
             catch (Exception ex)
             {

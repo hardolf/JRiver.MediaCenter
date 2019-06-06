@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using MediaCenter.SharedComponents;
+
+
 namespace MediaCenter.LyricsFinder
 {
     /// <summary>
@@ -58,6 +61,26 @@ namespace MediaCenter.LyricsFinder
 
             frm.ErrorTextBox.Text = message;
             frm.ErrorTextBox.Select(0, 0);
+            frm.ErrorTextBox.AutoSizeTextBox();
+
+            frm.ShowDialog(owner);
+        }
+
+
+        /// <summary>
+        /// Shows the specified message.
+        /// </summary>
+        /// <param name="owner">The owner.</param>
+        /// <param name="title">The title.</param>
+        /// <param name="message">The message.</param>
+        public static void Show(IWin32Window owner, string title, string message)
+        {
+            var frm = new ErrorForm();
+
+            frm.ErrorTextBox.Text = message;
+            frm.ErrorTextBox.Select(0, 0);
+            frm.Text = title;
+            frm.ErrorTextBox.AutoSizeTextBox();
 
             frm.ShowDialog(owner);
         }

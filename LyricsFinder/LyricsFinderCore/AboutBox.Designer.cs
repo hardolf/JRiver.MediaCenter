@@ -42,6 +42,7 @@
             this.BuildDateLabel = new System.Windows.Forms.Label();
             this.ProjectLinkLabel = new System.Windows.Forms.LinkLabel();
             this.AboutToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.UpdateCheckButton = new System.Windows.Forms.Button();
             this.AboutBoxPanel.SuspendLayout();
             this.AboutBoxLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
@@ -74,6 +75,7 @@
             this.AboutBoxLayoutPanel.Controls.Add(this.ReleaseNotesLinkLabel, 2, 1);
             this.AboutBoxLayoutPanel.Controls.Add(this.BuildDateLabel, 1, 2);
             this.AboutBoxLayoutPanel.Controls.Add(this.ProjectLinkLabel, 1, 3);
+            this.AboutBoxLayoutPanel.Controls.Add(this.UpdateCheckButton, 1, 7);
             this.AboutBoxLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.AboutBoxLayoutPanel.Location = new System.Drawing.Point(5, 5);
             this.AboutBoxLayoutPanel.Margin = new System.Windows.Forms.Padding(0);
@@ -88,7 +90,7 @@
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.AboutBoxLayoutPanel.Size = new System.Drawing.Size(474, 316);
-            this.AboutBoxLayoutPanel.TabIndex = 1;
+            this.AboutBoxLayoutPanel.TabIndex = 0;
             // 
             // LogoPictureBox
             // 
@@ -111,7 +113,7 @@
             this.ProductNameLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.ProductNameLabel.Name = "ProductNameLabel";
             this.ProductNameLabel.Size = new System.Drawing.Size(304, 17);
-            this.ProductNameLabel.TabIndex = 19;
+            this.ProductNameLabel.TabIndex = 0;
             this.ProductNameLabel.Text = "Product Name";
             // 
             // VersionLabel
@@ -122,7 +124,7 @@
             this.VersionLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.VersionLabel.Name = "VersionLabel";
             this.VersionLabel.Size = new System.Drawing.Size(147, 17);
-            this.VersionLabel.TabIndex = 0;
+            this.VersionLabel.TabIndex = 1;
             this.VersionLabel.Text = "Version";
             // 
             // CopyrightLabel
@@ -134,7 +136,7 @@
             this.CopyrightLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.CopyrightLabel.Name = "CopyrightLabel";
             this.CopyrightLabel.Size = new System.Drawing.Size(304, 17);
-            this.CopyrightLabel.TabIndex = 21;
+            this.CopyrightLabel.TabIndex = 5;
             this.CopyrightLabel.Text = "Copyright";
             // 
             // CompanyNameLabel
@@ -146,7 +148,7 @@
             this.CompanyNameLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.CompanyNameLabel.Name = "CompanyNameLabel";
             this.CompanyNameLabel.Size = new System.Drawing.Size(304, 5);
-            this.CompanyNameLabel.TabIndex = 22;
+            this.CompanyNameLabel.TabIndex = 6;
             this.CompanyNameLabel.Text = "Company Name";
             this.CompanyNameLabel.Visible = false;
             // 
@@ -171,7 +173,7 @@
             this.CloseButton.Location = new System.Drawing.Point(396, 290);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
-            this.CloseButton.TabIndex = 24;
+            this.CloseButton.TabIndex = 8;
             this.CloseButton.Text = "&Close (Esc)";
             this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
             // 
@@ -184,7 +186,7 @@
             this.ReleaseNotesLinkLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.ReleaseNotesLinkLabel.Name = "ReleaseNotesLinkLabel";
             this.ReleaseNotesLinkLabel.Size = new System.Drawing.Size(148, 25);
-            this.ReleaseNotesLinkLabel.TabIndex = 25;
+            this.ReleaseNotesLinkLabel.TabIndex = 2;
             this.ReleaseNotesLinkLabel.TabStop = true;
             this.ReleaseNotesLinkLabel.Text = "Release notes";
             this.ReleaseNotesLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
@@ -192,13 +194,12 @@
             // BuildDateLabel
             // 
             this.BuildDateLabel.AutoSize = true;
-            this.AboutBoxLayoutPanel.SetColumnSpan(this.BuildDateLabel, 2);
             this.BuildDateLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BuildDateLabel.Location = new System.Drawing.Point(167, 50);
             this.BuildDateLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.BuildDateLabel.Name = "BuildDateLabel";
-            this.BuildDateLabel.Size = new System.Drawing.Size(304, 25);
-            this.BuildDateLabel.TabIndex = 26;
+            this.BuildDateLabel.Size = new System.Drawing.Size(147, 25);
+            this.BuildDateLabel.TabIndex = 3;
             this.BuildDateLabel.Text = "Build Date";
             // 
             // ProjectLinkLabel
@@ -211,11 +212,22 @@
             this.ProjectLinkLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.ProjectLinkLabel.Name = "ProjectLinkLabel";
             this.ProjectLinkLabel.Size = new System.Drawing.Size(304, 25);
-            this.ProjectLinkLabel.TabIndex = 25;
+            this.ProjectLinkLabel.TabIndex = 4;
             this.ProjectLinkLabel.TabStop = true;
             this.ProjectLinkLabel.Text = "LyricsFinder project source on GitHub";
             this.AboutToolTip.SetToolTip(this.ProjectLinkLabel, "https://github.com/hardolf/JRiver.MediaCenter");
             this.ProjectLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
+            // 
+            // UpdateCheckButton
+            // 
+            this.UpdateCheckButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.UpdateCheckButton.Location = new System.Drawing.Point(164, 290);
+            this.UpdateCheckButton.Name = "UpdateCheckButton";
+            this.UpdateCheckButton.Size = new System.Drawing.Size(124, 23);
+            this.UpdateCheckButton.TabIndex = 7;
+            this.UpdateCheckButton.Text = "Check for Updates...";
+            this.UpdateCheckButton.UseVisualStyleBackColor = true;
+            this.UpdateCheckButton.Click += new System.EventHandler(this.UpdateCheckButton_Click);
             // 
             // AboutBox
             // 
@@ -259,5 +271,6 @@
         private System.Windows.Forms.Label BuildDateLabel;
         private System.Windows.Forms.LinkLabel ProjectLinkLabel;
         private System.Windows.Forms.ToolTip AboutToolTip;
+        private System.Windows.Forms.Button UpdateCheckButton;
     }
 }

@@ -22,7 +22,8 @@ Features
 
 Prerequisites
 -------------
-JRiver Media Center 23 or newer, using its builtin REST Web service (MCWS).
+JRiver Media Center 23 or newer, with enabled REST Web service (MCWS).
+Microsoft .NET 4.6.1 or newer.
 
 
 Compatibility

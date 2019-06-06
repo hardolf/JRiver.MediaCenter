@@ -31,69 +31,92 @@
             this.components = new System.ComponentModel.Container();
             this.ErrorToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ErrorPanel = new System.Windows.Forms.Panel();
-            this.ErrorTextBox = new System.Windows.Forms.TextBox();
+            this.ErrorLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.CloseButton = new System.Windows.Forms.Button();
+            this.ErrorTextBox = new System.Windows.Forms.TextBox();
             this.ErrorPanel.SuspendLayout();
+            this.ErrorLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // ErrorPanel
             // 
-            this.ErrorPanel.Controls.Add(this.ErrorTextBox);
-            this.ErrorPanel.Controls.Add(this.CloseButton);
+            this.ErrorPanel.AutoSize = true;
+            this.ErrorPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ErrorPanel.Controls.Add(this.ErrorLayoutPanel);
             this.ErrorPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ErrorPanel.Location = new System.Drawing.Point(0, 0);
             this.ErrorPanel.Name = "ErrorPanel";
-            this.ErrorPanel.Size = new System.Drawing.Size(484, 461);
+            this.ErrorPanel.Size = new System.Drawing.Size(284, 111);
             this.ErrorPanel.TabIndex = 0;
             // 
-            // ErrorTextBox
+            // ErrorLayoutPanel
             // 
-            this.ErrorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ErrorTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ErrorTextBox.Location = new System.Drawing.Point(12, 12);
-            this.ErrorTextBox.Multiline = true;
-            this.ErrorTextBox.Name = "ErrorTextBox";
-            this.ErrorTextBox.ReadOnly = true;
-            this.ErrorTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.ErrorTextBox.Size = new System.Drawing.Size(460, 397);
-            this.ErrorTextBox.TabIndex = 2;
+            this.ErrorLayoutPanel.AutoSize = true;
+            this.ErrorLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ErrorLayoutPanel.ColumnCount = 1;
+            this.ErrorLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.ErrorLayoutPanel.Controls.Add(this.CloseButton, 0, 1);
+            this.ErrorLayoutPanel.Controls.Add(this.ErrorTextBox, 0, 0);
+            this.ErrorLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ErrorLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.ErrorLayoutPanel.Name = "ErrorLayoutPanel";
+            this.ErrorLayoutPanel.RowCount = 2;
+            this.ErrorLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.ErrorLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.ErrorLayoutPanel.Size = new System.Drawing.Size(284, 111);
+            this.ErrorLayoutPanel.TabIndex = 4;
             // 
             // CloseButton
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(397, 426);
+            this.CloseButton.Location = new System.Drawing.Point(206, 85);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
-            this.CloseButton.TabIndex = 3;
+            this.CloseButton.TabIndex = 4;
             this.CloseButton.Text = "&Close (Esc)";
             this.CloseButton.UseVisualStyleBackColor = true;
-            this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
+            // 
+            // ErrorTextBox
+            // 
+            this.ErrorTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ErrorTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ErrorTextBox.Location = new System.Drawing.Point(3, 3);
+            this.ErrorTextBox.Multiline = true;
+            this.ErrorTextBox.Name = "ErrorTextBox";
+            this.ErrorTextBox.ReadOnly = true;
+            this.ErrorTextBox.Size = new System.Drawing.Size(278, 75);
+            this.ErrorTextBox.TabIndex = 3;
             // 
             // ErrorForm
             // 
             this.AcceptButton = this.CloseButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.CancelButton = this.CloseButton;
-            this.ClientSize = new System.Drawing.Size(484, 461);
+            this.ClientSize = new System.Drawing.Size(284, 111);
             this.Controls.Add(this.ErrorPanel);
+            this.MinimumSize = new System.Drawing.Size(300, 150);
             this.Name = "ErrorForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Error";
             this.TransparencyKey = System.Drawing.Color.Teal;
             this.ErrorPanel.ResumeLayout(false);
             this.ErrorPanel.PerformLayout();
+            this.ErrorLayoutPanel.ResumeLayout(false);
+            this.ErrorLayoutPanel.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.ToolTip ErrorToolTip;
         private System.Windows.Forms.Panel ErrorPanel;
-        private System.Windows.Forms.TextBox ErrorTextBox;
+        private System.Windows.Forms.TableLayoutPanel ErrorLayoutPanel;
         private System.Windows.Forms.Button CloseButton;
+        private System.Windows.Forms.TextBox ErrorTextBox;
     }
 }

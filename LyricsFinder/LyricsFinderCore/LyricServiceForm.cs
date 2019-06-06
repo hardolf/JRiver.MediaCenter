@@ -97,25 +97,6 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
-        /// Make the TextBox fit its contents.
-        /// </summary>
-        /// <param name="txt">The text box.</param>
-        /// <remarks>
-        /// Source: http://csharphelper.com/blog/2018/02/resize-a-textbox-to-fit-its-text-in-c/ 
-        /// </remarks>
-        private static void AutoSizeTextBox(TextBox txt)
-        {
-            const int x_margin = 0;
-            const int y_margin = 2;
-
-            Size size = TextRenderer.MeasureText(txt.Text, txt.Font);
-
-            txt.ClientSize =
-                new Size(size.Width + x_margin, size.Height + y_margin);
-        }
-
-
-        /// <summary>
         /// Handles the Click event of the CloseButton control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -142,16 +123,14 @@ namespace MediaCenter.LyricsFinder.Model
         /// <param name="tooltip">The tooltip.</param>
         private void FillRow(string caption, string value, bool isEditAllowed = false, string tooltip = "")
         {
-            var tlp = LyricServiceDetailsTableLayoutPanel;
-            var rowIdx = -1;
-
             if (value.IsNullOrEmptyTrimmed())
                 return;
 
+            var tlp = LyricServiceDetailsTableLayoutPanel;
+
             tlp.RowCount++;
 
-            rowIdx = tlp.RowCount - 1;
-
+            var rowIdx = tlp.RowCount - 1;
             var lblHeader = new Label();
             var txtValue = new TextBox();
 
@@ -175,7 +154,7 @@ namespace MediaCenter.LyricsFinder.Model
             else if (isEditAllowed)
                 LyricServiceFormToolTip.SetToolTip(txtValue, $"You can edit the \"{caption}\" value");
 
-            AutoSizeTextBox(txtValue);
+            txtValue.AutoSizeTextBox();
 
             tlp.Controls.Add(lblHeader, 0, rowIdx);
             tlp.Controls.Add(txtValue, 1, rowIdx);
@@ -504,14 +483,11 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         private void SaveSelectedService()
         {
-            AbstractLyricService service = null;
-            var serviceIdx = -1;
+            var tlp = LyricServiceDetailsTableLayoutPanel;
             string quota = null;
             string token = null;
             string userId = null;
-            var tlp = LyricServiceDetailsTableLayoutPanel;
-
-            service = GetSelectedService(out serviceIdx);
+            AbstractLyricService service = GetSelectedService(out _);
 
             if (service == null) return;
 
