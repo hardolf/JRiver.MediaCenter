@@ -104,13 +104,12 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// </summary>
         /// <param name="currentVersion">The current version.</param>
         /// <param name="isInteractive">if set to <c>true</c> [is interactive].</param>
-        /// <returns><c>true</c> if a newer release is available; else <c>false</c>.</returns>
+        /// <returns><c>false</c> if a newer release is available; else <c>true</c>.</returns>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}</exception>
         public static bool UpdateCheck(Version currentVersion, bool isInteractive = false)
         {
             var req = WebRequest.Create(LatestReleaseUrl) as HttpWebRequest;
-            var reqDummy = WebRequest.Create(RepositoryUrl) as HttpWebRequest;
             var json = string.Empty;
             HttpWebResponse rsp = null;
 
@@ -118,29 +117,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             req.UserAgent = "request";
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-            // We have to make a dummy request first...don't know why yet...
-            try
-            {
-                using (rsp = reqDummy.GetResponse() as HttpWebResponse)
-                {
-                    if (rsp == null)
-                        throw new NullReferenceException("Response is null");
-                    if (rsp.StatusCode != HttpStatusCode.OK)
-                        throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
-
-                    using (var rspStream = rsp.GetResponseStream())
-                    {
-                        var reader = new StreamReader(rspStream, Encoding.UTF8);
-
-                        json = reader.ReadToEnd();
-                    }
-                }
-            }
-            catch
-            {
-                // Ignore any errors
-            }
 
             // Make the request for the latest release
             using (rsp = req.GetResponse() as HttpWebResponse)

@@ -31,6 +31,7 @@ namespace MediaCenter.LyricsFinder
         /***** Private misc. routines *****/
         /**********************************/
 
+        // Private assembly-wide variables
         private bool _isConnectedToMc = false;
         private bool _isDesignTime = false;
         private bool _isGridDataChanged = false; // Do not change this in code, always change the <c>IsDataChanged</c> property instead.
@@ -40,6 +41,8 @@ namespace MediaCenter.LyricsFinder
         private int _currentMouseRowIndex = -1;
         private int _playingIndex = -1;
         private static int _progressPercentage = -1;
+        private static int _McStatusIntervalNormal = 500; // ½ second
+        private static int _McStatusIntervalError = 10000; // 10 seconds
 
         private readonly string _logHeader = "".PadRight(80, '-');
         private string _statusWarning = string.Empty;
@@ -47,7 +50,6 @@ namespace MediaCenter.LyricsFinder
         private BitmapForm _bitmapForm = null;
         private LyricForm _lyricsForm = null;
         private List<string> _noLyricsSearchList = new List<string>();
-        //private ConfigurationFileChanger _configurationFileChanger;
 
 
         #region ErrorTest
@@ -70,6 +72,31 @@ namespace MediaCenter.LyricsFinder
         }
 
         #endregion
+
+
+        /// <summary>
+        /// Blanks the play status bitmaps.
+        /// </summary>
+        /// <param name="exceptionIndex">Index of the exception song that should not be blanked.</param>
+        private void BlankPlayStatusBitmaps(int exceptionIndex = -1)
+        {
+            var rows = MainDataGridView.Rows;
+            var blank = new Bitmap(16, 16);
+
+            blank.MakeTransparent();
+
+            // Clear all other bitmaps than the one in exceptionIndex row
+            foreach (DataGridViewRow r in rows)
+            {
+                if (r.Index == exceptionIndex)
+                    continue;
+
+                var c = r.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+
+                if (c.Value != blank)
+                    c.Value = blank;
+            }
+        }
 
 
         /// <summary>

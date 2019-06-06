@@ -507,19 +507,7 @@ namespace MediaCenter.LyricsFinder
                         var cell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
                         var blank = new Bitmap(16, 16);
 
-                        blank.MakeTransparent();
-
-                        // Clear all other bitmaps than the one in playIdx
-                        foreach (DataGridViewRow r in rows)
-                        {
-                            if (r.Index == playIdx)
-                                continue;
-
-                            var c = r.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
-
-                            if (c.Value != blank)
-                                c.Value = blank;
-                        }
+                        BlankPlayStatusBitmaps(playIdx); // Clear all other bitmaps than the one in playIdx row
 
                         if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
                         {
@@ -536,11 +524,17 @@ namespace MediaCenter.LyricsFinder
                     } 
                 }
 
+                McStatusTimer.Interval = _McStatusIntervalNormal;
                 McStatusTimer.Start();
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                // We don't bother the user with this error, since MC could just be shut down.
+                // Instead we set up the timer interval and try again.
+                ErrorHandling.ErrorLog($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                BlankPlayStatusBitmaps();
+                McStatusTimer.Interval = _McStatusIntervalError;
+                McStatusTimer.Start();
             }
         }
 
