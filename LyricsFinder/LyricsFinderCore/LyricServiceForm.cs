@@ -139,7 +139,8 @@ namespace MediaCenter.LyricsFinder.Model
         /// <param name="caption">The caption.</param>
         /// <param name="value">The value.</param>
         /// <param name="isEditAllowed">if set to <c>true</c> value edit is allowed; else it is read-only.</param>
-        private void FillRow(string caption, string value, bool isEditAllowed = false)
+        /// <param name="tooltip">The tooltip.</param>
+        private void FillRow(string caption, string value, bool isEditAllowed = false, string tooltip = "")
         {
             var tlp = LyricServiceDetailsTableLayoutPanel;
             var rowIdx = -1;
@@ -168,6 +169,11 @@ namespace MediaCenter.LyricsFinder.Model
             txtValue.TabStop = false;
             txtValue.Text = value;
             txtValue.WordWrap = false;
+
+            if (!tooltip.IsNullOrEmptyTrimmed())
+                LyricServiceFormToolTip.SetToolTip(txtValue, tooltip);
+            else if (isEditAllowed)
+                LyricServiceFormToolTip.SetToolTip(txtValue, $"You can edit the \"{caption}\" value");
 
             AutoSizeTextBox(txtValue);
 

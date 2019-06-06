@@ -71,11 +71,11 @@ namespace MediaCenter.LyricsFinder
             this.FileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsSearchAllStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
-            this.ToolsLyricsServicesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
+            this.ToolsLyricsServicesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsMcWsConnectionpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsShowLogMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToolSepMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolSepMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolsTestMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DataChangedTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -91,6 +91,8 @@ namespace MediaCenter.LyricsFinder
             this.ContextPlayPauseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextPlayStopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.McStatusTimer = new System.Windows.Forms.Timer(this.components);
+            this.ToolSepMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolSepMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.MainContainer.BottomToolStripPanel.SuspendLayout();
             this.MainContainer.ContentPanel.SuspendLayout();
             this.MainContainer.TopToolStripPanel.SuspendLayout();
@@ -395,10 +397,12 @@ namespace MediaCenter.LyricsFinder
             this.ToolsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolsSearchAllStartStopButton,
             this.ToolsPlayStartStopButton,
+            this.ToolSepMenuItem1,
             this.ToolsLyricsServicesMenuItem,
             this.ToolsMcWsConnectionpMenuItem,
+            this.ToolSepMenuItem2,
             this.ToolsShowLogMenuItem,
-            this.ToolSepMenuItem1,
+            this.ToolSepMenuItem3,
             this.ToolsTestMenuItem});
             this.ToolsMenuItem.Name = "ToolsMenuItem";
             this.ToolsMenuItem.Size = new System.Drawing.Size(47, 20);
@@ -419,16 +423,6 @@ namespace MediaCenter.LyricsFinder
             this.ToolsSearchAllStartStopButton.TextStop = "&Stop search all";
             this.ToolsSearchAllStartStopButton.ToolTipText = "Start / stop finding all the lyrics for the current playlist";
             // 
-            // ToolsLyricsServicesMenuItem
-            // 
-            this.ToolsLyricsServicesMenuItem.Name = "ToolsLyricsServicesMenuItem";
-            this.ToolsLyricsServicesMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Y)));
-            this.ToolsLyricsServicesMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.ToolsLyricsServicesMenuItem.Text = "L&yric services";
-            this.ToolsLyricsServicesMenuItem.ToolTipText = "Select the services to be used when searching for lyrics. \r\nYou can also change t" +
-    "he search service order.";
-            this.ToolsLyricsServicesMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
-            // 
             // ToolsPlayStartStopButton
             // 
             this.ToolsPlayStartStopButton.Clicked = false;
@@ -443,6 +437,16 @@ namespace MediaCenter.LyricsFinder
             this.ToolsPlayStartStopButton.TextStart = "Start &play";
             this.ToolsPlayStartStopButton.TextStop = "Stop &play";
             this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item in the current playlist";
+            // 
+            // ToolsLyricsServicesMenuItem
+            // 
+            this.ToolsLyricsServicesMenuItem.Name = "ToolsLyricsServicesMenuItem";
+            this.ToolsLyricsServicesMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Y)));
+            this.ToolsLyricsServicesMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.ToolsLyricsServicesMenuItem.Text = "L&yric services";
+            this.ToolsLyricsServicesMenuItem.ToolTipText = "Select the services to be used when searching for lyrics. \r\nYou can also change t" +
+    "he search service order.";
+            this.ToolsLyricsServicesMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
             // 
             // ToolsMcWsConnectionpMenuItem
             // 
@@ -462,11 +466,11 @@ namespace MediaCenter.LyricsFinder
             this.ToolsShowLogMenuItem.ToolTipText = "Open the folder where the logs are located";
             this.ToolsShowLogMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
             // 
-            // ToolSepMenuItem1
+            // ToolSepMenuItem3
             // 
-            this.ToolSepMenuItem1.Name = "ToolSepMenuItem1";
-            this.ToolSepMenuItem1.Size = new System.Drawing.Size(195, 6);
-            this.ToolSepMenuItem1.Visible = false;
+            this.ToolSepMenuItem3.Name = "ToolSepMenuItem3";
+            this.ToolSepMenuItem3.Size = new System.Drawing.Size(195, 6);
+            this.ToolSepMenuItem3.Visible = false;
             // 
             // ToolsTestMenuItem
             // 
@@ -593,6 +597,16 @@ namespace MediaCenter.LyricsFinder
             this.McStatusTimer.Interval = 500;
             this.McStatusTimer.Tick += new System.EventHandler(this.McStatusTimer_Tick);
             // 
+            // ToolSepMenuItem1
+            // 
+            this.ToolSepMenuItem1.Name = "ToolSepMenuItem1";
+            this.ToolSepMenuItem1.Size = new System.Drawing.Size(195, 6);
+            // 
+            // ToolSepMenuItem2
+            // 
+            this.ToolSepMenuItem2.Name = "ToolSepMenuItem2";
+            this.ToolSepMenuItem2.Size = new System.Drawing.Size(195, 6);
+            // 
             // LyricsFinderCore
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -645,7 +659,7 @@ namespace MediaCenter.LyricsFinder
         private System.Windows.Forms.ToolStripMenuItem FileSaveMenuItem;
         private System.Windows.Forms.ToolStripTextBox DataChangedTextBox;
         private StartStopToolStripButton ToolsSearchAllStartStopButton;
-        private System.Windows.Forms.ToolStripSeparator ToolSepMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator ToolSepMenuItem3;
         private System.Windows.Forms.MenuStrip TopSubMenu;
         private System.Windows.Forms.ToolStripTextBox TopSubMenuTextBox;
         private System.Windows.Forms.ToolStripMenuItem ToolsLyricsServicesMenuItem;
@@ -671,6 +685,8 @@ namespace MediaCenter.LyricsFinder
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         private System.Windows.Forms.Timer McStatusTimer;
         private System.Windows.Forms.ToolStripMenuItem ToolsMcWsConnectionpMenuItem;
+        private System.Windows.Forms.ToolStripSeparator ToolSepMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator ToolSepMenuItem2;
     }
 
 }

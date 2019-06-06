@@ -22,7 +22,12 @@ namespace MediaCenter.LyricsFinder
     public partial class AboutBox : Form
     {
 
-        Assembly _assembly = null;
+        private Assembly _assembly = null;
+
+        private string _extraDescription = "\r\nThe LyricsFinder looks for lyrics in public lyric web services.\r\n"
+            + "\r\nLookup is done for all - or just one at a time - of the current songs in the \"Playing Now\" list in the JRiver Media Center.\r\n"
+            + "\r\nThe LyricsFinder can be used as a standalone program and/or as a plug-in for the JRiver Media Center.\r\n"
+            + "\r\nThe found lyrics are saved in the songs' tags.";
 
 
         /// <summary>
@@ -39,41 +44,58 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Gets the assembly title.
+        /// Gets the assembly company.
         /// </summary>
         /// <value>
-        /// The assembly title.
+        /// The assembly company.
         /// </value>
-        private string AssemblyTitle
+        private string AssemblyCompany
         {
             get
             {
-                object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+                object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
 
-                if (attributes.Length > 0)
-                {
-                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
+                if (attributes.Length == 0)
+                    return "";
 
-                    if (!titleAttribute.Title.IsNullOrEmptyTrimmed())
-                        return titleAttribute.Title;
-                }
-
-                return System.IO.Path.GetFileNameWithoutExtension(_assembly.CodeBase);
+                return ((AssemblyCompanyAttribute)attributes[0]).Company;
             }
         }
 
 
         /// <summary>
-        /// Gets the assembly version.
+        /// Gets the assembly copyright.
         /// </summary>
         /// <value>
-        /// The assembly version.
+        /// The assembly copyright.
         /// </value>
-        private string AssemblyVersion
+        private string AssemblyCopyright
         {
             get
             {
-                return _assembly.GetName().Version.ToString();
+                object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+
+                if (attributes.Length == 0)
+                    return "";
+
+                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the assembly build date.
+        /// </summary>
+        /// <value>
+        /// The assembly build date.
+        /// </value>
+        private string AssemblyBuildDate
+        {
+            get
+            {
+                var buildTime = _assembly.GetLinkerTime();
+
+                return buildTime.ToLongDateString();
             }
         }
 
@@ -119,40 +141,43 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Gets the assembly copyright.
+        /// Gets the assembly title.
         /// </summary>
         /// <value>
-        /// The assembly copyright.
+        /// The assembly title.
         /// </value>
-        private string AssemblyCopyright
+        private string AssemblyTitle
         {
             get
             {
-                object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+                object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
 
-                if (attributes.Length == 0)
-                    return "";
+                if (attributes.Length > 0)
+                {
+                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
 
-                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+                    if (!titleAttribute.Title.IsNullOrEmptyTrimmed())
+                        return titleAttribute.Title;
+                }
+
+                return System.IO.Path.GetFileNameWithoutExtension(_assembly.CodeBase);
             }
         }
 
+
         /// <summary>
-        /// Gets the assembly company.
+        /// Gets the assembly version.
         /// </summary>
         /// <value>
-        /// The assembly company.
+        /// The assembly version.
         /// </value>
-        private string AssemblyCompany
+        private string AssemblyVersion
         {
             get
             {
-                object[] attributes = _assembly.GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+                var version = _assembly.GetName().Version;
 
-                if (attributes.Length == 0)
-                    return "";
-
-                return ((AssemblyCompanyAttribute)attributes[0]).Company;
+                return $"{version.Major}.{version.Minor}.{version.Build}";
             }
         }
 
@@ -171,7 +196,8 @@ namespace MediaCenter.LyricsFinder
                 VersionLabel.Text = $"Version {AssemblyVersion}";
                 CopyrightLabel.Text = AssemblyCopyright;
                 CompanyNameLabel.Text = AssemblyCompany;
-                DescriptionTextBox.Text = AssemblyDescription;
+                BuildDateLabel.Text = $"Build date {AssemblyBuildDate}";
+                DescriptionTextBox.Text = AssemblyDescription + Environment.NewLine + _extraDescription;
             }
             catch (Exception ex)
             {
@@ -203,14 +229,19 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="LinkLabelLinkClickedEventArgs"/> instance containing the event data.</param>
-        private void ReleaseNotesLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void LinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             try
             {
-                var filePath = Path.Combine(Path.GetDirectoryName(_assembly.Location), "ReleaseNotes.html");
+                var path = string.Empty;
+
+                if (sender == ProjectLinkLabel)
+                    path = "https://github.com/hardolf/JRiver.MediaCenter";
+                else if (sender == ReleaseNotesLinkLabel)
+                    path = Path.Combine(Path.GetDirectoryName(_assembly.Location), "ReleaseNotes.html");
 
                 // Navigate to a URL.
-                System.Diagnostics.Process.Start(filePath);
+                System.Diagnostics.Process.Start(path);
             }
             catch (Exception ex)
             {

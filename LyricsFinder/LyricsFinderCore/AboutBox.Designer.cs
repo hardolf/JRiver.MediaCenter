@@ -27,6 +27,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutBox));
             this.AboutBoxPanel = new System.Windows.Forms.Panel();
             this.AboutBoxLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -38,6 +39,9 @@
             this.DescriptionTextBox = new System.Windows.Forms.TextBox();
             this.CloseButton = new System.Windows.Forms.Button();
             this.ReleaseNotesLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.BuildDateLabel = new System.Windows.Forms.Label();
+            this.ProjectLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.AboutToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.AboutBoxPanel.SuspendLayout();
             this.AboutBoxLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
@@ -51,7 +55,7 @@
             this.AboutBoxPanel.Margin = new System.Windows.Forms.Padding(0);
             this.AboutBoxPanel.Name = "AboutBoxPanel";
             this.AboutBoxPanel.Padding = new System.Windows.Forms.Padding(5);
-            this.AboutBoxPanel.Size = new System.Drawing.Size(384, 211);
+            this.AboutBoxPanel.Size = new System.Drawing.Size(484, 326);
             this.AboutBoxPanel.TabIndex = 0;
             // 
             // AboutBoxLayoutPanel
@@ -63,23 +67,27 @@
             this.AboutBoxLayoutPanel.Controls.Add(this.LogoPictureBox, 0, 0);
             this.AboutBoxLayoutPanel.Controls.Add(this.ProductNameLabel, 1, 0);
             this.AboutBoxLayoutPanel.Controls.Add(this.VersionLabel, 1, 1);
-            this.AboutBoxLayoutPanel.Controls.Add(this.CopyrightLabel, 1, 2);
-            this.AboutBoxLayoutPanel.Controls.Add(this.CompanyNameLabel, 1, 3);
-            this.AboutBoxLayoutPanel.Controls.Add(this.DescriptionTextBox, 1, 4);
-            this.AboutBoxLayoutPanel.Controls.Add(this.CloseButton, 2, 5);
+            this.AboutBoxLayoutPanel.Controls.Add(this.CopyrightLabel, 1, 4);
+            this.AboutBoxLayoutPanel.Controls.Add(this.CompanyNameLabel, 1, 5);
+            this.AboutBoxLayoutPanel.Controls.Add(this.DescriptionTextBox, 1, 6);
+            this.AboutBoxLayoutPanel.Controls.Add(this.CloseButton, 2, 7);
             this.AboutBoxLayoutPanel.Controls.Add(this.ReleaseNotesLinkLabel, 2, 1);
+            this.AboutBoxLayoutPanel.Controls.Add(this.BuildDateLabel, 1, 2);
+            this.AboutBoxLayoutPanel.Controls.Add(this.ProjectLinkLabel, 1, 3);
             this.AboutBoxLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.AboutBoxLayoutPanel.Location = new System.Drawing.Point(5, 5);
             this.AboutBoxLayoutPanel.Margin = new System.Windows.Forms.Padding(0);
             this.AboutBoxLayoutPanel.Name = "AboutBoxLayoutPanel";
-            this.AboutBoxLayoutPanel.RowCount = 6;
+            this.AboutBoxLayoutPanel.RowCount = 8;
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.AboutBoxLayoutPanel.Size = new System.Drawing.Size(374, 201);
+            this.AboutBoxLayoutPanel.Size = new System.Drawing.Size(474, 316);
             this.AboutBoxLayoutPanel.TabIndex = 1;
             // 
             // LogoPictureBox
@@ -88,8 +96,8 @@
             this.LogoPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("LogoPictureBox.Image")));
             this.LogoPictureBox.Location = new System.Drawing.Point(3, 3);
             this.LogoPictureBox.Name = "LogoPictureBox";
-            this.AboutBoxLayoutPanel.SetRowSpan(this.LogoPictureBox, 6);
-            this.LogoPictureBox.Size = new System.Drawing.Size(121, 195);
+            this.AboutBoxLayoutPanel.SetRowSpan(this.LogoPictureBox, 8);
+            this.LogoPictureBox.Size = new System.Drawing.Size(155, 310);
             this.LogoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.LogoPictureBox.TabIndex = 12;
             this.LogoPictureBox.TabStop = false;
@@ -98,65 +106,60 @@
             // 
             this.AboutBoxLayoutPanel.SetColumnSpan(this.ProductNameLabel, 2);
             this.ProductNameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ProductNameLabel.Location = new System.Drawing.Point(133, 0);
+            this.ProductNameLabel.Location = new System.Drawing.Point(167, 0);
             this.ProductNameLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.ProductNameLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.ProductNameLabel.Name = "ProductNameLabel";
-            this.ProductNameLabel.Size = new System.Drawing.Size(238, 17);
+            this.ProductNameLabel.Size = new System.Drawing.Size(304, 17);
             this.ProductNameLabel.TabIndex = 19;
             this.ProductNameLabel.Text = "Product Name";
-            this.ProductNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // VersionLabel
             // 
             this.VersionLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.VersionLabel.Location = new System.Drawing.Point(133, 25);
+            this.VersionLabel.Location = new System.Drawing.Point(167, 25);
             this.VersionLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.VersionLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.VersionLabel.Name = "VersionLabel";
-            this.VersionLabel.Size = new System.Drawing.Size(114, 17);
+            this.VersionLabel.Size = new System.Drawing.Size(147, 17);
             this.VersionLabel.TabIndex = 0;
             this.VersionLabel.Text = "Version";
-            this.VersionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // CopyrightLabel
             // 
             this.AboutBoxLayoutPanel.SetColumnSpan(this.CopyrightLabel, 2);
             this.CopyrightLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CopyrightLabel.Location = new System.Drawing.Point(133, 50);
+            this.CopyrightLabel.Location = new System.Drawing.Point(167, 100);
             this.CopyrightLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.CopyrightLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.CopyrightLabel.Name = "CopyrightLabel";
-            this.CopyrightLabel.Size = new System.Drawing.Size(238, 17);
+            this.CopyrightLabel.Size = new System.Drawing.Size(304, 17);
             this.CopyrightLabel.TabIndex = 21;
             this.CopyrightLabel.Text = "Copyright";
-            this.CopyrightLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // CompanyNameLabel
             // 
             this.AboutBoxLayoutPanel.SetColumnSpan(this.CompanyNameLabel, 2);
             this.CompanyNameLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CompanyNameLabel.Location = new System.Drawing.Point(133, 75);
+            this.CompanyNameLabel.Location = new System.Drawing.Point(167, 125);
             this.CompanyNameLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.CompanyNameLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.CompanyNameLabel.Name = "CompanyNameLabel";
-            this.CompanyNameLabel.Size = new System.Drawing.Size(238, 17);
+            this.CompanyNameLabel.Size = new System.Drawing.Size(304, 5);
             this.CompanyNameLabel.TabIndex = 22;
             this.CompanyNameLabel.Text = "Company Name";
-            this.CompanyNameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.CompanyNameLabel.Visible = false;
             // 
             // DescriptionTextBox
             // 
             this.AboutBoxLayoutPanel.SetColumnSpan(this.DescriptionTextBox, 2);
             this.DescriptionTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DescriptionTextBox.Location = new System.Drawing.Point(133, 103);
-            this.DescriptionTextBox.Margin = new System.Windows.Forms.Padding(6, 3, 3, 3);
+            this.DescriptionTextBox.Location = new System.Drawing.Point(167, 130);
+            this.DescriptionTextBox.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.DescriptionTextBox.Multiline = true;
             this.DescriptionTextBox.Name = "DescriptionTextBox";
             this.DescriptionTextBox.ReadOnly = true;
-            this.DescriptionTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.DescriptionTextBox.Size = new System.Drawing.Size(238, 65);
+            this.DescriptionTextBox.Size = new System.Drawing.Size(304, 156);
             this.DescriptionTextBox.TabIndex = 23;
             this.DescriptionTextBox.TabStop = false;
             this.DescriptionTextBox.Text = "Description";
@@ -165,7 +168,7 @@
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(296, 175);
+            this.CloseButton.Location = new System.Drawing.Point(396, 290);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
             this.CloseButton.TabIndex = 24;
@@ -175,15 +178,44 @@
             // ReleaseNotesLinkLabel
             // 
             this.ReleaseNotesLinkLabel.AutoSize = true;
+            this.ReleaseNotesLinkLabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ReleaseNotesLinkLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.ReleaseNotesLinkLabel.Location = new System.Drawing.Point(253, 25);
+            this.ReleaseNotesLinkLabel.Location = new System.Drawing.Point(323, 25);
+            this.ReleaseNotesLinkLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.ReleaseNotesLinkLabel.Name = "ReleaseNotesLinkLabel";
-            this.ReleaseNotesLinkLabel.Size = new System.Drawing.Size(75, 13);
+            this.ReleaseNotesLinkLabel.Size = new System.Drawing.Size(148, 25);
             this.ReleaseNotesLinkLabel.TabIndex = 25;
             this.ReleaseNotesLinkLabel.TabStop = true;
             this.ReleaseNotesLinkLabel.Text = "Release notes";
-            this.ReleaseNotesLinkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ReleaseNotesLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ReleaseNotesLinkLabel_LinkClicked);
+            this.ReleaseNotesLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
+            // 
+            // BuildDateLabel
+            // 
+            this.BuildDateLabel.AutoSize = true;
+            this.AboutBoxLayoutPanel.SetColumnSpan(this.BuildDateLabel, 2);
+            this.BuildDateLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BuildDateLabel.Location = new System.Drawing.Point(167, 50);
+            this.BuildDateLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
+            this.BuildDateLabel.Name = "BuildDateLabel";
+            this.BuildDateLabel.Size = new System.Drawing.Size(304, 25);
+            this.BuildDateLabel.TabIndex = 26;
+            this.BuildDateLabel.Text = "Build Date";
+            // 
+            // ProjectLinkLabel
+            // 
+            this.ProjectLinkLabel.AutoSize = true;
+            this.AboutBoxLayoutPanel.SetColumnSpan(this.ProjectLinkLabel, 2);
+            this.ProjectLinkLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProjectLinkLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.ProjectLinkLabel.Location = new System.Drawing.Point(167, 75);
+            this.ProjectLinkLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
+            this.ProjectLinkLabel.Name = "ProjectLinkLabel";
+            this.ProjectLinkLabel.Size = new System.Drawing.Size(304, 25);
+            this.ProjectLinkLabel.TabIndex = 25;
+            this.ProjectLinkLabel.TabStop = true;
+            this.ProjectLinkLabel.Text = "LyricsFinder project source on GitHub";
+            this.AboutToolTip.SetToolTip(this.ProjectLinkLabel, "https://github.com/hardolf/JRiver.MediaCenter");
+            this.ProjectLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
             // 
             // AboutBox
             // 
@@ -191,7 +223,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.CloseButton;
-            this.ClientSize = new System.Drawing.Size(384, 211);
+            this.ClientSize = new System.Drawing.Size(484, 326);
             this.Controls.Add(this.AboutBoxPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -224,5 +256,8 @@
         private System.Windows.Forms.TextBox DescriptionTextBox;
         private System.Windows.Forms.Button CloseButton;
         private System.Windows.Forms.LinkLabel ReleaseNotesLinkLabel;
+        private System.Windows.Forms.Label BuildDateLabel;
+        private System.Windows.Forms.LinkLabel ProjectLinkLabel;
+        private System.Windows.Forms.ToolTip AboutToolTip;
     }
 }
