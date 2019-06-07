@@ -4,10 +4,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.SharedComponents;
 
 
@@ -36,7 +38,32 @@ namespace MediaCenter.LyricsFinder
 
         private void CloseButton_Click(object sender, EventArgs e)
         {
-            Close();
+            try
+            {
+                Close();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Click event of the CopyToClipboardButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void CopyToClipboardButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Clipboard.SetText(ErrorTextBox.Text);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+            }
         }
 
 
@@ -46,7 +73,14 @@ namespace MediaCenter.LyricsFinder
         /// <param name="message">The message.</param>
         public static void Show(string message)
         {
-            Show(null, message);
+            try
+            {
+                Show(null, message);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+            }
         }
 
 
@@ -57,13 +91,20 @@ namespace MediaCenter.LyricsFinder
         /// <param name="message">The message.</param>
         public static void Show(IWin32Window owner, string message)
         {
-            var frm = new ErrorForm();
+            try
+            {
+                var frm = new ErrorForm();
 
-            frm.ErrorTextBox.Text = message;
-            frm.ErrorTextBox.Select(0, 0);
-            frm.ErrorTextBox.AutoSizeTextBox();
+                frm.ErrorTextBox.Text = message;
+                frm.ErrorTextBox.Select(0, 0);
+                frm.ErrorTextBox.AutoSizeTextBox();
 
-            frm.ShowDialog(owner);
+                frm.ShowDialog(owner);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+            }
         }
 
 
@@ -75,14 +116,21 @@ namespace MediaCenter.LyricsFinder
         /// <param name="message">The message.</param>
         public static void Show(IWin32Window owner, string title, string message)
         {
-            var frm = new ErrorForm();
+            try
+            {
+                var frm = new ErrorForm();
 
-            frm.ErrorTextBox.Text = message;
-            frm.ErrorTextBox.Select(0, 0);
-            frm.Text = title;
-            frm.ErrorTextBox.AutoSizeTextBox();
+                frm.ErrorTextBox.Text = message;
+                frm.ErrorTextBox.Select(0, 0);
+                frm.Text = title;
+                frm.ErrorTextBox.AutoSizeTextBox();
 
-            frm.ShowDialog(owner);
+                frm.ShowDialog(owner);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+            }
         }
 
     }
