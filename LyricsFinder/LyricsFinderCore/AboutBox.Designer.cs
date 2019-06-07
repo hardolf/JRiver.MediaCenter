@@ -41,8 +41,8 @@
             this.ReleaseNotesLinkLabel = new System.Windows.Forms.LinkLabel();
             this.BuildDateLabel = new System.Windows.Forms.Label();
             this.ProjectLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.AboutToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.UpdateCheckButton = new System.Windows.Forms.Button();
+            this.AboutToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.AboutBoxPanel.SuspendLayout();
             this.AboutBoxLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
