@@ -259,7 +259,7 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                Model.Helpers.Utility.UpdateCheck(_assembly.GetName().Version, true);
+                Model.Helpers.Utility.UpdateCheckWithRetries(_assembly.GetName().Version, true);
             }
             catch (Exception ex)
             {

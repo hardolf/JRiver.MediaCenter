@@ -63,11 +63,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             var req = WebRequest.Create(url) as HttpWebRequest;
             var json = string.Empty;
-            HttpWebResponse rsp = null;
 
             try
             {
-                using (rsp = req.GetResponse() as HttpWebResponse)
+                using (var rsp = req.GetResponse() as HttpWebResponse)
                 {
                     if (rsp == null)
                         throw new NullReferenceException("Response is null");

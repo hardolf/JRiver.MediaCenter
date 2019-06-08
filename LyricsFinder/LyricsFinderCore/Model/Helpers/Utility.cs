@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using MediaCenter.SharedComponents;
@@ -111,7 +112,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         {
             var req = WebRequest.Create(LatestReleaseUrl) as HttpWebRequest;
             var json = string.Empty;
-            HttpWebResponse rsp = null;
 
             req.Method = "GET";
             req.UserAgent = "request";
@@ -119,17 +119,15 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             // Make the request for the latest release
-            using (rsp = req.GetResponse() as HttpWebResponse)
+            using (var rsp = req.GetResponse() as HttpWebResponse)
             {
                 if (rsp == null)
                     throw new NullReferenceException("Response is null");
                 if (rsp.StatusCode != HttpStatusCode.OK)
                     throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
 
-                using (var rspStream = rsp.GetResponseStream())
+                using (var reader = new StreamReader(rsp.GetResponseStream(), Encoding.UTF8))
                 {
-                    var reader = new StreamReader(rspStream, Encoding.UTF8);
-
                     json = reader.ReadToEnd();
                 }
             }
@@ -169,6 +167,46 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                     + $"{urlString}";
 
             ErrorForm.Show(null, "Update information", msg);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Check for updates and retries 5 times.
+        /// </summary>
+        /// <param name="currentVersion">The current version.</param>
+        /// <param name="isInteractive">if set to <c>true</c> [is interactive].</param>
+        /// <param name="retryCount">The retry count.</param>
+        /// <returns>
+        ///   <c>false</c> if a newer release is available; else <c>true</c>.
+        /// </returns>
+        /// <exception cref="NullReferenceException">Response is null</exception>
+        /// <exception cref="Exception">Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}</exception>
+        /// <exception cref="WebException">Error contacting the latest release site ({LatestReleaseUrl}): {ex.Message}</exception>
+        public static bool UpdateCheckWithRetries(Version currentVersion, bool isInteractive = false, int retryCount = 5)
+        {
+            const int retryInterval = 500; // Milliseconds
+
+            var ret = true;
+
+            for (int i = 0; i < retryCount; i++)
+            {
+                try
+                {
+                    ret = UpdateCheck(currentVersion, isInteractive);
+
+                    break;
+                }
+                catch (WebException ex)
+                {
+                    // Should we ignore this exception for now?
+                    if (i < retryCount - 1)
+                        Thread.Sleep(retryInterval);
+                    else
+                        throw new WebException($"Error contacting the latest release site ({LatestReleaseUrl}): {ex.Message}");
+                }
+            }
 
             return ret;
         }

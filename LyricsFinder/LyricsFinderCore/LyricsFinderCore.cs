@@ -588,7 +588,7 @@ namespace MediaCenter.LyricsFinder
                         break;
 
                     case nameof(HelpLookForUpdatesMenuItem):
-                        Model.Helpers.Utility.UpdateCheck(EntryAssembly.GetName().Version, true);
+                        Model.Helpers.Utility.UpdateCheckWithRetries(EntryAssembly.GetName().Version, true);
                         break;
 
                     case nameof(ToolsLyricsServicesMenuItem):
@@ -939,23 +939,26 @@ namespace MediaCenter.LyricsFinder
                     || ((updInterval > 0) && (daysSinceLast >= updInterval)))
                 {
                     var version = Assembly.GetExecutingAssembly().GetName().Version;
-                    var isUpdated = Model.Helpers.Utility.UpdateCheck(version);
+                    var isUpdated = Model.Helpers.Utility.UpdateCheckWithRetries(version);
 
                     if (!isUpdated)
-                        Model.Helpers.Utility.UpdateCheck(version, true);
+                        Model.Helpers.Utility.UpdateCheckWithRetries(version, true);
 
                     _lastUpdateCheck = DateTime.Now;
                     Properties.Settings.Default.LastUpdateCheck = _lastUpdateCheck.ToString(CultureInfo.InvariantCulture);
                 }
 
-                // We only use this timer once, so no need to start it again
+                // We only use this timer once in each session, when the check is successful, so no need to start it again
             }
 #pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
 #pragma warning restore CS0168 // Variable is declared but never used
             {
-                // We ignore this exception!
+                // We ignore this exception for now
                 // ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+
+                UpdateCheckTimer.Interval *= 10;
+                UpdateCheckTimer.Start();
             }
         }
 
