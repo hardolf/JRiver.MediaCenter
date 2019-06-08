@@ -46,6 +46,7 @@ namespace MediaCenter.LyricsFinder
 
         private readonly string _logHeader = "".PadRight(80, '-');
         private string _statusWarning = string.Empty;
+        private DateTime _lastUpdateCheck = DateTime.MinValue;
 
         private BitmapForm _bitmapForm = null;
         private LyricForm _lyricsForm = null;
@@ -264,7 +265,7 @@ namespace MediaCenter.LyricsFinder
                         && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName)
                         && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword)))
                     {
-                        var frm = new ConfigurationForm("The LyricsFinder is not configured yet");
+                        var frm = new OptionForm("The LyricsFinder is not configured yet");
 
                         frm.ShowDialog(this);
                     }
@@ -290,12 +291,15 @@ namespace MediaCenter.LyricsFinder
 
                     msg = "initializing the Media Center MCWS connection";
                     Logging.Log(_progressPercentage, msg + "...", true);
-
                     McRestService.Init(
                         LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey,
                         LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl,
                         LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName,
                         LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword);
+
+                    msg = "initializing the update check";
+                    Logging.Log(_progressPercentage, msg + "...", true);
+                    UpdateCheckTimer.Start();
                 }
                 catch (Exception ex)
                 {
@@ -521,6 +525,8 @@ namespace MediaCenter.LyricsFinder
         private void LoadFormSettings()
         {
             //Properties.Settings.Default.Reload();
+            if (!DateTime.TryParse(Properties.Settings.Default.LastUpdateCheck, CultureInfo.InvariantCulture, DateTimeStyles.None, out _lastUpdateCheck))
+                _lastUpdateCheck = DateTime.MinValue;
 
             // Ensure the default of not overwriting (i.e. skipping) existing lyrics
             OverwriteMenuItem.Checked = false;

@@ -596,8 +596,8 @@ namespace MediaCenter.LyricsFinder
                         lyricsServiceForm.ShowDialog(this);
                         break;
 
-                    case nameof(ToolsMcWsConnectionpMenuItem):
-                        var frm = new ConfigurationForm("LyricsFinder connection setup");
+                    case nameof(ToolsOptionsMenuItem):
+                        var frm = new OptionForm("LyricsFinder connection setup");
                         frm.ShowDialog(this);
                         break;
 
@@ -917,6 +917,36 @@ namespace MediaCenter.LyricsFinder
             {
                 ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
             }
+        }
+
+
+        /// <summary>
+        /// Handles the Tick event of the UpdateCheckTimer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void UpdateCheckTimer_Tick(object sender, EventArgs e)
+        {
+            UpdateCheckTimer.Stop();
+
+            // Is it about time for a check?
+            var updInterval = Properties.Settings.Default.UpdateCheckInterval;
+            var daysSinceLast = (DateTime.Now - _lastUpdateCheck).TotalDays;
+
+            if ((updInterval == 0)
+                || ((updInterval > 0) && (daysSinceLast >= updInterval)))
+            {
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+                var isUpdated = Model.Helpers.Utility.UpdateCheck(version);
+
+                if (!isUpdated)
+                    Model.Helpers.Utility.UpdateCheck(version, true);
+
+                _lastUpdateCheck = DateTime.Now;
+                Properties.Settings.Default.LastUpdateCheck = _lastUpdateCheck.ToString(CultureInfo.InvariantCulture);
+            }
+
+            // We only use this timer once, so no need to start it again
         }
 
     }

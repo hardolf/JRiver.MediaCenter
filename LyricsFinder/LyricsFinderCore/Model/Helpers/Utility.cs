@@ -165,7 +165,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             else
                 msg = $"LyricsFinder v{currentVersion} is not the latest release.\r\n"
                     + $"An update to v{latestVersion} is available.\r\n\r\n"
-                    + $"Visit the download site:\r\n\r\n"
+                    + $"You can visit the download site here:\r\n\r\n"
                     + $"{urlString}";
 
             ErrorForm.Show(null, "Update information", msg);

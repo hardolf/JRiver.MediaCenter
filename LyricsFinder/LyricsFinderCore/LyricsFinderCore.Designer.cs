@@ -74,7 +74,7 @@ namespace MediaCenter.LyricsFinder
             this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.ToolSepMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolsLyricsServicesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToolsMcWsConnectionpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsOptionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolSepMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolsShowLogMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolSepMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
@@ -95,6 +95,7 @@ namespace MediaCenter.LyricsFinder
             this.ContextPlayPauseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextPlayStopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.McStatusTimer = new System.Windows.Forms.Timer(this.components);
+            this.UpdateCheckTimer = new System.Windows.Forms.Timer(this.components);
             this.MainContainer.BottomToolStripPanel.SuspendLayout();
             this.MainContainer.ContentPanel.SuspendLayout();
             this.MainContainer.TopToolStripPanel.SuspendLayout();
@@ -401,7 +402,7 @@ namespace MediaCenter.LyricsFinder
             this.ToolsPlayStartStopButton,
             this.ToolSepMenuItem1,
             this.ToolsLyricsServicesMenuItem,
-            this.ToolsMcWsConnectionpMenuItem,
+            this.ToolsOptionsMenuItem,
             this.ToolSepMenuItem2,
             this.ToolsShowLogMenuItem,
             this.ToolSepMenuItem3,
@@ -455,14 +456,14 @@ namespace MediaCenter.LyricsFinder
     "he search service order.";
             this.ToolsLyricsServicesMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
             // 
-            // ToolsMcWsConnectionpMenuItem
+            // ToolsOptionsMenuItem
             // 
-            this.ToolsMcWsConnectionpMenuItem.Name = "ToolsMcWsConnectionpMenuItem";
-            this.ToolsMcWsConnectionpMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.M)));
-            this.ToolsMcWsConnectionpMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.ToolsMcWsConnectionpMenuItem.Text = "&MC connection...";
-            this.ToolsMcWsConnectionpMenuItem.ToolTipText = "Configure connection to Media Center Network Service";
-            this.ToolsMcWsConnectionpMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.ToolsOptionsMenuItem.Name = "ToolsOptionsMenuItem";
+            this.ToolsOptionsMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
+            this.ToolsOptionsMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.ToolsOptionsMenuItem.Text = "&Options...";
+            this.ToolsOptionsMenuItem.ToolTipText = "Configure connection to Media Center Network Service";
+            this.ToolsOptionsMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
             // 
             // ToolSepMenuItem2
             // 
@@ -624,6 +625,11 @@ namespace MediaCenter.LyricsFinder
             this.McStatusTimer.Interval = 500;
             this.McStatusTimer.Tick += new System.EventHandler(this.McStatusTimer_Tick);
             // 
+            // UpdateCheckTimer
+            // 
+            this.UpdateCheckTimer.Interval = 5000;
+            this.UpdateCheckTimer.Tick += new System.EventHandler(this.UpdateCheckTimer_Tick);
+            // 
             // LyricsFinderCore
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -701,11 +707,12 @@ namespace MediaCenter.LyricsFinder
         private System.Windows.Forms.DataGridViewTextBoxColumn Lyrics;
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         private System.Windows.Forms.Timer McStatusTimer;
-        private System.Windows.Forms.ToolStripMenuItem ToolsMcWsConnectionpMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolsOptionsMenuItem;
         private System.Windows.Forms.ToolStripSeparator ToolSepMenuItem1;
         private System.Windows.Forms.ToolStripSeparator ToolSepMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem HelpLookForUpdatesMenuItem;
         private System.Windows.Forms.ToolStripSeparator HelpSepMenuItem2;
+        private System.Windows.Forms.Timer UpdateCheckTimer;
     }
 
 }

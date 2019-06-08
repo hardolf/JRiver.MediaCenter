@@ -20,5 +20,11 @@
     <Setting Name="LyricsFormSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">400, 500</Value>
     </Setting>
+    <Setting Name="UpdateCheckInterval" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="LastUpdateCheck" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
