@@ -927,26 +927,36 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void UpdateCheckTimer_Tick(object sender, EventArgs e)
         {
-            UpdateCheckTimer.Stop();
-
-            // Is it about time for a check?
-            var updInterval = Properties.Settings.Default.UpdateCheckInterval;
-            var daysSinceLast = (DateTime.Now - _lastUpdateCheck).TotalDays;
-
-            if ((updInterval == 0)
-                || ((updInterval > 0) && (daysSinceLast >= updInterval)))
+            try
             {
-                var version = Assembly.GetExecutingAssembly().GetName().Version;
-                var isUpdated = Model.Helpers.Utility.UpdateCheck(version);
+                UpdateCheckTimer.Stop();
 
-                if (!isUpdated)
-                    Model.Helpers.Utility.UpdateCheck(version, true);
+                // Is it about time for a check?
+                var updInterval = Properties.Settings.Default.UpdateCheckInterval;
+                var daysSinceLast = (DateTime.Now - _lastUpdateCheck).TotalDays;
 
-                _lastUpdateCheck = DateTime.Now;
-                Properties.Settings.Default.LastUpdateCheck = _lastUpdateCheck.ToString(CultureInfo.InvariantCulture);
+                if ((updInterval == 0)
+                    || ((updInterval > 0) && (daysSinceLast >= updInterval)))
+                {
+                    var version = Assembly.GetExecutingAssembly().GetName().Version;
+                    var isUpdated = Model.Helpers.Utility.UpdateCheck(version);
+
+                    if (!isUpdated)
+                        Model.Helpers.Utility.UpdateCheck(version, true);
+
+                    _lastUpdateCheck = DateTime.Now;
+                    Properties.Settings.Default.LastUpdateCheck = _lastUpdateCheck.ToString(CultureInfo.InvariantCulture);
+                }
+
+                // We only use this timer once, so no need to start it again
             }
-
-            // We only use this timer once, so no need to start it again
+#pragma warning disable CS0168 // Variable is declared but never used
+            catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
+            {
+                // We ignore this exception!
+                // ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+            }
         }
 
     }
