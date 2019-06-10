@@ -21,6 +21,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         Info,
         PlayByIndex,
         Playlist,
+        PlaylistList,
         PlayPause,
         Stop,
         SetInfo

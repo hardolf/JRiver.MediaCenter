@@ -47,7 +47,7 @@
             this.ErrorPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ErrorPanel.Location = new System.Drawing.Point(0, 0);
             this.ErrorPanel.Name = "ErrorPanel";
-            this.ErrorPanel.Size = new System.Drawing.Size(284, 111);
+            this.ErrorPanel.Size = new System.Drawing.Size(234, 81);
             this.ErrorPanel.TabIndex = 0;
             // 
             // ErrorLayoutPanel
@@ -55,8 +55,8 @@
             this.ErrorLayoutPanel.AutoSize = true;
             this.ErrorLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ErrorLayoutPanel.ColumnCount = 2;
-            this.ErrorLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.ErrorLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.ErrorLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.ErrorLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.ErrorLayoutPanel.Controls.Add(this.ErrorTextBox, 0, 0);
             this.ErrorLayoutPanel.Controls.Add(this.CloseButton, 1, 1);
             this.ErrorLayoutPanel.Controls.Add(this.CopyToClipboardButton, 0, 1);
@@ -66,26 +66,27 @@
             this.ErrorLayoutPanel.RowCount = 2;
             this.ErrorLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.ErrorLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.ErrorLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.ErrorLayoutPanel.Size = new System.Drawing.Size(284, 111);
+            this.ErrorLayoutPanel.Size = new System.Drawing.Size(234, 81);
             this.ErrorLayoutPanel.TabIndex = 4;
             // 
             // ErrorTextBox
             // 
             this.ErrorTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ErrorLayoutPanel.SetColumnSpan(this.ErrorTextBox, 2);
             this.ErrorTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ErrorTextBox.Location = new System.Drawing.Point(3, 3);
+            this.ErrorTextBox.Location = new System.Drawing.Point(5, 10);
+            this.ErrorTextBox.Margin = new System.Windows.Forms.Padding(5, 10, 5, 10);
             this.ErrorTextBox.Multiline = true;
             this.ErrorTextBox.Name = "ErrorTextBox";
             this.ErrorTextBox.ReadOnly = true;
-            this.ErrorTextBox.Size = new System.Drawing.Size(136, 75);
+            this.ErrorTextBox.Size = new System.Drawing.Size(224, 31);
             this.ErrorTextBox.TabIndex = 3;
             // 
             // CloseButton
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(206, 85);
+            this.CloseButton.Location = new System.Drawing.Point(156, 55);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
             this.CloseButton.TabIndex = 4;
@@ -95,7 +96,7 @@
             // CopyToClipboardButton
             // 
             this.CopyToClipboardButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.CopyToClipboardButton.Location = new System.Drawing.Point(3, 85);
+            this.CopyToClipboardButton.Location = new System.Drawing.Point(3, 55);
             this.CopyToClipboardButton.Name = "CopyToClipboardButton";
             this.CopyToClipboardButton.Size = new System.Drawing.Size(103, 23);
             this.CopyToClipboardButton.TabIndex = 5;
@@ -111,9 +112,9 @@
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.CancelButton = this.CloseButton;
-            this.ClientSize = new System.Drawing.Size(284, 111);
+            this.ClientSize = new System.Drawing.Size(234, 81);
             this.Controls.Add(this.ErrorPanel);
-            this.MinimumSize = new System.Drawing.Size(300, 150);
+            this.MinimumSize = new System.Drawing.Size(250, 120);
             this.Name = "ErrorForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Error";

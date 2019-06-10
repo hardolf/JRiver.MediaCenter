@@ -101,7 +101,7 @@ namespace MediaCenter.LyricsFinder
 
                 // Get the current Media Center info
                 McInfo();
-                var playList = McRestService.GetPlayList();
+                var playList = McRestService.GetPlayNowList();
 
                 workerState.Message = $"Connected to MediaCenter, the current playlist has {playList.Items.Count} items.";
                 workerState.Items = playList.Items;
@@ -144,7 +144,7 @@ namespace MediaCenter.LyricsFinder
                 if (!worker.CancellationPending)
                     worker.ReportProgress(0, workerState);
 
-                var playList = McRestService.GetPlayList();
+                var playList = McRestService.GetPlayNowList();
 
                 // Iterate the music file items
                 workerState.Message = $"Finding lyrics for the current playlist with {playList.Items.Count} items...";

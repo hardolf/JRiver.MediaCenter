@@ -181,6 +181,24 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the DropDownOpening event of the FileSelectPlaylistMenuItem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void FileSelectPlaylistMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            try
+            {
+                LoadPlayLists();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the KeyDown event of the LyricsFinderCore control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -499,29 +517,49 @@ namespace MediaCenter.LyricsFinder
 
                 if (mcInfo != null)
                 {
-                    var playIdx = int.Parse(mcInfo.PlayingNowPosition, NumberStyles.None, CultureInfo.InvariantCulture);
+                    var key = string.Join("|", mcInfo.Artist, mcInfo.Album, mcInfo.Name);
+                    var blank = new Bitmap(16, 16);
 
-                    if ((playIdx >= 0) && (playIdx < rows.Count))
+                    // Try to find a song in the current list matching the one (if any) that Media Center is playing
+                    // and set the bitmap to play or blank accordingly.
+                    // The reason we don't just use the index is, that the current playlist in LyricsFinder 
+                    // may be another than the Media Center "Playing Now" list.
+                    for (int i = 0; i < rows.Count; i++)
                     {
-                        var row = rows[playIdx];
-                        var cell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
-                        var blank = new Bitmap(16, 16);
+                        var row = rows[i];
+                        var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+                        var artistCell = row.Cells[(int)GridColumnEnum.Artist] as DataGridViewTextBoxCell;
+                        var albumCell = row.Cells[(int)GridColumnEnum.Album] as DataGridViewTextBoxCell;
+                        var titleCell = row.Cells[(int)GridColumnEnum.Title] as DataGridViewTextBoxCell;
+                        var found = false;
 
-                        BlankPlayStatusBitmaps(playIdx); // Clear all other bitmaps than the one in playIdx row
+                        if (key.Equals(string.Join("|", artistCell.Value.ToString(), albumCell.Value.ToString(), titleCell.Value.ToString()), StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            found = true;
 
-                        if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                        {
-                            cell.Value = Properties.Resources.Play;
+                            BlankPlayStatusBitmaps(i); // Clear all other bitmaps than the one in playIdx row
+
+                            if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                            {
+                                imgCell.Value = Properties.Resources.Play;
+                            }
+                            else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                            {
+                                imgCell.Value = Properties.Resources.Pause;
+                            }
+                            else
+                            {
+                                imgCell.Value = blank;
+                            }
+
+                            break;
                         }
-                        else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                        {
-                            cell.Value = Properties.Resources.Pause;
-                        }
-                        else
-                        {
-                            cell.Value = blank;
-                        }
-                    } 
+
+                        // If not found, blank all bitmaps
+                        if (!found)
+                            BlankPlayStatusBitmaps();
+                    }
+
                 }
 
                 McStatusTimer.Interval = _McStatusIntervalNormal;
@@ -562,63 +600,72 @@ namespace MediaCenter.LyricsFinder
 
                 position.Offset(menuItem.Bounds.Size.Width, 0);
 
-                switch (itemName)
+                if (itemName.StartsWith(nameof(FileSelectPlaylistMenuItem), StringComparison.InvariantCultureIgnoreCase))
                 {
-                    case nameof(FileReloadMenuItem):
-                        _isConnectedToMc = false;
-                        LyricsFinderCore_Load(this, new EventArgs());
-                        break;
+                    var idx = itemName.LastIndexOf("_", StringComparison.InvariantCultureIgnoreCase);
+                    var id = itemName.Substring(idx + 1);
 
-                    case nameof(FileSaveMenuItem):
-                        Save();
-                        break;
-
-                    case nameof(FileExitMenuItem):
-                        // Close(); // Not done here, in stanalone it is done in LyricsFinderExe, in plug-in it is done by Media Center
-                        break;
-
-                    case nameof(HelpAboutMenuItem):
-                        var about = new AboutBox(EntryAssembly);
-                        about.ShowDialog();
-                        break;
-
-                    case nameof(HelpContentsMenuItem):
-                        var url = "https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder-User-Manual";
-                        System.Diagnostics.Process.Start(url);
-                        break;
-
-                    case nameof(HelpLookForUpdatesMenuItem):
-                        Model.Helpers.Utility.UpdateCheckWithRetries(EntryAssembly.GetName().Version, true);
-                        break;
-
-                    case nameof(ToolsLyricsServicesMenuItem):
-                        var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback);
-                        lyricsServiceForm.ShowDialog(this);
-                        break;
-
-                    case nameof(ToolsOptionsMenuItem):
-                        var frm = new OptionForm("LyricsFinder connection setup");
-                        frm.ShowDialog(this);
-                        break;
-
-                    case nameof(ToolsShowLogMenuItem):
-                        Logging.ShowLog();
-                        break;
-
-                    case nameof(ToolsTestMenuItem):
-                        // MessageBox.Show($"{Properties.Settings.Default.McWebServiceUser}", "Menu item selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        break;
-
-                    case nameof(OverwriteMenuItem):
-                        OverwriteMenuItem.Text = (OverwriteMenuItem.Checked)
-                            ? "Overwrite existing lyrics"
-                            : "Skip existing lyrics";
-                        break;
-
-                    default:
-                        throw new Exception($"Unknown menu item: \"{itemName}\".");
+                    // TODO: Get the MC playlist
                 }
+                else
+                {
+                    switch (itemName)
+                    {
+                        case nameof(FileExitMenuItem):
+                            // Close(); // Not done here, in stanalone it is done in LyricsFinderExe, in plug-in it is done by Media Center
+                            break;
 
+                        case nameof(FileReloadMenuItem):
+                            _isConnectedToMc = false;
+                            LyricsFinderCore_Load(this, new EventArgs());
+                            break;
+
+                        case nameof(FileSaveMenuItem):
+                            Save();
+                            break;
+
+                        case nameof(HelpAboutMenuItem):
+                            var about = new AboutBox(EntryAssembly);
+                            about.ShowDialog();
+                            break;
+
+                        case nameof(HelpContentsMenuItem):
+                            var url = "https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder-User-Manual";
+                            System.Diagnostics.Process.Start(url);
+                            break;
+
+                        case nameof(HelpLookForUpdatesMenuItem):
+                            Model.Helpers.Utility.UpdateCheckWithRetries(EntryAssembly.GetName().Version, true);
+                            break;
+
+                        case nameof(ToolsLyricsServicesMenuItem):
+                            var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback);
+                            lyricsServiceForm.ShowDialog(this);
+                            break;
+
+                        case nameof(ToolsOptionsMenuItem):
+                            var frm = new OptionForm("LyricsFinder connection setup");
+                            frm.ShowDialog(this);
+                            break;
+
+                        case nameof(ToolsShowLogMenuItem):
+                            Logging.ShowLog();
+                            break;
+
+                        case nameof(ToolsTestMenuItem):
+                            // MessageBox.Show($"{Properties.Settings.Default.McWebServiceUser}", "Menu item selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            break;
+
+                        case nameof(OverwriteMenuItem):
+                            OverwriteMenuItem.Text = (OverwriteMenuItem.Checked)
+                                ? "Overwrite existing lyrics"
+                                : "Skip existing lyrics";
+                            break;
+
+                        default:
+                            throw new Exception($"Unknown menu item: \"{itemName}\".");
+                    }
+                }
             }
             catch (Exception ex)
             {

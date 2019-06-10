@@ -51,6 +51,9 @@ namespace MediaCenter.LyricsFinder
         private BitmapForm _bitmapForm = null;
         private LyricForm _lyricsForm = null;
         private List<string> _noLyricsSearchList = new List<string>();
+        private SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
+        private McPlayListsResponse _currentUnsortedMcPlaylistsResponse = null;
+        private int _mcPlaylistIndex = 0;
 
 
         #region ErrorTest
@@ -531,6 +534,103 @@ namespace MediaCenter.LyricsFinder
             // Ensure the default of not overwriting (i.e. skipping) existing lyrics
             OverwriteMenuItem.Checked = false;
             MenuItem_Click(OverwriteMenuItem, new EventArgs());
+        }
+
+
+        /// <summary>
+        /// Loads a select playlist menu tree item.
+        /// </summary>
+        /// <param name="parentMenuItem">The parent menu item.</param>
+        /// <param name="mcPlaylistIndex">Index of the mc playlist.</param>
+        /// <param name="dirLevel">The dir level.</param>
+        /// <remarks>
+        /// We use a file system analogy in the item naming, hence the use of System.IO methods.
+        /// </remarks>
+        private void LoadPlaylistMenuItem(ToolStripMenuItem parentMenuItem, int dirLevel = 0)
+        {
+            const string menuNameDelim = "_";
+            const char pathDelim = '\\';
+
+            while (_mcPlaylistIndex < _currentSortedMcPlaylists.Count)
+            {
+                var currItem = _currentSortedMcPlaylists.ElementAt(_mcPlaylistIndex);
+                var currId = currItem.Value.Id;
+                var currPath = currItem.Value.Path;
+                var currName = Path.GetFileName(currPath);
+                var currDirs = Path.GetDirectoryName(currPath).Split(pathDelim).Skip(dirLevel).ToList();
+                var prevPath = string.Empty;
+
+                if (_mcPlaylistIndex > 0)
+                {
+                    var prevItem = _currentSortedMcPlaylists.ElementAt(_mcPlaylistIndex - 1);
+
+                    prevPath = prevItem.Value.Path;
+                }
+
+                if (!(prevPath.IsNullOrEmptyTrimmed() || currPath.Contains(prevPath)))
+                    break;
+
+                if (currDirs.Count > 0)
+                {
+                    // A new child branch
+                    var currMenuItem = new ToolStripMenuItem
+                    {
+                        Name = string.Join(menuNameDelim, parentMenuItem.Name, string.Join(menuNameDelim, currDirs)),
+                        Text = currDirs[0]
+                    };
+
+                    parentMenuItem.DropDownItems.Add(currMenuItem);
+
+                    LoadPlaylistMenuItem(currMenuItem, dirLevel + 1);
+                }
+                else
+                {
+                    // Leaf
+                    var currMenuItem = new ToolStripMenuItem
+                    {
+                        Name = string.Join(menuNameDelim, parentMenuItem.Name, currName, currId),
+                        Text = currName
+                    };
+
+                    currMenuItem.Click += MenuItem_Click;
+                    parentMenuItem.DropDownItems.Add(currMenuItem);
+                    _mcPlaylistIndex++;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Loads all the play lists from the Media Center.
+        /// </summary>
+        private void LoadPlayLists()
+        {
+            var list = McRestService.GetPlayLists();
+
+            if (!list.IsOk)
+                throw new Exception("Unknown error finding Media Center playlists.");
+
+            if (list.Items.Count == 0)
+                throw new Exception("Empty list of playlists returned from Media Center.");
+
+            if (_currentUnsortedMcPlaylistsResponse?.Equals(list) ?? false)
+                return; // No changes since last fetch
+            else
+                _currentUnsortedMcPlaylistsResponse = list;
+
+            // Sort the playlists by path
+            _currentSortedMcPlaylists.Clear();
+
+            foreach (var item in list.Items)
+            {
+                var playlist = item.Value;
+
+                _currentSortedMcPlaylists.Add(playlist.SortKey, playlist);
+            }
+
+            // Populate the dropdown menus
+            FileSelectPlaylistMenuItem.DropDownItems.Clear();
+            LoadPlaylistMenuItem(FileSelectPlaylistMenuItem, 0);
         }
 
 

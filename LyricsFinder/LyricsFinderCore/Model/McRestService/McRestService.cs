@@ -117,6 +117,10 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                     sb.Append($"/Playback/{command}?Token={McWsToken}&Action=MPL");
                     break;
 
+                case McCommandEnum.PlaylistList:
+                    sb.Append($"/Playlists/List?Action=MPL&Token={McWsToken}");
+                    break;
+
                 case McCommandEnum.PlayPause:
                 case McCommandEnum.Stop:
                     sb.Append($"/Playback/{command}?Token={McWsToken}");
@@ -295,7 +299,23 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <returns>
         ///   <see cref="McMplResponse" /> object.
         /// </returns>
-        public static McMplResponse GetPlayList()
+        public static McPlayListsResponse GetPlayLists()
+        {
+            var requestUrl = CreateRequestUrl(McCommandEnum.PlaylistList);
+            var rsp = DoTextRequest(requestUrl);
+            var ret = new McPlayListsResponse(rsp);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Gets the current "Playing Now" list from MC server.
+        /// </summary>
+        /// <returns>
+        ///   <see cref="McMplResponse" /> object.
+        /// </returns>
+        public static McMplResponse GetPlayNowList()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Playlist);
             var rsp = DoTextRequest(requestUrl);
