@@ -27,11 +27,13 @@ namespace MediaCenter.LyricsFinder
     partial class LyricsFinderCore
     {
 
-        /**********************************/
-        /***** Private misc. routines *****/
-        /**********************************/
+        /***********************************/
+        /***** Private assembly-wide   *****/
+        /***** constants and variables *****/
+        /***********************************/
 
-        // Private assembly-wide variables
+        const string _menuNameDelim = "_";
+
         private bool _isConnectedToMc = false;
         private bool _isDesignTime = false;
         private bool _isGridDataChanged = false; // Do not change this in code, always change the <c>IsDataChanged</c> property instead.
@@ -54,6 +56,10 @@ namespace MediaCenter.LyricsFinder
         private SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
         private McPlayListsResponse _currentUnsortedMcPlaylistsResponse = null;
         private int _mcPlaylistIndex = 0;
+
+        /**********************************/
+        /***** Private misc. routines *****/
+        /**********************************/
 
 
         #region ErrorTest
@@ -538,63 +544,47 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Loads a select playlist menu tree item.
+        /// Loads a play list menu item recursively.
         /// </summary>
         /// <param name="parentMenuItem">The parent menu item.</param>
-        /// <param name="mcPlaylistIndex">Index of the mc playlist.</param>
-        /// <param name="dirLevel">The dir level.</param>
-        /// <remarks>
-        /// We use a file system analogy in the item naming, hence the use of System.IO methods.
-        /// </remarks>
-        private void LoadPlaylistMenuItem(ToolStripMenuItem parentMenuItem, int dirLevel = 0)
+        /// <param name="nodes">The path nodes.</param>
+        /// <param name="itemId">The item identifier.</param>
+        private void LoadPlayListMenu(ToolStripMenuItem parentMenuItem, List<string> nodes, string itemId)
         {
-            const string menuNameDelim = "_";
-            const char pathDelim = '\\';
+            var firstNode = nodes.FirstOrDefault();
+            var remainingNodes = nodes.Skip(1).ToList();
 
-            while (_mcPlaylistIndex < _currentSortedMcPlaylists.Count)
+            if (firstNode.IsNullOrEmptyTrimmed())
+                return;
+            else if (remainingNodes.Count() < 1)
             {
-                var currItem = _currentSortedMcPlaylists.ElementAt(_mcPlaylistIndex);
-                var currId = currItem.Value.Id;
-                var currPath = currItem.Value.Path;
-                var currName = Path.GetFileName(currPath);
-                var currDirs = Path.GetDirectoryName(currPath).Split(pathDelim).Skip(dirLevel).ToList();
-                var prevPath = string.Empty;
-
-                if (_mcPlaylistIndex > 0)
+                // Leaf node
+                var menuItem = new ToolStripMenuItem
                 {
-                    var prevItem = _currentSortedMcPlaylists.ElementAt(_mcPlaylistIndex - 1);
+                    Name = string.Join(_menuNameDelim, parentMenuItem.Name, firstNode, itemId),
+                    Text = firstNode
+                };
 
-                    prevPath = prevItem.Value.Path;
-                }
+                menuItem.Click += MenuItem_Click;
+                parentMenuItem.DropDownItems.Add(menuItem);
+            }
+            else
+            {
+                var menuName = string.Join(_menuNameDelim, parentMenuItem.Name, firstNode);
+                var menuItems = parentMenuItem.DropDownItems.Find(menuName, false);
 
-                if (!(prevPath.IsNullOrEmptyTrimmed() || currPath.Contains(prevPath)))
-                    break;
-
-                if (currDirs.Count > 0)
-                {
-                    // A new child branch
-                    var currMenuItem = new ToolStripMenuItem
-                    {
-                        Name = string.Join(menuNameDelim, parentMenuItem.Name, string.Join(menuNameDelim, currDirs)),
-                        Text = currDirs[0]
-                    };
-
-                    parentMenuItem.DropDownItems.Add(currMenuItem);
-
-                    LoadPlaylistMenuItem(currMenuItem, dirLevel + 1);
-                }
+                if (menuItems.Count() > 0)
+                    LoadPlayListMenu(menuItems.First() as ToolStripMenuItem, remainingNodes, itemId);
                 else
                 {
-                    // Leaf
-                    var currMenuItem = new ToolStripMenuItem
+                    var menuItem = new ToolStripMenuItem
                     {
-                        Name = string.Join(menuNameDelim, parentMenuItem.Name, currName, currId),
-                        Text = currName
+                        Name = menuName,
+                        Text = firstNode
                     };
 
-                    currMenuItem.Click += MenuItem_Click;
-                    parentMenuItem.DropDownItems.Add(currMenuItem);
-                    _mcPlaylistIndex++;
+                    parentMenuItem.DropDownItems.Add(menuItem);
+                    LoadPlayListMenu(menuItem, remainingNodes, itemId);
                 }
             }
         }
@@ -630,7 +620,17 @@ namespace MediaCenter.LyricsFinder
 
             // Populate the dropdown menus
             FileSelectPlaylistMenuItem.DropDownItems.Clear();
-            LoadPlaylistMenuItem(FileSelectPlaylistMenuItem, 0);
+            // LoadPlaylistMenuItem(FileSelectPlaylistMenuItem, 0);
+
+            for (int i = 0; i < _currentSortedMcPlaylists.Count; i++)
+            {
+                var currItem = _currentSortedMcPlaylists.ElementAt(i);
+                var currId = currItem.Value.Id;
+                var currPath = currItem.Value.Path;
+                var currNodes = currPath.Split('\\', '/').ToList();
+
+                LoadPlayListMenu(FileSelectPlaylistMenuItem, currNodes, currId);
+            }
         }
 
 

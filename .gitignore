@@ -356,8 +356,8 @@ healthchecksdb
 # Files
 json1.json
 json2.json
-*private.config
 MessageInspection.xml
+*private.config
 
 # Extensions
 *.bak

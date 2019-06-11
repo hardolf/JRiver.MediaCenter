@@ -55,7 +55,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="BuildRelease.cmd" />
-    <None Include="Release\Setup1.0.0.zip" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Setup.iss" />
@@ -65,6 +64,7 @@
     <Folder Include="Build\Plugin\" />
     <Folder Include="Build\Standalone\" />
     <Folder Include="Output\" />
+    <Folder Include="Release\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

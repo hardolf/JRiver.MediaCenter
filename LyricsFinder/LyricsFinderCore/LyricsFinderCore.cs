@@ -602,7 +602,7 @@ namespace MediaCenter.LyricsFinder
 
                 if (itemName.StartsWith(nameof(FileSelectPlaylistMenuItem), StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var idx = itemName.LastIndexOf("_", StringComparison.InvariantCultureIgnoreCase);
+                    var idx = itemName.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
                     var id = itemName.Substring(idx + 1);
 
                     // TODO: Get the MC playlist
