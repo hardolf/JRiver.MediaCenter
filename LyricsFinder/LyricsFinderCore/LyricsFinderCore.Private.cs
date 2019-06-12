@@ -55,7 +55,8 @@ namespace MediaCenter.LyricsFinder
         private List<string> _noLyricsSearchList = new List<string>();
         private SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
         private McPlayListsResponse _currentUnsortedMcPlaylistsResponse = null;
-        private int _mcPlaylistIndex = 0;
+        private McMplResponse _currentPlaylist = null;
+
 
         /**********************************/
         /***** Private misc. routines *****/
@@ -570,13 +571,16 @@ namespace MediaCenter.LyricsFinder
             }
             else
             {
+                // Branch node
                 var menuName = string.Join(_menuNameDelim, parentMenuItem.Name, firstNode);
                 var menuItems = parentMenuItem.DropDownItems.Find(menuName, false);
 
+                // Existing sub-menu found?
                 if (menuItems.Count() > 0)
                     LoadPlayListMenu(menuItems.First() as ToolStripMenuItem, remainingNodes, itemId);
                 else
                 {
+                    // Create new sub-menu
                     var menuItem = new ToolStripMenuItem
                     {
                         Name = menuName,
@@ -906,6 +910,7 @@ namespace MediaCenter.LyricsFinder
             {
                 MainStatusLabel.Text = msg;
                 MainStatusLabel.ToolTipText = msg;
+                MainStatusLabel.Invalidate();
             }
 
             if (_progressPercentage >= 0)

@@ -116,3 +116,5 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0019:Use pattern matching", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.Model.Helpers.Utility.UpdateCheck(System.Version,System.Boolean)~System.Boolean")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2235:Mark all non-serializable fields", Justification = "<Pending>", Scope = "member", Target = "~P:MediaCenter.LyricsFinder.Model.McRestService.McPlayListsResponse.XmlRoot")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.LyricsFinderCore.FileSelectPlaylistMenuItem_DropDownOpening(System.Object,System.EventArgs)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1305:Specify IFormatProvider", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.LyricsFinderCore.MenuItem_Click(System.Object,System.EventArgs)")]
+

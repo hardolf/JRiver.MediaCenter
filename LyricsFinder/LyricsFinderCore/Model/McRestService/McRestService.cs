@@ -117,6 +117,10 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                     sb.Append($"/Playback/{command}?Token={McWsToken}&Action=MPL");
                     break;
 
+                case McCommandEnum.PlaylistFiles:
+                    sb.Append($"/Playlist/Files?PlaylistType=ID&Action=MPL&Playlist={key}&Token={McWsToken}");
+                    break;
+
                 case McCommandEnum.PlaylistList:
                     sb.Append($"/Playlists/List?Action=MPL&Token={McWsToken}");
                     break;
@@ -288,6 +292,23 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
             var requestUrl = CreateRequestUrl(McCommandEnum.GetImage, key);
             var rsp = DoImageRequest(requestUrl);
             var ret = new McGetImageResponse(rsp);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Gets the a playlist from MC server.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>
+        ///   <see cref="McMplResponse" /> object.
+        /// </returns>
+        public static McMplResponse GetPlaylistFiles(int id)
+        {
+            var requestUrl = CreateRequestUrl(McCommandEnum.PlaylistFiles, id);
+            var rsp = DoTextRequest(requestUrl);
+            var ret = new McMplResponse(rsp);
 
             return ret;
         }

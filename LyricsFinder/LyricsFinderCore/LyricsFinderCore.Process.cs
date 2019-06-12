@@ -93,18 +93,21 @@ namespace MediaCenter.LyricsFinder
 
                 _isConnectedToMc = true;
 
-                // Get the current playlist items
-                workerState.Message = $"Collecting the current playlist...";
-
                 if (!worker.CancellationPending)
                     worker.ReportProgress(0, workerState);
 
                 // Get the current Media Center info
                 McInfo();
-                var playList = McRestService.GetPlayNowList();
 
-                workerState.Message = $"Connected to MediaCenter, the current playlist has {playList.Items.Count} items.";
-                workerState.Items = playList.Items;
+                // Get the current playlist items
+                if (_currentPlaylist == null)
+                {
+                    workerState.Message = $"Collecting the current playlist...";
+                    _currentPlaylist = McRestService.GetPlayNowList();
+                }
+
+                workerState.Message = $"Connected to MediaCenter, the current playlist has {_currentPlaylist.Items.Count} items.";
+                workerState.Items = _currentPlaylist.Items;
                 workerState.CurrentItemIndex = (_playingIndex >= 0) ? _playingIndex : 0;
 
                 if (!worker.CancellationPending)

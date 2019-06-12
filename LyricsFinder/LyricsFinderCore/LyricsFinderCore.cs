@@ -603,9 +603,23 @@ namespace MediaCenter.LyricsFinder
                 if (itemName.StartsWith(nameof(FileSelectPlaylistMenuItem), StringComparison.InvariantCultureIgnoreCase))
                 {
                     var idx = itemName.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
-                    var id = itemName.Substring(idx + 1);
+                    var idString = itemName.Substring(idx + 1);
+                    var id = int.Parse(idString);
+                    var tmp = itemName.Substring(0, idx);
 
-                    // TODO: Get the MC playlist
+                    idx = tmp.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
+
+                    var name = tmp.Substring(idx + 1);
+
+                    // Get the MC playlist and let LyricsFinder know about it
+                    StatusMessage($"Collecting the \"{name}\" playlist...");
+                    UseWaitCursor = true;
+
+                    _currentPlaylist = McRestService.GetPlaylistFiles(id);
+                    _isConnectedToMc = false;
+                    UseWaitCursor = false;
+
+                    LyricsFinderCore_Load(this, new EventArgs());
                 }
                 else
                 {
