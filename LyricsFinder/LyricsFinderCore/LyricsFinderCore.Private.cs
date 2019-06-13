@@ -153,7 +153,7 @@ namespace MediaCenter.LyricsFinder
 
                     if (!ifn.IsNullOrEmptyTrimmed())
                     {
-                        using (var tmp = new FileStream(ifn, FileMode.Open))
+                        using (var tmp = new FileStream(ifn, FileMode.Open, FileAccess.Read, FileShare.Read))
                         {
                             img = new Bitmap(tmp);
                         }
@@ -569,7 +569,10 @@ namespace MediaCenter.LyricsFinder
             _playingIndex = -1;
             McStatusTimer.Stop();
 
-            _currentPlaylist = await McRestService.GetPlaylistFiles(id, name).ConfigureAwait(false);
+            if (id > 0)
+                _currentPlaylist = await McRestService.GetPlaylistFiles(id, name).ConfigureAwait(false);
+            else
+                _currentPlaylist = await McRestService.GetPlayNowList().ConfigureAwait(false);
 
             UseWaitCursor = false;
             McStatusTimer.Start();
@@ -658,7 +661,16 @@ namespace MediaCenter.LyricsFinder
 
             // Populate the dropdown menus
             FileSelectPlaylistMenuItem.DropDownItems.Clear();
-            // LoadPlaylistMenuItem(FileSelectPlaylistMenuItem, 0);
+
+            // Create the "Playing Now" menu item
+            var menuItem = new ToolStripMenuItem
+            {
+                Name = string.Join(_menuNameDelim, nameof(FileSelectPlaylistMenuItem), "Playing Now", 0),
+                Text = "Playing Now"
+            };
+
+            menuItem.Click += MenuItem_ClickAsync;
+            FileSelectPlaylistMenuItem.DropDownItems.Add(menuItem);
 
             for (int i = 0; i < _currentSortedMcPlaylists.Count; i++)
             {

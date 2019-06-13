@@ -716,7 +716,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.ComponentModel.ProgressChangedEventArgs" /> instance containing the event data.</param>
-        private void ProcessWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private async void ProcessWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             try
             {
@@ -735,7 +735,7 @@ namespace MediaCenter.LyricsFinder
 
                 // Update the item list in GUI, if empty
                 if (!isInSync && (userState.Items.Count > 0))
-                    FillDataGrid(userState.Items);
+                    await FillDataGrid(userState.Items).ConfigureAwait(false);
 
                 // Finish the item row, e.g. set the item status and found lyrics
                 if (isInSync)

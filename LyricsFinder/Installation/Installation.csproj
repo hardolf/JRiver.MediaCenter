@@ -55,6 +55,8 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="BuildRelease.cmd" />
+    <None Include="BuildRelease.subroutine.cmd" />
+    <None Include="Elevate.cmd" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Setup.iss" />

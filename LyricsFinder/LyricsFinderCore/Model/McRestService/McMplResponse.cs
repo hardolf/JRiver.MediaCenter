@@ -23,6 +23,15 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
     {
 
         /// <summary>
+        /// Gets or sets the playlist ID, optional.
+        /// </summary>
+        /// <value>
+        /// The ID.
+        /// </value>
+        [XmlIgnore]
+        public int? Id { get; set; }
+
+        /// <summary>
         /// Gets or sets the playlist name, optional.
         /// </summary>
         /// <value>
@@ -87,12 +96,14 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="McMplResponse"/> class.
+        /// Initializes a new instance of the <see cref="McMplResponse" /> class.
         /// </summary>
+        /// <param name="id">The identifier.</param>
         /// <param name="name">The name.</param>
-        protected McMplResponse(string name = "")
+        protected McMplResponse(int? id = null, string name = null)
             : this()
         {
+            Id = id;
             Name = name;
         }
 
@@ -101,9 +112,10 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// Initializes a new instance of the <see cref="McMplResponse" /> class.
         /// </summary>
         /// <param name="xml">The XML string.</param>
+        /// <param name="id">The identifier.</param>
         /// <param name="name">The name, optional name of the playlist.</param>
-        public McMplResponse(string xml, string name = "")
-            : this(name)
+        public McMplResponse(string xml, int? id = null, string name = null)
+            : this(id, name)
         {
             XmlDocument xDoc = new XmlDocument() { XmlResolver = null };
             McMplItem item = null;

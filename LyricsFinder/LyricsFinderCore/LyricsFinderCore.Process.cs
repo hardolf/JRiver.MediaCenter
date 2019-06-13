@@ -99,11 +99,13 @@ namespace MediaCenter.LyricsFinder
                     worker.ReportProgress(0, workerState);
 
                 // Get the current playlist items
-                if (_currentPlaylist == null)
+                if ((_currentPlaylist == null) || !_currentPlaylist.Id.HasValue)
                 {
                     workerState.Message = $"Collecting the current playlist...";
                     _currentPlaylist = await McRestService.GetPlayNowList().ConfigureAwait(false);
                 }
+                else
+                    _currentPlaylist = await McRestService.GetPlaylistFiles(_currentPlaylist.Id.Value, _currentPlaylist.Name).ConfigureAwait(false);
 
                 workerState.Message = (_currentPlaylist.Name.IsNullOrEmptyTrimmed())
                     ? $"Connected to MediaCenter, the current playlist has {_currentPlaylist.Items.Count} items."

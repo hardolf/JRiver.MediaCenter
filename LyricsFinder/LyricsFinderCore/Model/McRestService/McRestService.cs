@@ -310,7 +310,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlaylistFiles, id);
             var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
-            var ret = new McMplResponse(rsp, name);
+            var ret = new McMplResponse(rsp, id, name);
 
             return ret;
         }
@@ -342,7 +342,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Playlist);
             var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
-            var ret = new McMplResponse(rsp, "Playing Now");
+            var ret = new McMplResponse(rsp, null, "Playing Now");
 
             return ret;
         }
