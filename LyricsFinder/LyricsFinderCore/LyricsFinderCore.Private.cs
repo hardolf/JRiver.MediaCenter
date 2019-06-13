@@ -9,6 +9,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using log4net;
@@ -43,8 +44,8 @@ namespace MediaCenter.LyricsFinder
         private int _currentMouseRowIndex = -1;
         private int _playingIndex = -1;
         private static int _progressPercentage = -1;
-        private static int _McStatusIntervalNormal = 500; // ½ second
-        private static int _McStatusIntervalError = 10000; // 10 seconds
+        private static int _mcStatusIntervalNormal = 500; // ½ second
+        private static int _mcStatusIntervalError = 10000; // 10 seconds
 
         private readonly string _logHeader = "".PadRight(80, '-');
         private string _statusWarning = string.Empty;
@@ -540,7 +541,35 @@ namespace MediaCenter.LyricsFinder
 
             // Ensure the default of not overwriting (i.e. skipping) existing lyrics
             OverwriteMenuItem.Checked = false;
-            MenuItem_Click(OverwriteMenuItem, new EventArgs());
+            MenuItem_ClickAsync(OverwriteMenuItem, new EventArgs());
+        }
+
+
+        /// <summary>
+        /// Loads the playlist.
+        /// </summary>
+        /// <param name="itemName">Name of the item.</param>
+        /// <returns>Playlist type <see cref="McMplResponse"/> object</returns>
+        private async Task<McMplResponse> LoadPlaylist(string itemName)
+        {
+            UseWaitCursor = true;
+
+            var idx = itemName.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
+            var idString = itemName.Substring(idx + 1);
+            var id = int.Parse(idString, NumberStyles.None, CultureInfo.InvariantCulture);
+            var tmp = itemName.Substring(0, idx);
+
+            idx = tmp.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
+
+            var name = tmp.Substring(idx + 1);
+
+            StatusMessage($"Collecting the \"{name}\" playlist...");
+
+            _currentPlaylist = await McRestService.GetPlaylistFiles(id).ConfigureAwait(false);
+
+            UseWaitCursor = false;
+
+            return _currentPlaylist;
         }
 
 
@@ -550,7 +579,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="parentMenuItem">The parent menu item.</param>
         /// <param name="nodes">The path nodes.</param>
         /// <param name="itemId">The item identifier.</param>
-        private void LoadPlayListMenu(ToolStripMenuItem parentMenuItem, List<string> nodes, string itemId)
+        private void LoadPlaylistMenu(ToolStripMenuItem parentMenuItem, List<string> nodes, string itemId)
         {
             var firstNode = nodes.FirstOrDefault();
             var remainingNodes = nodes.Skip(1).ToList();
@@ -566,7 +595,7 @@ namespace MediaCenter.LyricsFinder
                     Text = firstNode
                 };
 
-                menuItem.Click += MenuItem_Click;
+                menuItem.Click += MenuItem_ClickAsync;
                 parentMenuItem.DropDownItems.Add(menuItem);
             }
             else
@@ -577,7 +606,7 @@ namespace MediaCenter.LyricsFinder
 
                 // Existing sub-menu found?
                 if (menuItems.Count() > 0)
-                    LoadPlayListMenu(menuItems.First() as ToolStripMenuItem, remainingNodes, itemId);
+                    LoadPlaylistMenu(menuItems.First() as ToolStripMenuItem, remainingNodes, itemId);
                 else
                 {
                     // Create new sub-menu
@@ -588,7 +617,7 @@ namespace MediaCenter.LyricsFinder
                     };
 
                     parentMenuItem.DropDownItems.Add(menuItem);
-                    LoadPlayListMenu(menuItem, remainingNodes, itemId);
+                    LoadPlaylistMenu(menuItem, remainingNodes, itemId);
                 }
             }
         }
@@ -597,9 +626,9 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Loads all the play lists from the Media Center.
         /// </summary>
-        private void LoadPlayLists()
+        private async Task LoadPlaylistMenus()
         {
-            var list = McRestService.GetPlayLists();
+            var list = await McRestService.GetPlayLists().ConfigureAwait(false);
 
             if (!list.IsOk)
                 throw new Exception("Unknown error finding Media Center playlists.");
@@ -633,31 +662,15 @@ namespace MediaCenter.LyricsFinder
                 var currPath = currItem.Value.Path;
                 var currNodes = currPath.Split('\\', '/').ToList();
 
-                LoadPlayListMenu(FileSelectPlaylistMenuItem, currNodes, currId);
+                LoadPlaylistMenu(FileSelectPlaylistMenuItem, currNodes, currId);
             }
-        }
-
-
-        /// <summary>
-        /// Get the Media Center information and take som action with it.
-        /// </summary>
-        private void McInfo()
-        {
-            var mcInfo = McRestService.Info();
-
-            if (mcInfo == null)
-                throw new Exception("No Info response from Media Center.");
-
-            _playingIndex = (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                ? int.Parse(mcInfo.PlayingNowPosition, NumberStyles.None, CultureInfo.InvariantCulture)
-                : -1;
         }
 
 
         /// <summary>
         /// Plays the item in the Playing Now list by the selected row index.
         /// </summary>
-        private void PlayOrPause()
+        private async Task PlayOrPause()
         {
             var rows = MainDataGridView.SelectedRows;
 
@@ -667,9 +680,9 @@ namespace MediaCenter.LyricsFinder
             var rowIdx = rows[0].Index;
 
             if (rowIdx == _playingIndex)
-                McRestService.PlayPause();
+                await McRestService.PlayPause().ConfigureAwait(false);
             else
-                McRestService.PlayByIndex(rowIdx);
+                await McRestService.PlayByIndex(rowIdx).ConfigureAwait(false);
 
             _playingIndex = rowIdx;
         }
@@ -678,9 +691,9 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Stops playing any item.
         /// </summary>
-        private void PlayStop()
+        private async Task PlayStop()
         {
-            McRestService.PlayStop();
+            await McRestService.PlayStop().ConfigureAwait(false);
         }
 
 
@@ -910,10 +923,9 @@ namespace MediaCenter.LyricsFinder
             {
                 MainStatusLabel.Text = msg;
                 MainStatusLabel.ToolTipText = msg;
-                MainStatusLabel.Invalidate();
             }
 
-            if (_progressPercentage >= 0)
+            if (_progressPercentage > 0)
                 MainProgressBar.Value = _progressPercentage;
         }
 

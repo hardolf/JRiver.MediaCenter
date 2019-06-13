@@ -35,7 +35,7 @@ namespace MediaCenter.LyricsFinder
         /// Failed to connect to MediaCenter Web Service \"{url}
         /// or
         /// Error in MediaCenter routine \"{typeNs}.{typeName}.{routineName}</exception>
-        private void Connect(BackgroundWorker worker)
+        private async Task Connect(BackgroundWorker worker)
         {
             if (worker == null)
                 throw new ArgumentNullException(nameof(worker));
@@ -50,6 +50,8 @@ namespace MediaCenter.LyricsFinder
                 var connAttempts = Properties.Settings.Default.McWebServiceConnectAttempts;
                 McAliveResponse alive = null;
 
+                _statusWarning = string.Empty;
+
                 workerState.Message = $"Connecting to MediaCenter Web Service...";
 
                 if (!worker.CancellationPending)
@@ -60,7 +62,7 @@ namespace MediaCenter.LyricsFinder
                 {
                     try
                     {
-                        alive = McRestService.GetAlive();
+                        alive = await McRestService.GetAlive().ConfigureAwait(false);
 
                         if (alive != null)
                             break;
@@ -77,7 +79,7 @@ namespace MediaCenter.LyricsFinder
                     var expectedAccessKey = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey;
 
                     if (alive.AccessKey == expectedAccessKey)
-                        Authentication = McRestService.GetAuthentication();
+                        Authentication = await McRestService.GetAuthentication().ConfigureAwait(false);
                     else
                         throw new Exception($"The connected MediaCenter Web Service has AccessKey \"{alive.AccessKey}\" but \"{expectedAccessKey}\" was expected.");
                 }
@@ -96,14 +98,11 @@ namespace MediaCenter.LyricsFinder
                 if (!worker.CancellationPending)
                     worker.ReportProgress(0, workerState);
 
-                // Get the current Media Center info
-                McInfo();
-
                 // Get the current playlist items
                 if (_currentPlaylist == null)
                 {
                     workerState.Message = $"Collecting the current playlist...";
-                    _currentPlaylist = McRestService.GetPlayNowList();
+                    _currentPlaylist = await McRestService.GetPlayNowList().ConfigureAwait(false);
                 }
 
                 workerState.Message = $"Connected to MediaCenter, the current playlist has {_currentPlaylist.Items.Count} items.";
@@ -130,7 +129,7 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Processes the current MediaCenter playlist items.
         /// </summary>
-        private void Process(BackgroundWorker worker, DoWorkEventArgs e)
+        private async void Process(BackgroundWorker worker, DoWorkEventArgs e)
         {
             var isOk = false;
             var foundCount = 0;
@@ -147,7 +146,7 @@ namespace MediaCenter.LyricsFinder
                 if (!worker.CancellationPending)
                     worker.ReportProgress(0, workerState);
 
-                var playList = McRestService.GetPlayNowList();
+                var playList = await McRestService.GetPlayNowList().ConfigureAwait(false);
 
                 // Iterate the music file items
                 workerState.Message = $"Finding lyrics for the current playlist with {playList.Items.Count} items...";
@@ -177,11 +176,8 @@ namespace MediaCenter.LyricsFinder
                     }
                 }
 
+                _progressPercentage = 100;
                 isOk = true;
-
-                if (!e.Cancel)
-                    _progressPercentage = 100;
-
                 LyricsFinderData.Save();
             }
             catch (LyricsQuotaExceededException)

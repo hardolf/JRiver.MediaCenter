@@ -131,7 +131,8 @@ namespace MediaCenter.LyricsFinder
             {
                 if ((LyricsFinderCore != null) && LyricsFinderCore.IsDataChanged)
                 {
-                    var result = MessageBox.Show("Data is changed and will be lost if you close.\nDo you want to close anyway?", "Data changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                    var result = MessageBox.Show("Data is changed and will be lost if you close.\nDo you want to close anyway?"
+                        , "Data changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 
                     switch (result)
                     {

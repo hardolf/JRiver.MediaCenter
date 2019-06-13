@@ -188,7 +188,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <summary>
         /// Fills the properties from the <see cref="Fields"/> dictionary.
         /// </summary>
-        public virtual void FillPropertiesFromFields()
+        public virtual async Task FillPropertiesFromFields()
         {
             foreach (var field in this.Fields)
             {
@@ -221,7 +221,9 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
                         if ((propKey == "Image File") && field.Value.Equals("internal", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            Image = McRestService.GetImage(Key).Image;
+                            var rsp = await McRestService.GetImage(Key).ConfigureAwait(false);
+
+                            Image = rsp.Image;
                         }
                     }
                 }

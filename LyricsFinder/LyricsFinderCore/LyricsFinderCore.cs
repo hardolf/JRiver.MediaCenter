@@ -20,6 +20,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using log4net;
@@ -185,11 +186,11 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void FileSelectPlaylistMenuItem_DropDownOpening(object sender, EventArgs e)
+        private async void FileSelectPlaylistMenuItem_DropDownOpening(object sender, EventArgs e)
         {
             try
             {
-                LoadPlayLists();
+                await LoadPlaylistMenus().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -203,7 +204,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs" /> instance containing the event data.</param>
-        private void LyricsFinderCore_KeyDown(object sender, KeyEventArgs e)
+        private async void LyricsFinderCore_KeyDown(object sender, KeyEventArgs e)
         {
             try
             {
@@ -224,7 +225,8 @@ namespace MediaCenter.LyricsFinder
                 else if (e.KeyCode == Keys.Space)
                 {
                     e.Handled = true;
-                    PlayOrPause();
+
+                    await PlayOrPause().ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -273,7 +275,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ToolStripItemClickedEventArgs"/> instance containing the event data.</param>
-        private void MainContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private async void MainContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             try
             {
@@ -294,7 +296,7 @@ namespace MediaCenter.LyricsFinder
                     if (!ToolsPlayStartStopButton.IsRunning)
                         ToolsPlayStartStopButton.PerformClick();
                     else
-                        PlayOrPause();
+                        await PlayOrPause().ConfigureAwait(false);
                 }
                 else if (e.ClickedItem == ContextPlayStopMenuItem)
                     ToolsPlayStartStopButton.Stop();
@@ -513,7 +515,11 @@ namespace MediaCenter.LyricsFinder
                 McStatusTimer.Stop();
 
                 var rows = MainDataGridView.Rows;
-                var mcInfo = McRestService.Info();
+                var mcInfoTask = McRestService.Info();
+
+                mcInfoTask.Wait();
+
+                var mcInfo = mcInfoTask.Result;
 
                 if (mcInfo != null)
                 {
@@ -562,7 +568,7 @@ namespace MediaCenter.LyricsFinder
 
                 }
 
-                McStatusTimer.Interval = _McStatusIntervalNormal;
+                McStatusTimer.Interval = _mcStatusIntervalNormal;
                 McStatusTimer.Start();
             }
             catch (Exception ex)
@@ -571,7 +577,7 @@ namespace MediaCenter.LyricsFinder
                 // Instead we set up the timer interval and try again.
                 ErrorHandling.ErrorLog($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
                 BlankPlayStatusBitmaps();
-                McStatusTimer.Interval = _McStatusIntervalError;
+                McStatusTimer.Interval = _mcStatusIntervalError;
                 McStatusTimer.Start();
             }
         }
@@ -582,7 +588,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MenuItem_Click(object sender, EventArgs e)
+        private async void MenuItem_ClickAsync(object sender, EventArgs e)
         {
             var itemName = "Undefined item";
 
@@ -602,36 +608,44 @@ namespace MediaCenter.LyricsFinder
 
                 if (itemName.StartsWith(nameof(FileSelectPlaylistMenuItem), StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var idx = itemName.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
-                    var idString = itemName.Substring(idx + 1);
-                    var id = int.Parse(idString);
-                    var tmp = itemName.Substring(0, idx);
+                    // Ignore any "Select playlist "branch" menu and only accept the "leaf"
+                    if (menuItem.DropDownItems.Count > 0)
+                        return;
 
-                    idx = tmp.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
+                    if (IsDataChanged)
+                    {
+                        var result = MessageBox.Show("Data is changed and will be lost if you continue.\nDo you want to continue anyway?"
+                            , "Data changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 
-                    var name = tmp.Substring(idx + 1);
+                        switch (result)
+                        {
+                            case DialogResult.No:
+                                return;
+
+                            default:
+                                break;
+                        }
+                    }
 
                     // Get the MC playlist and let LyricsFinder know about it
-                    StatusMessage($"Collecting the \"{name}\" playlist...");
-                    UseWaitCursor = true;
 
-                    _currentPlaylist = McRestService.GetPlaylistFiles(id);
+                    await LoadPlaylist(itemName).ConfigureAwait(false);
+
                     _isConnectedToMc = false;
-                    UseWaitCursor = false;
-
-                    LyricsFinderCore_Load(this, new EventArgs());
+                    _progressPercentage = 0;
+                    ProcessWorker.RunWorkerAsync();
                 }
                 else
                 {
                     switch (itemName)
                     {
                         case nameof(FileExitMenuItem):
-                            // Close(); // Not done here, in stanalone it is done in LyricsFinderExe, in plug-in it is done by Media Center
+                            // Close(); // Not done here, in standalone it is done in LyricsFinderExe, in plug-in it is done by Media Center
                             break;
 
                         case nameof(FileReloadMenuItem):
                             _isConnectedToMc = false;
-                            LyricsFinderCore_Load(this, new EventArgs());
+                            ProcessWorker.RunWorkerAsync();
                             break;
 
                         case nameof(FileSaveMenuItem):
@@ -699,7 +713,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (!_isDesignTime)
                 {
-                    _progressPercentage = -1;
+                    _progressPercentage = 0;
 
                     if (ProcessWorker.WorkerSupportsCancellation)
                         ProcessWorker.CancelAsync();
@@ -727,7 +741,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.ComponentModel.DoWorkEventArgs" /> instance containing the event data.</param>
-        private void ProcessWorker_DoWork(object sender, DoWorkEventArgs e)
+        private async void ProcessWorker_DoWorkAsync(object sender, DoWorkEventArgs e)
         {
             try
             {
@@ -738,7 +752,9 @@ namespace MediaCenter.LyricsFinder
                 if (_isConnectedToMc)
                     Process(worker, e);
                 else
-                    Connect(worker);
+                {
+                    await Connect(worker).ConfigureAwait(false);
+                }
             }
             catch
             {
@@ -821,7 +837,6 @@ namespace MediaCenter.LyricsFinder
                 }
                 else
                 {
-                    _progressPercentage = 100;
                     //msg = "Process completed.";
                     //StatusLog(msg);
                     //StatusMessage(msg);
@@ -901,7 +916,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void ToolsPlayStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void ToolsPlayStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -910,7 +925,7 @@ namespace MediaCenter.LyricsFinder
                 var dvg = MainDataGridView;
 
                 if (dvg.SelectedRows.Count > 0)
-                    PlayOrPause();
+                    await PlayOrPause().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -924,13 +939,13 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void ToolsPlayStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private async void ToolsPlayStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
 
-                PlayStop();
+                await PlayStop().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

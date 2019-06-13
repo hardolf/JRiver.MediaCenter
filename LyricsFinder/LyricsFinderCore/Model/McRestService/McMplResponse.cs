@@ -102,7 +102,9 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
             {
                 item = new McMplItem(xItem);
 
-                item.FillPropertiesFromFields();
+                var task = Task.Run(async () => { await item.FillPropertiesFromFields(); });
+
+                task.Wait();
 
                 if (!Items.Keys.Contains(item.Key))
                     Items.Add(item.Key, item);
