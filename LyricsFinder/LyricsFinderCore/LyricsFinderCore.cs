@@ -508,65 +508,13 @@ namespace MediaCenter.LyricsFinder
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         /// <remarks>The timer polls Media Center for the playing item, if any, and sets the PlayImage accordingly.</remarks>
-        private void McStatusTimer_Tick(object sender, EventArgs e)
+        private async void McStatusTimer_Tick(object sender, EventArgs e)
         {
             try
             {
                 McStatusTimer.Stop();
 
-                var rows = MainDataGridView.Rows;
-                var mcInfoTask = McRestService.Info();
-
-                mcInfoTask.Wait();
-
-                var mcInfo = mcInfoTask.Result;
-
-                if (mcInfo != null)
-                {
-                    var key = string.Join("|", mcInfo.Artist, mcInfo.Album, mcInfo.Name);
-                    var blank = new Bitmap(16, 16);
-
-                    // Try to find a song in the current list matching the one (if any) that Media Center is playing
-                    // and set the bitmap to play or blank accordingly.
-                    // The reason we don't just use the index is, that the current playlist in LyricsFinder 
-                    // may be another than the Media Center "Playing Now" list.
-                    for (int i = 0; i < rows.Count; i++)
-                    {
-                        var row = rows[i];
-                        var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
-                        var artistCell = row.Cells[(int)GridColumnEnum.Artist] as DataGridViewTextBoxCell;
-                        var albumCell = row.Cells[(int)GridColumnEnum.Album] as DataGridViewTextBoxCell;
-                        var titleCell = row.Cells[(int)GridColumnEnum.Title] as DataGridViewTextBoxCell;
-                        var found = false;
-
-                        if (key.Equals(string.Join("|", artistCell.Value.ToString(), albumCell.Value.ToString(), titleCell.Value.ToString()), StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            found = true;
-
-                            BlankPlayStatusBitmaps(i); // Clear all other bitmaps than the one in playIdx row
-
-                            if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                            {
-                                imgCell.Value = Properties.Resources.Play;
-                            }
-                            else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                            {
-                                imgCell.Value = Properties.Resources.Pause;
-                            }
-                            else
-                            {
-                                imgCell.Value = blank;
-                            }
-
-                            break;
-                        }
-
-                        // If not found, blank all bitmaps
-                        if (!found)
-                            BlankPlayStatusBitmaps();
-                    }
-
-                }
+                _playingIndex = await SetPlayImages().ConfigureAwait(false);
 
                 McStatusTimer.Interval = _mcStatusIntervalNormal;
                 McStatusTimer.Start();
@@ -575,7 +523,11 @@ namespace MediaCenter.LyricsFinder
             {
                 // We don't bother the user with this error, since MC could just be shut down.
                 // Instead we set up the timer interval and try again.
-                ErrorHandling.ErrorLog($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                // Also, we only log the first incident.
+
+                if (McStatusTimer.Interval == _mcStatusIntervalNormal)
+                    ErrorHandling.ErrorLog($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+
                 BlankPlayStatusBitmaps();
                 McStatusTimer.Interval = _mcStatusIntervalError;
                 McStatusTimer.Start();
@@ -617,18 +569,11 @@ namespace MediaCenter.LyricsFinder
                         var result = MessageBox.Show("Data is changed and will be lost if you continue.\nDo you want to continue anyway?"
                             , "Data changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 
-                        switch (result)
-                        {
-                            case DialogResult.No:
-                                return;
-
-                            default:
-                                break;
-                        }
+                        if (result == DialogResult.No)
+                            return;
                     }
 
                     // Get the MC playlist and let LyricsFinder know about it
-
                     await LoadPlaylist(itemName).ConfigureAwait(false);
 
                     _isConnectedToMc = false;

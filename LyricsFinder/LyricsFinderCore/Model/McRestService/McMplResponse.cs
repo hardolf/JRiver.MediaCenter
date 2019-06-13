@@ -23,6 +23,15 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
     {
 
         /// <summary>
+        /// Gets or sets the playlist name, optional.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        [XmlIgnore]
+        public string Name { get; set; }
+
+        /// <summary>
         /// Gets or sets the path separator.
         /// </summary>
         /// <value>
@@ -80,9 +89,21 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <summary>
         /// Initializes a new instance of the <see cref="McMplResponse"/> class.
         /// </summary>
-        /// <param name="xml">The XML string.</param>
-        public McMplResponse(string xml)
+        /// <param name="name">The name.</param>
+        protected McMplResponse(string name = "")
             : this()
+        {
+            Name = name;
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="McMplResponse" /> class.
+        /// </summary>
+        /// <param name="xml">The XML string.</param>
+        /// <param name="name">The name, optional name of the playlist.</param>
+        public McMplResponse(string xml, string name = "")
+            : this(name)
         {
             XmlDocument xDoc = new XmlDocument() { XmlResolver = null };
             McMplItem item = null;

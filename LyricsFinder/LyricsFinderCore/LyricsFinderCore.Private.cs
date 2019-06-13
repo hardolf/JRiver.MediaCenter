@@ -45,7 +45,7 @@ namespace MediaCenter.LyricsFinder
         private int _playingIndex = -1;
         private static int _progressPercentage = -1;
         private static int _mcStatusIntervalNormal = 500; // ½ second
-        private static int _mcStatusIntervalError = 10000; // 10 seconds
+        private static int _mcStatusIntervalError = 5000; // 5 seconds
 
         private readonly string _logHeader = "".PadRight(80, '-');
         private string _statusWarning = string.Empty;
@@ -115,7 +115,7 @@ namespace MediaCenter.LyricsFinder
         /// Fills the data grid.
         /// </summary>
         /// <param name="items">The items.</param>
-        private void FillDataGrid(Dictionary<int, McMplItem> items)
+        private async Task FillDataGrid(Dictionary<int, McMplItem> items)
         {
             // ErrorTest();
 
@@ -172,6 +172,8 @@ namespace MediaCenter.LyricsFinder
                 dgv.Rows.Add(row);
             }
 
+            _playingIndex = await SetPlayImages().ConfigureAwait(false);
+
             if (_playingIndex >= 0)
             {
                 if (dgv.Rows.Count >= _playingIndex + 1)
@@ -179,11 +181,11 @@ namespace MediaCenter.LyricsFinder
                     dgv.Rows[_playingIndex].Selected = true;
                     dgv.FirstDisplayedScrollingRowIndex = (_playingIndex > 2) ? _playingIndex - 3 : 0;
 
-                    ToolsPlayStartStopButton.Start();
+                    ToolsPlayStartStopButton.SetRunningState(true);
                 }
             }
             else
-                ToolsPlayStartStopButton.Stop();
+                ToolsPlayStartStopButton.SetRunningState(false);
 
             if (ToolsPlayStartStopButton.GetStartingEventSubscribers().Length == 0)
                 ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_Starting;
@@ -564,10 +566,13 @@ namespace MediaCenter.LyricsFinder
             var name = tmp.Substring(idx + 1);
 
             StatusMessage($"Collecting the \"{name}\" playlist...");
+            _playingIndex = -1;
+            McStatusTimer.Stop();
 
-            _currentPlaylist = await McRestService.GetPlaylistFiles(id).ConfigureAwait(false);
+            _currentPlaylist = await McRestService.GetPlaylistFiles(id, name).ConfigureAwait(false);
 
             UseWaitCursor = false;
+            McStatusTimer.Start();
 
             return _currentPlaylist;
         }
@@ -683,8 +688,6 @@ namespace MediaCenter.LyricsFinder
                 await McRestService.PlayPause().ConfigureAwait(false);
             else
                 await McRestService.PlayByIndex(rowIdx).ConfigureAwait(false);
-
-            _playingIndex = rowIdx;
         }
 
 
@@ -745,6 +748,67 @@ namespace MediaCenter.LyricsFinder
         private static void SaveFormSettings()
         {
             Properties.Settings.Default.Save();
+        }
+
+
+        /// <summary>
+        /// Sets the play images.
+        /// </summary>
+        /// <returns>Playing row index or -1 if nothing is playing.</returns>
+        private async Task<int> SetPlayImages()
+        {
+            var ret = -1;
+            var rows = MainDataGridView.Rows;
+            var mcInfo = await McRestService.Info().ConfigureAwait(false);
+
+            if (mcInfo != null)
+            {
+                var key = string.Join("|", mcInfo.Artist, mcInfo.Album, mcInfo.Name);
+                var blank = new Bitmap(16, 16);
+
+                // Try to find a song in the current list matching the one (if any) that Media Center is playing
+                // and set the bitmap to play or blank accordingly.
+                // The reason we don't just use the index is, that the current playlist in LyricsFinder 
+                // may be another than the Media Center "Playing Now" list.
+                for (int i = 0; i < rows.Count; i++)
+                {
+                    var row = rows[i];
+                    var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+                    var artistCell = row.Cells[(int)GridColumnEnum.Artist] as DataGridViewTextBoxCell;
+                    var albumCell = row.Cells[(int)GridColumnEnum.Album] as DataGridViewTextBoxCell;
+                    var titleCell = row.Cells[(int)GridColumnEnum.Title] as DataGridViewTextBoxCell;
+                    var found = false;
+
+                    if (key.Equals(string.Join("|", artistCell.Value.ToString(), albumCell.Value.ToString(), titleCell.Value.ToString()), StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        found = true;
+
+                        BlankPlayStatusBitmaps(i); // Clear all other bitmaps than the one in playIdx row
+
+                        if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                        {
+                            imgCell.Value = Properties.Resources.Play;
+                            ret = i;
+                        }
+                        else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                        {
+                            imgCell.Value = Properties.Resources.Pause;
+                        }
+                        else
+                        {
+                            imgCell.Value = blank;
+                        }
+
+                        break;
+                    }
+
+                    // If not found, blank all bitmaps
+                    if (!found)
+                        BlankPlayStatusBitmaps();
+                }
+            }
+
+            return ret;
         }
 
 

@@ -105,7 +105,9 @@ namespace MediaCenter.LyricsFinder
                     _currentPlaylist = await McRestService.GetPlayNowList().ConfigureAwait(false);
                 }
 
-                workerState.Message = $"Connected to MediaCenter, the current playlist has {_currentPlaylist.Items.Count} items.";
+                workerState.Message = (_currentPlaylist.Name.IsNullOrEmptyTrimmed())
+                    ? $"Connected to MediaCenter, the current playlist has {_currentPlaylist.Items.Count} items."
+                    : $"Connected to MediaCenter, the current playlist \"{_currentPlaylist.Name}\" has {_currentPlaylist.Items.Count} items.";
                 workerState.Items = _currentPlaylist.Items;
                 workerState.CurrentItemIndex = (_playingIndex >= 0) ? _playingIndex : 0;
 

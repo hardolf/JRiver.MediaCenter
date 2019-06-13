@@ -213,6 +213,25 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Sets the state of the running without trigger any events.
+        /// </summary>
+        /// <param name="isRunning">if set to <c>true</c> [is running].</param>
+        public void SetRunningState(bool isRunning)
+        {
+            if (isRunning)
+            {
+                this.Image = this.ImageStop;
+                this.Text = this.TextStop;
+            }
+            else
+            {
+                this.Image = this.ImageStart;
+                this.Text = this.TextStart;
+            }
+        }
+
+
+        /// <summary>
         /// Starts this instance.
         /// </summary>
         public void Start()
@@ -256,8 +275,7 @@ namespace MediaCenter.LyricsFinder
 		{
 			StartEventHandler handler = Starting;
 
-			this.Image = this.ImageStop;
-			this.Text = this.TextStop;
+            SetRunningState(true);
 
             // Invokes the delegates.
             handler?.Invoke(this, e);
@@ -273,8 +291,7 @@ namespace MediaCenter.LyricsFinder
         {
             StopEventHandler handler = Stopping;
 
-            this.Image = this.ImageStart;
-            this.Text = this.TextStart;
+            SetRunningState(false);
 
             // Invokes the delegates.
             handler?.Invoke(this, e);

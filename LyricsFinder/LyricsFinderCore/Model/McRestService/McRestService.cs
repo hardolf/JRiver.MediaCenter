@@ -302,16 +302,15 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// Gets the a playlist from MC server.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="name">The name, optional.</param>
         /// <returns>
         ///   <see cref="McMplResponse" /> object.
         /// </returns>
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public static async Task<McMplResponse> GetPlaylistFiles(int id)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        public static async Task<McMplResponse> GetPlaylistFiles(int id, string name = "")
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlaylistFiles, id);
             var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
-            var ret = new McMplResponse(rsp);
+            var ret = new McMplResponse(rsp, name);
 
             return ret;
         }
@@ -343,7 +342,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Playlist);
             var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
-            var ret = new McMplResponse(rsp);
+            var ret = new McMplResponse(rsp, "Playing Now");
 
             return ret;
         }
