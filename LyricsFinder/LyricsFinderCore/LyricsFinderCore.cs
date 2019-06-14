@@ -313,11 +313,14 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
-        private void MainContextMenu_Opening(object sender, CancelEventArgs e)
+        private async void MainContextMenu_Opening(object sender, CancelEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
+
+                await SetPlayingImagesAndMenus().ConfigureAwait(false);
+
                 if (MainDataGridView.SelectedRows.Count < 1)
                 {
                     e.Cancel = true;
@@ -514,7 +517,7 @@ namespace MediaCenter.LyricsFinder
             {
                 McStatusTimer.Stop();
 
-                _playingIndex = await SetPlayImages().ConfigureAwait(false);
+                await SetPlayingImagesAndMenus().ConfigureAwait(false);
 
                 McStatusTimer.Interval = _mcStatusIntervalNormal;
                 McStatusTimer.Start();
@@ -528,7 +531,8 @@ namespace MediaCenter.LyricsFinder
                 if (McStatusTimer.Interval == _mcStatusIntervalNormal)
                     ErrorHandling.ErrorLog($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
 
-                BlankPlayStatusBitmaps();
+                await BlankPlayStatusBitmaps().ConfigureAwait(false);
+
                 McStatusTimer.Interval = _mcStatusIntervalError;
                 McStatusTimer.Start();
             }
@@ -575,10 +579,6 @@ namespace MediaCenter.LyricsFinder
 
                     // Get the MC playlist and let LyricsFinder know about it
                     await LoadPlaylist(itemName).ConfigureAwait(false);
-
-                    _isConnectedToMc = false;
-                    _progressPercentage = 0;
-                    ProcessWorker.RunWorkerAsync();
                 }
                 else
                 {

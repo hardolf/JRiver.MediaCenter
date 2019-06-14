@@ -90,7 +90,9 @@ namespace MediaCenter.LyricsFinder
         /// Blanks the play status bitmaps.
         /// </summary>
         /// <param name="exceptionIndex">Index of the exception song that should not be blanked.</param>
-        private void BlankPlayStatusBitmaps(int exceptionIndex = -1)
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private async Task BlankPlayStatusBitmaps(int exceptionIndex = -1)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var rows = MainDataGridView.Rows;
             var blank = new Bitmap(16, 16);
@@ -172,7 +174,7 @@ namespace MediaCenter.LyricsFinder
                 dgv.Rows.Add(row);
             }
 
-            _playingIndex = await SetPlayImages().ConfigureAwait(false);
+            await SetPlayingImagesAndMenus().ConfigureAwait(false);
 
             if (_playingIndex >= 0)
             {
@@ -180,12 +182,8 @@ namespace MediaCenter.LyricsFinder
                 {
                     dgv.Rows[_playingIndex].Selected = true;
                     dgv.FirstDisplayedScrollingRowIndex = (_playingIndex > 2) ? _playingIndex - 3 : 0;
-
-                    ToolsPlayStartStopButton.SetRunningState(true);
                 }
             }
-            else
-                ToolsPlayStartStopButton.SetRunningState(false);
 
             if (ToolsPlayStartStopButton.GetStartingEventSubscribers().Length == 0)
                 ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_Starting;
@@ -574,6 +572,10 @@ namespace MediaCenter.LyricsFinder
             else
                 _currentPlaylist = await McRestService.GetPlayNowList().ConfigureAwait(false);
 
+            _isConnectedToMc = false;
+            _progressPercentage = 0;
+            ProcessWorker.RunWorkerAsync();
+
             UseWaitCursor = false;
             McStatusTimer.Start();
 
@@ -700,6 +702,8 @@ namespace MediaCenter.LyricsFinder
                 await McRestService.PlayPause().ConfigureAwait(false);
             else
                 await McRestService.PlayByIndex(rowIdx).ConfigureAwait(false);
+
+            await SetPlayingImagesAndMenus().ConfigureAwait(false);
         }
 
 
@@ -709,6 +713,8 @@ namespace MediaCenter.LyricsFinder
         private async Task PlayStop()
         {
             await McRestService.PlayStop().ConfigureAwait(false);
+
+            await SetPlayingImagesAndMenus().ConfigureAwait(false);
         }
 
 
@@ -767,60 +773,79 @@ namespace MediaCenter.LyricsFinder
         /// Sets the play images.
         /// </summary>
         /// <returns>Playing row index or -1 if nothing is playing.</returns>
-        private async Task<int> SetPlayImages()
+        private async Task SetPlayingImagesAndMenus()
         {
-            var ret = -1;
             var rows = MainDataGridView.Rows;
+            var selectedRows = MainDataGridView.SelectedRows;
+
+            if (selectedRows.Count < 1)
+                return;
+
+            var rowIdx = MainDataGridView.SelectedRows[0].Index;
             var mcInfo = await McRestService.Info().ConfigureAwait(false);
 
-            if (mcInfo != null)
+            _playingIndex = -1;
+
+            if (mcInfo == null)
+                return;
+
+            var key = string.Join("|", mcInfo.Artist, mcInfo.Album, mcInfo.Name);
+            var blank = new Bitmap(16, 16);
+
+            // Try to find a song in the current list matching the one (if any) that Media Center is playing
+            // and set the bitmap to play or blank accordingly.
+            // The reason we don't just use the index is, that the current playlist in LyricsFinder 
+            // may be another than the Media Center "Playing Now" list.
+            for (int i = 0; i < rows.Count; i++)
             {
-                var key = string.Join("|", mcInfo.Artist, mcInfo.Album, mcInfo.Name);
-                var blank = new Bitmap(16, 16);
+                var row = rows[i];
+                var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+                var artistCell = row.Cells[(int)GridColumnEnum.Artist] as DataGridViewTextBoxCell;
+                var albumCell = row.Cells[(int)GridColumnEnum.Album] as DataGridViewTextBoxCell;
+                var titleCell = row.Cells[(int)GridColumnEnum.Title] as DataGridViewTextBoxCell;
 
-                // Try to find a song in the current list matching the one (if any) that Media Center is playing
-                // and set the bitmap to play or blank accordingly.
-                // The reason we don't just use the index is, that the current playlist in LyricsFinder 
-                // may be another than the Media Center "Playing Now" list.
-                for (int i = 0; i < rows.Count; i++)
+                if (key.Equals(string.Join("|", artistCell.Value.ToString(), albumCell.Value.ToString(), titleCell.Value.ToString()), StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var row = rows[i];
-                    var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
-                    var artistCell = row.Cells[(int)GridColumnEnum.Artist] as DataGridViewTextBoxCell;
-                    var albumCell = row.Cells[(int)GridColumnEnum.Album] as DataGridViewTextBoxCell;
-                    var titleCell = row.Cells[(int)GridColumnEnum.Title] as DataGridViewTextBoxCell;
-                    var found = false;
+                    _playingIndex = i;
 
-                    if (key.Equals(string.Join("|", artistCell.Value.ToString(), albumCell.Value.ToString(), titleCell.Value.ToString()), StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        found = true;
+                    await BlankPlayStatusBitmaps(i).ConfigureAwait(false); // Clear all other bitmaps than the one in playIdx row
 
-                        BlankPlayStatusBitmaps(i); // Clear all other bitmaps than the one in playIdx row
+                    if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                        imgCell.Value = Properties.Resources.Play;
+                    else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                        imgCell.Value = Properties.Resources.Pause;
+                    else
+                        imgCell.Value = blank;
 
-                        if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                        {
-                            imgCell.Value = Properties.Resources.Play;
-                            ret = i;
-                        }
-                        else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                        {
-                            imgCell.Value = Properties.Resources.Pause;
-                        }
-                        else
-                        {
-                            imgCell.Value = blank;
-                        }
-
-                        break;
-                    }
-
-                    // If not found, blank all bitmaps
-                    if (!found)
-                        BlankPlayStatusBitmaps();
+                    break;
                 }
             }
 
-            return ret;
+            // If not found, blank all bitmaps
+            if (_playingIndex < 0)
+                await BlankPlayStatusBitmaps().ConfigureAwait(false);
+
+            // Set the playing menus' states
+            ContextPlayStopMenuItem.Text = "Stop play";
+
+            if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
+            {
+                ContextPlayPauseMenuItem.Text = (_playingIndex == rowIdx) ? "Pause play" : "Play";
+                ContextPlayStopMenuItem.Visible = true;
+                ToolsPlayStartStopButton.SetRunningState(true);
+            }
+            else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
+            {
+                ContextPlayPauseMenuItem.Text = (_playingIndex == rowIdx) ? "Continue play" : "Play";
+                ContextPlayStopMenuItem.Visible = true;
+                ToolsPlayStartStopButton.SetRunningState(false);
+            }
+            else
+            {
+                ContextPlayPauseMenuItem.Text = "Play";
+                ContextPlayStopMenuItem.Visible = false;
+                ToolsPlayStartStopButton.SetRunningState(false);
+            }
         }
 
 
