@@ -194,7 +194,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -231,7 +231,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -265,7 +265,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -303,7 +303,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -329,7 +329,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -348,7 +348,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -398,7 +398,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -446,7 +446,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -476,7 +476,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -500,7 +500,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -642,7 +642,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in menu item: \"{itemName}\" in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex, $"in menu item: \"{itemName}\"");
             }
         }
 
@@ -676,7 +676,7 @@ namespace MediaCenter.LyricsFinder
                 if (ProcessWorker.WorkerSupportsCancellation)
                     ProcessWorker.CancelAsync();
 
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -746,7 +746,7 @@ namespace MediaCenter.LyricsFinder
                 if (ProcessWorker.WorkerSupportsCancellation)
                     ProcessWorker.CancelAsync();
 
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -778,7 +778,7 @@ namespace MediaCenter.LyricsFinder
                     if (e.Error is LyricsQuotaExceededException)
                         ErrorHandling.ShowErrorHandler(this, e.Error.Message);
                     else
-                        ErrorHandling.ShowAndLogErrorHandler("Error handling background worker event in LyricsFinder.", e.Error, _progressPercentage);
+                        ErrorReport(MethodBase.GetCurrentMethod(), e.Error, "handling background worker event in LyricsFinder");
                 }
                 else
                 {
@@ -795,7 +795,7 @@ namespace MediaCenter.LyricsFinder
                 if (ProcessWorker.WorkerSupportsCancellation)
                     ProcessWorker.CancelAsync();
 
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -827,7 +827,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -851,7 +851,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -874,7 +874,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -894,7 +894,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -915,7 +915,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -936,7 +936,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -976,7 +976,7 @@ namespace MediaCenter.LyricsFinder
 #pragma warning restore CS0168 // Variable is declared but never used
             {
                 // We ignore this exception for now
-                // ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                // ErrorReport(MethodBase.GetCurrentMethod(), ex);
 
                 UpdateCheckTimer.Interval *= 10;
                 UpdateCheckTimer.Start();

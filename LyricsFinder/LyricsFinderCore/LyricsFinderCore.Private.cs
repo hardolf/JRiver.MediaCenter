@@ -114,6 +114,32 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Show and log a fatal error report.
+        /// </summary>
+        /// <param name="method">The method.</param>
+        /// <param name="exception">The exception.</param>
+        /// <param name="message">The message.</param>
+        /// <remarks>
+        /// Fatal error reporting, normally called from an event routine.
+        /// </remarks>
+        private void ErrorReport(MethodBase method, Exception exception, string message = null)
+        {
+            // Stop the timers
+            McStatusTimer.Stop();
+            UpdateCheckTimer.Stop();
+
+            message = message?.Trim() ?? string.Empty;
+            message += " ";
+
+            ErrorHandling.ShowAndLogErrorHandler($"Error {message}in {method.Name} event.", exception, _progressPercentage);
+
+            // Start the timers
+            McStatusTimer.Start();
+            UpdateCheckTimer.Start();
+        }
+
+
+        /// <summary>
         /// Fills the data grid.
         /// </summary>
         /// <param name="items">The items.</param>
@@ -314,7 +340,7 @@ namespace MediaCenter.LyricsFinder
                 }
                 catch (Exception ex)
                 {
-                    ErrorHandling.ShowAndLogErrorHandler($"Error {msg} in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                    ErrorReport(MethodBase.GetCurrentMethod(), ex, msg);
                 }
             }
         }
@@ -691,17 +717,36 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         private async Task PlayOrPause()
         {
-            var rows = MainDataGridView.SelectedRows;
+            var rows = MainDataGridView.Rows;
+            var selectedRows = MainDataGridView.SelectedRows;
 
-            if (rows.Count < 1)
+            if (selectedRows.Count < 1)
                 return;
 
-            var rowIdx = rows[0].Index;
+            var rowIdx = selectedRows[0].Index;
 
-            if (rowIdx == _playingIndex)
-                await McRestService.PlayPause().ConfigureAwait(false);
-            else
-                await McRestService.PlayByIndex(rowIdx).ConfigureAwait(false);
+            // Is the selected file in the Playing Now list?
+            var selectedKeyCell = rows[rowIdx].Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+            var selectedKey = (int)(selectedKeyCell?.Value ?? -1);
+            var playingNowList = await McRestService.GetPlayNowList().ConfigureAwait(false);
+            var isInPlayingNowList = playingNowList.Items.ContainsKey(selectedKey);
+
+            if (isInPlayingNowList)
+            {
+                if (rowIdx == _playingIndex)
+                    await McRestService.PlayPause().ConfigureAwait(false);
+                else
+                    await McRestService.PlayByIndex(rowIdx).ConfigureAwait(false);
+            }
+            else if ((_currentPlaylist != null) && (_currentPlaylist.Id > 0))
+            {
+                // Replace the MC Playing Now list with the current LyricsFinder playlist
+                var rsp = await McRestService.PlayPlaylist(_currentPlaylist.Id).ConfigureAwait(false);
+
+                // Play the selected item
+                if (rsp.IsOk)
+                    await McRestService.PlayByIndex(rowIdx).ConfigureAwait(false);
+            }
 
             await SetPlayingImagesAndMenus().ConfigureAwait(false);
         }
@@ -775,6 +820,8 @@ namespace MediaCenter.LyricsFinder
         /// <returns>Playing row index or -1 if nothing is playing.</returns>
         private async Task SetPlayingImagesAndMenus()
         {
+            McStatusTimer.Stop();
+
             var rows = MainDataGridView.Rows;
             var selectedRows = MainDataGridView.SelectedRows;
 
@@ -789,7 +836,6 @@ namespace MediaCenter.LyricsFinder
             if (mcInfo == null)
                 return;
 
-            var key = string.Join("|", mcInfo.Artist, mcInfo.Album, mcInfo.Name);
             var blank = new Bitmap(16, 16);
 
             // Try to find a song in the current list matching the one (if any) that Media Center is playing
@@ -799,12 +845,11 @@ namespace MediaCenter.LyricsFinder
             for (int i = 0; i < rows.Count; i++)
             {
                 var row = rows[i];
+                var keyCell = row.Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+                var key = keyCell?.Value?.ToString() ?? string.Empty;
                 var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
-                var artistCell = row.Cells[(int)GridColumnEnum.Artist] as DataGridViewTextBoxCell;
-                var albumCell = row.Cells[(int)GridColumnEnum.Album] as DataGridViewTextBoxCell;
-                var titleCell = row.Cells[(int)GridColumnEnum.Title] as DataGridViewTextBoxCell;
 
-                if (key.Equals(string.Join("|", artistCell.Value.ToString(), albumCell.Value.ToString(), titleCell.Value.ToString()), StringComparison.InvariantCultureIgnoreCase))
+                if (mcInfo.FileKey.Equals(key, StringComparison.InvariantCultureIgnoreCase))
                 {
                     _playingIndex = i;
 
@@ -846,6 +891,8 @@ namespace MediaCenter.LyricsFinder
                 ContextPlayStopMenuItem.Visible = false;
                 ToolsPlayStartStopButton.SetRunningState(false);
             }
+
+            McStatusTimer.Start();
         }
 
 
@@ -935,7 +982,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 
@@ -952,7 +999,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex, _progressPercentage);
+                ErrorReport(MethodBase.GetCurrentMethod(), ex);
             }
         }
 

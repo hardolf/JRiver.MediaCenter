@@ -29,7 +29,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// The ID.
         /// </value>
         [XmlIgnore]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the playlist name, optional.
@@ -100,7 +100,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <param name="name">The name.</param>
-        protected McMplResponse(int? id = null, string name = null)
+        protected McMplResponse(int id = -1, string name = null)
             : this()
         {
             Id = id;
@@ -114,7 +114,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <param name="xml">The XML string.</param>
         /// <param name="id">The identifier.</param>
         /// <param name="name">The name, optional name of the playlist.</param>
-        public McMplResponse(string xml, int? id = null, string name = null)
+        public McMplResponse(string xml, int id = -1, string name = null)
             : this(id, name)
         {
             XmlDocument xDoc = new XmlDocument() { XmlResolver = null };

@@ -68,6 +68,24 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
+        /*
+        /// <summary>
+        /// Adds to playing now.
+        /// </summary>
+        /// <returns>
+        ///   <see cref="McResponse" /> object.
+        /// </returns>
+        public static async Task<McResponse> AddToPlayingNow(int key)
+        {
+            var requestUrl = CreateRequestUrl(McCommandEnum.AddToPlayingNow, key);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
+            var ret = new McResponse(rsp);
+
+            return ret;
+        }
+        */
+
+
         /// <summary>
         /// Creates the request URL for MC server.
         /// </summary>
@@ -97,6 +115,10 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
             switch (command)
             {
+                case McCommandEnum.AddToPlayingNow:
+                    sb.Append($"/Playlist/AddFile?Token={McWsToken}&PlaylistType=ID&FileType=Key&File={key}");
+                    break;
+
                 case McCommandEnum.Alive:
                 case McCommandEnum.Authenticate:
                     sb.Append($"/{command}");
@@ -114,6 +136,10 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                     sb.Append($"/Playback/{command}?Token={McWsToken}&Index={key}");
                     break;
 
+                case McCommandEnum.PlayByKey:
+                    sb.Append($"/Playback/{command}?Token={McWsToken}&Key={key}");
+                    break;
+
                 case McCommandEnum.Playlist:
                     sb.Append($"/Playback/{command}?Token={McWsToken}&Action=MPL");
                     break;
@@ -124,6 +150,10 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
                 case McCommandEnum.PlaylistList:
                     sb.Append($"/Playlists/List?Action=MPL&Token={McWsToken}");
+                    break;
+
+                case McCommandEnum.PlayPlaylist:
+                    sb.Append($"/Playback/{command}?Token={McWsToken}&Playlist={key}");
                     break;
 
                 case McCommandEnum.PlayPause:
@@ -342,7 +372,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Playlist);
             var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
-            var ret = new McMplResponse(rsp, null, "Playing Now");
+            var ret = new McMplResponse(rsp, 0, "Playing Now");
 
             return ret;
         }
@@ -351,7 +381,9 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <summary>
         /// Get the playback info.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        ///   <see cref="McInfoResponse" /> object.
+        /// </returns>
         public static async Task<McInfoResponse> Info()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Info);
@@ -388,13 +420,30 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>
-        ///   <see cref="McMplResponse" /> object.
+        ///   <see cref="McResponse" /> object.
         /// </returns>
-        public static async Task<McMplResponse> PlayByIndex(int index)
+        public static async Task<McResponse> PlayByIndex(int index)
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlayByIndex, index);
             var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
-            var ret = new McMplResponse(rsp);
+            var ret = new McResponse(rsp);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Plays the item by the file key.
+        /// </summary>
+        /// <param name="key">The file key.</param>
+        /// <returns>
+        ///   <see cref="McResponse" /> object.
+        /// </returns>
+        public static async Task<McResponse> PlayByKey(int key)
+        {
+            var requestUrl = CreateRequestUrl(McCommandEnum.PlayByKey, key);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
+            var ret = new McResponse(rsp);
 
             return ret;
         }
@@ -404,13 +453,30 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// Pauses the playing.
         /// </summary>
         /// <returns>
-        ///   <see cref="McMplResponse" /> object.
+        ///   <see cref="McResponse" /> object.
         /// </returns>
-        public static async Task<McMplResponse> PlayPause()
+        public static async Task<McResponse> PlayPause()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlayPause);
             var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
-            var ret = new McMplResponse(rsp);
+            var ret = new McResponse(rsp);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Plays the playlist with the specified ID.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>
+        ///   <see cref="McResponse" /> object.
+        /// </returns>
+        public static async Task<McResponse> PlayPlaylist(int id)
+        {
+            var requestUrl = CreateRequestUrl(McCommandEnum.PlayPlaylist, id);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
+            var ret = new McResponse(rsp);
 
             return ret;
         }
@@ -420,20 +486,20 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// Stops the playing.
         /// </summary>
         /// <returns>
-        ///   <see cref="McMplResponse" /> object.
+        ///   <see cref="McResponse" /> object.
         /// </returns>
-        public static async Task<McMplResponse> PlayStop()
+        public static async Task<McResponse> PlayStop()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Stop);
             var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
-            var ret = new McMplResponse(rsp);
+            var ret = new McResponse(rsp);
 
             return ret;
         }
 
 
         /// <summary>
-        /// Sets the information to the MC server.
+        /// Sets the information of an item to the MC server.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="field">The field.</param>

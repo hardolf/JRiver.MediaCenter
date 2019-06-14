@@ -75,7 +75,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// Initializes a new instance of the <see cref="McResponse"/> class.
         /// </summary>
         /// <param name="xml">The XML string.</param>
-        protected McResponse(string xml)
+        public McResponse(string xml)
             : this()
         {
             var xDoc = new XmlDocument() { XmlResolver = null };

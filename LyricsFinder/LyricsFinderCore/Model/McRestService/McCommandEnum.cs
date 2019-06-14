@@ -15,15 +15,18 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
     {
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        AddToPlayingNow,
         Alive,
         Authenticate,
         GetImage,
         Info,
         PlayByIndex,
+        PlayByKey,
         Playlist,
         PlaylistFiles,
         PlaylistList,
         PlayPause,
+        PlayPlaylist,
         Stop,
         SetInfo
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
