@@ -33,12 +33,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
             };
 
             _service = new ChartLyricsService();
+            _service.DataDirectory = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\Documents\LyricsFinder");
             _service.RefreshServiceSettings();
         }
 
 
         [TestMethod]
-        public void TestMethod01()
+        public void ChartLyricsTestMethod01()
         {
             var resultService = _service.Process(_item);
 

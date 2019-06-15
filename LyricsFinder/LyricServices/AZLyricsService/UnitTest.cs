@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Net;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.LyricsFinder.Model.McRestService;
+using System.Globalization;
+
 
 namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 {
@@ -13,8 +14,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
     public class UnitTest
     {
 
-        private McMplItem _item1, _item2, _item3;
-        private ApiseedsService _service;
+        private McMplItem _item1, _item2;
+        private AZLyricsService _service;
 
 
         [TestCleanup]
@@ -34,24 +35,18 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 
             _item2 = new McMplItem
             {
-                Artist = "Eliza Gilkyson",
-                Name = "xxx" // Does not exist
+                Artist = "dire Straits",
+                Name = "brothers in arms"
             };
 
-            _item3 = new McMplItem
-            {
-                Artist = "xxx", // Does not exist
-                Name = "yyy" // Does not exist
-            };
-
-            _service = new ApiseedsService();
+            _service = new AZLyricsService();
             _service.DataDirectory = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\Documents\LyricsFinder");
             _service.RefreshServiceSettings();
         }
 
 
         [TestMethod]
-        public void ApiseedsTestMethod01()
+        public void AZLyricsTestMethod01()
         {
             var resultService = _service.Process(_item1);
 
@@ -60,29 +55,21 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
             Assert.IsNotNull(resultService.FoundLyricList[0]);
             Assert.IsNotNull(resultService.FoundLyricList[0].LyricText);
             Assert.AreNotEqual(0, resultService.FoundLyricList[0].LyricText.Trim().Length);
-            Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("APISEEDS"));
+            Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("AZLYRICS"));
         }
 
 
         [TestMethod]
-        public void ApiseedsTestMethod02()
+        public void AZLyricsTestMethod02()
         {
             var resultService = _service.Process(_item2);
 
             Assert.IsNotNull(resultService);
-            Assert.AreEqual(0, resultService.FoundLyricList.Count);
-            Assert.AreEqual(resultService.LyricResult, LyricResultEnum.NotFound);
-        }
-
-
-        [TestMethod]
-        public void ApiseedsTestMethod03()
-        {
-            var resultService = _service.Process(_item3);
-
-            Assert.IsNotNull(resultService);
-            Assert.AreEqual(0, resultService.FoundLyricList.Count);
-            Assert.AreEqual(resultService.LyricResult, LyricResultEnum.NotFound);
+            Assert.AreNotEqual(0, resultService.FoundLyricList.Count);
+            Assert.IsNotNull(resultService.FoundLyricList[0]);
+            Assert.IsNotNull(resultService.FoundLyricList[0].LyricText);
+            Assert.AreNotEqual(0, resultService.FoundLyricList[0].LyricText.Trim().Length);
+            Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("AZLYRICS"));
         }
 
     }

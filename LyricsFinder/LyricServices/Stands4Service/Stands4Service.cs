@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
+using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
 
@@ -92,19 +93,23 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="getAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
-        /// <returns></returns>
+        /// <returns>
+        ///   <see cref="AbstractLyricService"/> descendent object of type <see cref="Stands4Service"/>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception">\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".</exception>
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
         public override AbstractLyricService Process(McMplItem item, bool getAll = false)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
             base.Process(item); // Result: not found
 
             var credit = Credit as CreditType;
-            var term = item.Name;
-            var urlString = $"{credit.ServiceUrl}?uid={credit.UserId}&tokenid={credit.Token}&term={term}";
+            var urlString = $"{credit.ServiceUrl}?uid={credit.UserId}&tokenid={credit.Token}&term={item.Name}";
             var url = new SerializableUri(Uri.EscapeUriString(urlString));
 
             var req = WebRequest.Create(url) as HttpWebRequest;
@@ -115,14 +120,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 using (var rsp = req.GetResponse() as HttpWebResponse)
                 {
                     if (rsp == null)
-                        throw new NullReferenceException("Response is null");
+                        throw new NullReferenceException(Helpers.Utility.NullResponseMessage);
                     if (rsp.StatusCode != HttpStatusCode.OK)
-                        throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
+                        throw new Exception(Helpers.Utility.HttpWebServerErrorMessage(rsp));
 
                     using (var rspStream = rsp.GetResponseStream())
                     {
-                        var reader = new StreamReader(rspStream, Encoding.UTF8);
-                        txt = reader.ReadToEnd();
+                        using (var reader = new StreamReader(rspStream, Encoding.UTF8))
+                        {
+                            txt = reader.ReadToEnd(); 
+                        }
                     }
                 }
             }

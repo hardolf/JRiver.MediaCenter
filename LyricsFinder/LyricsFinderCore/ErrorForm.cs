@@ -93,13 +93,14 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                var frm = new ErrorForm();
+                using (var frm = new ErrorForm())
+                {
+                    frm.ErrorTextBox.Text = message;
+                    frm.ErrorTextBox.Select(0, 0);
+                    frm.ErrorTextBox.AutoSizeTextBox();
 
-                frm.ErrorTextBox.Text = message;
-                frm.ErrorTextBox.Select(0, 0);
-                frm.ErrorTextBox.AutoSizeTextBox();
-
-                frm.ShowDialog(owner);
+                    frm.ShowDialog(owner); 
+                }
             }
             catch (Exception ex)
             {
@@ -118,14 +119,15 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                var frm = new ErrorForm();
+                using (var frm = new ErrorForm())
+                {
+                    frm.ErrorTextBox.Text = message;
+                    frm.ErrorTextBox.Select(0, 0);
+                    frm.Text = title;
+                    frm.ErrorTextBox.AutoSizeTextBox();
 
-                frm.ErrorTextBox.Text = message;
-                frm.ErrorTextBox.Select(0, 0);
-                frm.Text = title;
-                frm.ErrorTextBox.AutoSizeTextBox();
-
-                frm.ShowDialog(owner);
+                    frm.ShowDialog(owner);
+                }
             }
             catch (Exception ex)
             {

@@ -67,6 +67,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <summary>
         /// Shows the log.
         /// </summary>
+        /// <exception cref="Exception">No active log4net file appenders.</exception>
         public static void ShowLog()
         {
             var appenders = _log.Logger.Repository.GetAppenders();
@@ -77,16 +78,19 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             var file = appender.File;
             var dir = Path.GetDirectoryName(file);
             var ext = Path.GetExtension(file);
-            var logFileDialog = new OpenFileDialog
+
+            using (var logFileDialog = new OpenFileDialog
             {
                 CheckPathExists = true,
                 DefaultExt = ext,
                 InitialDirectory = dir
-            };
-            var result = logFileDialog.ShowDialog();
+            })
+            {
+                var result = logFileDialog.ShowDialog();
 
-            if ((result == DialogResult.OK) && (!string.IsNullOrEmpty(logFileDialog.FileName)))
-                Process.Start(logFileDialog.FileName);
+                if ((result == DialogResult.OK) && (!string.IsNullOrEmpty(logFileDialog.FileName)))
+                    Process.Start(logFileDialog.FileName);
+            }
         }
 
     }

@@ -30,6 +30,8 @@ namespace MediaCenter.SharedComponents
         /// <returns></returns>
         public static string PatchMissingNamespace(this string xmlText)
         {
+            if (xmlText.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(xmlText));
+
             const string ns = "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"";
 
             var ret = new StringBuilder(xmlText);
@@ -70,9 +72,12 @@ namespace MediaCenter.SharedComponents
         /// <returns>
         ///   <see cref="type" /> object.
         /// </returns>
+        /// <exception cref="ArgumentNullException">filePath</exception>
+        /// <exception cref="FileNotFoundException">File not found: \"{filePath}\"</exception>
 #pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
         public static object XmlDeserializeFromFile(this string filePath, Type type, params Type[] knownTypes)
         {
+            if (filePath.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(filePath));
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"File not found: \"{filePath}\"");
 
@@ -92,7 +97,9 @@ namespace MediaCenter.SharedComponents
             {
                 try
                 {
+#pragma warning disable CA5369 // Use XmlReader For Deserialize
                     ret = serializer.Deserialize(reader);
+#pragma warning restore CA5369 // Use XmlReader For Deserialize
                 }
                 catch (Exception)
                 {
@@ -131,11 +138,11 @@ namespace MediaCenter.SharedComponents
         /// <returns>
         ///   <see cref="type" /> object.
         /// </returns>
+        /// <exception cref="ArgumentNullException">xml</exception>
 #pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
         public static object XmlDeserializeFromString(this string xml, Type type, params Type[] knownTypes)
         {
-            if (xml.IsNullOrEmptyTrimmed())
-                throw new ArgumentNullException(nameof(xml));
+            if (xml.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(xml));
 
             object ret;
             XmlSerializer serializer;
@@ -153,7 +160,9 @@ namespace MediaCenter.SharedComponents
             {
                 try
                 {
+#pragma warning disable CA5369 // Use XmlReader For Deserialize
                     ret = serializer.Deserialize(reader);
+#pragma warning restore CA5369 // Use XmlReader For Deserialize
                 }
                 catch (Exception)
                 {
@@ -171,12 +180,13 @@ namespace MediaCenter.SharedComponents
         /// <param name="objectInstance">The object instance.</param>
         /// <param name="filePath">The file path.</param>
         /// <param name="knownTypes">The known types.</param>
+        /// <exception cref="ArgumentNullException">filePath</exception>
+        /// <exception cref="DirectoryNotFoundException">Directory not found for the file to write: \"{filePath}\"</exception>
         public static void XmlSerializeToFile(this object objectInstance, string filePath, params Type[] knownTypes)
         {
-            if (filePath == null)
-                throw new ArgumentNullException(nameof(filePath));
-            if (!Directory.Exists(Path.GetDirectoryName(filePath)))
-                throw new DirectoryNotFoundException($"Directory not found for the file to write: \"{filePath}\"");
+            if (objectInstance == null) throw new ArgumentNullException(nameof(objectInstance));
+            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
+            if (!Directory.Exists(Path.GetDirectoryName(filePath))) throw new DirectoryNotFoundException($"Directory not found for the file to write: \"{filePath}\"");
 
             XmlSerializer serializer;
 
@@ -211,6 +221,8 @@ namespace MediaCenter.SharedComponents
         /// <returns>XML string.</returns>
         public static string XmlSerializeToString(this object objectInstance, params Type[] knownTypes)
         {
+            if (objectInstance == null) throw new ArgumentNullException(nameof(objectInstance));
+
             var ret = new StringBuilder();
             XmlSerializer serializer;
 

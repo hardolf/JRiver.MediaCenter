@@ -125,6 +125,13 @@ namespace MediaCenter.LyricsFinder
         /// <param name="artist">The artist, only used for search.</param>
         /// <param name="album">The album, only used for search.</param>
         /// <param name="track">The track, only used for search.</param>
+        /// <exception cref="ArgumentNullException">
+        /// lyricCell
+        /// or
+        /// callback
+        /// or
+        /// lyricsFinderData
+        /// </exception>
         internal LyricForm(DataGridViewTextBoxCell lyricCell, Point location, Size? size, Action<LyricForm> callback, LyricsFinderDataType lyricsFinderData, bool isSearch = false, string artist = null, string album = null, string track = null)
             : this()
         {

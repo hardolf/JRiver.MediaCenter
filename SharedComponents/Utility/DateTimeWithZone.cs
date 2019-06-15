@@ -37,7 +37,7 @@ namespace MediaCenter.SharedComponents
         public TimeZoneInfo ServiceTimeZone
         {
             get { return TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId); }
-            set { TimeZoneId = value.Id; }
+            set { TimeZoneId = value?.Id ?? TimeZoneInfo.Utc.ToString(); }
         }
 
         /// <summary>

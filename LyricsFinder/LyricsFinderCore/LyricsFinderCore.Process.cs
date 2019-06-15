@@ -29,6 +29,7 @@ namespace MediaCenter.LyricsFinder
         /// Connects to the MediaCenter.
         /// </summary>
         /// <param name="worker">The worker.</param>
+        /// <returns></returns>
         /// <exception cref="ArgumentNullException">worker</exception>
         /// <exception cref="Exception">The connected MediaCenter Web Service has AccessKey \"{alive.AccessKey}\", ...
         /// or

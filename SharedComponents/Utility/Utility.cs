@@ -28,6 +28,8 @@ namespace MediaCenter.SharedComponents
         /// </remarks>
         public static void AutoSizeTextBox(this TextBox textBox)
         {
+            if (textBox == null) throw new ArgumentNullException(nameof(textBox));
+
             const int x_margin = 0;
             const int y_margin = 2;
 
@@ -48,6 +50,8 @@ namespace MediaCenter.SharedComponents
         /// <remarks>This routine can be used as a simple "serialization" function.</remarks>
         public static string GetAllTextBoxesText(this Control parentControl)
         {
+            if (parentControl == null) throw new ArgumentNullException(nameof(parentControl));
+
             var ret = new StringBuilder();
 
             foreach (var ctl in parentControl.Controls)
@@ -64,7 +68,10 @@ namespace MediaCenter.SharedComponents
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <param name="target">The target.</param>
-        /// <returns>The assembly build datetime.</returns>
+        /// <returns>
+        /// The assembly build datetime.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">assembly</exception>
         /// <remarks>
         /// <para>Sources:</para>
         /// <para>https://stackoverflow.com/questions/1600962/displaying-the-build-date</para>
@@ -72,10 +79,12 @@ namespace MediaCenter.SharedComponents
         /// </remarks>
         public static DateTime GetLinkerTime(this Assembly assembly, TimeZoneInfo target = null)
         {
-            var filePath = assembly.Location;
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+
             const int c_PeHeaderOffset = 60;
             const int c_LinkerTimestampOffset = 8;
 
+            var filePath = assembly.Location;
             var buffer = new byte[2048];
 
             using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
@@ -99,9 +108,14 @@ namespace MediaCenter.SharedComponents
         /// </summary>
         /// <param name="separator">The separator.</param>
         /// <param name="strings">The strings.</param>
-        /// <returns>Joined string.</returns>
+        /// <returns>
+        /// Joined string.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">separator
+        /// or
+        /// separator</exception>
         /// <remarks>
-        /// <para>This function is an improved version of the <see cref="string.Join"/> method.</para>
+        /// <para>This function is an improved version of the <see cref="string.Join" /> method.</para>
         /// <para>It removes any duplicate trailing separators.</para>
         /// </remarks>
         public static string JoinTrimmedStrings(string separator, params string[] strings)
@@ -138,8 +152,11 @@ namespace MediaCenter.SharedComponents
         /// <returns>
         ///   <c>true</c> if the input string contains one or more of the strings in the specified compare list; otherwise, <c>false</c>.
         /// </returns>
+        /// <exception cref="ArgumentNullException">input</exception>
         public static bool Contains(this string input, IEnumerable<string> compareList)
         {
+            if (input.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(input));
+
             input = input.ToUpperInvariant();
 
             var ret = compareList.Any(s => input.Contains(s.ToUpperInvariant()));
@@ -208,8 +225,11 @@ namespace MediaCenter.SharedComponents
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">input</exception>
         public static string LfToCrLf(this string input)
         {
+            if (input.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(input));
+
             var ret = new StringBuilder(input);
 
             for (int i = 0; i < ret.Length; i++)

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.LyricServices.ChartLyricsReference;
+using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.LyricServices.Properties;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
@@ -41,9 +42,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="getAll">If set to <c>true</c> get all search hits; else get the first one only.</param>
-        /// <returns></returns>
+        /// <returns>
+        ///   <see cref="AbstractLyricService" /> descendent object of type <see cref="Stands4Service" />.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">item</exception>
+        /// <exception cref="CommunicationException">Failed to get info from \"{Credit.ServiceName}\".</exception>
         public override AbstractLyricService Process(McMplItem item, bool getAll = false)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
             base.Process(item); // Result: not found
 
             apiv1Soap client = null;

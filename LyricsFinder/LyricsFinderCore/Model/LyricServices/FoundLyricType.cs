@@ -128,7 +128,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 return ret.ToString();
             }
-            set { _lyricCreditText = value.Trim().LfToCrLf(); }
+            set { _lyricCreditText = value?.Trim().LfToCrLf() ?? string.Empty; }
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual string LyricText
         {
             get { return _lyricText; }
-            set { _lyricText = value.Trim().LfToCrLf(); }
+            set { _lyricText = value?.Trim().LfToCrLf() ?? string.Empty; }
         }
 
         /// <summary>

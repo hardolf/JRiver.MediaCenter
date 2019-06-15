@@ -55,6 +55,9 @@ namespace MediaCenter.LyricsFinder.Model
         /// <param name="lyricsFinderData">The lyrics finder data.</param>
         /// <param name="location">The location.</param>
         /// <param name="callback">The callback.</param>
+        /// <exception cref="ArgumentNullException">callback
+        /// or
+        /// lyricsFinderData</exception>
         public LyricServiceForm(LyricsFinderDataType lyricsFinderData, Point location, Action<LyricServiceForm> callback)
             : this()
         {
@@ -131,33 +134,37 @@ namespace MediaCenter.LyricsFinder.Model
             tlp.RowCount++;
 
             var rowIdx = tlp.RowCount - 1;
-            var lblHeader = new Label();
-            var txtValue = new TextBox();
 
-            lblHeader.AutoSize = true;
-            lblHeader.Name = $"HeaderLabel{rowIdx}";
-            lblHeader.Text = caption;
+            using (var lblHeader = new Label())
+            {
+                using (var txtValue = new TextBox())
+                {
+                    lblHeader.AutoSize = true;
+                    lblHeader.Name = $"HeaderLabel{rowIdx}";
+                    lblHeader.Text = caption;
 
-            txtValue.AutoSize = true;
-            txtValue.BorderStyle = (isEditAllowed) ? BorderStyle.FixedSingle : BorderStyle.None;
-            txtValue.Multiline = true;
-            txtValue.Name = $"ValueTextbox{rowIdx}";
-            txtValue.ReadOnly = !isEditAllowed;
-            txtValue.ScrollBars = ScrollBars.None;
-            txtValue.TabIndex = rowIdx;
-            txtValue.TabStop = false;
-            txtValue.Text = value;
-            txtValue.WordWrap = false;
+                    txtValue.AutoSize = true;
+                    txtValue.BorderStyle = (isEditAllowed) ? BorderStyle.FixedSingle : BorderStyle.None;
+                    txtValue.Multiline = true;
+                    txtValue.Name = $"ValueTextbox{rowIdx}";
+                    txtValue.ReadOnly = !isEditAllowed;
+                    txtValue.ScrollBars = ScrollBars.None;
+                    txtValue.TabIndex = rowIdx;
+                    txtValue.TabStop = false;
+                    txtValue.Text = value;
+                    txtValue.WordWrap = false;
 
-            if (!tooltip.IsNullOrEmptyTrimmed())
-                LyricServiceFormToolTip.SetToolTip(txtValue, tooltip);
-            else if (isEditAllowed)
-                LyricServiceFormToolTip.SetToolTip(txtValue, $"You can edit the \"{caption}\" value");
+                    if (!tooltip.IsNullOrEmptyTrimmed())
+                        LyricServiceFormToolTip.SetToolTip(txtValue, tooltip);
+                    else if (isEditAllowed)
+                        LyricServiceFormToolTip.SetToolTip(txtValue, $"You can edit the \"{caption}\" value");
 
-            txtValue.AutoSizeTextBox();
+                    txtValue.AutoSizeTextBox();
 
-            tlp.Controls.Add(lblHeader, 0, rowIdx);
-            tlp.Controls.Add(txtValue, 1, rowIdx);
+                    tlp.Controls.Add(lblHeader, 0, rowIdx);
+                    tlp.Controls.Add(txtValue, 1, rowIdx);  
+                }
+            }
 
             tlp.RowStyles.Clear();
 

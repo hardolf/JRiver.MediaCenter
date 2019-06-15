@@ -95,20 +95,22 @@ namespace MediaCenter.LyricsFinder
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var rows = MainDataGridView.Rows;
-            var blank = new Bitmap(16, 16);
 
-            blank.MakeTransparent();
-
-            // Clear all other bitmaps than the one in exceptionIndex row
-            foreach (DataGridViewRow r in rows)
+            using (var blank = new Bitmap(16, 16))
             {
-                if (r.Index == exceptionIndex)
-                    continue;
+                blank.MakeTransparent();
 
-                var c = r.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+                // Clear all other bitmaps than the one in exceptionIndex row
+                foreach (DataGridViewRow r in rows)
+                {
+                    if (r.Index == exceptionIndex)
+                        continue;
 
-                if (c.Value != blank)
-                    c.Value = blank;
+                    var c = r.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+
+                    if (c.Value != blank)
+                        c.Value = blank;
+                }
             }
         }
 
@@ -183,18 +185,22 @@ namespace MediaCenter.LyricsFinder
                     {
                         using (var tmp = new FileStream(ifn, FileMode.Open, FileAccess.Read, FileShare.Read))
                         {
-                            img = new Bitmap(tmp);
+                            using (var bitmap = new Bitmap(tmp))
+                            {
+                                img = bitmap;
+                            }
                         }
                     }
                 }
                 else
                     img = value.Image;
 
-                var bmp = new Bitmap(16, 16);
+                using (var bmp = new Bitmap(16, 16))
+                {
+                    bmp.MakeTransparent();
+                    row.CreateCells(dgv, value.Key, bmp, img, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
+                }
 
-                bmp.MakeTransparent();
-
-                row.CreateCells(dgv, value.Key, bmp, img, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
                 row.Height = dgv.Columns[(int)GridColumnEnum.Cover].Width;
 
                 dgv.Rows.Add(row);
@@ -302,9 +308,10 @@ namespace MediaCenter.LyricsFinder
                         && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName)
                         && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword)))
                     {
-                        var frm = new OptionForm("The LyricsFinder is not configured yet");
-
-                        frm.ShowDialog(this);
+                        using (var frm = new OptionForm("The LyricsFinder is not configured yet"))
+                        {
+                            frm.ShowDialog(this); 
+                        }
                     }
 
                     msg = "initializing key events";
@@ -836,33 +843,34 @@ namespace MediaCenter.LyricsFinder
             if (mcInfo == null)
                 return;
 
-            var blank = new Bitmap(16, 16);
-
-            // Try to find a song in the current list matching the one (if any) that Media Center is playing
-            // and set the bitmap to play or blank accordingly.
-            // The reason we don't just use the index is, that the current playlist in LyricsFinder 
-            // may be another than the Media Center "Playing Now" list.
-            for (int i = 0; i < rows.Count; i++)
+            using (var blank = new Bitmap(16, 16))
             {
-                var row = rows[i];
-                var keyCell = row.Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
-                var key = keyCell?.Value?.ToString() ?? string.Empty;
-                var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
-
-                if (mcInfo.FileKey.Equals(key, StringComparison.InvariantCultureIgnoreCase))
+                // Try to find a song in the current list matching the one (if any) that Media Center is playing
+                // and set the bitmap to play or blank accordingly.
+                // The reason we don't just use the index is, that the current playlist in LyricsFinder 
+                // may be another than the Media Center "Playing Now" list.
+                for (int i = 0; i < rows.Count; i++)
                 {
-                    _playingIndex = i;
+                    var row = rows[i];
+                    var keyCell = row.Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+                    var key = keyCell?.Value?.ToString() ?? string.Empty;
+                    var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
 
-                    await BlankPlayStatusBitmaps(i).ConfigureAwait(false); // Clear all other bitmaps than the one in playIdx row
+                    if (mcInfo.FileKey.Equals(key, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        _playingIndex = i;
 
-                    if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                        imgCell.Value = Properties.Resources.Play;
-                    else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                        imgCell.Value = Properties.Resources.Pause;
-                    else
-                        imgCell.Value = blank;
+                        await BlankPlayStatusBitmaps(i).ConfigureAwait(false); // Clear all other bitmaps than the one in playIdx row
 
-                    break;
+                        if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                            imgCell.Value = Properties.Resources.Play;
+                        else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                            imgCell.Value = Properties.Resources.Pause;
+                        else
+                            imgCell.Value = blank;
+
+                        break;
+                    }
                 }
             }
 

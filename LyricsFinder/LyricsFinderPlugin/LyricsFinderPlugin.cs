@@ -86,10 +86,11 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// After the plugin has been created Media Center will call the following method, 
+        /// After the plugin has been created Media Center will call the following method,
         /// giving us a reference to the Media Center interface.
         /// </summary>
         /// <param name="mediaCenterReference">Media Center Reference.</param>
+        /// <exception cref="ArgumentNullException">mediaCenterReference</exception>
         [ComVisible(true)]
         public void Init(MCAutomation mediaCenterReference)
         {

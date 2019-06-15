@@ -122,8 +122,11 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
             XmlNodeList xItems = null;
 
             var sr = new StringReader(xml);
-            var reader = XmlReader.Create(sr, new XmlReaderSettings() { XmlResolver = null });
-            xDoc.Load(reader);
+
+            using (var reader = XmlReader.Create(sr, new XmlReaderSettings() { XmlResolver = null }))
+            {
+                xDoc.Load(reader); 
+            }
 
             XmlRoot = xDoc.DocumentElement;
             PathSeparator = XmlRoot.GetAttribute("PathSeparator");
@@ -135,7 +138,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
             {
                 item = new McMplItem(xItem);
 
-                var task = Task.Run(async () => { await item.FillPropertiesFromFields(); });
+                var task = Task.Run(async () => { await item.FillPropertiesFromFields().ConfigureAwait(false); });
 
                 task.Wait();
 

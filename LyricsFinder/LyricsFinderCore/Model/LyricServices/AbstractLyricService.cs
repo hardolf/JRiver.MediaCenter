@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.ServiceModel.Configuration;
@@ -183,6 +184,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         [XmlElement]
         public virtual int HitCountTotal { get; set; }
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AbstractLyricService"/> class.
         /// </summary>
@@ -292,9 +294,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="getAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
-        /// <returns></returns>
+        /// <returns><see cref="AbstractLyricService"/> descendent object.</returns>
+        /// <exception cref="ArgumentNullException">item</exception>
+        /// <exception cref="LyricsQuotaExceededException"></exception>
         public virtual AbstractLyricService Process(McMplItem item, bool getAll = false)
         {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
             InternalFoundLyricList.Clear();
             LyricResult = LyricResultEnum.NotFound;
             CheckQuota();
@@ -367,14 +373,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns>
         /// String representing the value of the setting.
         /// </returns>
-        /// <exception cref="ArgumentException">Argument '{nameof(key)}</exception>
+        /// <exception cref="ArgumentNullException">settings</exception>
         /// <exception cref="IndexOutOfRangeException">Configuration value for key '{key}</exception>
+        /// <exception cref="ArgumentException">Argument '{nameof(key)}</exception>
         private string ServiceSettingsValue(
             KeyValueConfigurationCollection settings,
             string key)
         {
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (key.IsNullOrEmptyTrimmed()) throw new ArgumentException(nameof(settings));
+            if ((settings == null) || (key.IsNullOrEmptyTrimmed()))
+                throw new ArgumentNullException(nameof(settings));
 
             var ret = string.Empty;
 

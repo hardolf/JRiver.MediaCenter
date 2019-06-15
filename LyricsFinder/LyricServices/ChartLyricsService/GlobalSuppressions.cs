@@ -3,4 +3,7 @@
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Build", "CA1031:Modify 'Process' to catch a more specific exception type, or rethrow the exception.", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.Model.LyricServices.ChartLyricsService.Process(MediaCenter.LyricsFinder.Model.McRestService.McMplItem,System.Boolean)~MediaCenter.LyricsFinder.Model.LyricServices.AbstractLyricService")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "module")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>", Scope = "module")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0017:Simplify object initialization", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.Model.LyricServices.Test.UnitTest.Init")]
+

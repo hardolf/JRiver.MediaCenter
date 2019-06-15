@@ -20,18 +20,21 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     /// <summary>
     /// Utilities for the LyricsFinder.
     /// </summary>
-    internal static class Utility
+    public static class Utility
     {
 
         // Private constants
         private const string UnInitializedPrivateSettingText = "YOUR_OWN_STRING";
         private static readonly Uri LatestReleaseUrl = new Uri("https://api.github.com/repos/hardolf/JRiver.MediaCenter/releases/latest");
 
+
         // Public constants
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public const string AppSettingsSectionName = "appSettings";
         public const string PrivateConfigFileExt = ".private.config";
         public const string PrivateConfigTemplateFileExt = ".template.config";
         public static readonly Uri RepositoryUrl = new Uri("https://github.com/hardolf/JRiver.MediaCenter");
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 
         /// <summary>
@@ -42,8 +45,14 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <returns>
         /// String with the private settings file path.
         /// </returns>
+        /// <exception cref="ArgumentNullException">assembly
+        /// or
+        /// dataDir</exception>
         public static string GetPrivateSettingsFilePath(Assembly assembly, string dataDir)
         {
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            if (dataDir.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(dataDir));
+
             var ret = Path.Combine(dataDir, Path.GetFileName(assembly.Location) + Utility.PrivateConfigFileExt);
             var appConfigFilePath = assembly.Location + Utility.PrivateConfigFileExt;
             var templateConfigFilePath = assembly.Location + Utility.PrivateConfigTemplateFileExt;
@@ -77,6 +86,28 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
 
         /// <summary>
+        /// Shows the server error message.
+        /// </summary>
+        /// <param name="response">The HTTP Web response.</param>
+        /// <returns>HTTP error message.</returns>
+        /// <exception cref="ArgumentNullException">response</exception>
+        public static string HttpWebServerErrorMessage(HttpWebResponse response)
+        {
+            if (response == null) throw new ArgumentNullException(nameof(response));
+
+            return $"Server error (HTTP {response.StatusCode}: {response.StatusDescription}).";
+        }
+
+        /// <summary>
+        /// Gets the null responce message.
+        /// </summary>
+        /// <value>
+        /// The null responce message.
+        /// </value>
+        public static string NullResponseMessage => "Response is null";
+
+
+        /// <summary>
         /// Lyrics result text.
         /// </summary>
         /// <returns>Transformed text.</returns>
@@ -105,11 +136,16 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// </summary>
         /// <param name="currentVersion">The current version.</param>
         /// <param name="isInteractive">if set to <c>true</c> [is interactive].</param>
-        /// <returns><c>false</c> if a newer release is available; else <c>true</c>.</returns>
+        /// <returns>
+        ///   <c>false</c> if a newer release is available; else <c>true</c>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">currentVersion</exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}</exception>
         public static bool UpdateCheck(Version currentVersion, bool isInteractive = false)
         {
+            if (currentVersion == null) throw new ArgumentNullException(nameof(currentVersion));
+
             var req = WebRequest.Create(LatestReleaseUrl) as HttpWebRequest;
             var json = string.Empty;
 
@@ -122,9 +158,9 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             using (var rsp = req.GetResponse() as HttpWebResponse)
             {
                 if (rsp == null)
-                    throw new NullReferenceException("Response is null");
+                    throw new NullReferenceException(NullResponseMessage);
                 if (rsp.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
+                    throw new Exception(HttpWebServerErrorMessage(rsp));
 
                 using (var reader = new StreamReader(rsp.GetResponseStream(), Encoding.UTF8))
                 {

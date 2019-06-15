@@ -31,8 +31,10 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AboutBox"/> class.
+        /// Initializes a new instance of the <see cref="AboutBox" /> class.
         /// </summary>
+        /// <param name="entryAssembly">The entry assembly.</param>
+        /// <exception cref="ArgumentNullException">entryAssembly</exception>
         public AboutBox(Assembly entryAssembly)
         {
             InitializeComponent();

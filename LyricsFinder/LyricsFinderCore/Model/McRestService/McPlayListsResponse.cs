@@ -76,9 +76,12 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         {
             var xDoc = new XmlDocument() { XmlResolver = null };
             var sr = new StringReader(xml);
-            var reader = XmlReader.Create(sr, new XmlReaderSettings() { XmlResolver = null });
 
-            xDoc.Load(reader);
+            using (var reader = XmlReader.Create(sr, new XmlReaderSettings() { XmlResolver = null }))
+            {
+                xDoc.Load(reader); 
+            }
+
             XmlRoot = xDoc.DocumentElement;
             Status = XmlRoot.GetAttribute("Status");
 

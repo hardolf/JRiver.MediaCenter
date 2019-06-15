@@ -26,6 +26,9 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
     internal static class McRestService
     {
 
+        private const string MissingTokenMessage = "Token must be specified.";
+
+
         /// <summary>
         /// Gets the MediaCenter MCWS access key.
         /// </summary>
@@ -111,7 +114,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
             if (!(new[] { McCommandEnum.Alive, McCommandEnum.Authenticate }).Contains(command))
                 if (McWsToken.IsNullOrEmptyTrimmed())
-                    throw new Exception("Token must be specified.");
+                    throw new ArgumentException(MissingTokenMessage);
 
             switch (command)
             {
@@ -145,11 +148,11 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                     break;
 
                 case McCommandEnum.PlaylistFiles:
-                    sb.Append($"/Playlist/Files?PlaylistType=ID&Action=MPL&Playlist={key}&Token={McWsToken}");
+                    sb.Append($"/Playlist/Files?Token={McWsToken}&PlaylistType=ID&Action=MPL&Playlist={key}");
                     break;
 
                 case McCommandEnum.PlaylistList:
-                    sb.Append($"/Playlists/List?Action=MPL&Token={McWsToken}");
+                    sb.Append($"/Playlists/List?Token={McWsToken}&Action=MPL");
                     break;
 
                 case McCommandEnum.PlayPlaylist:
@@ -202,9 +205,9 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                 using (var rsp = req.GetResponse() as HttpWebResponse)
                 {
                     if (rsp == null)
-                        throw new NullReferenceException("Response is null");
+                        throw new NullReferenceException(Helpers.Utility.NullResponseMessage);
                     if (rsp.StatusCode != HttpStatusCode.OK)
-                        throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
+                        throw new Exception(Helpers.Utility.HttpWebServerErrorMessage(rsp));
 
                     using (var rspStream = rsp.GetResponseStream())
                     {
@@ -248,14 +251,16 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                 using (var rsp = req.GetResponse() as HttpWebResponse)
                 {
                     if (rsp == null)
-                        throw new NullReferenceException("Response is null");
+                        throw new NullReferenceException(Helpers.Utility.NullResponseMessage);
                     if (rsp.StatusCode != HttpStatusCode.OK)
-                        throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
+                        throw new Exception(Helpers.Utility.HttpWebServerErrorMessage(rsp));
 
                     using (var rspStream = rsp.GetResponseStream())
                     {
-                        var reader = new StreamReader(rspStream, Encoding.UTF8);
-                        ret = reader.ReadToEnd();
+                        using (var reader = new StreamReader(rspStream, Encoding.UTF8))
+                        {
+                            ret = reader.ReadToEnd();
+                        }
                     }
                 }
             }
@@ -401,6 +406,13 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <param name="mcWebServiceUrl">The MediaCenter MCWS URL.</param>
         /// <param name="mcWsUserName">Name of the MediaCenter MCWS user.</param>
         /// <param name="mcWsPassword">The MediaCenter MCWS password.</param>
+        /// <exception cref="ArgumentNullException">Parameter must be specified: {nameof(mcWebServiceAccessKey)}.
+        /// or
+        /// Parameter must be specified: {nameof(mcWebServiceUrl)}.
+        /// or
+        /// Parameter must be specified: {nameof(mcWsUserName)}.
+        /// or
+        /// Parameter must be specified: {nameof(mcWsPassword)}.</exception>
         public static void Init(string mcWebServiceAccessKey, string mcWebServiceUrl, string mcWsUserName, string mcWsPassword)
         {
             if (mcWebServiceAccessKey.IsNullOrEmptyTrimmed()) throw new ArgumentNullException($"Parameter must be specified: {nameof(mcWebServiceAccessKey)}.");

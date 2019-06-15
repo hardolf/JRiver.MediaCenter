@@ -168,9 +168,11 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 var rot = ExamineRot.GetRotText();
-                var textForm = new TextForm("Running Object Table (ROT)", rot);
 
-                textForm.ShowDialog(this);
+                using (var textForm = new TextForm("Running Object Table (ROT)", rot))
+                {
+                    textForm.ShowDialog(this); 
+                }
             }
             catch (Exception ex)
             {

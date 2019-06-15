@@ -598,8 +598,10 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(HelpAboutMenuItem):
-                            var about = new AboutBox(EntryAssembly);
-                            about.ShowDialog();
+                            using (var about = new AboutBox(EntryAssembly))
+                            {
+                                about.ShowDialog(); 
+                            }
                             break;
 
                         case nameof(HelpContentsMenuItem):
@@ -612,13 +614,17 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(ToolsLyricsServicesMenuItem):
-                            var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback);
-                            lyricsServiceForm.ShowDialog(this);
+                            using (var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback))
+                            {
+                                lyricsServiceForm.ShowDialog(this); 
+                            }
                             break;
 
                         case nameof(ToolsOptionsMenuItem):
-                            var frm = new OptionForm("LyricsFinder connection setup");
-                            frm.ShowDialog(this);
+                            using (var frm = new OptionForm("LyricsFinder connection setup"))
+                            {
+                                frm.ShowDialog(this); 
+                            }
                             break;
 
                         case nameof(ToolsShowLogMenuItem):
