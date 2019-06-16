@@ -544,7 +544,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void MenuItem_ClickAsync(object sender, EventArgs e)
+        private async void MenuItem_Click(object sender, EventArgs e)
         {
             var itemName = "Undefined item";
 
@@ -598,10 +598,8 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(HelpAboutMenuItem):
-                            using (var about = new AboutBox(EntryAssembly))
-                            {
-                                about.ShowDialog(); 
-                            }
+                            var about = new AboutBox(EntryAssembly);
+                            about.ShowDialog();
                             break;
 
                         case nameof(HelpContentsMenuItem):
@@ -614,17 +612,13 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(ToolsLyricsServicesMenuItem):
-                            using (var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback))
-                            {
-                                lyricsServiceForm.ShowDialog(this); 
-                            }
+                            var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback);
+                            lyricsServiceForm.ShowDialog(this);
                             break;
 
                         case nameof(ToolsOptionsMenuItem):
-                            using (var frm = new OptionForm("LyricsFinder connection setup"))
-                            {
-                                frm.ShowDialog(this); 
-                            }
+                            var frm = new OptionForm("LyricsFinder connection setup");
+                            frm.ShowDialog(this);
                             break;
 
                         case nameof(ToolsShowLogMenuItem):
@@ -692,7 +686,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.ComponentModel.DoWorkEventArgs" /> instance containing the event data.</param>
-        private async void ProcessWorker_DoWorkAsync(object sender, DoWorkEventArgs e)
+        private async void ProcessWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             try
             {
@@ -701,10 +695,20 @@ namespace MediaCenter.LyricsFinder
                 var worker = sender as BackgroundWorker;
 
                 if (_isConnectedToMc)
-                    Process(worker, e);
+                {
+                    // Process(worker, e);
+                    await Process(worker, e).ConfigureAwait(false);
+                    // var task = Task.Run(async () => { await Process(worker, e).ConfigureAwait(false); });
+                    // var task = Task.Run(() => { Process(worker, e); });
+                    // task.Wait();
+                }
                 else
                 {
+                    // Connect(worker);
                     await Connect(worker).ConfigureAwait(false);
+                    // var task = Task.Run(async () => { await Connect(worker).ConfigureAwait(false); });
+                    // var task = Task.Run(() => { Connect(worker); });
+                    // task.Wait();
                 }
             }
             catch
@@ -741,7 +745,15 @@ namespace MediaCenter.LyricsFinder
 
                 // Update the item list in GUI, if empty
                 if (!isInSync && (userState.Items.Count > 0))
+                {
+                    // FillDataGrid(userState.Items);
                     await FillDataGrid(userState.Items).ConfigureAwait(false);
+                    // var task = Task.Run( async () => { await FillDataGrid(userState.Items).ConfigureAwait(false); });
+                    // var task = Task.Run(() => { FillDataGrid(userState.Items); });
+                    // var task = new Task(() => { FillDataGrid(userState.Items); });
+                    // task.Wait();
+                    // task.RunSynchronously();
+                }
 
                 // Finish the item row, e.g. set the item status and found lyrics
                 if (isInSync)
@@ -762,7 +774,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RunWorkerCompletedEventArgs"/> instance containing the event data.</param>
-        private void ProcessWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private async void ProcessWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             try
             {

@@ -171,6 +171,7 @@ del /q App*.config
 del /q "%25_tdir%25\App*.config"
 del /q "%25_tdir%25\*CodeAnalysis*.*"
 del /q %25_tdir%25\vs*.tmp
+del /q Microsoft.VisualStudio.TestPlatform*.*
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

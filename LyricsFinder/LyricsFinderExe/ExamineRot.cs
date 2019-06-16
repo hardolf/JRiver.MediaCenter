@@ -65,16 +65,16 @@ namespace MediaCenter.LyricsFinder
 
         private static string ReadSubKeyValue(string keyName, RegistryKey key)
         {
-            var subKey = key.OpenSubKey(keyName);
-
-            if (subKey != null)
+            using (var subKey = key.OpenSubKey(keyName))
             {
-                using (subKey)
+                if (subKey != null)
                 {
                     var value = subKey.GetValue("");
+
                     return value == null ? string.Empty : value.ToString();
                 }
             }
+
             return string.Empty;
         }
 
@@ -91,11 +91,9 @@ namespace MediaCenter.LyricsFinder
             {
                 sb.AppendLine($"DisplayName            : {displayName}");
 
-                var regClass = Registry.ClassesRoot.OpenSubKey("\\CLSID\\" + clsid);
-
-                if (regClass != null)
+                using (var regClass = Registry.ClassesRoot.OpenSubKey("\\CLSID\\" + clsid))
                 {
-                    using (regClass)
+                    if (regClass != null)
                     {
                         var regClassDisplay = regClass.GetValue("");
                         var progId = ReadSubKeyValue("ProgID", regClass);

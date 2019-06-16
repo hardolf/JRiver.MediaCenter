@@ -135,36 +135,33 @@ namespace MediaCenter.LyricsFinder.Model
 
             var rowIdx = tlp.RowCount - 1;
 
-            using (var lblHeader = new Label())
-            {
-                using (var txtValue = new TextBox())
-                {
-                    lblHeader.AutoSize = true;
-                    lblHeader.Name = $"HeaderLabel{rowIdx}";
-                    lblHeader.Text = caption;
+            var lblHeader = new Label();
+            var txtValue = new TextBox();
 
-                    txtValue.AutoSize = true;
-                    txtValue.BorderStyle = (isEditAllowed) ? BorderStyle.FixedSingle : BorderStyle.None;
-                    txtValue.Multiline = true;
-                    txtValue.Name = $"ValueTextbox{rowIdx}";
-                    txtValue.ReadOnly = !isEditAllowed;
-                    txtValue.ScrollBars = ScrollBars.None;
-                    txtValue.TabIndex = rowIdx;
-                    txtValue.TabStop = false;
-                    txtValue.Text = value;
-                    txtValue.WordWrap = false;
+            lblHeader.AutoSize = true;
+            lblHeader.Name = $"HeaderLabel{rowIdx}";
+            lblHeader.Text = caption;
 
-                    if (!tooltip.IsNullOrEmptyTrimmed())
-                        LyricServiceFormToolTip.SetToolTip(txtValue, tooltip);
-                    else if (isEditAllowed)
-                        LyricServiceFormToolTip.SetToolTip(txtValue, $"You can edit the \"{caption}\" value");
+            txtValue.AutoSize = true;
+            txtValue.BorderStyle = (isEditAllowed) ? BorderStyle.FixedSingle : BorderStyle.None;
+            txtValue.Multiline = true;
+            txtValue.Name = $"ValueTextbox{rowIdx}";
+            txtValue.ReadOnly = !isEditAllowed;
+            txtValue.ScrollBars = ScrollBars.None;
+            txtValue.TabIndex = rowIdx;
+            txtValue.TabStop = false;
+            txtValue.Text = value;
+            txtValue.WordWrap = false;
 
-                    txtValue.AutoSizeTextBox();
+            if (!tooltip.IsNullOrEmptyTrimmed())
+                LyricServiceFormToolTip.SetToolTip(txtValue, tooltip);
+            else if (isEditAllowed)
+                LyricServiceFormToolTip.SetToolTip(txtValue, $"You can edit the \"{caption}\" value");
 
-                    tlp.Controls.Add(lblHeader, 0, rowIdx);
-                    tlp.Controls.Add(txtValue, 1, rowIdx);  
-                }
-            }
+            txtValue.AutoSizeTextBox();
+
+            tlp.Controls.Add(lblHeader, 0, rowIdx);
+            tlp.Controls.Add(txtValue, 1, rowIdx);
 
             tlp.RowStyles.Clear();
 

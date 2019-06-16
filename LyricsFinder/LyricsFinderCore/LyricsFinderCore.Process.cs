@@ -45,7 +45,7 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                // ErrorTest();
+                 ErrorTest();
 
                 var url = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl;
                 var connAttempts = Properties.Settings.Default.McWebServiceConnectAttempts;
@@ -100,7 +100,7 @@ namespace MediaCenter.LyricsFinder
                     worker.ReportProgress(0, workerState);
 
                 // Get the current playlist items
-                if (_currentPlaylist == null)
+                if ((_currentPlaylist == null) || (_currentPlaylist.Id == 0))
                 {
                     workerState.Message = $"Collecting the current playlist...";
                     _currentPlaylist = await McRestService.GetPlayNowList().ConfigureAwait(false);
@@ -134,7 +134,7 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Processes the current MediaCenter playlist items.
         /// </summary>
-        private async void Process(BackgroundWorker worker, DoWorkEventArgs e)
+        private async Task Process(BackgroundWorker worker, DoWorkEventArgs e)
         {
             var isOk = false;
             var foundCount = 0;

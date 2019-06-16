@@ -71,7 +71,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <exception cref="DivideByZeroException"></exception>
         /// <exception cref="Exception">Test error</exception>
-        private void ErrorTest()
+        private static void ErrorTest()
         {
             try
             {
@@ -95,22 +95,20 @@ namespace MediaCenter.LyricsFinder
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var rows = MainDataGridView.Rows;
+            var blank = new Bitmap(16, 16);
 
-            using (var blank = new Bitmap(16, 16))
+            blank.MakeTransparent();
+
+            // Clear all other bitmaps than the one in exceptionIndex row
+            foreach (DataGridViewRow r in rows)
             {
-                blank.MakeTransparent();
+                if (r.Index == exceptionIndex)
+                    continue;
 
-                // Clear all other bitmaps than the one in exceptionIndex row
-                foreach (DataGridViewRow r in rows)
-                {
-                    if (r.Index == exceptionIndex)
-                        continue;
+                var c = r.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
 
-                    var c = r.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
-
-                    if (c.Value != blank)
-                        c.Value = blank;
-                }
+                if (c.Value != blank)
+                    c.Value = blank;
             }
         }
 
@@ -185,22 +183,18 @@ namespace MediaCenter.LyricsFinder
                     {
                         using (var tmp = new FileStream(ifn, FileMode.Open, FileAccess.Read, FileShare.Read))
                         {
-                            using (var bitmap = new Bitmap(tmp))
-                            {
-                                img = bitmap;
-                            }
+                            var bitmap = new Bitmap(tmp);
+                            img = bitmap;
                         }
                     }
                 }
                 else
                     img = value.Image;
 
-                using (var bmp = new Bitmap(16, 16))
-                {
-                    bmp.MakeTransparent();
-                    row.CreateCells(dgv, value.Key, bmp, img, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
-                }
+                var bmp = new Bitmap(16, 16);
 
+                bmp.MakeTransparent();
+                row.CreateCells(dgv, value.Key, bmp, img, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
                 row.Height = dgv.Columns[(int)GridColumnEnum.Cover].Width;
 
                 dgv.Rows.Add(row);
@@ -310,7 +304,7 @@ namespace MediaCenter.LyricsFinder
                     {
                         using (var frm = new OptionForm("The LyricsFinder is not configured yet"))
                         {
-                            frm.ShowDialog(this); 
+                            frm.ShowDialog(this);
                         }
                     }
 
@@ -399,9 +393,9 @@ namespace MediaCenter.LyricsFinder
 
                 // Test if we may write files in the data folder
                 Logging.Log(_progressPercentage, $"Testing if we may write to a file in the local data directory \"{tmpFile}\"...", true);
-                using (var st = File.Create(tmpFile))
+                using (var st = File.Create(tmpFile)) { }
 
-                    Logging.Log(_progressPercentage, $"Testing if we may delete the test file in the local data directory \"{tmpFile}\"...", true);
+                Logging.Log(_progressPercentage, $"Testing if we may delete the test file in the local data directory \"{tmpFile}\"...", true);
                 File.Delete(tmpFile);
             }
             catch (Exception ex)
@@ -533,9 +527,18 @@ namespace MediaCenter.LyricsFinder
                 // Get a list of the descendant lyrics service types
                 Logging.Log(_progressPercentage, $"Trying to find service types in \"{file}\"...", true);
 
-                var assyLyricsServiceTypes = assy
-                   .GetTypes()
-                   .Where(t => t.IsSubclassOf(typeof(AbstractLyricService)));
+                IEnumerable<Type> assyLyricsServiceTypes;
+
+                try
+                {
+                    assyLyricsServiceTypes = assy
+                       .GetTypes()
+                       .Where(t => t.IsSubclassOf(typeof(AbstractLyricService)));
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Error getting types from \"{file}\".", ex);
+                }
 
                 // Create service instance(s)
                 Logging.Log(_progressPercentage,
@@ -574,7 +577,7 @@ namespace MediaCenter.LyricsFinder
 
             // Ensure the default of not overwriting (i.e. skipping) existing lyrics
             OverwriteMenuItem.Checked = false;
-            MenuItem_ClickAsync(OverwriteMenuItem, new EventArgs());
+            MenuItem_Click(OverwriteMenuItem, new EventArgs());
         }
 
 
@@ -638,7 +641,7 @@ namespace MediaCenter.LyricsFinder
                     Text = firstNode
                 };
 
-                menuItem.Click += MenuItem_ClickAsync;
+                menuItem.Click += MenuItem_Click;
                 parentMenuItem.DropDownItems.Add(menuItem);
             }
             else
@@ -704,7 +707,7 @@ namespace MediaCenter.LyricsFinder
                 Text = "Playing Now"
             };
 
-            menuItem.Click += MenuItem_ClickAsync;
+            menuItem.Click += MenuItem_Click;
             FileSelectPlaylistMenuItem.DropDownItems.Add(menuItem);
 
             for (int i = 0; i < _currentSortedMcPlaylists.Count; i++)
@@ -843,34 +846,33 @@ namespace MediaCenter.LyricsFinder
             if (mcInfo == null)
                 return;
 
-            using (var blank = new Bitmap(16, 16))
+            var blank = new Bitmap(16, 16);
+
+            // Try to find a song in the current list matching the one (if any) that Media Center is playing
+            // and set the bitmap to play or blank accordingly.
+            // The reason we don't just use the index is, that the current playlist in LyricsFinder 
+            // may be another than the Media Center "Playing Now" list.
+            for (int i = 0; i < rows.Count; i++)
             {
-                // Try to find a song in the current list matching the one (if any) that Media Center is playing
-                // and set the bitmap to play or blank accordingly.
-                // The reason we don't just use the index is, that the current playlist in LyricsFinder 
-                // may be another than the Media Center "Playing Now" list.
-                for (int i = 0; i < rows.Count; i++)
+                var row = rows[i];
+                var keyCell = row.Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+                var key = keyCell?.Value?.ToString() ?? string.Empty;
+                var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+
+                if (mcInfo.FileKey.Equals(key, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var row = rows[i];
-                    var keyCell = row.Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
-                    var key = keyCell?.Value?.ToString() ?? string.Empty;
-                    var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
+                    _playingIndex = i;
 
-                    if (mcInfo.FileKey.Equals(key, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        _playingIndex = i;
+                    await BlankPlayStatusBitmaps(i).ConfigureAwait(false); // Clear all other bitmaps than the one in playIdx row
 
-                        await BlankPlayStatusBitmaps(i).ConfigureAwait(false); // Clear all other bitmaps than the one in playIdx row
+                    if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                        imgCell.Value = Properties.Resources.Play;
+                    else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
+                        imgCell.Value = Properties.Resources.Pause;
+                    else
+                        imgCell.Value = blank;
 
-                        if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                            imgCell.Value = Properties.Resources.Play;
-                        else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
-                            imgCell.Value = Properties.Resources.Pause;
-                        else
-                            imgCell.Value = blank;
-
-                        break;
-                    }
+                    break;
                 }
             }
 

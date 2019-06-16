@@ -113,6 +113,7 @@ xcopy /e /i /v /y "..\..\..\LyricsFinderCore\$(OutDir)LyricsFinderCore*.*" "%25_
 del /q "%25_tdir%25\App*.config"
 del /q "%25_tdir%25\*CodeAnalysis*.*"
 del /q App*.config
+del /q Microsoft.VisualStudio.TestPlatform*.*
 </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
