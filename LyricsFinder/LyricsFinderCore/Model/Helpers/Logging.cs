@@ -31,6 +31,9 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
         public static void Log(int progressPercentage, string message, bool isDebug = false)
         {
+            if (message.Length > 0)
+                message = message.Substring(0, 1).ToUpperInvariant() + message.Remove(0, 1);
+
             if (progressPercentage > 0)
                 message = $"{progressPercentage,3}% - {message}";
 

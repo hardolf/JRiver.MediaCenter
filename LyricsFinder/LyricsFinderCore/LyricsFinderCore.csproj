@@ -87,6 +87,8 @@
     <Compile Include="BitmapForm.Designer.cs">
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\Helpers\LyricsFinderCoreConfigurationSectionHandler.cs" />
+    <Compile Include="Model\Helpers\LyricsFinderCorePrivateConfigurationSectionHandler.cs" />
     <Compile Include="Model\McRestService\McPlayListsResponse.cs" />
     <Compile Include="OptionForm.cs">
       <SubType>Form</SubType>
@@ -122,7 +124,7 @@
     <Compile Include="Model\Helpers\AddinCustomConfigResolveHelper.cs" />
     <Compile Include="Model\Helpers\ErrorHandling.cs" />
     <Compile Include="Model\Helpers\Logging.cs" />
-    <Compile Include="Model\Helpers\PrivateConfigurationSectionHandlers.cs" />
+    <Compile Include="Model\Helpers\LyricServicesPrivateConfigurationSectionHandler.cs" />
     <Compile Include="Model\LyricsFinderData.cs" />
     <Compile Include="LyricServiceForm.cs">
       <SubType>Form</SubType>
@@ -151,11 +153,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <Compile Include="StartStopButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -173,11 +170,6 @@
     </None>
     <None Include="LyricsFinderCore.snk" />
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>

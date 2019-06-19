@@ -69,7 +69,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -83,7 +83,7 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                var newText = OptionLayoutPanel.GetAllTextBoxesText() + Environment.NewLine + UpdateCheckIntervalUpDown.Value.ToString(CultureInfo.InvariantCulture);
+                var newText = SerializeValues();
                 var question = "Do you want to use the new values?";
                 var result = DialogResult.No;
 
@@ -102,8 +102,6 @@ namespace MediaCenter.LyricsFinder
 
                     case DialogResult.Yes:
                         e.Cancel = false;
-                        Properties.Settings.Default.UpdateCheckInterval = (int)UpdateCheckIntervalUpDown.Value;
-                        Properties.Settings.Default.Save();
                         LyricsFinderCorePrivateConfigurationSectionHandler.Save(McAccessKeyTextBox.Text.Trim(), McWsUrlTextBox.Text.Trim(), McWsUsernameTextBox.Text.Trim(), McWsPasswordTextBox.Text.Trim());
                         break;
 
@@ -113,7 +111,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -130,19 +128,31 @@ namespace MediaCenter.LyricsFinder
                 Text = _title;
                 HeaderTextBox.Text = _headerText;
 
+                LastUpdateTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.LastUpdateCheck.ToString(CultureInfo.CurrentCulture);
                 McAccessKeyTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey;
                 McWsPasswordTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword;
                 McWsUrlTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl;
                 McWsUsernameTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName;
+                UpdateCheckIntervalDaysUpDown.Value = LyricsFinderCorePrivateConfigurationSectionHandler.UpdateCheckIntervalDays;
 
-                UpdateCheckIntervalUpDown.Value = Properties.Settings.Default.UpdateCheckInterval;
-
-                _initialText = OptionLayoutPanel.GetAllTextBoxesText() + Environment.NewLine + UpdateCheckIntervalUpDown.Value.ToString(CultureInfo.InvariantCulture);
+                _initialText = SerializeValues();
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
+        }
+
+
+        private string SerializeValues()
+        {
+            var ret = new StringBuilder();
+
+            ret.AppendLine(LastUpdateTextBox.Text);
+            ret.Append(OptionLayoutPanel.GetAllTextBoxesText());
+            ret.AppendLine(((int)UpdateCheckIntervalDaysUpDown.Value).ToString(CultureInfo.InvariantCulture));
+
+            return ret.ToString();
         }
 
     }

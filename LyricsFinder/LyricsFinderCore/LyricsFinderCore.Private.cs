@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -52,6 +53,7 @@ namespace MediaCenter.LyricsFinder
         private DateTime _lastUpdateCheck = DateTime.MinValue;
 
         private BitmapForm _bitmapForm = null;
+        private Configuration _configuration = null;
         private LyricForm _lyricsForm = null;
         private List<string> _noLyricsSearchList = new List<string>();
         private SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
@@ -116,13 +118,13 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Show and log a fatal error report.
         /// </summary>
-        /// <param name="method">The method.</param>
+        /// <param name="methodName">Name of the method.</param>
         /// <param name="exception">The exception.</param>
         /// <param name="message">The message.</param>
         /// <remarks>
         /// Fatal error reporting, normally called from an event routine.
         /// </remarks>
-        private void ErrorReport(MethodBase method, Exception exception, string message = null)
+        private void ErrorReport(string methodName, Exception exception, string message = null)
         {
             // Stop the timers
             McStatusTimer.Stop();
@@ -131,7 +133,7 @@ namespace MediaCenter.LyricsFinder
             message = message?.Trim() ?? string.Empty;
             message += " ";
 
-            ErrorHandling.ShowAndLogErrorHandler($"Error {message}in {method.Name} event.", exception, _progressPercentage);
+            ErrorHandling.ShowAndLogErrorHandler($"Error {message}in {methodName} event.", exception, _progressPercentage);
 
             // Start the timers
             McStatusTimer.Start();
@@ -143,8 +145,11 @@ namespace MediaCenter.LyricsFinder
         /// Fills the data grid.
         /// </summary>
         /// <param name="items">The items.</param>
-        private async Task FillDataGrid(Dictionary<int, McMplItem> items)
+        private async Task FillDataGrid()
         {
+            if ((_currentPlaylist == null) || ((_currentPlaylist.Items?.Count ?? -1) < 0))
+                throw new Exception("Current playlist is not initializes yet.");
+
             // ErrorTest();
 
             var dgv = MainDataGridView;
@@ -152,7 +157,7 @@ namespace MediaCenter.LyricsFinder
             dgv.Rows.Clear();
             IsDataChanged = false;
 
-            foreach (var item in items)
+            foreach (var item in _currentPlaylist.Items)
             {
                 var initStatus = LyricResultEnum.NotProcessedYet.ResultText();
                 var row = new DataGridViewRow();
@@ -275,78 +280,6 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        private void Init()
-        {
-            if (!_isDesignTime)
-            {
-                var msg = string.Empty;
-
-                try
-                {
-                    // Init the log. This must be done as the very first thing, before trying to write to the log.
-                    msg = "LyricsFinder for JRiver Media Center started" + (_isStandAlone ? " standalone." : " from Media Center.");
-                    InitLogging(new[] { _logHeader, msg });
-
-                    msg = "initializing local data";
-                    Logging.Log(_progressPercentage, msg + "...", true);
-                    InitLocalData();
-
-                    msg = "initializing the private configuration handler";
-                    Logging.Log(_progressPercentage, msg + "...", true);
-                    LyricsFinderCorePrivateConfigurationSectionHandler.Init(Assembly.GetExecutingAssembly(), DataDirectory);
-
-                    msg = "checking if private configuration needed";
-                    Logging.Log(_progressPercentage, msg + "...", true);
-                    if (!(Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey)
-                        && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl)
-                        && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName)
-                        && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword)))
-                    {
-                        using (var frm = new OptionForm("The LyricsFinder is not configured yet"))
-                        {
-                            frm.ShowDialog(this);
-                        }
-                    }
-
-                    msg = "initializing key events";
-                    Logging.Log(_progressPercentage, msg + "...", true);
-                    InitKeyDownEvent();
-
-                    msg = "loading form settings";
-                    Logging.Log(_progressPercentage, msg + "...", true);
-                    LoadFormSettings();
-
-                    msg = "initializing shortcuts";
-                    Logging.Log(_progressPercentage, msg + "...", true);
-                    ShowShortcuts(_isStandAlone);
-
-                    msg = "initializing start/stop button delegates";
-                    Logging.Log(_progressPercentage, msg + "...", true);
-                    ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
-                    ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
-                    SearchAllStartStopButton.Starting += StartStopButton_Starting;
-                    SearchAllStartStopButton.Stopping += StartStopButton_Stopping;
-
-                    msg = "initializing the Media Center MCWS connection";
-                    Logging.Log(_progressPercentage, msg + "...", true);
-                    McRestService.Init(
-                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey,
-                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl,
-                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName,
-                        LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword);
-
-                    msg = "initializing the update check";
-                    Logging.Log(_progressPercentage, msg + "...", true);
-                    UpdateCheckTimer.Start();
-                }
-                catch (Exception ex)
-                {
-                    ErrorReport(MethodBase.GetCurrentMethod(), ex, msg);
-                }
-            }
-        }
-
-
         /// <summary>
         /// Initializes the key down event for the UserControl and all its child controls recursively.
         /// </summary>
@@ -382,7 +315,7 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 Logging.Log(_progressPercentage, "Preparing load of local data...", true);
-                dataFile = Path.GetFullPath(Environment.ExpandEnvironmentVariables(Properties.Settings.Default.LocalAppDataFile));
+                dataFile = Path.GetFullPath(Environment.ExpandEnvironmentVariables(LyricsFinderCoreConfigurationSectionHandler.LocalAppDataFile));
                 DataDirectory = Path.GetDirectoryName(dataFile);
                 tmpFile = Path.Combine(DataDirectory, dataFile + ".tmp");
 
@@ -572,8 +505,7 @@ namespace MediaCenter.LyricsFinder
         private void LoadFormSettings()
         {
             //Properties.Settings.Default.Reload();
-            if (!DateTime.TryParse(Properties.Settings.Default.LastUpdateCheck, CultureInfo.InvariantCulture, DateTimeStyles.None, out _lastUpdateCheck))
-                _lastUpdateCheck = DateTime.MinValue;
+            _lastUpdateCheck = LyricsFinderCorePrivateConfigurationSectionHandler.LastUpdateCheck;
 
             // Ensure the default of not overwriting (i.e. skipping) existing lyrics
             OverwriteMenuItem.Checked = false;
@@ -599,7 +531,7 @@ namespace MediaCenter.LyricsFinder
 
             var name = tmp.Substring(idx + 1);
 
-            StatusMessage($"Collecting the \"{name}\" playlist...");
+            await StatusMessage($"Collecting the \"{name}\" playlist...");
             _playingIndex = -1;
             McStatusTimer.Stop();
 
@@ -610,7 +542,9 @@ namespace MediaCenter.LyricsFinder
 
             _isConnectedToMc = false;
             _progressPercentage = 0;
-            ProcessWorker.RunWorkerAsync();
+
+            //TODO: BackgroundWorker: ProcessWorker.RunWorkerAsync();
+            await FillDataGrid();
 
             UseWaitCursor = false;
             McStatusTimer.Start();
@@ -780,8 +714,7 @@ namespace MediaCenter.LyricsFinder
         {
             if (!IsDataChanged) return;
 
-            if (ProcessWorker.IsBusy)
-                throw new Exception("You cannot save while the search process is running.");
+            //TODO: BackgroundWorker: if (ProcessWorker.IsBusy) throw new Exception("You cannot save while the search process is running.");
 
             LyricsFinderData.Save();
 
@@ -806,21 +739,7 @@ namespace MediaCenter.LyricsFinder
             }
 
             // Force a list refresh
-            _isConnectedToMc = false;
-            IsDataChanged = false;
-            MainDataGridView.Rows.Clear();
-            ProcessWorker.RunWorkerAsync();
-
-            SaveFormSettings();
-        }
-
-
-        /// <summary>
-        /// Saves the form settings.
-        /// </summary>
-        private static void SaveFormSettings()
-        {
-            Properties.Settings.Default.Save();
+            // TODO: reconnect
         }
 
 
@@ -960,7 +879,7 @@ namespace MediaCenter.LyricsFinder
                 throw new ArgumentException($"Column {colIdx} is not a DataGridViewTextBoxCell.");
 
             var location = new Point(MousePosition.X, MousePosition.Y);
-            var size = Properties.Settings.Default.LyricsFormSize;
+            var size = LyricsFinderCorePrivateConfigurationSectionHandler.LyricFormSize;
             var ret = new LyricForm(cell, location, size, ShowLyricsCallback, LyricsFinderData);
 
             ret.ShowDialog();
@@ -992,7 +911,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -1009,7 +928,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -1049,41 +968,52 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Logs the message.
         /// </summary>
-        /// <param name="msg">The message.</param>
+        /// <param name="message">The message.</param>
         /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
-        private static void StatusLog(string msg, bool isDebug = false)
+        private static async Task StatusLog(string message, bool isDebug = false)
         {
-            Logging.Log(_progressPercentage, msg, isDebug);
+            Logging.Log(_progressPercentage, message, isDebug);
         }
 
 
         /// <summary>
         /// Logs the error message.
         /// </summary>
-        /// <param name="msg">The message.</param>
+        /// <param name="message">The message.</param>
         /// <param name="ex">The exception.</param>
-        private static void StatusLog(string msg, Exception ex)
+        private static async Task StatusLog(string message, Exception ex)
         {
-            Logging.Log(_progressPercentage, msg, ex);
+            Logging.Log(_progressPercentage, message, ex);
         }
 
 
         /// <summary>
         /// Shows status message.
         /// </summary>
-        /// <param name="msg">The message.</param>
-        private void StatusMessage(string msg)
+        /// <param name="message">The message.</param>
+        /// <param name="includeProgress">if set to <c>true</c> [include progress].</param>
+        /// <param name="includeLogging">if set to <c>true</c> [include logging].</param>
+        private async Task StatusMessage(string message, bool includeProgress = false, bool includeLogging = false)
         {
-            if (!_statusWarning.IsNullOrEmptyTrimmed())
-                msg = $"{msg} - {_statusWarning}";
+            var msg1 = message?.Trim() ?? string.Empty;
 
-            if (MainStatusLabel.Text != msg)
+            if (msg1.Length > 0)
             {
-                MainStatusLabel.Text = msg;
-                MainStatusLabel.ToolTipText = msg;
+                msg1 = msg1.Substring(0, 1).ToUpperInvariant() + msg1.Remove(0, 1);
             }
 
-            if (_progressPercentage > 0)
+            if (MainStatusLabel.Text != msg1)
+            {
+                MainStatusLabel.Text = msg1;
+                MainStatusLabel.ToolTipText = msg1;
+
+                MainStatusStrip.Update();
+            }
+
+            if (includeLogging)
+                await StatusLog(msg1);
+
+            if (includeProgress && (_progressPercentage > 0))
                 MainProgressBar.Value = _progressPercentage;
         }
 

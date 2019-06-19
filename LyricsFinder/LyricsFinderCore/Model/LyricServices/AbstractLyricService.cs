@@ -353,12 +353,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 UserId = PrivateSettings.UserId
             };
 
-            var dailyQuotaString = PrivateSettings.DailyQuota;
-
-            DailyQuota = (dailyQuotaString.IsNullOrEmptyTrimmed())
-                ? 0
-                : int.Parse(dailyQuotaString, CultureInfo.InvariantCulture);
-
+            DailyQuota = PrivateSettings.DailyQuota;
             QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Now.Date, TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue(settings, "QuotaResetTimeZone")));
 
             CheckQuota();

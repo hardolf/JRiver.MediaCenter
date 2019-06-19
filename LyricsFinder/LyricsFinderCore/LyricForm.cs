@@ -224,7 +224,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -287,11 +287,11 @@ namespace MediaCenter.LyricsFinder
                     }
                 }
 
-                Properties.Settings.Default.LyricsFormSize = Size;
+                LyricsFinderCorePrivateConfigurationSectionHandler.Save(lyricFormSize: Size);
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -315,7 +315,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -338,7 +338,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -411,7 +411,7 @@ namespace MediaCenter.LyricsFinder
             {
                 // Cursor.Current = Cursors.Default;
                 UseWaitCursor = false;
-                ErrorHandling.ShowAndLogErrorHandler($"Error{msg} in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error{msg} in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
                 Close();
             }
         }
@@ -442,7 +442,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -478,7 +478,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -508,7 +508,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 

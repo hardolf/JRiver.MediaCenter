@@ -112,7 +112,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -312,7 +312,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -343,7 +343,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -411,7 +411,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -437,7 +437,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -455,7 +455,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -477,7 +477,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod()} event.", ex);
+                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -488,7 +488,7 @@ namespace MediaCenter.LyricsFinder.Model
         private void SaveSelectedService()
         {
             var tlp = LyricServiceDetailsTableLayoutPanel;
-            string quota = null;
+            int quota = 0;
             string token = null;
             string userId = null;
             AbstractLyricService service = GetSelectedService(out _);
@@ -507,8 +507,8 @@ namespace MediaCenter.LyricsFinder.Model
 
                     if (lbl.Text.ToUpperInvariant().Contains("QUOTA"))
                     {
-                        quota = txt.Text;
-                        service.DailyQuota = int.Parse(quota, NumberStyles.None, CultureInfo.InvariantCulture);
+                        quota = int.Parse(txt.Text, NumberStyles.None, CultureInfo.InvariantCulture);
+                        service.DailyQuota = quota;
                     }
 
                     if (lbl.Text.ToUpperInvariant().Contains("TOKEN"))

@@ -121,6 +121,30 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the Tick event of the InitTimer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void InitTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                InitTimer.Stop();
+
+#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
+                await LyricsFinderCore.InitCore();
+#pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
+
+                // We don't start this timer again!
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler(ex);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the FormClosing event of the MainForm control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -150,6 +174,25 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 SaveFormSettings();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler(ex);
+            }
+        }
+
+
+
+        /// <summary>
+        /// Handles the Shown event of the MainForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            try
+            {
+                InitTimer.Start();
             }
             catch (Exception ex)
             {

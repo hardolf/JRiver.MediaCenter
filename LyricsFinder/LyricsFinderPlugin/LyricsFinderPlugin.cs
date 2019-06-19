@@ -18,6 +18,8 @@ Modified: 2019.05.25 by Hardolf.
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -60,28 +62,34 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="exception">The exeption.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private static void ErrorHandler(string message, Exception exception)
         {
             const string indent = "    ";
 
-            // StatusLog(ex);
+            try
+            {
+                // StatusLog(ex);
 
-            message += $" \r\n"
-                + $"{indent}{exception.Message} \r\n\r\n"
-                + $"The failure occurred in class object {exception.Source} \r\n"
-                + $"when calling Method {exception.TargetSite}.\r\n";
+                message += $" \r\n"
+                    + $"{indent}{exception.Message} \r\n\r\n"
+                    + $"The failure occurred in class object {exception.Source} \r\n"
+                    + $"when calling Method {exception.TargetSite}.\r\n";
 
-            if (exception.InnerException != null)
+                if (exception.InnerException != null)
+                    message += " \r\n"
+                        + $"Inner exception: \r\n"
+                        + $"{indent}{exception.InnerException} \r\n";
+
                 message += " \r\n"
-                    + $"Inner exception: \r\n"
-                    + $"{indent}{exception.InnerException} \r\n";
+                    + $"Stack trace: \r\n"
+                    + $"{exception.StackTrace}";
 
-            message += " \r\n"
-                + $"Stack trace: \r\n"
-                + $"{exception.StackTrace}";
-
-            MessageBox.Show(message, "Fatal plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(message, "Fatal plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error displaying error message: " + ex.Message, "Fatal plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
 
@@ -91,8 +99,9 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="mediaCenterReference">Media Center Reference.</param>
         /// <exception cref="ArgumentNullException">mediaCenterReference</exception>
+        /// <remarks>The "async Task" construct seems to work instead of just "void".</remarks>
         [ComVisible(true)]
-        public void Init(MCAutomation mediaCenterReference)
+        public async Task Init(MCAutomation mediaCenterReference)
         {
             try
             {
@@ -100,6 +109,10 @@ namespace MediaCenter.LyricsFinder
 
                 // This tells MC to also call our MJEvent method
                 MediaCenterReference.FireMJEvent += new IMJAutomationEvents_FireMJEventEventHandler(MJEvent);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                var task = Task.Run(() => { InitCore(); });
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
             catch (Exception ex)
             {

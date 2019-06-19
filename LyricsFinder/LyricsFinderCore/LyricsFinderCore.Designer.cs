@@ -51,7 +51,7 @@ namespace MediaCenter.LyricsFinder
             this.SearchAllStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.TestTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.OverwriteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MainStatus = new System.Windows.Forms.StatusStrip();
+            this.MainStatusStrip = new System.Windows.Forms.StatusStrip();
             this.MainStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.MainProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.MainDataGridView = new System.Windows.Forms.DataGridView();
@@ -92,7 +92,6 @@ namespace MediaCenter.LyricsFinder
             this.TopSubMenu = new System.Windows.Forms.MenuStrip();
             this.TopSubMenuTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.ProcessWorker = new System.ComponentModel.BackgroundWorker();
             this.MainContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextEditMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextPlayPauseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,7 +103,7 @@ namespace MediaCenter.LyricsFinder
             this.MainContainer.TopToolStripPanel.SuspendLayout();
             this.MainContainer.SuspendLayout();
             this.BottomMenu.SuspendLayout();
-            this.MainStatus.SuspendLayout();
+            this.MainStatusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainDataGridView)).BeginInit();
             this.TopMenu.SuspendLayout();
             this.TopSubMenu.SuspendLayout();
@@ -117,7 +116,7 @@ namespace MediaCenter.LyricsFinder
             // MainContainer.BottomToolStripPanel
             // 
             this.MainContainer.BottomToolStripPanel.Controls.Add(this.BottomMenu);
-            this.MainContainer.BottomToolStripPanel.Controls.Add(this.MainStatus);
+            this.MainContainer.BottomToolStripPanel.Controls.Add(this.MainStatusStrip);
             // 
             // MainContainer.ContentPanel
             // 
@@ -189,18 +188,18 @@ namespace MediaCenter.LyricsFinder
             this.OverwriteMenuItem.ToolTipText = "Should the operation overwrite existing lyrics?";
             this.OverwriteMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
             // 
-            // MainStatus
+            // MainStatusStrip
             // 
-            this.MainStatus.Dock = System.Windows.Forms.DockStyle.None;
-            this.MainStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MainStatusStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.MainStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MainStatusLabel,
             this.MainProgressBar});
-            this.MainStatus.Location = new System.Drawing.Point(0, 27);
-            this.MainStatus.Name = "MainStatus";
-            this.MainStatus.ShowItemToolTips = true;
-            this.MainStatus.Size = new System.Drawing.Size(738, 22);
-            this.MainStatus.SizingGrip = false;
-            this.MainStatus.TabIndex = 0;
+            this.MainStatusStrip.Location = new System.Drawing.Point(0, 27);
+            this.MainStatusStrip.Name = "MainStatusStrip";
+            this.MainStatusStrip.ShowItemToolTips = true;
+            this.MainStatusStrip.Size = new System.Drawing.Size(738, 22);
+            this.MainStatusStrip.SizingGrip = false;
+            this.MainStatusStrip.TabIndex = 0;
             // 
             // MainStatusLabel
             // 
@@ -388,7 +387,7 @@ namespace MediaCenter.LyricsFinder
             // dummyItemToolStripMenuItem
             // 
             this.dummyItemToolStripMenuItem.Name = "dummyItemToolStripMenuItem";
-            this.dummyItemToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dummyItemToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.dummyItemToolStripMenuItem.Text = "Dummy item";
             // 
             // FileSepMenuItem1
@@ -609,14 +608,6 @@ namespace MediaCenter.LyricsFinder
             this.MainToolTip.InitialDelay = 50;
             this.MainToolTip.ReshowDelay = 10;
             // 
-            // ProcessWorker
-            // 
-            this.ProcessWorker.WorkerReportsProgress = true;
-            this.ProcessWorker.WorkerSupportsCancellation = true;
-            this.ProcessWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ProcessWorker_DoWork);
-            this.ProcessWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.ProcessWorker_ProgressChanged);
-            this.ProcessWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ProcessWorker_RunWorkerCompleted);
-            // 
             // MainContextMenu
             // 
             this.MainContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -663,7 +654,6 @@ namespace MediaCenter.LyricsFinder
             this.Controls.Add(this.MainContainer);
             this.Name = "LyricsFinderCore";
             this.Size = new System.Drawing.Size(738, 509);
-            this.Load += new System.EventHandler(this.LyricsFinderCore_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricsFinderCore_KeyDown);
             this.MainContainer.BottomToolStripPanel.ResumeLayout(false);
             this.MainContainer.BottomToolStripPanel.PerformLayout();
@@ -674,8 +664,8 @@ namespace MediaCenter.LyricsFinder
             this.MainContainer.PerformLayout();
             this.BottomMenu.ResumeLayout(false);
             this.BottomMenu.PerformLayout();
-            this.MainStatus.ResumeLayout(false);
-            this.MainStatus.PerformLayout();
+            this.MainStatusStrip.ResumeLayout(false);
+            this.MainStatusStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainDataGridView)).EndInit();
             this.TopMenu.ResumeLayout(false);
             this.TopMenu.PerformLayout();
@@ -690,7 +680,7 @@ namespace MediaCenter.LyricsFinder
 
 
         private System.Windows.Forms.ToolStripContainer MainContainer;
-        private System.Windows.Forms.StatusStrip MainStatus;
+        private System.Windows.Forms.StatusStrip MainStatusStrip;
         private System.Windows.Forms.ToolStripStatusLabel MainStatusLabel;
         private System.Windows.Forms.MenuStrip TopMenu;
         private System.Windows.Forms.ToolStripMenuItem FileMenuItem;
@@ -701,7 +691,6 @@ namespace MediaCenter.LyricsFinder
         private System.Windows.Forms.ToolStripMenuItem ToolsTestMenuItem;
         private System.Windows.Forms.MenuStrip BottomMenu;
         private StartStopToolStripButton SearchAllStartStopButton;
-        private System.ComponentModel.BackgroundWorker ProcessWorker;
         private System.Windows.Forms.ToolStripProgressBar MainProgressBar;
         private System.Windows.Forms.DataGridView MainDataGridView;
         private System.Windows.Forms.ToolStripTextBox TestTextBox;

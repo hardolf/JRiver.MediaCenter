@@ -31,10 +31,29 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         // Public constants
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public const string AppSettingsSectionName = "appSettings";
+        public const string AppConfigFileExt = ".config";
         public const string PrivateConfigFileExt = ".private.config";
         public const string PrivateConfigTemplateFileExt = ".template.config";
         public static readonly Uri RepositoryUrl = new Uri("https://github.com/hardolf/JRiver.MediaCenter");
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
+
+        /// <summary>
+        /// Gets the application settings file path.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <returns>
+        /// String with the application settings file path.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">assembly</exception>
+        public static string GetAppSettingsFilePath(Assembly assembly)
+        {
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+
+            var ret = assembly.Location + AppConfigFileExt;
+
+            return ret;
+        }
 
 
         /// <summary>
@@ -53,9 +72,9 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
             if (dataDir.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(dataDir));
 
-            var ret = Path.Combine(dataDir, Path.GetFileName(assembly.Location) + Utility.PrivateConfigFileExt);
-            var appConfigFilePath = assembly.Location + Utility.PrivateConfigFileExt;
-            var templateConfigFilePath = assembly.Location + Utility.PrivateConfigTemplateFileExt;
+            var ret = Path.Combine(dataDir, Path.GetFileName(assembly.Location) + PrivateConfigFileExt);
+            var appConfigFilePath = assembly.Location + PrivateConfigFileExt;
+            var templateConfigFilePath = assembly.Location + PrivateConfigTemplateFileExt;
 
             // Create the private config. file if not found in the data dir.
             if (!File.Exists(ret))

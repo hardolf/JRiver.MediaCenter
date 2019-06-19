@@ -65,8 +65,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
             message += $" \r\n"
                 + $"{indent}{exception.Message} \r\n\r\n"
-                + $"The failure occurred in class object {exception.Source} \r\n"
-                + $"when calling Method {exception.TargetSite}.\r\n";
+                + $"The failure occurred in class object {exception.Source} \r\n";
 
             if (exception.InnerException != null)
                 message += " \r\n"

@@ -28,109 +28,206 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Connects to the MediaCenter.
         /// </summary>
-        /// <param name="worker">The worker.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException">worker</exception>
+        /// <returns><see cref="Task"/> object.</returns>
+        /// <exception cref="System.Exception">The connected MediaCenter Web Service has AccessKey \"{alive.AccessKey}\" but \"{expectedAccessKey}\" was expected.
+        /// or
+        /// Failed to connect to MediaCenter Web Service \"{url}\". The service is {msg}.
+        /// or
+        /// Error in MediaCenter routine \"{typeNs}.{typeName}.{routineName}\".</exception>
         /// <exception cref="Exception">The connected MediaCenter Web Service has AccessKey \"{alive.AccessKey}\", ...
         /// or
         /// Failed to connect to MediaCenter Web Service \"{url}
         /// or
         /// Error in MediaCenter routine \"{typeNs}.{typeName}.{routineName}</exception>
-        private async Task Connect(BackgroundWorker worker)
+        private async Task Connect()
         {
-            if (worker == null)
-                throw new ArgumentNullException(nameof(worker));
+            var connectAttempts = 0;
+            var maxConnectAttempts = LyricsFinderCoreConfigurationSectionHandler.McWsConnectAttempts;
+            var url = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl;
+            McAliveResponse alive = null;
 
-            var workerState = new WorkerUserState();
+            _isConnectedToMc = false;
+            _statusWarning = string.Empty;
 
-            try
+            // Try to get the MC WS connection
+            do
             {
-                 ErrorTest();
+                connectAttempts++;
 
-                var url = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl;
-                var connAttempts = Properties.Settings.Default.McWebServiceConnectAttempts;
-                McAliveResponse alive = null;
+                try
+                {
+                    alive = await McRestService.GetAlive();
+                }
+                catch
+                {
+                    if (connectAttempts < maxConnectAttempts)
+                    {
+                        await StatusMessage($"Connection to the MCWS failed - retrying {connectAttempts}...", true, true);
 
-                _statusWarning = string.Empty;
+                        // Ignore and wait ½ sec.
+                        // Do not use await or Task.Delay here!
+                        Thread.Sleep(500);
+                    }
+                    else
+                        throw;
+                }
+            } while (connectAttempts < maxConnectAttempts);
 
-                workerState.Message = $"Connecting to MediaCenter Web Service...";
+            if ((alive != null) && alive.IsOk)
+            {
+                var expectedAccessKey = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey;
 
-                if (!worker.CancellationPending)
-                    worker.ReportProgress(0, workerState);
-
-                // Try to get the MC WS connection
-                for (int i = 0; i < connAttempts; i++)
+                if (alive.AccessKey == expectedAccessKey)
                 {
                     try
                     {
-                        alive = await McRestService.GetAlive().ConfigureAwait(false);
+                        Authentication = await McRestService.GetAuthentication();
 
-                        if (alive != null)
-                            break;
+                        _isConnectedToMc = true;
                     }
-                    catch (Exception)
+                    catch
                     {
-                        // Ignore and wait ½ sec.
-                        Thread.Sleep(500);
+                        throw;
                     }
                 }
-
-                if ((alive != null) && alive.IsOk)
-                {
-                    var expectedAccessKey = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey;
-
-                    if (alive.AccessKey == expectedAccessKey)
-                        Authentication = await McRestService.GetAuthentication().ConfigureAwait(false);
-                    else
-                        throw new Exception($"The connected MediaCenter Web Service has AccessKey \"{alive.AccessKey}\" but \"{expectedAccessKey}\" was expected.");
-                }
                 else
                 {
-                    var msg = (alive == null) ? "not alive" : "alive";
-
-                    if (alive != null)
-                        msg += (alive.IsOk) ? " and OK" : " but not OK";
-
-                    throw new Exception($"Failed to connect to MediaCenter Web Service \"{url}\". The service is {msg}.");
+                    throw new Exception($"The connected JRiver MediaCenter Web Service (MCWS) has AccessKey \"{alive.AccessKey}\" but \"{expectedAccessKey}\" was expected.");
                 }
-
-                _isConnectedToMc = true;
-
-                if (!worker.CancellationPending)
-                    worker.ReportProgress(0, workerState);
-
-                // Get the current playlist items
-                if ((_currentPlaylist == null) || (_currentPlaylist.Id == 0))
-                {
-                    workerState.Message = $"Collecting the current playlist...";
-                    _currentPlaylist = await McRestService.GetPlayNowList().ConfigureAwait(false);
-                }
-                else
-                    _currentPlaylist = await McRestService.GetPlaylistFiles(_currentPlaylist.Id, _currentPlaylist.Name).ConfigureAwait(false);
-
-                workerState.Message = (_currentPlaylist.Name.IsNullOrEmptyTrimmed())
-                    ? $"Connected to MediaCenter, the current playlist has {_currentPlaylist.Items.Count} items."
-                    : $"Connected to MediaCenter, the current playlist \"{_currentPlaylist.Name}\" has {_currentPlaylist.Items.Count} items.";
-                workerState.Items = _currentPlaylist.Items;
-                workerState.CurrentItemIndex = (_playingIndex >= 0) ? _playingIndex : 0;
-
-                if (!worker.CancellationPending)
-                    worker.ReportProgress(0, workerState);
-
-                Thread.Sleep(100);
             }
-            catch (Exception ex)
+            else
             {
-                var type = this.GetType();
-                var typeNs = type?.Namespace ?? "?";
-                var typeName = type?.Name ?? "?";
-                var routineName = MethodBase.GetCurrentMethod()?.Name ?? "?";
+                // We probably never get here
+                var msg = (alive == null) ? "not alive" : "alive";
 
-                throw new Exception($"Error in MediaCenter routine \"{typeNs}.{typeName}.{routineName}\".", ex);
+                if (alive != null)
+                    msg += (alive.IsOk) ? " and OK" : " but not OK";
+
+                throw new Exception($"Error connecting to the JRiver Media Center Web Service (MCWS) \"{url}\". The service is {msg}.");
             }
         }
 
 
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
+        /// <returns></returns>
+        public async Task InitCore()
+        {
+            if (_isDesignTime) return;
+
+            var msg = string.Empty;
+
+            try
+            {
+                _statusWarning = string.Empty;
+
+                await StatusMessage("LyricsFinder initializes...", true, false);
+
+                // Init the log. This must be done as the very first thing, before trying to write to the log.
+                msg = "LyricsFinder for JRiver Media Center is started" + (_isStandAlone ? " standalone." : " from Media Center.");
+                InitLogging(new[] { _logHeader, msg });
+
+                msg = "initializing the application configuration handler";
+                Logging.Log(_progressPercentage, msg + "...", true);
+                LyricsFinderCoreConfigurationSectionHandler.Init(Assembly.GetExecutingAssembly());
+
+                msg = "initializing the local data";
+                Logging.Log(_progressPercentage, msg + "...", true);
+                InitLocalData();
+
+                msg = "initializing the private configuration handler";
+                Logging.Log(_progressPercentage, msg + "...", true);
+                LyricsFinderCorePrivateConfigurationSectionHandler.Init(Assembly.GetExecutingAssembly(), DataDirectory);
+
+                msg = "checking if private configuration is needed";
+                Logging.Log(_progressPercentage, msg + "...", true);
+                if (!(Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey)
+                    && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl)
+                    && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName)
+                    && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword)))
+                {
+                    using (var frm = new OptionForm("The LyricsFinder is not configured yet"))
+                    {
+                        frm.ShowDialog(this);
+                    }
+                }
+
+                msg = "initializing the key events";
+                Logging.Log(_progressPercentage, msg + "...", true);
+                InitKeyDownEvent();
+
+                msg = "loading the form settings";
+                Logging.Log(_progressPercentage, msg + "...", true);
+                LoadFormSettings();
+
+                msg = "initializing the shortcuts";
+                Logging.Log(_progressPercentage, msg + "...", true);
+                ShowShortcuts(_isStandAlone);
+
+                msg = "initializing the start/stop button delegates";
+                Logging.Log(_progressPercentage, msg + "...", true);
+                ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
+                ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
+                SearchAllStartStopButton.Starting += StartStopButton_Starting;
+                SearchAllStartStopButton.Stopping += StartStopButton_Stopping;
+
+                msg = "initializing the Media Center MCWS connection parameters";
+                Logging.Log(_progressPercentage, msg + "...", true);
+                McRestService.Init(
+                    LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey,
+                    LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl,
+                    LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName,
+                    LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword);
+
+                msg = "initializing the update check";
+                Logging.Log(_progressPercentage, msg + "...", true);
+                UpdateCheckTimer.Start();
+
+                MainDataGridView.Select();
+
+                _progressPercentage = 0;
+                _noLyricsSearchList.AddRange(LyricsFinderCoreConfigurationSectionHandler.McNoLyricsSearchList.Split(',', ';'));
+
+                msg = "connecting to the MediaCenter Web Service (MCWS)";
+                await StatusMessage(msg + "...", true, true);
+                await Connect();
+
+                msg = "loading the current \"Playing Now\" playlist";
+                await StatusMessage(msg + "...", true, true);
+                await LoadCurrentPlaylist();
+                await FillDataGrid();
+            }
+            catch (Exception ex)
+            {
+                await StatusMessage($"Error {msg} during initialization.", true, true);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
+            }
+        }
+
+
+        /// <summary>
+        /// Loads the current playlist.
+        /// </summary>
+        /// <returns><see cref="Task"/> object.</returns>
+        private async Task LoadCurrentPlaylist()
+        {
+            await StatusMessage("Collecting the current playlist...");
+
+            if ((_currentPlaylist == null) || (_currentPlaylist.Id == 0))
+                _currentPlaylist = await McRestService.GetPlayNowList().ConfigureAwait(false);
+            else
+                _currentPlaylist = await McRestService.GetPlaylistFiles(_currentPlaylist.Id, _currentPlaylist.Name).ConfigureAwait(false);
+
+            await StatusMessage((_currentPlaylist.Name.IsNullOrEmptyTrimmed())
+                ? $"Connected to MediaCenter, the current playlist has {_currentPlaylist.Items.Count} items."
+                : $"Connected to MediaCenter, the current playlist \"{_currentPlaylist.Name}\" has {_currentPlaylist.Items.Count} items.");
+
+            //TODO: BackgroundWorker: workerState.CurrentItemIndex = (_playingIndex >= 0) ? _playingIndex : 0;
+        }
+
+
+        /*
         /// <summary>
         /// Processes the current MediaCenter playlist items.
         /// </summary>
@@ -194,7 +291,7 @@ namespace MediaCenter.LyricsFinder
                 var type = this.GetType();
                 var typeNs = type?.Namespace ?? "?";
                 var typeName = type?.Name ?? "?";
-                var routineName = MethodBase.GetCurrentMethod()?.Name ?? "?";
+                var routineName = SharedComponents.Utility.GetActualAsyncMethodName()?.Name ?? "?";
 
                 isOk = false;
 
@@ -214,8 +311,10 @@ namespace MediaCenter.LyricsFinder
                     worker.ReportProgress(_progressPercentage, workerState);
             }
         }
+        */
 
 
+        /*
         private bool ProcessItem(BackgroundWorker worker, WorkerUserState workerState)
         {
             var item = workerState.CurrentItem;
@@ -270,6 +369,7 @@ namespace MediaCenter.LyricsFinder
 
             return ret;
         }
+        */
 
     }
 

@@ -118,6 +118,7 @@ namespace MediaCenter.LyricsFinder
         /***** Constructors *****/
         /************************/
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LyricsFinderCore"/> class.
         /// </summary>
@@ -148,16 +149,6 @@ namespace MediaCenter.LyricsFinder
 
             _isStandAlone = isStandAlone;
             _isDesignTime = (LicenseManager.UsageMode == LicenseUsageMode.Designtime);
-
-            if (!_isDesignTime)
-            {
-                // Upgrade User Settings from previous version the first time
-                if (Properties.Settings.Default.UpgradeSettings)
-                {
-                    Properties.Settings.Default.Upgrade();
-                    Properties.Settings.Default.UpgradeSettings = false;
-                }
-            }
 
             InitializeComponent();
         }
@@ -194,7 +185,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -231,41 +222,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the Load event of the LyricsFinderCore control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricsFinderCore_Load(object sender, EventArgs e)
-        {
-            try
-            {
-                if (_isDesignTime) return;
-                if (ProcessWorker.IsBusy) return;
-
-                var msg = "LyricsFinder initializes...";
-
-                Init();
-
-                MainDataGridView.Select();
-                Thread.Sleep(100);
-
-                _progressPercentage = 0;
-                _noLyricsSearchList.AddRange(Properties.Settings.Default.McNoLyricsSearchList.Split(',', ';'));
-
-                StatusLog(msg);
-                StatusMessage(msg);
-
-                ProcessWorker.RunWorkerAsync();
-            }
-            catch (Exception ex)
-            {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -303,7 +260,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -329,7 +286,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -348,7 +305,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -398,7 +355,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -413,8 +370,8 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 if (_isDesignTime) return;
-                if ((_lyricsForm != null) && _lyricsForm.Visible && !Properties.Settings.Default.MouseMoveOpenLyricsForm) return;
-                if ((e.ColumnIndex == (int)GridColumnEnum.Lyrics) && !Properties.Settings.Default.MouseMoveOpenLyricsForm) return;
+                if ((_lyricsForm != null) && _lyricsForm.Visible && !LyricsFinderCoreConfigurationSectionHandler.MouseMoveOpenLyricsForm) return;
+                if ((e.ColumnIndex == (int)GridColumnEnum.Lyrics) && !LyricsFinderCoreConfigurationSectionHandler.MouseMoveOpenLyricsForm) return;
                 if ((e.ColumnIndex == _currentMouseColumnIndex) && (e.RowIndex == _currentMouseRowIndex)) return;
 
                 _bitmapForm?.Close();
@@ -446,7 +403,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -461,7 +418,7 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 if (_isDesignTime) return;
-                if (!Properties.Settings.Default.MouseMoveOpenLyricsForm) return;
+                if (!LyricsFinderCoreConfigurationSectionHandler.MouseMoveOpenLyricsForm) return;
 
                 var pt = Cursor.Position;
                 var rect = MainDataGridView.RectangleToScreen(MainDataGridView.ClientRectangle);
@@ -476,7 +433,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -500,7 +457,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -529,7 +486,7 @@ namespace MediaCenter.LyricsFinder
                 // Also, we only log the first incident.
 
                 if (McStatusTimer.Interval == _mcStatusIntervalNormal)
-                    ErrorHandling.ErrorLog($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                    ErrorHandling.ErrorLog($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex, _progressPercentage);
 
                 await BlankPlayStatusBitmaps().ConfigureAwait(false);
 
@@ -547,6 +504,7 @@ namespace MediaCenter.LyricsFinder
         private async void MenuItem_Click(object sender, EventArgs e)
         {
             var itemName = "Undefined item";
+            var msg = string.Empty;
 
             try
             {
@@ -590,7 +548,14 @@ namespace MediaCenter.LyricsFinder
 
                         case nameof(FileReloadMenuItem):
                             _isConnectedToMc = false;
-                            ProcessWorker.RunWorkerAsync();
+                            msg = "connecting to the MediaCenter Web Service (MCWS)";
+                            await StatusMessage(msg + "...", true, true);
+                            await Connect();
+
+                            msg = "loading current playlist";
+                            await StatusMessage(msg + "...", true, true);
+                            await LoadCurrentPlaylist();
+                            await FillDataGrid();
                             break;
 
                         case nameof(FileSaveMenuItem):
@@ -642,7 +607,8 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex, $"in menu item: \"{itemName}\"");
+                await StatusMessage($"Error {(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item \"{itemName}\".", true, true);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
             }
         }
 
@@ -660,27 +626,28 @@ namespace MediaCenter.LyricsFinder
                 {
                     _progressPercentage = 0;
 
-                    if (ProcessWorker.WorkerSupportsCancellation)
-                        ProcessWorker.CancelAsync();
+                    //TODO: BackgroundWorker: 
+                    //if (ProcessWorker.WorkerSupportsCancellation)
+                    //    ProcessWorker.CancelAsync();
 
                     StatusLog("LyricsFinder for JRiver Media Center closed.");
                     StatusLog(_logHeader + Environment.NewLine);
-
-                    SaveFormSettings();
                 }
 
                 base.OnHandleDestroyed(e);
             }
             catch (Exception ex)
             {
-                if (ProcessWorker.WorkerSupportsCancellation)
-                    ProcessWorker.CancelAsync();
+                //TODO: BackgroundWorker: 
+                //if (ProcessWorker.WorkerSupportsCancellation)
+                //    ProcessWorker.CancelAsync();
 
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
 
+        /*
         /// <summary>
         /// Handles the DoWork event of the ProcessWorker control.
         /// </summary>
@@ -764,7 +731,7 @@ namespace MediaCenter.LyricsFinder
                 if (ProcessWorker.WorkerSupportsCancellation)
                     ProcessWorker.CancelAsync();
 
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -796,7 +763,7 @@ namespace MediaCenter.LyricsFinder
                     if (e.Error is LyricsQuotaExceededException)
                         ErrorHandling.ShowErrorHandler(this, e.Error.Message);
                     else
-                        ErrorReport(MethodBase.GetCurrentMethod(), e.Error, "handling background worker event in LyricsFinder");
+                        ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), e.Error, "handling background worker event in LyricsFinder");
                 }
                 else
                 {
@@ -813,9 +780,10 @@ namespace MediaCenter.LyricsFinder
                 if (ProcessWorker.WorkerSupportsCancellation)
                     ProcessWorker.CancelAsync();
 
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
+        */
 
 
         /// <summary>
@@ -840,12 +808,13 @@ namespace MediaCenter.LyricsFinder
                 _progressPercentage = 0;
 
                 // Start the bacground worker
-                if (!ProcessWorker.IsBusy)
-                    ProcessWorker.RunWorkerAsync();
+                //TODO: BackgroundWorker: 
+                //if (!ProcessWorker.IsBusy)
+                //    ProcessWorker.RunWorkerAsync();
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -864,12 +833,13 @@ namespace MediaCenter.LyricsFinder
                 if (ToolsSearchAllStartStopButton.IsRunning)
                     ToolsSearchAllStartStopButton.Stop();
 
-                if (ProcessWorker.WorkerSupportsCancellation)
-                    ProcessWorker.CancelAsync();
+                //TODO: BackgroundWorker: 
+                //if (ProcessWorker.WorkerSupportsCancellation)
+                //    ProcessWorker.CancelAsync();
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -892,7 +862,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -912,7 +882,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -933,7 +903,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -954,7 +924,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -971,7 +941,7 @@ namespace MediaCenter.LyricsFinder
                 UpdateCheckTimer.Stop();
 
                 // Is it about time for a check?
-                var updInterval = Properties.Settings.Default.UpdateCheckInterval;
+                var updInterval = LyricsFinderCorePrivateConfigurationSectionHandler.UpdateCheckIntervalDays;
                 var daysSinceLast = (DateTime.Now - _lastUpdateCheck).TotalDays;
 
                 if ((updInterval == 0)
@@ -984,7 +954,7 @@ namespace MediaCenter.LyricsFinder
                         Model.Helpers.Utility.UpdateCheckWithRetries(version, true);
 
                     _lastUpdateCheck = DateTime.Now;
-                    Properties.Settings.Default.LastUpdateCheck = _lastUpdateCheck.ToString(CultureInfo.InvariantCulture);
+                    LyricsFinderCorePrivateConfigurationSectionHandler.Save(lastUpdateCheck: _lastUpdateCheck);
                 }
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again
@@ -994,7 +964,7 @@ namespace MediaCenter.LyricsFinder
 #pragma warning restore CS0168 // Variable is declared but never used
             {
                 // We ignore this exception for now
-                // ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                // ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
 
                 UpdateCheckTimer.Interval *= 10;
                 UpdateCheckTimer.Start();

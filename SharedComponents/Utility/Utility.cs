@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -38,6 +39,9 @@ namespace MediaCenter.SharedComponents
             textBox.ClientSize =
                 new Size(size.Width + x_margin, size.Height + y_margin);
         }
+
+
+        public static string GetActualAsyncMethodName([CallerMemberName]string name = null) => name;
 
 
         /// <summary>
