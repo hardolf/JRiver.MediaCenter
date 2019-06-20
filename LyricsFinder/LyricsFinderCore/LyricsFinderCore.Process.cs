@@ -41,38 +41,37 @@ namespace MediaCenter.LyricsFinder
         /// Error in MediaCenter routine \"{typeNs}.{typeName}.{routineName}</exception>
         private async Task Connect()
         {
-            var connectAttempts = 0;
+            var cnt = 0;
             var maxConnectAttempts = LyricsFinderCoreConfigurationSectionHandler.McWsConnectAttempts;
             var url = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl;
             McAliveResponse alive = null;
 
             _isConnectedToMc = false;
-            _statusWarning = string.Empty;
 
-            // Try to get the MC WS connection
+            // Try to get the MCWS connection
             do
             {
-                connectAttempts++;
+                cnt++;
 
                 try
                 {
+                    StatusMessage($"Connecting to the MCWS {((cnt > 1) ? "failed " : string.Empty)}- attempt {cnt}...", true, true);
+
                     alive = await McRestService.GetAlive();
                 }
                 catch
                 {
-                    if (connectAttempts < maxConnectAttempts)
+                    if (cnt < maxConnectAttempts)
                     {
-                        await StatusMessage($"Connection to the MCWS failed - retrying {connectAttempts}...", true, true);
-
                         // Ignore and wait ½ sec.
-                        // Do not use await or Task.Delay here!
-                        Thread.Sleep(500);
+                        await Task.Delay(500);
                     }
                     else
                         throw;
                 }
-            } while (connectAttempts < maxConnectAttempts);
+            } while (cnt < maxConnectAttempts);
 
+            // If we got the MCWS connection, let's try to authenticate
             if ((alive != null) && alive.IsOk)
             {
                 var expectedAccessKey = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey;
@@ -92,12 +91,13 @@ namespace MediaCenter.LyricsFinder
                 }
                 else
                 {
+                    // We probably never get here
                     throw new Exception($"The connected JRiver MediaCenter Web Service (MCWS) has AccessKey \"{alive.AccessKey}\" but \"{expectedAccessKey}\" was expected.");
                 }
             }
             else
             {
-                // We probably never get here
+                // We probably never get here either
                 var msg = (alive == null) ? "not alive" : "alive";
 
                 if (alive != null)
@@ -120,9 +120,8 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                _statusWarning = string.Empty;
-
-                await StatusMessage("LyricsFinder initializes...", true, false);
+                EnableOrDisableMenuItems(false, FileMenuItem, HelpMenuItem, ToolsMenuItem);
+                StatusMessage("LyricsFinder initializes...", true, false);
 
                 // Init the log. This must be done as the very first thing, before trying to write to the log.
                 msg = "LyricsFinder for JRiver Media Center is started" + (_isStandAlone ? " standalone." : " from Media Center.");
@@ -189,187 +188,49 @@ namespace MediaCenter.LyricsFinder
                 _progressPercentage = 0;
                 _noLyricsSearchList.AddRange(LyricsFinderCoreConfigurationSectionHandler.McNoLyricsSearchList.Split(',', ';'));
 
-                msg = "connecting to the MediaCenter Web Service (MCWS)";
-                await StatusMessage(msg + "...", true, true);
-                await Connect();
-
-                msg = "loading the current \"Playing Now\" playlist";
-                await StatusMessage(msg + "...", true, true);
-                await LoadCurrentPlaylist();
-                await FillDataGrid();
+                EnableOrDisableMenuItems(true);
+                await ReloadPlaylist(true);
             }
             catch (Exception ex)
             {
-                await StatusMessage($"Error {msg} during initialization.", true, true);
+                EnableOrDisableMenuItems(true);
+                StatusMessage($"Error {msg} during initialization.", true, true);
                 ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
             }
         }
 
 
         /// <summary>
-        /// Loads the current playlist.
+        /// Reloads the playlist.
         /// </summary>
-        /// <returns><see cref="Task"/> object.</returns>
-        private async Task LoadCurrentPlaylist()
+        /// <param name="isReconnect">if set to <c>true</c> reconnect to MediaCenter; else do not.</param>
+        /// <param name="menuItemName">Name of the menu item.</param>
+        /// <returns></returns>
+        private async Task ReloadPlaylist(bool isReconnect = false, string menuItemName = null)
         {
-            await StatusMessage("Collecting the current playlist...");
-
-            if ((_currentPlaylist == null) || (_currentPlaylist.Id == 0))
-                _currentPlaylist = await McRestService.GetPlayNowList().ConfigureAwait(false);
-            else
-                _currentPlaylist = await McRestService.GetPlaylistFiles(_currentPlaylist.Id, _currentPlaylist.Name).ConfigureAwait(false);
-
-            await StatusMessage((_currentPlaylist.Name.IsNullOrEmptyTrimmed())
-                ? $"Connected to MediaCenter, the current playlist has {_currentPlaylist.Items.Count} items."
-                : $"Connected to MediaCenter, the current playlist \"{_currentPlaylist.Name}\" has {_currentPlaylist.Items.Count} items.");
-
-            //TODO: BackgroundWorker: workerState.CurrentItemIndex = (_playingIndex >= 0) ? _playingIndex : 0;
-        }
-
-
-        /*
-        /// <summary>
-        /// Processes the current MediaCenter playlist items.
-        /// </summary>
-        private async Task Process(BackgroundWorker worker, DoWorkEventArgs e)
-        {
-            var isOk = false;
-            var foundCount = 0;
-            var lastIdx = 0;
-            var workerState = new WorkerUserState();
+            var msg = "connecting to the Media Center and/or loading the playlist";
 
             try
             {
-                // ErrorTest();
+                EnableOrDisableMenuItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem);
 
-                // Get the current playlist items
-                workerState.Message = $"Collecting lyrics for the current playlist...";
+                if (!_isConnectedToMc || isReconnect)
+                    await Connect();
 
-                if (!worker.CancellationPending)
-                    worker.ReportProgress(0, workerState);
+                _currentPlaylist = await LoadPlaylist(menuItemName);
+                await FillDataGrid();
 
-                var playList = await McRestService.GetPlayNowList().ConfigureAwait(false);
-
-                // Iterate the music file items
-                workerState.Message = $"Finding lyrics for the current playlist with {playList.Items.Count} items...";
-                workerState.Items = playList.Items;
-                workerState.CurrentItemIndex = 0;
-                workerState.OverwriteLyrics = OverwriteMenuItem.Checked;
-
-                if (!worker.CancellationPending)
-                    worker.ReportProgress(0, workerState);
-
-                foreach (var kvp in playList.Items)
-                {
-                    workerState.CurrentItem = kvp.Value;
-
-                    if (worker.CancellationPending)
-                    {
-                        e.Cancel = true;
-                        break;
-                    }
-                    else
-                    {
-                        workerState.CurrentItemIndex = lastIdx++; // workerState.CurrentItemIndex is always 1 less thant the lastIdx
-                        _progressPercentage = Convert.ToInt32(100 * lastIdx / playList.Items.Count);
-
-                        if (ProcessItem(worker, workerState))
-                            foundCount++;
-                    }
-                }
-
-                _progressPercentage = 100;
-                isOk = true;
-                LyricsFinderData.Save();
-            }
-            catch (LyricsQuotaExceededException)
-            {
-                throw;
+                EnableOrDisableMenuItems(true);
             }
             catch (Exception ex)
             {
-                var type = this.GetType();
-                var typeNs = type?.Namespace ?? "?";
-                var typeName = type?.Name ?? "?";
-                var routineName = SharedComponents.Utility.GetActualAsyncMethodName()?.Name ?? "?";
+                EnableOrDisableMenuItems(true);
+                EnableOrDisableMenuItems(false, FileSaveMenuItem, FileSelectPlaylistMenuItem);
 
-                isOk = false;
-
-                throw new Exception($"Error in MediaCenter routine \"{typeNs}.{typeName}.{routineName}\".", ex);
-            }
-            finally
-            {
-                var result = (isOk)
-                    ? (e.Cancel)
-                        ? "was canceled"
-                        : "completed successfully"
-                    : "failed";
-
-                workerState.Message = $"Finding lyrics for the current playlist {result} with {foundCount} lyrics found.";
-
-                if (!worker.CancellationPending)
-                    worker.ReportProgress(_progressPercentage, workerState);
+                StatusMessage($"Error {msg}.", true, true);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
             }
         }
-        */
-
-
-        /*
-        private bool ProcessItem(BackgroundWorker worker, WorkerUserState workerState)
-        {
-            var item = workerState.CurrentItem;
-            var itemText = $"\"{item.Artist}\" - \"{item.Album}\" - \"{item.Name}\"";
-            var ret = false;
-
-            // Do we only look at items with no lyrics?
-            if (workerState.OverwriteLyrics || item.Lyrics.IsNullOrEmptyTrimmed() || item.Lyrics.Contains(_noLyricsSearchList))
-                workerState.LyricsStatus = LyricResultEnum.NotProcessedYet;
-            else
-                workerState.LyricsStatus = LyricResultEnum.SkippedOldLyrics;
-
-            var doSearch = !(new[] { LyricResultEnum.Found, LyricResultEnum.ManuallyEdited, LyricResultEnum.SkippedOldLyrics }).Contains(workerState.LyricsStatus);
-
-            if (doSearch)
-            {
-                // Search for lyrics in each service and stop if lyrics is found
-                foreach (var service in LyricsFinderData.Services)
-                {
-                    if (!service.IsImplemented || !service.IsActive || service.IsQuotaExceeded) continue;
-
-                    service.Process(item);
-
-                    workerState.LyricsStatus = service.LyricResult;
-                    workerState.Message = $"{service.LyricResultMessage.PadRight(19, ' ')}: {itemText}";
-                    workerState.LyricsTextList.Clear();
-
-                    if (service.LyricResult == LyricResultEnum.Found)
-                    {
-                        foreach (var foundLyrics in service.FoundLyricList)
-                        {
-                            var txt = foundLyrics.ToString();
-
-                            workerState.LyricsTextList.Add(txt);
-                        }
-
-                        ret = true;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                workerState.Message = $"{workerState.LyricsStatus.ResultText().PadRight(19, ' ')}: {itemText}";
-            }
-
-            if (!worker.CancellationPending)
-                worker.ReportProgress(_progressPercentage, workerState);
-
-            // We may need this in order to give the datagrid enough time to update (don't know why...)
-            Thread.Sleep(50);
-
-            return ret;
-        }
-        */
 
     }
 

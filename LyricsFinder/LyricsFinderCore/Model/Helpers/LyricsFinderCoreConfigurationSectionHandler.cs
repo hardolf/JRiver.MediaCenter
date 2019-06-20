@@ -135,7 +135,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="assembly">The assembly.</param>
         public static void Init(Assembly assembly)
         {
-            _assembly = Assembly.GetExecutingAssembly();
+            _assembly = assembly;
         }
 
     }

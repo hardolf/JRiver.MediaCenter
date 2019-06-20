@@ -34,6 +34,7 @@ namespace MediaCenter.SharedComponents
         public static void AppendControlText(this Control control, string text)
         {
             if (control == null) throw new ArgumentNullException(nameof(control));
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             if (control.InvokeRequired)
             {
@@ -164,6 +165,7 @@ namespace MediaCenter.SharedComponents
         public static void SetControlText(this Control control, string text)
         {
             if (control == null) throw new ArgumentNullException(nameof(control));
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             if (control.InvokeRequired)
             {
@@ -211,6 +213,7 @@ namespace MediaCenter.SharedComponents
         public static void SetToolStripItemText(this ToolStripItem control, string text)
         {
             if (control == null) throw new ArgumentNullException(nameof(control));
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             if (control.Owner.InvokeRequired)
             {
@@ -227,6 +230,7 @@ namespace MediaCenter.SharedComponents
         public static void SetToolStripItemToolTipText(this ToolStripItem control, string text)
         {
             if (control == null) throw new ArgumentNullException(nameof(control));
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             if (control.Owner.InvokeRequired)
             {

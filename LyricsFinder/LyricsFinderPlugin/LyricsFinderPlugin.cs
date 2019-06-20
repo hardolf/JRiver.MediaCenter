@@ -101,7 +101,7 @@ namespace MediaCenter.LyricsFinder
         /// <exception cref="ArgumentNullException">mediaCenterReference</exception>
         /// <remarks>The "async Task" construct seems to work instead of just "void".</remarks>
         [ComVisible(true)]
-        public async Task Init(MCAutomation mediaCenterReference)
+        public void Init(MCAutomation mediaCenterReference)
         {
             try
             {
@@ -110,9 +110,7 @@ namespace MediaCenter.LyricsFinder
                 // This tells MC to also call our MJEvent method
                 MediaCenterReference.FireMJEvent += new IMJAutomationEvents_FireMJEventEventHandler(MJEvent);
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                var task = Task.Run(() => { InitCore(); });
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                var task = Task.Run(() => { _ = InitCore(); });
             }
             catch (Exception ex)
             {

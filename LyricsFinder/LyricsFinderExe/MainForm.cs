@@ -131,9 +131,7 @@ namespace MediaCenter.LyricsFinder
             {
                 InitTimer.Stop();
 
-#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
                 await LyricsFinderCore.InitCore();
-#pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
 
                 // We don't start this timer again!
             }

@@ -49,11 +49,9 @@ namespace MediaCenter.LyricsFinder
         private static int _mcStatusIntervalError = 5000; // 5 seconds
 
         private readonly string _logHeader = "".PadRight(80, '-');
-        private string _statusWarning = string.Empty;
         private DateTime _lastUpdateCheck = DateTime.MinValue;
 
         private BitmapForm _bitmapForm = null;
-        private Configuration _configuration = null;
         private LyricForm _lyricsForm = null;
         private List<string> _noLyricsSearchList = new List<string>();
         private SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
@@ -116,6 +114,61 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Enables or disables ALL the menu items under the parent menu.
+        /// </summary>
+        /// <param name="parentMenu">The parent menu.</param>
+        /// <param name="isEnable">If set to <c>true</c>, the menus are enabled; else they are disabled.</param>
+        private void EnableOrDisableMenuItems(ToolStripMenuItem parentMenu, bool isEnable)
+        {
+            parentMenu.Enabled = isEnable;
+
+            foreach (var item in parentMenu.DropDownItems)
+            {
+                if (!(item is ToolStripMenuItem menu)) continue;
+
+                menu.Enabled = isEnable;
+
+                if (menu.DropDownItems.Count > 0)
+                    EnableOrDisableMenuItems(menu, isEnable);
+            }
+        }
+
+
+        /// <summary>
+        /// Enables or disables the menu items named in the menuNames.
+        /// </summary>
+        /// <param name="isEnable">If set to <c>true</c>, the menus are enabled; else they are disabled.</param>
+        /// <param name="menuItems">Menu items to be enabled or disabled.</param>
+        /// <remarks>
+        /// <para>If empty menu item list, all sub-menus are enabled or disabled.</para>
+        /// <para>If selected menus are disabled, all other menus are enabled - and vice versa.</para>
+        /// </remarks>
+        private void EnableOrDisableMenuItems(bool isEnable, params ToolStripMenuItem[] menuItems)
+        {
+            if (menuItems.IsNullOrEmpty())
+            {
+                // Set ALL the menus to isEnable value
+                foreach (var item in TopMenu.Items)
+                {
+                    if (!(item is ToolStripMenuItem menu)) continue;
+
+                    EnableOrDisableMenuItems(menu, isEnable);
+                }
+            }
+            else
+            {
+                // Now set the specified menus to isEnable value
+                foreach (var item in menuItems)
+                {
+                    if (!(item is ToolStripMenuItem menu)) continue;
+
+                    menu.Enabled = isEnable;
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Show and log a fatal error report.
         /// </summary>
         /// <param name="methodName">Name of the method.</param>
@@ -144,16 +197,20 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Fills the data grid.
         /// </summary>
-        /// <param name="items">The items.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Current playlist is not initializes yet.</exception>
         private async Task FillDataGrid()
         {
             if ((_currentPlaylist == null) || ((_currentPlaylist.Items?.Count ?? -1) < 0))
-                throw new Exception("Current playlist is not initializes yet.");
+                throw new Exception("Current playlist is not initialized yet.");
+
+            McStatusTimer.Stop();
 
             // ErrorTest();
 
             var dgv = MainDataGridView;
 
+            // Clean up the previous list
             dgv.Rows.Clear();
             IsDataChanged = false;
 
@@ -162,58 +219,25 @@ namespace MediaCenter.LyricsFinder
                 var initStatus = LyricResultEnum.NotProcessedYet.ResultText();
                 var row = new DataGridViewRow();
                 var value = item.Value;
-                Bitmap img = null;
+                var coverImage = GetCoverImage(value);
+                var playPauseImage = new Bitmap(16, 16);
 
-                if ((value.Image == null) && !value.ImageFile.IsNullOrEmptyTrimmed())
-                {
-                    var fn = WebUtility.HtmlDecode(value.Filename);
-                    var ifn = WebUtility.HtmlDecode(value.ImageFile);
-                    var ifi = new FileInfo(ifn);
+                playPauseImage.MakeTransparent();
 
-                    if (!ifi.Exists)
-                    {
-                        if (!value.Filename.IsNullOrEmptyTrimmed())
-                        {
-                            var dir = Path.GetDirectoryName(fn);
-
-                            ifn = Path.Combine(dir, ifn);
-                            ifi = new FileInfo(ifn);
-
-                            if (!ifi.Exists)
-                                ifn = string.Empty;
-                        }
-                    }
-
-                    if (!ifn.IsNullOrEmptyTrimmed())
-                    {
-                        using (var tmp = new FileStream(ifn, FileMode.Open, FileAccess.Read, FileShare.Read))
-                        {
-                            var bitmap = new Bitmap(tmp);
-                            img = bitmap;
-                        }
-                    }
-                }
-                else
-                    img = value.Image;
-
-                var bmp = new Bitmap(16, 16);
-
-                bmp.MakeTransparent();
-                row.CreateCells(dgv, value.Key, bmp, img, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
+                // Create the row and make it's height equal to the width of the bitmap img
+                row.CreateCells(dgv, value.Key, playPauseImage, coverImage, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
                 row.Height = dgv.Columns[(int)GridColumnEnum.Cover].Width;
 
                 dgv.Rows.Add(row);
             }
 
-            await SetPlayingImagesAndMenus().ConfigureAwait(false);
+            await SetPlayingImagesAndMenus();
 
-            if (_playingIndex >= 0)
+            // Scroll if necessary
+            if ((_playingIndex >= 0) && (dgv.Rows.Count >= _playingIndex + 1))
             {
-                if (dgv.Rows.Count >= _playingIndex + 1)
-                {
-                    dgv.Rows[_playingIndex].Selected = true;
-                    dgv.FirstDisplayedScrollingRowIndex = (_playingIndex > 2) ? _playingIndex - 3 : 0;
-                }
+                dgv.Rows[_playingIndex].Selected = true;
+                dgv.FirstDisplayedScrollingRowIndex = (_playingIndex > 2) ? _playingIndex - 3 : 0;
             }
 
             if (ToolsPlayStartStopButton.GetStartingEventSubscribers().Length == 0)
@@ -224,59 +248,62 @@ namespace MediaCenter.LyricsFinder
 
             McStatusTimer.Start();
 
-            var x = IsDataChanged; // Force display of data change, if necessary
+            _ = IsDataChanged; // Force display of data change, if necessary
         }
 
 
         /// <summary>
-        /// Finishes the data grid row.
+        /// Gets the item's cover image.
         /// </summary>
-        /// <param name="userState">State of the user.</param>
-        /// <exception cref="Exception"></exception>
-        private void FinishDataGridRow(WorkerUserState userState)
+        /// <param name="mcMplItem">The MediaCenter MPL item.</param>
+        /// <returns>The item's cover image bitmap.</returns>
+        private static Bitmap GetCoverImage(McMplItem mcMplItem)
         {
-            var dgv = MainDataGridView;
+            Bitmap ret = null;
+            var emptyImage = new Bitmap(400, 400);
 
-            if (dgv.Rows.Count - 1 < userState.CurrentItemIndex)
-                return;
-
-            var isOk = false;
-
-            // Get the displayed rows index from the item key - and update it from the userState
-            for (int i = 0; i < dgv.Rows.Count; i++)
+            // Get the item's cover image
+            if ((mcMplItem.Image == null) && !mcMplItem.ImageFile.IsNullOrEmptyTrimmed())
             {
-                var row = dgv.Rows[i];
-                var key = (int)row.Cells[(int)GridColumnEnum.Key].Value;
+                var fn = WebUtility.HtmlDecode(mcMplItem.Filename);
+                var ifn = WebUtility.HtmlDecode(mcMplItem.ImageFile);
+                var ifi = new FileInfo(ifn);
 
-                if (key == userState.CurrentItem.Key)
+                if (!ifi.Exists)
                 {
-                    var lyricsCell = row.Cells[(int)GridColumnEnum.Lyrics];
-                    var statusCell = row.Cells[(int)GridColumnEnum.Status];
-                    var newLyrics = userState.LyricsTextList.FirstOrDefault() ?? string.Empty;
-                    var isNewLyricsDifferent = (newLyrics != (lyricsCell.Value?.ToString() ?? string.Empty));
-
-                    statusCell.Value = userState.LyricsStatus;
-
-                    if (isNewLyricsDifferent && (userState.LyricsStatus == LyricResultEnum.Found))
+                    if (!mcMplItem.Filename.IsNullOrEmptyTrimmed())
                     {
-                        IsDataChanged = true;
-                        lyricsCell.Value = newLyrics;
-                    }
+                        var dir = Path.GetDirectoryName(fn);
 
-                    isOk = true;
-                    // row.Selected = true;
-                    dgv.CurrentCell = dgv.Rows[i].Cells[(int)GridColumnEnum.Artist];
-                    break;
+                        ifn = Path.Combine(dir, ifn);
+                        ifi = new FileInfo(ifn);
+
+                        if (!ifi.Exists)
+                            ifn = string.Empty;
+                    }
+                }
+
+                if (ifn.IsNullOrEmptyTrimmed())
+                    ret = emptyImage;
+                else
+                {
+                    // Get the item's bitmap
+                    using (var fs = new FileStream(ifn, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        var image = new Bitmap(fs);
+
+                        ret = image;
+                    }
                 }
             }
+            else if (mcMplItem.Image == null)
+                ret = emptyImage;
+            else
+                ret = mcMplItem.Image;
 
-            var processIdx = userState.CurrentItemIndex;
-            var processKey = userState.CurrentItem.Key;
+            ret.MakeTransparent();
 
-            StatusLog($"FinishDataGridRow: currently processed item index: {userState.CurrentItemIndex}, key: {userState.CurrentItem.Key}.", true);
-
-            if (!isOk)
-                throw new Exception($"The currently processed item key ({userState.CurrentItem.Key}) is not found in the display list.");
+            return ret;
         }
 
 
@@ -333,8 +360,8 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                _statusWarning = $"Failed writing to the data folder \"{DataDirectory}\": {ex.Message}";
-                ErrorHandling.ShowAndLogErrorHandler(_statusWarning, ex, _progressPercentage);
+                var msg = $"Failed writing to the data folder \"{DataDirectory}\": {ex.Message}";
+                ErrorHandling.ShowAndLogErrorHandler(msg, ex, _progressPercentage);
                 StatusMessage("Warning");
             }
 
@@ -383,8 +410,8 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                _statusWarning = $"Failed initializing the lyric services.";
-                ErrorHandling.ShowAndLogErrorHandler(_statusWarning, ex, _progressPercentage);
+                var msg = $"Failed initializing the lyric services.";
+                ErrorHandling.ShowAndLogErrorHandler(msg, ex, _progressPercentage);
                 StatusMessage("Warning");
             }
         }
@@ -516,40 +543,41 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Loads the playlist.
         /// </summary>
-        /// <param name="itemName">Name of the item.</param>
+        /// <param name="menuItemName">Name of the menu item.</param>
         /// <returns>Playlist type <see cref="McMplResponse"/> object</returns>
-        private async Task<McMplResponse> LoadPlaylist(string itemName)
+        private async Task<McMplResponse> LoadPlaylist(string menuItemName = null)
         {
-            UseWaitCursor = true;
+            var id = 0;
+            var name = "Playing Now";
+            McMplResponse ret;
 
-            var idx = itemName.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
-            var idString = itemName.Substring(idx + 1);
-            var id = int.Parse(idString, NumberStyles.None, CultureInfo.InvariantCulture);
-            var tmp = itemName.Substring(0, idx);
+            if (!menuItemName.IsNullOrEmptyTrimmed())
+            {
+                var idx = menuItemName.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
+                var idString = menuItemName.Substring(idx + 1);
+                var tmp = menuItemName.Substring(0, idx);
 
-            idx = tmp.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
+                id = int.Parse(idString, NumberStyles.None, CultureInfo.InvariantCulture);
+                idx = tmp.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
+                name = tmp.Substring(idx + 1);
+            }
 
-            var name = tmp.Substring(idx + 1);
-
-            await StatusMessage($"Collecting the \"{name}\" playlist...");
+            StatusMessage($"Collecting the \"{name}\" playlist...");
             _playingIndex = -1;
             McStatusTimer.Stop();
 
             if (id > 0)
-                _currentPlaylist = await McRestService.GetPlaylistFiles(id, name).ConfigureAwait(false);
+                ret = await McRestService.GetPlaylistFiles(id, name);
             else
-                _currentPlaylist = await McRestService.GetPlayNowList().ConfigureAwait(false);
+                ret = await McRestService.GetPlayNowList();
 
-            _isConnectedToMc = false;
-            _progressPercentage = 0;
+            StatusMessage($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.");
 
-            //TODO: BackgroundWorker: ProcessWorker.RunWorkerAsync();
-            await FillDataGrid();
+            //TODO: BackgroundWorker: workerState.CurrentItemIndex = (_playingIndex >= 0) ? _playingIndex : 0;
 
-            UseWaitCursor = false;
             McStatusTimer.Start();
 
-            return _currentPlaylist;
+            return ret;
         }
 
 
@@ -608,7 +636,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         private async Task LoadPlaylistMenus()
         {
-            var list = await McRestService.GetPlayLists().ConfigureAwait(false);
+            var list = await McRestService.GetPlayLists();
 
             if (!list.IsOk)
                 throw new Exception("Unknown error finding Media Center playlists.");
@@ -672,27 +700,27 @@ namespace MediaCenter.LyricsFinder
             // Is the selected file in the Playing Now list?
             var selectedKeyCell = rows[rowIdx].Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
             var selectedKey = (int)(selectedKeyCell?.Value ?? -1);
-            var playingNowList = await McRestService.GetPlayNowList().ConfigureAwait(false);
+            var playingNowList = await McRestService.GetPlayNowList();
             var isInPlayingNowList = playingNowList.Items.ContainsKey(selectedKey);
 
             if (isInPlayingNowList)
             {
                 if (rowIdx == _playingIndex)
-                    await McRestService.PlayPause().ConfigureAwait(false);
+                    await McRestService.PlayPause();
                 else
-                    await McRestService.PlayByIndex(rowIdx).ConfigureAwait(false);
+                    await McRestService.PlayByIndex(rowIdx);
             }
             else if ((_currentPlaylist != null) && (_currentPlaylist.Id > 0))
             {
                 // Replace the MC Playing Now list with the current LyricsFinder playlist
-                var rsp = await McRestService.PlayPlaylist(_currentPlaylist.Id).ConfigureAwait(false);
+                var rsp = await McRestService.PlayPlaylist(_currentPlaylist.Id);
 
                 // Play the selected item
                 if (rsp.IsOk)
-                    await McRestService.PlayByIndex(rowIdx).ConfigureAwait(false);
+                    await McRestService.PlayByIndex(rowIdx);
             }
 
-            await SetPlayingImagesAndMenus().ConfigureAwait(false);
+            await SetPlayingImagesAndMenus();
         }
 
 
@@ -701,9 +729,9 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         private async Task PlayStop()
         {
-            await McRestService.PlayStop().ConfigureAwait(false);
+            await McRestService.PlayStop();
 
-            await SetPlayingImagesAndMenus().ConfigureAwait(false);
+            await SetPlayingImagesAndMenus();
         }
 
 
@@ -758,7 +786,7 @@ namespace MediaCenter.LyricsFinder
                 return;
 
             var rowIdx = MainDataGridView.SelectedRows[0].Index;
-            var mcInfo = await McRestService.Info().ConfigureAwait(false);
+            var mcInfo = await McRestService.Info();
 
             _playingIndex = -1;
 
@@ -782,7 +810,7 @@ namespace MediaCenter.LyricsFinder
                 {
                     _playingIndex = i;
 
-                    await BlankPlayStatusBitmaps(i).ConfigureAwait(false); // Clear all other bitmaps than the one in playIdx row
+                    await BlankPlayStatusBitmaps(i); // Clear all other bitmaps than the one in playIdx row
 
                     if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
                         imgCell.Value = Properties.Resources.Play;
@@ -797,7 +825,7 @@ namespace MediaCenter.LyricsFinder
 
             // If not found, blank all bitmaps
             if (_playingIndex < 0)
-                await BlankPlayStatusBitmaps().ConfigureAwait(false);
+                await BlankPlayStatusBitmaps();
 
             // Set the playing menus' states
             ContextPlayStopMenuItem.Text = "Stop play";
@@ -970,7 +998,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
-        private static async Task StatusLog(string message, bool isDebug = false)
+        private static void StatusLog(string message, bool isDebug = false)
         {
             Logging.Log(_progressPercentage, message, isDebug);
         }
@@ -981,7 +1009,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="ex">The exception.</param>
-        private static async Task StatusLog(string message, Exception ex)
+        private void StatusLog(string message, Exception ex)
         {
             Logging.Log(_progressPercentage, message, ex);
         }
@@ -993,7 +1021,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="message">The message.</param>
         /// <param name="includeProgress">if set to <c>true</c> [include progress].</param>
         /// <param name="includeLogging">if set to <c>true</c> [include logging].</param>
-        private async Task StatusMessage(string message, bool includeProgress = false, bool includeLogging = false)
+        private void StatusMessage(string message, bool includeProgress = false, bool includeLogging = false)
         {
             var msg1 = message?.Trim() ?? string.Empty;
 
@@ -1011,7 +1039,7 @@ namespace MediaCenter.LyricsFinder
             }
 
             if (includeLogging)
-                await StatusLog(msg1);
+                StatusLog(msg1);
 
             if (includeProgress && (_progressPercentage > 0))
                 MainProgressBar.Value = _progressPercentage;

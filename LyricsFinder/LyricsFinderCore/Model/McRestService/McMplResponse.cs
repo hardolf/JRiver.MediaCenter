@@ -138,7 +138,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
             {
                 item = new McMplItem(xItem);
 
-                var task = Task.Run(async () => { await item.FillPropertiesFromFields().ConfigureAwait(false); });
+                var task = Task.Run(async () => { await item.FillPropertiesFromFields(); });
 
                 task.Wait();
 

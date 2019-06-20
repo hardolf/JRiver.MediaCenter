@@ -31,7 +31,6 @@ namespace MediaCenter.LyricsFinder.Model
 
         private LyricsFinderDataType _lyricsFinderData = null;
 
-
         /// <summary>
         /// The callback function.
         /// </summary>
@@ -53,18 +52,16 @@ namespace MediaCenter.LyricsFinder.Model
         /// Initializes a new instance of the <see cref="LyricServiceForm" /> class.
         /// </summary>
         /// <param name="lyricsFinderData">The lyrics finder data.</param>
-        /// <param name="location">The location.</param>
         /// <param name="callback">The callback.</param>
         /// <exception cref="ArgumentNullException">callback
         /// or
         /// lyricsFinderData</exception>
-        public LyricServiceForm(LyricsFinderDataType lyricsFinderData, Point location, Action<LyricServiceForm> callback)
+        public LyricServiceForm(LyricsFinderDataType lyricsFinderData, Action<LyricServiceForm> callback)
             : this()
         {
             var dgv = LyricServiceListDataGridView;
 
             _callback = callback ?? throw new ArgumentNullException(nameof(callback));
-            Location = location;
 
             // Fill the datagrid
             _isListReady = false;

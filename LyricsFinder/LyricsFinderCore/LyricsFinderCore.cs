@@ -181,7 +181,7 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                await LoadPlaylistMenus().ConfigureAwait(false);
+                await LoadPlaylistMenus();
             }
             catch (Exception ex)
             {
@@ -217,7 +217,7 @@ namespace MediaCenter.LyricsFinder
                 {
                     e.Handled = true;
 
-                    await PlayOrPause().ConfigureAwait(false);
+                    await PlayOrPause();
                 }
             }
             catch (Exception ex)
@@ -253,7 +253,7 @@ namespace MediaCenter.LyricsFinder
                     if (!ToolsPlayStartStopButton.IsRunning)
                         ToolsPlayStartStopButton.PerformClick();
                     else
-                        await PlayOrPause().ConfigureAwait(false);
+                        await PlayOrPause();
                 }
                 else if (e.ClickedItem == ContextPlayStopMenuItem)
                     ToolsPlayStartStopButton.Stop();
@@ -276,7 +276,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                await SetPlayingImagesAndMenus().ConfigureAwait(false);
+                await SetPlayingImagesAndMenus();
 
                 if (MainDataGridView.SelectedRows.Count < 1)
                 {
@@ -474,7 +474,7 @@ namespace MediaCenter.LyricsFinder
             {
                 McStatusTimer.Stop();
 
-                await SetPlayingImagesAndMenus().ConfigureAwait(false);
+                await SetPlayingImagesAndMenus();
 
                 McStatusTimer.Interval = _mcStatusIntervalNormal;
                 McStatusTimer.Start();
@@ -488,7 +488,7 @@ namespace MediaCenter.LyricsFinder
                 if (McStatusTimer.Interval == _mcStatusIntervalNormal)
                     ErrorHandling.ErrorLog($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex, _progressPercentage);
 
-                await BlankPlayStatusBitmaps().ConfigureAwait(false);
+                await BlankPlayStatusBitmaps();
 
                 McStatusTimer.Interval = _mcStatusIntervalError;
                 McStatusTimer.Start();
@@ -516,10 +516,7 @@ namespace MediaCenter.LyricsFinder
                 else
                     itemName = menuItem.Name;
 
-                var position = menuItem.Owner.Location;
-
-                position.Offset(menuItem.Bounds.Size.Width, 0);
-
+                // Special handling of the select playlist menu
                 if (itemName.StartsWith(nameof(FileSelectPlaylistMenuItem), StringComparison.InvariantCultureIgnoreCase))
                 {
                     // Ignore any "Select playlist "branch" menu and only accept the "leaf"
@@ -536,7 +533,7 @@ namespace MediaCenter.LyricsFinder
                     }
 
                     // Get the MC playlist and let LyricsFinder know about it
-                    await LoadPlaylist(itemName).ConfigureAwait(false);
+                    await ReloadPlaylist(false, itemName);
                 }
                 else
                 {
@@ -547,15 +544,7 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(FileReloadMenuItem):
-                            _isConnectedToMc = false;
-                            msg = "connecting to the MediaCenter Web Service (MCWS)";
-                            await StatusMessage(msg + "...", true, true);
-                            await Connect();
-
-                            msg = "loading current playlist";
-                            await StatusMessage(msg + "...", true, true);
-                            await LoadCurrentPlaylist();
-                            await FillDataGrid();
+                            await ReloadPlaylist(true);
                             break;
 
                         case nameof(FileSaveMenuItem):
@@ -576,8 +565,8 @@ namespace MediaCenter.LyricsFinder
                             Model.Helpers.Utility.UpdateCheckWithRetries(EntryAssembly.GetName().Version, true);
                             break;
 
-                        case nameof(ToolsLyricsServicesMenuItem):
-                            var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback);
+                        case nameof(ToolsLyricServicesMenuItem):
+                            var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, ShowServicesCallback);
                             lyricsServiceForm.ShowDialog(this);
                             break;
 
@@ -607,8 +596,8 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await StatusMessage($"Error {(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item \"{itemName}\".", true, true);
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
+                StatusMessage($"Error {(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item \"{itemName}\".", true, true);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, $"{(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item: \"{itemName}\"");
             }
         }
 
@@ -645,145 +634,6 @@ namespace MediaCenter.LyricsFinder
                 ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
-
-
-        /*
-        /// <summary>
-        /// Handles the DoWork event of the ProcessWorker control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.ComponentModel.DoWorkEventArgs" /> instance containing the event data.</param>
-        private async void ProcessWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            try
-            {
-                if (_isDesignTime) return;
-
-                var worker = sender as BackgroundWorker;
-
-                if (_isConnectedToMc)
-                {
-                    // Process(worker, e);
-                    await Process(worker, e).ConfigureAwait(false);
-                    // var task = Task.Run(async () => { await Process(worker, e).ConfigureAwait(false); });
-                    // var task = Task.Run(() => { Process(worker, e); });
-                    // task.Wait();
-                }
-                else
-                {
-                    // Connect(worker);
-                    await Connect(worker).ConfigureAwait(false);
-                    // var task = Task.Run(async () => { await Connect(worker).ConfigureAwait(false); });
-                    // var task = Task.Run(() => { Connect(worker); });
-                    // task.Wait();
-                }
-            }
-            catch
-            {
-                if (ProcessWorker.WorkerSupportsCancellation)
-                    ProcessWorker.CancelAsync();
-
-                throw; // This exception is available in the RunWorkerCompletedEventArgs in the ProcessWorker_RunWorkerCompleted event
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the ProgressChanged event of the ProcessWorker control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.ComponentModel.ProgressChangedEventArgs" /> instance containing the event data.</param>
-        private async void ProcessWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            try
-            {
-                if (_isDesignTime) return;
-
-                _progressPercentage = e.ProgressPercentage;
-
-                var userState = e.UserState as WorkerUserState;
-                var currentDataGridViewItem = MainDataGridView.CurrentRow;
-
-                // Write the log and the status label
-                StatusLog(userState?.Message ?? "");
-                StatusMessage(userState?.Message ?? "");
-
-                var isInSync = ((userState != null) && (userState.CurrentItem != null) && (MainDataGridView.Rows.Count > 0) && (MainDataGridView.Rows.Count == userState.Items.Count));
-
-                // Update the item list in GUI, if empty
-                if (!isInSync && (userState.Items.Count > 0))
-                {
-                    // FillDataGrid(userState.Items);
-                    await FillDataGrid(userState.Items).ConfigureAwait(false);
-                    // var task = Task.Run( async () => { await FillDataGrid(userState.Items).ConfigureAwait(false); });
-                    // var task = Task.Run(() => { FillDataGrid(userState.Items); });
-                    // var task = new Task(() => { FillDataGrid(userState.Items); });
-                    // task.Wait();
-                    // task.RunSynchronously();
-                }
-
-                // Finish the item row, e.g. set the item status and found lyrics
-                if (isInSync)
-                    FinishDataGridRow(userState);
-            }
-            catch (Exception ex)
-            {
-                if (ProcessWorker.WorkerSupportsCancellation)
-                    ProcessWorker.CancelAsync();
-
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the RunWorkerCompleted event of the ProcessWorker control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RunWorkerCompletedEventArgs"/> instance containing the event data.</param>
-        private async void ProcessWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            try
-            {
-                if (_isDesignTime) return;
-
-                var msg = string.Empty;
-
-                if (e.Cancelled == true)
-                {
-                    //msg = "Process canceled.";
-                    //StatusLog(msg);
-                    //StatusMessage(msg);
-                }
-                else if (e.Error != null)
-                {
-                    _statusWarning = $"{e.Error.Message}";
-                    StatusMessage("Warning");
-
-                    if (e.Error is LyricsQuotaExceededException)
-                        ErrorHandling.ShowErrorHandler(this, e.Error.Message);
-                    else
-                        ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), e.Error, "handling background worker event in LyricsFinder");
-                }
-                else
-                {
-                    //msg = "Process completed.";
-                    //StatusLog(msg);
-                    //StatusMessage(msg);
-                }
-
-                SearchAllStartStopButton.Stop();
-                SearchAllStartStopButton.Checked = false;
-            }
-            catch (Exception ex)
-            {
-                if (ProcessWorker.WorkerSupportsCancellation)
-                    ProcessWorker.CancelAsync();
-
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
-            }
-        }
-        */
 
 
         /// <summary>
@@ -858,7 +708,7 @@ namespace MediaCenter.LyricsFinder
                 var dvg = MainDataGridView;
 
                 if (dvg.SelectedRows.Count > 0)
-                    await PlayOrPause().ConfigureAwait(false);
+                    await PlayOrPause();
             }
             catch (Exception ex)
             {
@@ -878,7 +728,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                await PlayStop().ConfigureAwait(false);
+                await PlayStop();
             }
             catch (Exception ex)
             {

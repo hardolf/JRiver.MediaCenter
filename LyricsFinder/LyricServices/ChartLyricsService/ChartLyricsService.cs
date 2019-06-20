@@ -12,7 +12,6 @@ using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.LyricServices.ChartLyricsReference;
 using MediaCenter.LyricsFinder.Model.Helpers;
-using MediaCenter.LyricsFinder.Model.LyricServices.Properties;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
 

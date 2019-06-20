@@ -221,7 +221,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
                         if ((propKey == "Image File") && field.Value.Equals("internal", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            var rsp = await McRestService.GetImage(Key).ConfigureAwait(false);
+                            var rsp = await McRestService.GetImage(Key);
 
                             Image = rsp.Image;
                         }
