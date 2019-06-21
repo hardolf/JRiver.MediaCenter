@@ -186,7 +186,7 @@ namespace MediaCenter.LyricsFinder
             this.OverwriteMenuItem.Size = new System.Drawing.Size(143, 23);
             this.OverwriteMenuItem.Text = "Overwrite &existing lyrics";
             this.OverwriteMenuItem.ToolTipText = "Should the operation overwrite existing lyrics?";
-            this.OverwriteMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.OverwriteMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // MainStatusStrip
             // 
@@ -246,11 +246,11 @@ namespace MediaCenter.LyricsFinder
             this.MainDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.MainDataGridView.Size = new System.Drawing.Size(738, 412);
             this.MainDataGridView.TabIndex = 0;
-            this.MainDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainDataGridView_CellDoubleClick);
-            this.MainDataGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainDataGridView_CellMouseClick);
-            this.MainDataGridView.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainDataGridView_CellMouseMove);
-            this.MainDataGridView.MouseLeave += new System.EventHandler(this.MainDataGridView_MouseLeave);
-            this.MainDataGridView.Resize += new System.EventHandler(this.MainDataGridView_Resize);
+            this.MainDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainDataGridView_CellDoubleClickAsync);
+            this.MainDataGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainDataGridView_CellMouseClickAsync);
+            this.MainDataGridView.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainDataGridView_CellMouseMoveAsync);
+            this.MainDataGridView.MouseLeave += new System.EventHandler(this.MainDataGridView_MouseLeaveAsync);
+            this.MainDataGridView.Resize += new System.EventHandler(this.MainDataGridView_ResizeAsync);
             // 
             // Key
             // 
@@ -372,7 +372,7 @@ namespace MediaCenter.LyricsFinder
             this.FileReloadMenuItem.Text = "&Reload current playlist";
             this.FileReloadMenuItem.ToolTipText = "Reload the Play Now list. \r\nAlso reconnects to the running Media Center, \r\nuseful" +
     " if the connect failed at startup of the standalone application.";
-            this.FileReloadMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.FileReloadMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // FileSelectPlaylistMenuItem
             // 
@@ -381,8 +381,8 @@ namespace MediaCenter.LyricsFinder
             this.FileSelectPlaylistMenuItem.Name = "FileSelectPlaylistMenuItem";
             this.FileSelectPlaylistMenuItem.Size = new System.Drawing.Size(255, 22);
             this.FileSelectPlaylistMenuItem.Text = "Select playlist";
-            this.FileSelectPlaylistMenuItem.DropDownOpening += new System.EventHandler(this.FileSelectPlaylistMenuItem_DropDownOpening);
-            this.FileSelectPlaylistMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.FileSelectPlaylistMenuItem.DropDownOpening += new System.EventHandler(this.FileSelectPlaylistMenuItem_DropDownOpeningAsync);
+            this.FileSelectPlaylistMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // dummyItemToolStripMenuItem
             // 
@@ -402,7 +402,7 @@ namespace MediaCenter.LyricsFinder
             this.FileSaveMenuItem.Size = new System.Drawing.Size(255, 22);
             this.FileSaveMenuItem.Text = "&Save items to MediaCenter";
             this.FileSaveMenuItem.ToolTipText = "Save the found/changed lyrics to the song tags";
-            this.FileSaveMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.FileSaveMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // FileSepMenuItem2
             // 
@@ -418,7 +418,7 @@ namespace MediaCenter.LyricsFinder
             this.FileExitMenuItem.Text = "E&xit";
             this.FileExitMenuItem.ToolTipText = "Close the Lyrics Finder standalone application";
             this.FileExitMenuItem.Visible = false;
-            this.FileExitMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.FileExitMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // ToolsMenuItem
             // 
@@ -479,7 +479,7 @@ namespace MediaCenter.LyricsFinder
             this.ToolsLyricServicesMenuItem.Text = "L&yric services...";
             this.ToolsLyricServicesMenuItem.ToolTipText = "Select the services to be used when searching for lyrics. \r\nYou can also change t" +
     "he search service order.";
-            this.ToolsLyricServicesMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.ToolsLyricServicesMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // ToolsOptionsMenuItem
             // 
@@ -488,7 +488,7 @@ namespace MediaCenter.LyricsFinder
             this.ToolsOptionsMenuItem.Size = new System.Drawing.Size(207, 22);
             this.ToolsOptionsMenuItem.Text = "&Options...";
             this.ToolsOptionsMenuItem.ToolTipText = "Configure connection to Media Center Network Service";
-            this.ToolsOptionsMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.ToolsOptionsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // ToolSepMenuItem2
             // 
@@ -502,7 +502,7 @@ namespace MediaCenter.LyricsFinder
             this.ToolsShowLogMenuItem.Size = new System.Drawing.Size(207, 22);
             this.ToolsShowLogMenuItem.Text = "Show &logs folder...";
             this.ToolsShowLogMenuItem.ToolTipText = "Open the folder where the logs are located";
-            this.ToolsShowLogMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.ToolsShowLogMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // ToolSepMenuItem3
             // 
@@ -516,7 +516,7 @@ namespace MediaCenter.LyricsFinder
             this.ToolsTestMenuItem.Size = new System.Drawing.Size(207, 22);
             this.ToolsTestMenuItem.Text = "Test";
             this.ToolsTestMenuItem.Visible = false;
-            this.ToolsTestMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.ToolsTestMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // DataChangedTextBox
             // 
@@ -553,7 +553,7 @@ namespace MediaCenter.LyricsFinder
             this.HelpContentsMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
             this.HelpContentsMenuItem.Size = new System.Drawing.Size(219, 22);
             this.HelpContentsMenuItem.Text = "&Help contents...";
-            this.HelpContentsMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.HelpContentsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // HelpSepMenuItem1
             // 
@@ -566,7 +566,7 @@ namespace MediaCenter.LyricsFinder
             this.HelpLookForUpdatesMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.U)));
             this.HelpLookForUpdatesMenuItem.Size = new System.Drawing.Size(219, 22);
             this.HelpLookForUpdatesMenuItem.Text = "Look for updates...";
-            this.HelpLookForUpdatesMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.HelpLookForUpdatesMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // HelpSepMenuItem2
             // 
@@ -579,7 +579,7 @@ namespace MediaCenter.LyricsFinder
             this.HelpAboutMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
             this.HelpAboutMenuItem.Size = new System.Drawing.Size(219, 22);
             this.HelpAboutMenuItem.Text = "&About LyricsFinder...";
-            this.HelpAboutMenuItem.Click += new System.EventHandler(this.MenuItem_Click);
+            this.HelpAboutMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // TopSubMenu
             // 
@@ -599,7 +599,7 @@ namespace MediaCenter.LyricsFinder
             this.TopSubMenuTextBox.ReadOnly = true;
             this.TopSubMenuTextBox.Size = new System.Drawing.Size(200, 20);
             this.TopSubMenuTextBox.Text = "Current playlist items:";
-            this.TopSubMenuTextBox.Click += new System.EventHandler(this.MenuItem_Click);
+            this.TopSubMenuTextBox.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // MainToolTip
             // 
@@ -616,8 +616,8 @@ namespace MediaCenter.LyricsFinder
             this.ContextPlayStopMenuItem});
             this.MainContextMenu.Name = "ContextMenu";
             this.MainContextMenu.Size = new System.Drawing.Size(170, 70);
-            this.MainContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.MainContextMenu_Opening);
-            this.MainContextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MainContextMenu_ItemClicked);
+            this.MainContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.MainContextMenu_OpeningAsync);
+            this.MainContextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MainContextMenu_ItemClickedAsync);
             // 
             // ContextEditMenuItem
             // 
@@ -640,12 +640,12 @@ namespace MediaCenter.LyricsFinder
             // McStatusTimer
             // 
             this.McStatusTimer.Interval = 500;
-            this.McStatusTimer.Tick += new System.EventHandler(this.McStatusTimer_Tick);
+            this.McStatusTimer.Tick += new System.EventHandler(this.McStatusTimer_TickAsync);
             // 
             // UpdateCheckTimer
             // 
             this.UpdateCheckTimer.Interval = 5000;
-            this.UpdateCheckTimer.Tick += new System.EventHandler(this.UpdateCheckTimer_Tick);
+            this.UpdateCheckTimer.Tick += new System.EventHandler(this.UpdateCheckTimer_TickAsync);
             // 
             // LyricsFinderCore
             // 
@@ -654,7 +654,7 @@ namespace MediaCenter.LyricsFinder
             this.Controls.Add(this.MainContainer);
             this.Name = "LyricsFinderCore";
             this.Size = new System.Drawing.Size(738, 509);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricsFinderCore_KeyDown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricsFinderCore_KeyDownAsync);
             this.MainContainer.BottomToolStripPanel.ResumeLayout(false);
             this.MainContainer.BottomToolStripPanel.PerformLayout();
             this.MainContainer.ContentPanel.ResumeLayout(false);

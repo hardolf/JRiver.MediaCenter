@@ -46,11 +46,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </returns>
         /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="CommunicationException">Failed to get info from \"{Credit.ServiceName}\".</exception>
-        public override AbstractLyricService Process(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> Process(McMplItem item, bool getAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            base.Process(item); // Result: not found
+            await base.Process(item).ConfigureAwait(false); // Result: not found
 
             apiv1Soap client = null;
 

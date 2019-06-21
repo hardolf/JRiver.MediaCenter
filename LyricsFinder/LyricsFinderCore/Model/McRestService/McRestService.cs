@@ -70,8 +70,6 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// </value>
         public static string McWsToken { get; private set; }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-
         /*
         /// <summary>
         /// Adds to playing now.
@@ -82,7 +80,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McResponse> AddToPlayingNow(int key)
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.AddToPlayingNow, key);
-            var rsp = await DoTextRequest(requestUrl);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
             var ret = new McResponse(rsp);
 
             return ret;
@@ -188,37 +186,27 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <returns>
         /// Complete REST service Web request image.
         /// </returns>
-        /// <exception cref="NullReferenceException">Response is null</exception>
-        /// <exception cref="Exception">Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}</exception>
-        /// <exception cref="System.NullReferenceException">Response is null</exception>
-        /// <exception cref="System.Exception"></exception>
+        /// <exception cref="Exception">\"The call to the Media Center MCWS failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".</exception>
         private static async Task<Bitmap> DoImageRequest(Uri requestUrl, string userName = "", string password = "")
         {
             Bitmap ret = null;
 
-            var req = WebRequest.Create(requestUrl) as HttpWebRequest;
-
-            if (userName.Length > 0)
-                req.Credentials = new NetworkCredential(userName, password);
-
             try
             {
-                using (var rsp = req.GetResponse() as HttpWebResponse)
+                using (var handler = new HttpClientHandler { Credentials = new NetworkCredential(userName, password) })
                 {
-                    if (rsp == null)
-                        throw new NullReferenceException(Helpers.Utility.NullResponseMessage);
-                    if (rsp.StatusCode != HttpStatusCode.OK)
-                        throw new Exception(Helpers.Utility.HttpWebServerErrorMessage(rsp));
-
-                    using (var rspStream = rsp.GetResponseStream())
+                    using (var client = new HttpClient(handler))
                     {
-                        ret = new Bitmap(rspStream);
+                        using (var rspStream = await client.GetStreamAsync(requestUrl).ConfigureAwait(false))
+                        {
+                            ret = new Bitmap(rspStream);
+                        }
                     }
                 }
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                throw new Exception($"\"The call to the Media Center MCWS failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex);
+                throw new Exception($"\"The call to the Media Center MCWS failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".", ex);
             }
 
             return ret;
@@ -234,6 +222,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <returns>
         /// Complete REST service Web request string.
         /// </returns>
+        /// <exception cref="Exception">\"The call to the Media Center MCWS failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".</exception>
         public static async Task<string> DoTextRequest(Uri requestUrl, string userName = "", string password = "")
         {
             string ret = null;
@@ -244,7 +233,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                 {
                     using (var client = new HttpClient(handler))
                     {
-                        ret = await client.GetStringAsync(requestUrl);
+                        ret = await client.GetStringAsync(requestUrl).ConfigureAwait(false);
                     }
                 }
             }
@@ -269,7 +258,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McAliveResponse> GetAlive()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Alive);
-            var rsp = await DoTextRequest(requestUrl);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
             var ret = new McAliveResponse(rsp);
 
             return ret;
@@ -291,7 +280,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
             var user = McWsUserName;
             var psw = McWsPassword;
             var requestUrl = CreateRequestUrl(McCommandEnum.Authenticate);
-            var rsp = await DoTextRequest(requestUrl, user, psw);
+            var rsp = await DoTextRequest(requestUrl, user, psw).ConfigureAwait(false);
             var ret = new McAuthenticationResponse(rsp);
 
             McWsToken = ret.Token;
@@ -310,7 +299,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McGetImageResponse> GetImage(int key)
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.GetImage, key);
-            var rsp = await DoImageRequest(requestUrl);
+            var rsp = await DoImageRequest(requestUrl).ConfigureAwait(false);
             var ret = new McGetImageResponse(rsp);
 
             return ret;
@@ -328,8 +317,8 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McMplResponse> GetPlaylistFiles(int id, string name = "")
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlaylistFiles, id);
-            var rsp = await DoTextRequest(requestUrl);
-            var ret = new McMplResponse(rsp, id, name);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
+            var ret = await McMplResponse.CreateMcMplResponse(rsp, id, name).ConfigureAwait(false);
 
             return ret;
         }
@@ -344,8 +333,8 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McPlayListsResponse> GetPlayLists()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlaylistList);
-            var rsp = await DoTextRequest(requestUrl);
-            var ret = new McPlayListsResponse(rsp);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
+            var ret = await McPlayListsResponse.CreateMcPlayListsResponse(rsp).ConfigureAwait(false);
 
             return ret;
         }
@@ -360,8 +349,8 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McMplResponse> GetPlayNowList()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Playlist);
-            var rsp = await DoTextRequest(requestUrl);
-            var ret = new McMplResponse(rsp, 0, "Playing Now");
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
+            var ret = await McMplResponse.CreateMcMplResponse(rsp, 0, "Playing Now").ConfigureAwait(false);
 
             return ret;
         }
@@ -376,7 +365,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McInfoResponse> Info()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Info);
-            var rsp = await DoTextRequest(requestUrl);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
             var ret = new McInfoResponse(rsp);
 
             return ret;
@@ -421,7 +410,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McResponse> PlayByIndex(int index)
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlayByIndex, index);
-            var rsp = await DoTextRequest(requestUrl);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
             var ret = new McResponse(rsp);
 
             return ret;
@@ -438,7 +427,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McResponse> PlayByKey(int key)
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlayByKey, key);
-            var rsp = await DoTextRequest(requestUrl);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
             var ret = new McResponse(rsp);
 
             return ret;
@@ -454,7 +443,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McResponse> PlayPause()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlayPause);
-            var rsp = await DoTextRequest(requestUrl);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
             var ret = new McResponse(rsp);
 
             return ret;
@@ -471,7 +460,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McResponse> PlayPlaylist(int id)
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlayPlaylist, id);
-            var rsp = await DoTextRequest(requestUrl);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
             var ret = new McResponse(rsp);
 
             return ret;
@@ -487,7 +476,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public static async Task<McResponse> PlayStop()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Stop);
-            var rsp = await DoTextRequest(requestUrl);
+            var rsp = await DoTextRequest(requestUrl).ConfigureAwait(false);
             var ret = new McResponse(rsp);
 
             return ret;
@@ -509,13 +498,12 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
             var user = McWsUserName;
             var psw = McWsPassword;
             var requestUrl = CreateRequestUrl(McCommandEnum.SetInfo, key, field, value);
-            var rsp = await DoTextRequest(requestUrl, user, psw);
+            var rsp = await DoTextRequest(requestUrl, user, psw).ConfigureAwait(false);
             var ret = new McSetInfoResponse(rsp);
 
             return ret;
         }
 
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     }
 
 }

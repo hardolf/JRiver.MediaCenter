@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Globalization;
+using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.LyricsFinder.Model.McRestService;
-using System.Globalization;
-
 
 namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 {
@@ -46,9 +46,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 
 
         [TestMethod]
-        public void AZLyricsTestMethod01()
+        public async Task AZLyricsTestMethod01()
         {
-            var resultService = _service.Process(_item1);
+            var resultService = await _service.Process(_item1).ConfigureAwait(false);
 
             Assert.IsNotNull(resultService);
             Assert.AreNotEqual(0, resultService.FoundLyricList.Count);
@@ -60,9 +60,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 
 
         [TestMethod]
-        public void AZLyricsTestMethod02()
+        public async Task AZLyricsTestMethod02()
         {
-            var resultService = _service.Process(_item2);
+            var resultService = await _service.Process(_item2).ConfigureAwait(false);
 
             Assert.IsNotNull(resultService);
             Assert.AreNotEqual(0, resultService.FoundLyricList.Count);

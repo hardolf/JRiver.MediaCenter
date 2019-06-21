@@ -241,10 +241,10 @@ namespace MediaCenter.LyricsFinder
             }
 
             if (ToolsPlayStartStopButton.GetStartingEventSubscribers().Length == 0)
-                ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_Starting;
+                ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_StartingAsync;
 
             if (ToolsPlayStartStopButton.GetStoppingEventSubscribers().Length == 0)
-                ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_Stopping;
+                ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_StoppingAsync;
 
             McStatusTimer.Start();
 
@@ -317,7 +317,7 @@ namespace MediaCenter.LyricsFinder
                 InitKeyDownEvent(this);
             else
             {
-                control.KeyDown += new KeyEventHandler(LyricsFinderCore_KeyDown);
+                control.KeyDown += new KeyEventHandler(LyricsFinderCore_KeyDownAsync);
 
                 // Iterate the child controls
                 if (control.HasChildren)
@@ -536,7 +536,7 @@ namespace MediaCenter.LyricsFinder
 
             // Ensure the default of not overwriting (i.e. skipping) existing lyrics
             OverwriteMenuItem.Checked = false;
-            MenuItem_Click(OverwriteMenuItem, new EventArgs());
+            MenuItem_ClickAsync(OverwriteMenuItem, new EventArgs());
         }
 
 
@@ -551,6 +551,7 @@ namespace MediaCenter.LyricsFinder
             var name = "Playing Now";
             McMplResponse ret;
 
+            // If called from a select playlist menu, get the ID and name of the playlist
             if (!menuItemName.IsNullOrEmptyTrimmed())
             {
                 var idx = menuItemName.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
@@ -566,6 +567,7 @@ namespace MediaCenter.LyricsFinder
             _playingIndex = -1;
             McStatusTimer.Stop();
 
+            // Get the playlist
             if (id > 0)
                 ret = await McRestService.GetPlaylistFiles(id, name);
             else
@@ -603,7 +605,7 @@ namespace MediaCenter.LyricsFinder
                     Text = firstNode
                 };
 
-                menuItem.Click += MenuItem_Click;
+                menuItem.Click += MenuItem_ClickAsync;
                 parentMenuItem.DropDownItems.Add(menuItem);
             }
             else
@@ -669,7 +671,7 @@ namespace MediaCenter.LyricsFinder
                 Text = "Playing Now"
             };
 
-            menuItem.Click += MenuItem_Click;
+            menuItem.Click += MenuItem_ClickAsync;
             FileSelectPlaylistMenuItem.DropDownItems.Add(menuItem);
 
             for (int i = 0; i < _currentSortedMcPlaylists.Count; i++)
@@ -908,7 +910,10 @@ namespace MediaCenter.LyricsFinder
 
             var location = new Point(MousePosition.X, MousePosition.Y);
             var size = LyricsFinderCorePrivateConfigurationSectionHandler.LyricFormSize;
-            var ret = new LyricForm(cell, location, size, ShowLyricsCallback, LyricsFinderData);
+            var ret = new LyricForm(cell, location, size, ShowLyricsCallback, LyricsFinderData)
+            {
+                StartPosition = FormStartPosition.CenterParent
+            };
 
             ret.ShowDialog();
 

@@ -166,10 +166,10 @@ namespace MediaCenter.LyricsFinder
 
                 msg = "initializing the start/stop button delegates";
                 Logging.Log(_progressPercentage, msg + "...", true);
-                ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
-                ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
-                SearchAllStartStopButton.Starting += StartStopButton_Starting;
-                SearchAllStartStopButton.Stopping += StartStopButton_Stopping;
+                ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_StartingAsync;
+                ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_StoppingAsync;
+                SearchAllStartStopButton.Starting += StartStopButton_StartingAsync;
+                SearchAllStartStopButton.Stopping += StartStopButton_StoppingAsync;
 
                 msg = "initializing the Media Center MCWS connection parameters";
                 Logging.Log(_progressPercentage, msg + "...", true);
@@ -212,7 +212,7 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                EnableOrDisableMenuItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem);
+                //EnableOrDisableMenuItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem);
 
                 if (!_isConnectedToMc || isReconnect)
                     await Connect();
@@ -220,12 +220,12 @@ namespace MediaCenter.LyricsFinder
                 _currentPlaylist = await LoadPlaylist(menuItemName);
                 await FillDataGrid();
 
-                EnableOrDisableMenuItems(true);
+                //EnableOrDisableMenuItems(true);
             }
             catch (Exception ex)
             {
-                EnableOrDisableMenuItems(true);
-                EnableOrDisableMenuItems(false, FileSaveMenuItem, FileSelectPlaylistMenuItem);
+                //EnableOrDisableMenuItems(true);
+                //EnableOrDisableMenuItems(false, FileSaveMenuItem, FileSelectPlaylistMenuItem);
 
                 StatusMessage($"Error {msg}.", true, true);
                 ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);

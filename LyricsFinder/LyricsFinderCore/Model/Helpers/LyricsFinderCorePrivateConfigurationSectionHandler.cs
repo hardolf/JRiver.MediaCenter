@@ -100,7 +100,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 var valueString = Instance?.Settings[_updateCheckIntervalDaysPropertyName]?.Value ?? string.Empty;
 
                 if (!int.TryParse(valueString, out var ret))
-                    ret = 5;
+                    ret = 0;
 
                 return ret;
             }
@@ -117,10 +117,13 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             get
             {
                 var valueString = Instance?.Settings[_lyricFormSizePropertyName]?.Value;
-                var valueArray = valueString.Remove(' ').Split(',') ?? Array.Empty<string>();
+                var valueArray = Array.Empty<string>();
+
+                if (!valueString.IsNullOrEmptyTrimmed())
+                    valueArray = valueString.Replace(" ", string.Empty).Split(',');
 
                 if (valueArray.Length == 0)
-                    valueArray = new string[] { "0", "0" };
+                    valueArray = new string[] { "400", "600" };
 
                 if (valueArray.Length != 2)
                     throw new ConfigurationErrorsException($"Wrong size format. Expected: \"x,y\", actual value; \"{valueString}\".");
@@ -217,7 +220,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
             var sizeString = (lyricFormSize == null)
                 ? string.Empty
-                : lyricFormSize.Value.ToString();
+                : $"{lyricFormSize.Value.Width},{lyricFormSize.Value.Height}";
 
             SaveProperty(_lastUpdateCheckPropertyName, dateString);
             SaveProperty(_mcWebServiceAccessKeyPropertyName, accessKey);

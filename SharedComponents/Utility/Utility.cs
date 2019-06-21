@@ -52,15 +52,20 @@ namespace MediaCenter.SharedComponents
         /// Appended string with all the text boxes' trimmed texts, with CR+LF as separators.
         /// </returns>
         /// <remarks>This routine can be used as a simple "serialization" function.</remarks>
-        public static string GetAllTextBoxesText(this Control parentControl)
+        public static string GetAllControlText(this Control parentControl)
         {
             if (parentControl == null) throw new ArgumentNullException(nameof(parentControl));
 
             var ret = new StringBuilder();
 
+            ret.AppendLine($"{parentControl.Name}: {parentControl.Text.Trim()}");
+
             foreach (var ctl in parentControl.Controls)
             {
-                if (ctl is TextBox txt) ret.AppendLine($"{txt.Name}: {txt.Text.Trim()}");
+                if (ctl is TextBox txt)
+                    ret.AppendLine($"{txt.Name}: {txt.Text.Trim()}");
+                else if (ctl is NumericUpDown ud)
+                    ret.AppendLine($"{ud.Name}: {ud.Value.ToString(CultureInfo.InvariantCulture).Trim()}");
             }
 
             return ret.ToString();

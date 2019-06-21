@@ -146,18 +146,9 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         [XmlIgnore]
         public virtual Dictionary<string, string> Fields { get; }
 
-        /// <summary>
-        /// Gets or sets the XML root element.
-        /// </summary>
-        /// <value>
-        /// The XML root element.
-        /// </value>
-        [XmlIgnore]
-        private XmlElement XmlRoot { get; set; }
-
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="McMplResponse"/> class.
+        /// Initializes a new instance of the <see cref="McMplResponse" /> class.
         /// </summary>
         public McMplItem()
         {
@@ -166,22 +157,30 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="McMplResponse" /> class.
+        /// Creates the mc MPL item.
         /// </summary>
         /// <param name="root">The root.</param>
-        internal McMplItem(XmlElement root)
-            : this()
+        /// <returns>
+        ///   <see cref="McMplItem" /> object.
+        /// </returns>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public static async Task<McMplItem> CreateMcMplItem(XmlElement root)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            XmlRoot = root;
+            if (root == null) throw new ArgumentNullException(nameof(root));
 
-            var xFields = XmlRoot.GetElementsByTagName("Field");
+            var ret = new McMplItem();
+            var xmlRoot = root;
+            var xFields = xmlRoot.GetElementsByTagName("Field");
 
             foreach (XmlElement xField in xFields)
             {
                 var name = xField.GetAttribute("Name");
 
-                Fields.Add(name, xField.InnerXml);
+                ret.Fields.Add(name, xField.InnerXml);
             }
+
+            return ret;
         }
 
 
@@ -221,7 +220,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
                         if ((propKey == "Image File") && field.Value.Equals("internal", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            var rsp = await McRestService.GetImage(Key);
+                            var rsp = await McRestService.GetImage(Key).ConfigureAwait(false);
 
                             Image = rsp.Image;
                         }

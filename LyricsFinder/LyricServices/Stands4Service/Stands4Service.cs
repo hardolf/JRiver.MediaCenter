@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -102,74 +103,46 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
-        public override AbstractLyricService Process(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> Process(McMplItem item, bool getAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            base.Process(item); // Result: not found
+            await base.Process(item).ConfigureAwait(false); // Result: not found
 
             var credit = Credit as CreditType;
             var urlString = $"{credit.ServiceUrl}?uid={credit.UserId}&tokenid={credit.Token}&term={item.Name}";
             var url = new SerializableUri(Uri.EscapeUriString(urlString));
-
-            var req = WebRequest.Create(url) as HttpWebRequest;
             var txt = string.Empty;
 
             try
             {
-                using (var rsp = req.GetResponse() as HttpWebResponse)
+                using (var client = new HttpClient())
                 {
-                    if (rsp == null)
-                        throw new NullReferenceException(Helpers.Utility.NullResponseMessage);
-                    if (rsp.StatusCode != HttpStatusCode.OK)
-                        throw new Exception(Helpers.Utility.HttpWebServerErrorMessage(rsp));
-
-                    using (var rspStream = rsp.GetResponseStream())
-                    {
-                        using (var reader = new StreamReader(rspStream, Encoding.UTF8))
-                        {
-                            txt = reader.ReadToEnd(); 
-                        }
-                    }
+                    txt = await client.GetStringAsync(url).ConfigureAwait(false);
                 }
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex);
+                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{url.ToString()}\".", ex);
             }
 
             // Avoid analyzer warning CA1812
             _ = new StandsResultType();
             _ = new StandsResultListType();
 
-            var results = txt.XmlDeserializeFromString<StandsResultListType>();
-
-            // We got results back from the service.
-            // Now, do any of them match our playlist item (song)?
-            if ((results != null) && (results.Count > 0))
+            try
             {
-                // First, we try a rigorous test
-                foreach (var result in results)
+                var results = txt.XmlDeserializeFromString<StandsResultListType>();
+
+                // We got results back from the service.
+                // Now, do any of them match our playlist item (song)?
+                if ((results != null) && (results.Count > 0))
                 {
-                    if (result.Artist.Equals(item.Artist, StringComparison.InvariantCultureIgnoreCase)
-                        && result.Album.Equals(item.Album, StringComparison.InvariantCultureIgnoreCase)
-                        && result.Song.Equals(item.Name, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        var lyricText = ExtractLyricsText(new Uri(result.SongLink));
-
-                        AddFoundLyric(lyricText, new SerializableUri(result.SongLink));
-
-                        if (!getAll)
-                            break;
-                    }
-                }
-
-                if (getAll || (LyricResult != LyricResultEnum.Found))
-                {
-                    // If not found we next try a more lax test without the album
+                    // First, we try a rigorous test
                     foreach (var result in results)
                     {
                         if (result.Artist.Equals(item.Artist, StringComparison.InvariantCultureIgnoreCase)
+                            && result.Album.Equals(item.Album, StringComparison.InvariantCultureIgnoreCase)
                             && result.Song.Equals(item.Name, StringComparison.InvariantCultureIgnoreCase))
                         {
                             var lyricText = ExtractLyricsText(new Uri(result.SongLink));
@@ -180,7 +153,29 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                                 break;
                         }
                     }
+
+                    if (getAll || (LyricResult != LyricResultEnum.Found))
+                    {
+                        // If not found we next try a more lax test without the album
+                        foreach (var result in results)
+                        {
+                            if (result.Artist.Equals(item.Artist, StringComparison.InvariantCultureIgnoreCase)
+                                && result.Song.Equals(item.Name, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                var lyricText = ExtractLyricsText(new Uri(result.SongLink));
+
+                                AddFoundLyric(lyricText, new SerializableUri(result.SongLink));
+
+                                if (!getAll)
+                                    break;
+                            }
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"\"{Credit.ServiceName}\" lyric search failed: \"{ex.Message}\".", ex);
             }
 
             return this;

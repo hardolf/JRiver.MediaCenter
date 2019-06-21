@@ -177,7 +177,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void FileSelectPlaylistMenuItem_DropDownOpening(object sender, EventArgs e)
+        private async void FileSelectPlaylistMenuItem_DropDownOpeningAsync(object sender, EventArgs e)
         {
             try
             {
@@ -195,7 +195,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs" /> instance containing the event data.</param>
-        private async void LyricsFinderCore_KeyDown(object sender, KeyEventArgs e)
+        private async void LyricsFinderCore_KeyDownAsync(object sender, KeyEventArgs e)
         {
             try
             {
@@ -232,7 +232,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ToolStripItemClickedEventArgs"/> instance containing the event data.</param>
-        private async void MainContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private async void MainContextMenu_ItemClickedAsync(object sender, ToolStripItemClickedEventArgs e)
         {
             try
             {
@@ -270,7 +270,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
-        private async void MainContextMenu_Opening(object sender, CancelEventArgs e)
+        private async void MainContextMenu_OpeningAsync(object sender, CancelEventArgs e)
         {
             try
             {
@@ -296,7 +296,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private async void MainDataGridView_CellDoubleClickAsync(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
@@ -315,7 +315,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private async void MainDataGridView_CellMouseClickAsync(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
@@ -365,7 +365,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        private async void MainDataGridView_CellMouseMoveAsync(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
@@ -413,7 +413,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_MouseLeave(object sender, EventArgs e)
+        private async void MainDataGridView_MouseLeaveAsync(object sender, EventArgs e)
         {
             try
             {
@@ -443,7 +443,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_Resize(object sender, EventArgs e)
+        private async void MainDataGridView_ResizeAsync(object sender, EventArgs e)
         {
             const int fraction = 6;
 
@@ -468,7 +468,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         /// <remarks>The timer polls Media Center for the playing item, if any, and sets the PlayImage accordingly.</remarks>
-        private async void McStatusTimer_Tick(object sender, EventArgs e)
+        private async void McStatusTimer_TickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -501,7 +501,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void MenuItem_Click(object sender, EventArgs e)
+        private async void MenuItem_ClickAsync(object sender, EventArgs e)
         {
             var itemName = "Undefined item";
             var msg = string.Empty;
@@ -552,8 +552,10 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(HelpAboutMenuItem):
-                            var about = new AboutBox(EntryAssembly);
-                            about.ShowDialog();
+                            using (var about = new AboutBox(EntryAssembly))
+                            {
+                                about.ShowDialog();
+                            }
                             break;
 
                         case nameof(HelpContentsMenuItem):
@@ -641,7 +643,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void StartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void StartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -674,7 +676,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void StartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private async void StartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -699,7 +701,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private async void ToolsPlayStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void ToolsPlayStartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -722,7 +724,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private async void ToolsPlayStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private async void ToolsPlayStartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -742,7 +744,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void ToolsSearchAllStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void ToolsSearchAllStartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -763,7 +765,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void ToolsSearchAllStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private async void ToolsSearchAllStartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -784,7 +786,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void UpdateCheckTimer_Tick(object sender, EventArgs e)
+        private async void UpdateCheckTimer_TickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -810,7 +812,9 @@ namespace MediaCenter.LyricsFinder
                 // We only use this timer once in each session, when the check is successful, so no need to start it again
             }
 #pragma warning disable CS0168 // Variable is declared but never used
+#pragma warning disable IDE0059 // Value assigned to symbol is never used
             catch (Exception ex)
+#pragma warning restore IDE0059 // Value assigned to symbol is never used
 #pragma warning restore CS0168 // Variable is declared but never used
             {
                 // We ignore this exception for now

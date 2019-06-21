@@ -36,7 +36,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         public virtual Dictionary<string, McPlayListType> Items { get; set; }
 
         [XmlAttribute("Status")]
-        private string Status
+        public string Status
         {
             get
             {
@@ -47,15 +47,6 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                 IsOk = value.Equals("OK", StringComparison.InvariantCultureIgnoreCase) ? true : false;
             }
         }
-
-        /// <summary>
-        /// Gets or sets the XML root element.
-        /// </summary>
-        /// <value>
-        /// The XML root element.
-        /// </value>
-        [XmlIgnore]
-        private XmlElement XmlRoot { get; set; }
 
 
         /// <summary>
@@ -68,24 +59,29 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="McResponse"/> class.
+        /// Creates the mc play lists response.
         /// </summary>
-        /// <param name="xml">The XML string.</param>
-        public McPlayListsResponse(string xml)
-            : this()
+        /// <param name="xml">The XML.</param>
+        /// <returns><see cref="McPlayListsResponse"/> object.</returns>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public static async Task<McPlayListsResponse> CreateMcPlayListsResponse(string xml)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
+            var ret = new McPlayListsResponse();
+
             var xDoc = new XmlDocument() { XmlResolver = null };
             var sr = new StringReader(xml);
 
             using (var reader = XmlReader.Create(sr, new XmlReaderSettings() { XmlResolver = null }))
             {
-                xDoc.Load(reader); 
+                xDoc.Load(reader);
             }
 
-            XmlRoot = xDoc.DocumentElement;
-            Status = XmlRoot.GetAttribute("Status");
+            var xmlRoot = xDoc.DocumentElement;
 
-            var xItems = XmlRoot.GetElementsByTagName("Item");
+            ret.Status = xmlRoot.GetAttribute("Status");
+
+            var xItems = xmlRoot.GetElementsByTagName("Item");
 
             foreach (XmlElement xItem in xItems)
             {
@@ -132,8 +128,10 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                 };
 
                 if (!type.Equals("GROUP", StringComparison.InvariantCultureIgnoreCase))
-                    Items.Add(id, item);
+                    ret.Items.Add(id, item);
             }
+
+            return ret;
         }
 
 

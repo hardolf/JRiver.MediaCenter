@@ -31,21 +31,21 @@
             this.components = new System.ComponentModel.Container();
             this.OptionPanel = new System.Windows.Forms.Panel();
             this.OptionLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.McWsLabel = new System.Windows.Forms.Label();
-            this.McWsUrlTextBox = new System.Windows.Forms.TextBox();
-            this.McWsPasswordTextBox = new System.Windows.Forms.TextBox();
-            this.McWsPassword = new System.Windows.Forms.Label();
             this.HeaderTextBox = new System.Windows.Forms.TextBox();
             this.McAccessKeyLabel = new System.Windows.Forms.Label();
-            this.McAccessKeyTextBox = new System.Windows.Forms.TextBox();
             this.McWsUsernameLabel = new System.Windows.Forms.Label();
+            this.McWsPassword = new System.Windows.Forms.Label();
+            this.McWsLabel = new System.Windows.Forms.Label();
+            this.McAccessKeyTextBox = new System.Windows.Forms.TextBox();
             this.McWsUsernameTextBox = new System.Windows.Forms.TextBox();
-            this.CloseButton = new System.Windows.Forms.Button();
+            this.McWsPasswordTextBox = new System.Windows.Forms.TextBox();
+            this.McWsUrlTextBox = new System.Windows.Forms.TextBox();
             this.UpdateCheckIntervalDaysLabel = new System.Windows.Forms.Label();
             this.UpdateCheckIntervalDaysUpDown = new System.Windows.Forms.NumericUpDown();
-            this.OptionToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.LastUpdateLabel = new System.Windows.Forms.Label();
+            this.CloseButton = new System.Windows.Forms.Button();
             this.LastUpdateTextBox = new System.Windows.Forms.TextBox();
+            this.OptionToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.OptionPanel.SuspendLayout();
             this.OptionLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UpdateCheckIntervalDaysUpDown)).BeginInit();
@@ -96,46 +96,6 @@
             this.OptionLayoutPanel.Size = new System.Drawing.Size(451, 250);
             this.OptionLayoutPanel.TabIndex = 0;
             // 
-            // McWsLabel
-            // 
-            this.McWsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.McWsLabel.AutoSize = true;
-            this.McWsLabel.Location = new System.Drawing.Point(3, 135);
-            this.McWsLabel.Name = "McWsLabel";
-            this.McWsLabel.Size = new System.Drawing.Size(137, 25);
-            this.McWsLabel.TabIndex = 7;
-            this.McWsLabel.Text = "Web Service (MCWS) URL";
-            this.McWsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // McWsUrlTextBox
-            // 
-            this.McWsUrlTextBox.Location = new System.Drawing.Point(157, 138);
-            this.McWsUrlTextBox.Name = "McWsUrlTextBox";
-            this.McWsUrlTextBox.Size = new System.Drawing.Size(291, 20);
-            this.McWsUrlTextBox.TabIndex = 8;
-            this.OptionToolTip.SetToolTip(this.McWsUrlTextBox, "MCWS web service URL from Media Center Options window > Media Network tab");
-            // 
-            // McWsPasswordTextBox
-            // 
-            this.McWsPasswordTextBox.Location = new System.Drawing.Point(157, 113);
-            this.McWsPasswordTextBox.Name = "McWsPasswordTextBox";
-            this.McWsPasswordTextBox.Size = new System.Drawing.Size(150, 20);
-            this.McWsPasswordTextBox.TabIndex = 6;
-            this.OptionToolTip.SetToolTip(this.McWsPasswordTextBox, "Password from Media Center Options window > Media Network tab");
-            // 
-            // McWsPassword
-            // 
-            this.McWsPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.McWsPassword.AutoSize = true;
-            this.McWsPassword.Location = new System.Drawing.Point(3, 110);
-            this.McWsPassword.Name = "McWsPassword";
-            this.McWsPassword.Size = new System.Drawing.Size(124, 25);
-            this.McWsPassword.TabIndex = 5;
-            this.McWsPassword.Text = "Authentication Password";
-            this.McWsPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // HeaderTextBox
             // 
             this.HeaderTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -163,14 +123,6 @@
             this.McAccessKeyLabel.Text = "Access Key";
             this.McAccessKeyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // McAccessKeyTextBox
-            // 
-            this.McAccessKeyTextBox.Location = new System.Drawing.Point(157, 63);
-            this.McAccessKeyTextBox.Name = "McAccessKeyTextBox";
-            this.McAccessKeyTextBox.Size = new System.Drawing.Size(150, 20);
-            this.McAccessKeyTextBox.TabIndex = 2;
-            this.OptionToolTip.SetToolTip(this.McAccessKeyTextBox, "Media Network Access Key from Media Center Options window > Media Network tab");
-            // 
             // McWsUsernameLabel
             // 
             this.McWsUsernameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -183,6 +135,38 @@
             this.McWsUsernameLabel.Text = "Authentication Username";
             this.McWsUsernameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // McWsPassword
+            // 
+            this.McWsPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.McWsPassword.AutoSize = true;
+            this.McWsPassword.Location = new System.Drawing.Point(3, 110);
+            this.McWsPassword.Name = "McWsPassword";
+            this.McWsPassword.Size = new System.Drawing.Size(124, 25);
+            this.McWsPassword.TabIndex = 5;
+            this.McWsPassword.Text = "Authentication Password";
+            this.McWsPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // McWsLabel
+            // 
+            this.McWsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.McWsLabel.AutoSize = true;
+            this.McWsLabel.Location = new System.Drawing.Point(3, 135);
+            this.McWsLabel.Name = "McWsLabel";
+            this.McWsLabel.Size = new System.Drawing.Size(137, 25);
+            this.McWsLabel.TabIndex = 7;
+            this.McWsLabel.Text = "Web Service (MCWS) URL";
+            this.McWsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // McAccessKeyTextBox
+            // 
+            this.McAccessKeyTextBox.Location = new System.Drawing.Point(157, 63);
+            this.McAccessKeyTextBox.Name = "McAccessKeyTextBox";
+            this.McAccessKeyTextBox.Size = new System.Drawing.Size(150, 20);
+            this.McAccessKeyTextBox.TabIndex = 2;
+            this.OptionToolTip.SetToolTip(this.McAccessKeyTextBox, "Media Network Access Key from Media Center Options window > Media Network tab");
+            // 
             // McWsUsernameTextBox
             // 
             this.McWsUsernameTextBox.Location = new System.Drawing.Point(157, 88);
@@ -191,17 +175,21 @@
             this.McWsUsernameTextBox.TabIndex = 4;
             this.OptionToolTip.SetToolTip(this.McWsUsernameTextBox, "Username from Media Center Options window > Media Network tab");
             // 
-            // CloseButton
+            // McWsPasswordTextBox
             // 
-            this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(373, 224);
-            this.CloseButton.Name = "CloseButton";
-            this.CloseButton.Size = new System.Drawing.Size(75, 23);
-            this.CloseButton.TabIndex = 13;
-            this.CloseButton.Text = "&Close (Esc)";
-            this.CloseButton.UseVisualStyleBackColor = true;
-            this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
+            this.McWsPasswordTextBox.Location = new System.Drawing.Point(157, 113);
+            this.McWsPasswordTextBox.Name = "McWsPasswordTextBox";
+            this.McWsPasswordTextBox.Size = new System.Drawing.Size(150, 20);
+            this.McWsPasswordTextBox.TabIndex = 6;
+            this.OptionToolTip.SetToolTip(this.McWsPasswordTextBox, "Password from Media Center Options window > Media Network tab");
+            // 
+            // McWsUrlTextBox
+            // 
+            this.McWsUrlTextBox.Location = new System.Drawing.Point(157, 138);
+            this.McWsUrlTextBox.Name = "McWsUrlTextBox";
+            this.McWsUrlTextBox.Size = new System.Drawing.Size(291, 20);
+            this.McWsUrlTextBox.TabIndex = 8;
+            this.OptionToolTip.SetToolTip(this.McWsUrlTextBox, "MCWS web service URL from Media Center Options window > Media Network tab");
             // 
             // UpdateCheckIntervalDaysLabel
             // 
@@ -240,6 +228,18 @@
             this.LastUpdateLabel.TabIndex = 11;
             this.LastUpdateLabel.Text = "Last update";
             this.LastUpdateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // CloseButton
+            // 
+            this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.CloseButton.Location = new System.Drawing.Point(373, 224);
+            this.CloseButton.Name = "CloseButton";
+            this.CloseButton.Size = new System.Drawing.Size(75, 23);
+            this.CloseButton.TabIndex = 13;
+            this.CloseButton.Text = "&Close (Esc)";
+            this.CloseButton.UseVisualStyleBackColor = true;
+            this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
             // 
             // LastUpdateTextBox
             // 

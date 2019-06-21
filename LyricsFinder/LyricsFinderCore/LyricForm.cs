@@ -179,7 +179,7 @@ namespace MediaCenter.LyricsFinder
             }
             else
             {
-                location.Offset(-Size.Width - 10, -Convert.ToInt32(Size.Height / 2));
+                // location.Offset(-Size.Width - 10, -Convert.ToInt32(Size.Height / 2));
                 ArtistTextBox.ReadOnly = false;
                 AlbumTextBox.ReadOnly = false;
                 TrackTextBox.ReadOnly = false;
@@ -325,7 +325,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricForm_Load(object sender, EventArgs e)
+        private async void LyricForm_LoadAsync(object sender, EventArgs e)
         {
             try
             {
@@ -333,86 +333,18 @@ namespace MediaCenter.LyricsFinder
                 {
                     LyricFormStatusLabel.Text = "Searching...";
 
-                    LyricFormTimer.Start();
+                    // LyricFormTimer.Start();
+                    await Search();
                 }
             }
             catch (Exception ex)
             {
                 ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the Tick event of the LyricFormTimer control.
-        /// Used when searching for lyrics.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricFormTimer_Tick(object sender, EventArgs e)
-        {
-            var msg = string.Empty;
-
-            try
-            {
-                LyricFormTimer.Stop();
-
-                // Clear list and search for all the lyrics in each lyric service
-                _foundLyricList.Clear();
-
-                foreach (var service in LyricsFinderData.Services)
-                {
-                    if (!service.IsImplemented || !service.IsActive || service.IsQuotaExceeded) continue;
-
-                    msg = $" in \"{service?.Credit.ServiceName ?? "Unknown service"}\" service";
-
-                    service.Process(_McItem, true);
-
-                    if (service.LyricResult != LyricResultEnum.Found) continue;
-
-                    foreach (var foundLyric in service.FoundLyricList)
-                    {
-                        _foundLyricList.Add(foundLyric);
-
-                        var serviceName = foundLyric.Service.Credit.ServiceName;
-                        var serviceCount = 0;
-
-                        // Keep track of the number of hits for each lyric service
-                        if (_serviceCounts.ContainsKey(serviceName))
-                        {
-                            serviceCount = _serviceCounts.First(s => s.Key == serviceName).Value;
-                            _serviceCounts.Remove(serviceName);
-                        }
-
-                        _serviceCounts.Add(serviceName, serviceCount + 1);
-                    }
-                }
-
-                // No more service-specific error details
-                msg = string.Empty;
-
-                // Set the trackbar and call the Scroll event handler to initialize the text box
-                LyricFormTrackBar.Maximum = _foundLyricList.Count - 1;
-                LyricFormTrackBar_Scroll(this, new EventArgs());
-
-                LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
-
-                LyricsFinderData.Save();
-                UseWaitCursor = false;
-            }
-            catch (LyricsQuotaExceededException ex)
-            {
-                // Cursor.Current = Cursors.Default;
-                UseWaitCursor = false;
-                ErrorHandling.ShowErrorHandler($"Error{msg}: {ex.Message}.");
                 Close();
             }
-            catch (Exception ex)
+            finally
             {
-                // Cursor.Current = Cursors.Default;
                 UseWaitCursor = false;
-                ErrorHandling.ShowAndLogErrorHandler($"Error{msg} in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-                Close();
             }
         }
 
@@ -479,6 +411,83 @@ namespace MediaCenter.LyricsFinder
             catch (Exception ex)
             {
                 ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Searches this instance.
+        /// </summary>
+        /// <returns></returns>
+        private async Task Search()
+        {
+            try
+            {
+                // Clear list and search for all the lyrics in each lyric service
+                _foundLyricList.Clear();
+
+                // Set up the tasks for the search
+                var tasks = new List<Task<AbstractLyricService>>();
+
+                foreach (var service in LyricsFinderData.Services)
+                {
+                    if (!service.IsImplemented || !service.IsActive || service.IsQuotaExceeded) continue;
+
+                    var task = service.Process(_McItem, true);
+
+                    tasks.Add(task);
+                }
+
+                // Run the search and wait for all the results
+                var resultServices = Array.Empty<AbstractLyricService>();
+                Exception searchException = null;
+
+                try
+                {
+                    resultServices = await Task.WhenAll(tasks);
+                }
+                catch (Exception ex)
+                {
+                    searchException = ex;
+                }
+
+                // Process the results
+                foreach (var service in resultServices)
+                {
+                    if (service.LyricResult != LyricResultEnum.Found) continue;
+
+                    foreach (var foundLyric in service.FoundLyricList)
+                    {
+                        _foundLyricList.Add(foundLyric);
+
+                        var serviceName = foundLyric.Service.Credit.ServiceName;
+                        var serviceCount = 0;
+
+                        // Keep track of the number of hits for each lyric service
+                        if (_serviceCounts.ContainsKey(serviceName))
+                        {
+                            serviceCount = _serviceCounts.First(s => s.Key == serviceName).Value;
+                            _serviceCounts.Remove(serviceName);
+                        }
+
+                        _serviceCounts.Add(serviceName, serviceCount + 1);
+                    }
+                }
+
+                // Set the trackbar and call the Scroll event handler to initialize the text box
+                LyricFormTrackBar.Maximum = _foundLyricList.Count - 1;
+                LyricFormTrackBar_Scroll(this, new EventArgs());
+
+                LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
+
+                LyricsFinderData.Save();
+
+                if (searchException != null)
+                    throw searchException;
+            }
+            catch (LyricsQuotaExceededException ex)
+            {
+                ErrorHandling.ShowErrorHandler(ex.Message);
             }
         }
 

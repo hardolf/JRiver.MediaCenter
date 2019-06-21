@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -51,11 +52,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
-        public override AbstractLyricService Process(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> Process(McMplItem item, bool getAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            base.Process(item); // Result: not found
+            await base.Process(item).ConfigureAwait(false); // Result: not found
 
             // Example GET request:
             // https://orion.apiseeds.com/api/music/lyric/dire straits/brothers in arms?apikey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -65,35 +66,22 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             // First we search for the track
             var urlString = $"{credit.ServiceUrl}{item.Artist}/{item.Name}?apikey={credit.Token}";
             var url = new SerializableUri(Uri.EscapeUriString(urlString));
-
-            var req = WebRequest.Create(url) as HttpWebRequest;
             var json = string.Empty;
 
             try
             {
-                using (var rsp = req.GetResponse() as HttpWebResponse)
+                using (var client = new HttpClient())
                 {
-                    if (rsp == null)
-                        throw new NullReferenceException(Helpers.Utility.NullResponseMessage);
-                    if (rsp.StatusCode != HttpStatusCode.OK)
-                        throw new Exception(Helpers.Utility.HttpWebServerErrorMessage(rsp));
-
-                    using (var rspStream = rsp.GetResponseStream())
-                    {
-                        using (var reader = new StreamReader(rspStream, Encoding.UTF8))
-                        {
-                            json = reader.ReadToEnd();
-                        }
-                    }
+                    json = await client.GetStringAsync(url).ConfigureAwait(false);
                 }
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
                 // Is this a normal situation? i.e. if the song was not found, the remote server returns HTML error 404
                 if (ex.Message.Contains("404"))
                     return this;
                 else
-                    throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex); 
+                    throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{url.ToString()}\".", ex);
             }
 
             // Deserialize the returned JSON

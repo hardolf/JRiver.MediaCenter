@@ -83,7 +83,7 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                var newText = SerializeValues();
+                var newText = OptionLayoutPanel.GetAllControlText();
                 var question = "Do you want to use the new values?";
                 var result = DialogResult.No;
 
@@ -102,7 +102,9 @@ namespace MediaCenter.LyricsFinder
 
                     case DialogResult.Yes:
                         e.Cancel = false;
-                        LyricsFinderCorePrivateConfigurationSectionHandler.Save(McAccessKeyTextBox.Text.Trim(), McWsUrlTextBox.Text.Trim(), McWsUsernameTextBox.Text.Trim(), McWsPasswordTextBox.Text.Trim());
+                        LyricsFinderCorePrivateConfigurationSectionHandler.Save(McAccessKeyTextBox.Text.Trim(), McWsUrlTextBox.Text.Trim(), 
+                            McWsUsernameTextBox.Text.Trim(), McWsPasswordTextBox.Text.Trim(), 
+                            null, (int)UpdateCheckIntervalDaysUpDown.Value);
                         break;
 
                     default:
@@ -135,24 +137,12 @@ namespace MediaCenter.LyricsFinder
                 McWsUsernameTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName;
                 UpdateCheckIntervalDaysUpDown.Value = LyricsFinderCorePrivateConfigurationSectionHandler.UpdateCheckIntervalDays;
 
-                _initialText = SerializeValues();
+                _initialText = OptionLayoutPanel.GetAllControlText();
             }
             catch (Exception ex)
             {
                 ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
-        }
-
-
-        private string SerializeValues()
-        {
-            var ret = new StringBuilder();
-
-            ret.AppendLine(LastUpdateTextBox.Text);
-            ret.Append(OptionLayoutPanel.GetAllTextBoxesText());
-            ret.AppendLine(((int)UpdateCheckIntervalDaysUpDown.Value).ToString(CultureInfo.InvariantCulture));
-
-            return ret.ToString();
         }
 
     }

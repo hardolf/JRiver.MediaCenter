@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -51,9 +52,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 
 
         [TestMethod]
-        public void ApiseedsTestMethod01()
+        public async Task ApiseedsTestMethod01()
         {
-            var resultService = _service.Process(_item1);
+            var resultService = await _service.Process(_item1).ConfigureAwait(false);
 
             Assert.IsNotNull(resultService);
             Assert.AreNotEqual(0, resultService.FoundLyricList.Count);
@@ -65,9 +66,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 
 
         [TestMethod]
-        public void ApiseedsTestMethod02()
+        public async Task ApiseedsTestMethod02()
         {
-            var resultService = _service.Process(_item2);
+            var resultService = await _service.Process(_item2).ConfigureAwait(false);
 
             Assert.IsNotNull(resultService);
             Assert.AreEqual(0, resultService.FoundLyricList.Count);
@@ -76,9 +77,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 
 
         [TestMethod]
-        public void ApiseedsTestMethod03()
+        public async Task ApiseedsTestMethod03()
         {
-            var resultService = _service.Process(_item3);
+            var resultService = await _service.Process(_item3).ConfigureAwait(false);
 
             Assert.IsNotNull(resultService);
             Assert.AreEqual(0, resultService.FoundLyricList.Count);

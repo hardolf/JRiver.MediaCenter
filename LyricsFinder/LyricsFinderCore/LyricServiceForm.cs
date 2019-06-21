@@ -220,7 +220,7 @@ namespace MediaCenter.LyricsFinder.Model
         {
             if (!_isListReady) return false;
 
-            var newText = LyricServiceDetailsTableLayoutPanel.GetAllTextBoxesText();
+            var newText = LyricServiceDetailsTableLayoutPanel.GetAllControlText();
             var question = "Do you want to use the new values?";
             var result = DialogResult.No;
             var ret = false;
@@ -624,7 +624,7 @@ namespace MediaCenter.LyricsFinder.Model
             Refresh();
             tlp.ResumeLayout(true);
 
-            _initialText = tlp.GetAllTextBoxesText();
+            _initialText = tlp.GetAllControlText();
             _isListReady = true;
         }
 

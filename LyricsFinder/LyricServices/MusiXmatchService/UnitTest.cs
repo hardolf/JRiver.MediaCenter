@@ -1,10 +1,10 @@
 ﻿using System;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.LyricsFinder.Model.McRestService;
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 {
@@ -39,9 +39,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 
 
         [TestMethod]
-        public void MusiXmatchTestMethod01()
+        public async Task MusiXmatchTestMethod01()
         {
-            var resultService = _service.Process(_item);
+            var resultService = await _service.Process(_item).ConfigureAwait(false);
 
             Assert.IsNotNull(resultService);
             Assert.AreNotEqual(0, resultService.FoundLyricList.Count);

@@ -102,7 +102,7 @@
     <PostBuildEvent>rem copy /y App.template.config $(TargetFileName).template.config
 
 del /q App*.config
-call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.*
+call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.* HtmlAgilityPack.*
 </PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

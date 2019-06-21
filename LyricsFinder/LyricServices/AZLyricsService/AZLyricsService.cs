@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using HtmlAgilityPack;
+
 using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
@@ -151,37 +154,24 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
-        public override AbstractLyricService Process(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> Process(McMplItem item, bool getAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            base.Process(item); // Result: not found
+            await base.Process(item).ConfigureAwait(false); // Result: not found
 
             var credit = Credit as CreditType;
             var urlString = $"{credit.ServiceUrl}?q={item.Artist} {item.Album} {item.Name}";
             var url = new SerializableUri(Uri.EscapeUriString(urlString));
-
-            var req = WebRequest.Create(url) as HttpWebRequest;
             var html = string.Empty;
 
-            req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            // TODO: req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             try
             {
-                using (var rsp = req.GetResponse() as HttpWebResponse)
+                using (var client = new HttpClient())
                 {
-                    if (rsp == null)
-                        throw new NullReferenceException(Helpers.Utility.NullResponseMessage);
-                    if (rsp.StatusCode != HttpStatusCode.OK)
-                        throw new Exception(Helpers.Utility.HttpWebServerErrorMessage(rsp));
-
-                    using (var rspStream = rsp.GetResponseStream())
-                    {
-                        using (var reader = new StreamReader(rspStream, Encoding.UTF8))
-                        {
-                            html = reader.ReadToEnd();
-                        }
-                    }
+                    html = await client.GetStringAsync(url).ConfigureAwait(false);
                 }
 
                 var uriList = GetResultUris(html);
@@ -193,9 +183,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     AddFoundLyric(lyricText, new SerializableUri(uri.AbsoluteUri));
                 }
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex);
+                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{url.ToString()}\".", ex);
             }
 
             return this;

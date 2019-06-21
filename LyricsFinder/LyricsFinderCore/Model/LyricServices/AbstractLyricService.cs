@@ -297,7 +297,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns><see cref="AbstractLyricService"/> descendent object.</returns>
         /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="LyricsQuotaExceededException"></exception>
-        public virtual AbstractLyricService Process(McMplItem item, bool getAll = false)
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public virtual async Task<AbstractLyricService> Process(McMplItem item, bool getAll = false)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -311,7 +313,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 IsActive = false;
                 IsQuotaExceeded = true;
 
-                var msg = $"Lyric service \"{Credit.ServiceName}\" is over the daily limit of {DailyQuota} requests per day. \"{Credit.ServiceName}\" is now disabled in LyricsFinder and no more requests will be sent to this service today.";
+                var msg = $"Lyric service \"{Credit.ServiceName}\" is over the daily limit of {DailyQuota} requests per day. "
+                    + $"\"{Credit.ServiceName}\" is now disabled in LyricsFinder and no more requests will be sent to this service today.";
 
                 throw new LyricsQuotaExceededException(msg);
             }

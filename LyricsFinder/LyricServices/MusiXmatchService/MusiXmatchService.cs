@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -53,11 +54,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
-        public override AbstractLyricService Process(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> Process(McMplItem item, bool getAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            base.Process(item); // Result: not found
+            await base.Process(item).ConfigureAwait(false); // Result: not found
 
             // Example requests:
             // http://api.musixmatch.com/ws/1.1/track.search?apikey=xxxxxxxxxxxxxxxxxxxxx&q_artist=Dire%20Straits&q_track=Lions
@@ -68,31 +69,18 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             // First we search for the track
             var urlString = $"{credit.ServiceUrl}track.search?apikey={credit.Token}&q_artist={item.Artist}&q_track={item.Name}";
             var url = new SerializableUri(Uri.EscapeUriString(urlString));
-
-            var req = WebRequest.Create(url) as HttpWebRequest;
             var json = string.Empty;
 
             try
             {
-                using (var rsp = req.GetResponse() as HttpWebResponse)
+                using (var client = new HttpClient())
                 {
-                    if (rsp == null)
-                        throw new NullReferenceException(Helpers.Utility.NullResponseMessage);
-                    if (rsp.StatusCode != HttpStatusCode.OK)
-                        throw new Exception(Helpers.Utility.HttpWebServerErrorMessage(rsp));
-
-                    using (var rspStream = rsp.GetResponseStream())
-                    {
-                        using (var reader = new StreamReader(rspStream, Encoding.UTF8))
-                        {
-                            json = reader.ReadToEnd();
-                        }
-                    }
+                    json = await client.GetStringAsync(url).ConfigureAwait(false);
                 }
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex);
+                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{url.ToString()}\".", ex);
             }
 
             // Deserialize the returned JSON
@@ -100,49 +88,37 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var tracks = searchDyn.message.body.track_list;
 
             // Now we get the lyrics for each search result
-            foreach (var track in tracks)
+            try
             {
-                urlString = $"{credit.ServiceUrl}track.lyrics.get?apikey={credit.Token}&track_id={track?.track?.track_id ?? 0}&commontrack_id={track?.track?.commontrack_id ?? 0}";
-                url = new SerializableUri(Uri.EscapeUriString(urlString));
-                req = WebRequest.Create(url) as HttpWebRequest;
-
-                try
+                using (var client = new HttpClient())
                 {
-                    using (var rsp = req.GetResponse() as HttpWebResponse)
+                    foreach (var track in tracks)
                     {
-                        if (rsp == null)
-                            throw new NullReferenceException(Helpers.Utility.NullResponseMessage);
-                        if (rsp.StatusCode != HttpStatusCode.OK)
-                            throw new Exception(Helpers.Utility.HttpWebServerErrorMessage(rsp));
+                        urlString = $"{credit.ServiceUrl}track.lyrics.get?apikey={credit.Token}&track_id={track?.track?.track_id ?? 0}&commontrack_id={track?.track?.commontrack_id ?? 0}";
+                        url = new SerializableUri(Uri.EscapeUriString(urlString));
 
-                        using (var rspStream = rsp.GetResponseStream())
-                        {
-                            using (var reader = new StreamReader(rspStream, Encoding.UTF8))
-                            {
-                                json = reader.ReadToEnd();
-                            }
-                        }
+                        json = await client.GetStringAsync(url).ConfigureAwait(false);
+
+                        // Deserialize the returned JSON
+                        var lyricDyn = JsonConvert.DeserializeObject<dynamic>(json);
+                        var lyricDynBody = lyricDyn.message.body;
+
+                        if ((lyricDynBody == null) || (lyricDynBody.Count == 0))
+                            continue;
+
+                        var lyricDynEl = lyricDynBody.lyrics;
+                        var lyricText = (string)lyricDynEl.lyrics_body;
+
+                        AddFoundLyric(lyricText, lyricDynEl.backlink_url, lyricDynEl.html_tracking_url, (string)lyricDynEl.lyrics_copyright);
+
+                        if (!getAll)
+                            break;
                     }
                 }
-                catch (WebException ex)
-                {
-                    throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex);
-                }
-
-                // Deserialize the returned JSON
-                var lyricDyn = JsonConvert.DeserializeObject<dynamic>(json);
-                var lyricDynBody = lyricDyn.message.body;
-
-                if ((lyricDynBody == null) || (lyricDynBody.Count == 0))
-                    continue;
-
-                var lyricDynEl = lyricDynBody.lyrics;
-                var lyricText = (string)lyricDynEl.lyrics_body;
-
-                AddFoundLyric(lyricText, lyricDynEl.backlink_url, lyricDynEl.html_tracking_url, (string)lyricDynEl.lyrics_copyright);
-
-                if (!getAll)
-                    break;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{url.ToString()}\".", ex);
             }
 
             return this;
