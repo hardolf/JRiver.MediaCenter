@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -73,10 +72,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             try
             {
-                using (var client = new HttpClient())
-                {
-                    json = await client.GetStringAsync(url).ConfigureAwait(false);
-                }
+                json = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
@@ -85,35 +81,41 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             // Deserialize the returned JSON
             var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
-            var tracks = searchDyn.message.body.track_list;
+            var trackDyns = searchDyn.message.body.track_list;
 
             // Now we get the lyrics for each search result
             try
             {
-                using (var client = new HttpClient())
+                foreach (var trackDyn in trackDyns)
                 {
-                    foreach (var track in tracks)
+                    urlString = $"{credit.ServiceUrl}track.lyrics.get?apikey={credit.Token}&track_id={trackDyn?.track?.track_id ?? 0}&commontrack_id={trackDyn?.track?.commontrack_id ?? 0}";
+                    url = new SerializableUri(Uri.EscapeUriString(urlString));
+
+                    json = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
+
+                    // Deserialize the returned JSON
+                    var lyricDyn = JsonConvert.DeserializeObject<dynamic>(json);
+                    var lyricDynBody = lyricDyn.message.body;
+                    dynamic lyricsDyn;
+
+                    try
                     {
-                        urlString = $"{credit.ServiceUrl}track.lyrics.get?apikey={credit.Token}&track_id={track?.track?.track_id ?? 0}&commontrack_id={track?.track?.commontrack_id ?? 0}";
-                        url = new SerializableUri(Uri.EscapeUriString(urlString));
-
-                        json = await client.GetStringAsync(url).ConfigureAwait(false);
-
-                        // Deserialize the returned JSON
-                        var lyricDyn = JsonConvert.DeserializeObject<dynamic>(json);
-                        var lyricDynBody = lyricDyn.message.body;
-
-                        if ((lyricDynBody == null) || (lyricDynBody.Count == 0))
-                            continue;
-
-                        var lyricDynEl = lyricDynBody.lyrics;
-                        var lyricText = (string)lyricDynEl.lyrics_body;
-
-                        AddFoundLyric(lyricText, lyricDynEl.backlink_url, lyricDynEl.html_tracking_url, (string)lyricDynEl.lyrics_copyright);
-
-                        if (!getAll)
-                            break;
+                        lyricsDyn = lyricDynBody?.lyrics;
                     }
+                    catch
+                    {
+                        continue;
+                    }
+
+                    var lyricText = (string)lyricsDyn?.lyrics_body ?? string.Empty;
+                    var lyricUrl = (lyricsDyn?.backlink_url == null) ? null : new SerializableUri((string)lyricsDyn?.backlink_url);
+                    var lyricTrackingUrl = (lyricsDyn?.html_tracking_url == null) ? null : new SerializableUri((string)lyricsDyn?.html_tracking_url);
+                    var copyright = (string)lyricsDyn?.lyrics_copyright ?? string.Empty;
+
+                    AddFoundLyric(lyricText, lyricUrl, lyricTrackingUrl, copyright);
+
+                    if (!getAll)
+                        break;
                 }
             }
             catch (HttpRequestException ex)

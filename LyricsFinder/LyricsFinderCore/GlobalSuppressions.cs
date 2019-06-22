@@ -52,4 +52,5 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "<Pending>", Scope = "member", Target = "~P:MediaCenter.LyricsFinder.Model.Helpers.LyricsFinderCorePrivateConfigurationSectionHandler.LyricFormSize")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.LyricsFinderCore.FillDataGrid~System.Threading.Tasks.Task")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0052:Remove unread private members", Justification = "<Pending>", Scope = "member", Target = "~P:MediaCenter.LyricsFinder.LyricsFinderCore.Authentication")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Value assigned to symbol is never used", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.Model.Helpers.Utility.HttpImageRequest(System.Uri,System.String,System.String)~System.Threading.Tasks.Task{System.Drawing.Bitmap}")]
 

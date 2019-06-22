@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -70,10 +69,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             try
             {
-                using (var client = new HttpClient())
-                {
-                    json = await client.GetStringAsync(url).ConfigureAwait(false);
-                }
+                json = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
@@ -81,7 +77,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 if (ex.Message.Contains("404"))
                     return this;
                 else
-                    throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{url.ToString()}\".", ex);
+                    throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\" Request: \"{url.ToString()}\".", ex);
             }
 
             // Deserialize the returned JSON

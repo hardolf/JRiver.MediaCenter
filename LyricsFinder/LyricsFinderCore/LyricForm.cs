@@ -456,21 +456,11 @@ namespace MediaCenter.LyricsFinder
                 {
                     if (service.LyricResult != LyricResultEnum.Found) continue;
 
+                    _serviceCounts.Add(service.Credit.ServiceName, service.FoundLyricList.Count);
+
                     foreach (var foundLyric in service.FoundLyricList)
                     {
                         _foundLyricList.Add(foundLyric);
-
-                        var serviceName = foundLyric.Service.Credit.ServiceName;
-                        var serviceCount = 0;
-
-                        // Keep track of the number of hits for each lyric service
-                        if (_serviceCounts.ContainsKey(serviceName))
-                        {
-                            serviceCount = _serviceCounts.First(s => s.Key == serviceName).Value;
-                            _serviceCounts.Remove(serviceName);
-                        }
-
-                        _serviceCounts.Add(serviceName, serviceCount + 1);
                     }
                 }
 

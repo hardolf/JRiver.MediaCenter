@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -39,14 +38,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Extracts the result text and sets the FoundLyricsText.
         /// </summary>
-        protected static string ExtractLyricsText(Uri url)
+        protected static async Task<string> ExtractLyricsText(Uri url)
         {
-            var html = string.Empty;
-
-            using (var client = new WebClient())
-            {
-                html = client.DownloadString(url);
-            }
+            var html = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
 
             var doc = new HtmlDocument();
 
@@ -121,7 +115,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             var tableNode = docNode.SelectSingleNode("//table[@class]");
 
-            if (tableNode == null) throw new NullReferenceException("Result table node not found.");
+            if (tableNode == null) return ret; // No results
+
             if (!tableNode.GetAttributeValue("class", string.Empty).Equals("table table-condensed", StringComparison.InvariantCultureIgnoreCase))
                 throw new Exception("Result table node with attribute class=\"table table-condensed\" not found.");
 
@@ -161,31 +156,52 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             await base.Process(item).ConfigureAwait(false); // Result: not found
 
             var credit = Credit as CreditType;
-            var urlString = $"{credit.ServiceUrl}?q={item.Artist} {item.Album} {item.Name}";
-            var url = new SerializableUri(Uri.EscapeUriString(urlString));
             var html = string.Empty;
+            var urlString = string.Empty;
 
             // TODO: req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
             try
             {
-                using (var client = new HttpClient())
-                {
-                    html = await client.GetStringAsync(url).ConfigureAwait(false);
-                }
+                // First we try a rigorous test
+                urlString = $"{credit.ServiceUrl}?q={item.Artist} {item.Album} {item.Name}";
 
-                var uriList = GetResultUris(html);
+                var url = new SerializableUri(Uri.EscapeUriString(urlString));
 
-                foreach (var uri in uriList)
+                html = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
+
+                var resultUriList = GetResultUris(html);
+                var tasks = new List<Task>();
+
+                foreach (var uri in resultUriList)
                 {
-                    var lyricText = ExtractLyricsText(uri);
+                    var lyricText = await ExtractLyricsText(uri).ConfigureAwait(false);
 
                     AddFoundLyric(lyricText, new SerializableUri(uri.AbsoluteUri));
+                }
+
+                // If not found or if we want all possible results, we next try a more lax test without the album
+                if (getAll || (LyricResult != LyricResultEnum.Found))
+                {
+                    urlString = $"{credit.ServiceUrl}?q={item.Artist} {item.Name}";
+                    url = new SerializableUri(Uri.EscapeUriString(urlString));
+                    tasks = new List<Task>();
+
+                    html = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
+
+                    resultUriList = GetResultUris(html);
+
+                    foreach (var uri in resultUriList)
+                    {
+                        var lyricText = await ExtractLyricsText(uri).ConfigureAwait(false);
+
+                        AddFoundLyric(lyricText, new SerializableUri(uri.AbsoluteUri));
+                    }
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{url.ToString()}\".", ex);
+                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{urlString}\".", ex);
             }
 
             return this;

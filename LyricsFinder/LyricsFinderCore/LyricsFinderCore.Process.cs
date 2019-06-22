@@ -212,7 +212,7 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                //EnableOrDisableMenuItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem);
+                EnableOrDisableMenuItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem);
 
                 if (!_isConnectedToMc || isReconnect)
                     await Connect();
@@ -220,12 +220,12 @@ namespace MediaCenter.LyricsFinder
                 _currentPlaylist = await LoadPlaylist(menuItemName);
                 await FillDataGrid();
 
-                //EnableOrDisableMenuItems(true);
+                EnableOrDisableMenuItems(true);
             }
             catch (Exception ex)
             {
-                //EnableOrDisableMenuItems(true);
-                //EnableOrDisableMenuItems(false, FileSaveMenuItem, FileSelectPlaylistMenuItem);
+                EnableOrDisableMenuItems(true);
+                EnableOrDisableMenuItems(false, FileSaveMenuItem);
 
                 StatusMessage($"Error {msg}.", true, true);
                 ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
