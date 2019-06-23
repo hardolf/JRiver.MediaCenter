@@ -296,7 +296,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
-        private async void MainDataGridView_CellDoubleClickAsync(object sender, DataGridViewCellEventArgs e)
+        private void MainDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
@@ -315,7 +315,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private async void MainDataGridView_CellMouseClickAsync(object sender, DataGridViewCellMouseEventArgs e)
+        private void MainDataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
@@ -365,7 +365,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private async void MainDataGridView_CellMouseMoveAsync(object sender, DataGridViewCellMouseEventArgs e)
+        private void MainDataGridView_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
@@ -413,7 +413,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void MainDataGridView_MouseLeaveAsync(object sender, EventArgs e)
+        private void MainDataGridView_MouseLeave(object sender, EventArgs e)
         {
             try
             {
@@ -443,7 +443,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void MainDataGridView_ResizeAsync(object sender, EventArgs e)
+        private void MainDataGridView_Resize(object sender, EventArgs e)
         {
             const int fraction = 6;
 
@@ -568,13 +568,17 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(ToolsLyricServicesMenuItem):
-                            var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, ShowServicesCallback);
-                            lyricsServiceForm.ShowDialog(this);
+                            using (var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, ShowServicesCallback))
+                            {
+                                lyricsServiceForm.ShowDialog(this); 
+                            }
                             break;
 
                         case nameof(ToolsOptionsMenuItem):
-                            var frm = new OptionForm("LyricsFinder connection setup");
-                            frm.ShowDialog(this);
+                            using (var frm = new OptionForm("LyricsFinder connection setup"))
+                            {
+                                frm.ShowDialog(this);
+                            }
                             break;
 
                         case nameof(ToolsShowLogMenuItem):
@@ -643,7 +647,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private async void StartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
+        private void StartStopButton_Starting(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -676,7 +680,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private async void StartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
+        private void StartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -744,7 +748,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private async void ToolsSearchAllStartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
+        private void ToolsSearchAllStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -765,7 +769,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private async void ToolsSearchAllStartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
+        private void ToolsSearchAllStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -786,7 +790,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void UpdateCheckTimer_TickAsync(object sender, EventArgs e)
+        private void UpdateCheckTimer_Tick(object sender, EventArgs e)
         {
             try
             {

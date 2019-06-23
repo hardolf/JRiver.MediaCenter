@@ -22,6 +22,19 @@ namespace MediaCenter.LyricsFinder.Model
     public class LyricsFinderDataType
     {
 
+        /// <summary>
+        /// Gets the active services.
+        /// </summary>
+        /// <value>
+        /// The active services.
+        /// </value>
+        [XmlIgnore]
+        public List<AbstractLyricService> ActiveServices {
+            get
+            {
+                return Services.Where(s => s.IsImplemented && s.IsActive && !s.IsQuotaExceeded).ToList();
+            }
+        }
 
         /// <summary>
         /// Gets the saved data file path.

@@ -171,25 +171,25 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
 
             var credit = Credit as CreditType;
-            var urlString = $"{credit.ServiceUrl}?uid={credit.UserId}&tokenid={credit.Token}&term={item.Name}";
-            var url = new SerializableUri(Uri.EscapeUriString(urlString));
+            var uriString = $"{credit.ServiceUrl}?uid={credit.UserId}&tokenid={credit.Token}&term={item.Name}";
+            var uri = new SerializableUri(Uri.EscapeUriString(uriString));
             var txt = string.Empty;
 
             try
             {
-                txt = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
+                txt = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{url.ToString()}\".", ex);
+                AddException(ex, uri.ToString());
             }
 
-            // Avoid analyzer warning CA1812
-            _ = new StandsResultType();
-            _ = new StandsResultListType();
+            if (Exceptions.Count > 0)
+                return this;
 
             try
             {
+                // Deserialize the returned JSON
                 var results = txt.XmlDeserializeFromString<StandsResultListType>();
 
                 // Did we get results back from the service?
@@ -205,7 +205,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
             catch (Exception ex)
             {
-                throw new Exception($"\"{Credit.ServiceName}\" lyric search failed: \"{ex.Message}\".", ex);
+                AddException(ex, uri.ToString());
             }
 
             return this;

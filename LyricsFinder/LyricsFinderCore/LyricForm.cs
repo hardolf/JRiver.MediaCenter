@@ -426,33 +426,10 @@ namespace MediaCenter.LyricsFinder
                 // Clear list and search for all the lyrics in each lyric service
                 _foundLyricList.Clear();
 
-                // Set up the tasks for the search
-                var tasks = new List<Task<AbstractLyricService>>();
-
-                foreach (var service in LyricsFinderData.Services)
-                {
-                    if (!service.IsImplemented || !service.IsActive || service.IsQuotaExceeded) continue;
-
-                    var task = service.ProcessAsync(_McItem, true);
-
-                    tasks.Add(task);
-                }
-
-                // Run the search and wait for all the results
-                var resultServices = Array.Empty<AbstractLyricService>();
-                Exception searchException = null;
-
-                try
-                {
-                    resultServices = await Task.WhenAll(tasks);
-                }
-                catch (Exception ex)
-                {
-                    searchException = ex;
-                }
+                await LyricSearch.Search(LyricsFinderData, _McItem).ConfigureAwait(true);
 
                 // Process the results
-                foreach (var service in resultServices)
+                foreach (var service in LyricsFinderData.ActiveServices)
                 {
                     if (service.LyricResult != LyricResultEnum.Found) continue;
 
@@ -471,13 +448,10 @@ namespace MediaCenter.LyricsFinder
                 LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
 
                 LyricsFinderData.Save();
-
-                if (searchException != null)
-                    throw searchException;
             }
             catch (LyricsQuotaExceededException ex)
             {
-                ErrorHandling.ShowErrorHandler(ex.Message);
+                ErrorHandling.ShowAndLogErrorHandler(ex.Message, ex);
             }
         }
 

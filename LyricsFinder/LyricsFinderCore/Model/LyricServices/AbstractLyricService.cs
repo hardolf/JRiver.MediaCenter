@@ -67,6 +67,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         private FoundLyricListType<FoundLyricType> InternalFoundLyricList { get; set; }
 
         /// <summary>
+        /// Gets or sets the exceptions.
+        /// </summary>
+        /// <value>
+        /// The exceptions.
+        /// </value>
+        [XmlIgnore]
+        public List<Exception> Exceptions { get; private set; }
+
+        /// <summary>
         /// Gets or sets a list of the found lyric texts.
         /// </summary>
         /// <value>
@@ -192,6 +201,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             Credit = new CreditType();
             DailyQuota = 0;
+            Exceptions = new List<Exception>();
             InternalFoundLyricList = new FoundLyricListType<FoundLyricType>();
             FoundLyricList = new ReadOnlyCollection<FoundLyricType>(InternalFoundLyricList);
             IsActive = false;
@@ -199,6 +209,24 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             IsQuotaExceeded = false;
             LyricResult = LyricResultEnum.NotProcessedYet;
             QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Now.Date, TimeZoneInfo.Local); // Default is midnight in the client time zone
+        }
+
+
+        /// <summary>
+        /// Adds the exception.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <param name="request">Optional request.</param>
+        public void AddException(Exception exception, string request = null)
+        {
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
+
+            var msg = $"\"{Credit.ServiceName}\" call failed: \"{exception.Message}\"";
+
+            if (!request.IsNullOrEmptyTrimmed())
+                msg += $" Request: \"{request}\".";
+
+            Exceptions.Add(new Exception(msg, exception));
         }
 
 
@@ -333,16 +361,29 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns>
         /// If found, the found lyric text string; else null.
         /// </returns>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         protected virtual async Task<string> ExtractOneLyricTextAsync(Uri uri)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
             var ret = string.Empty;
 
-            // This must be done in every descendent routine:
+            /**************************************************
+             * This must be done in every descendent routine: *
+             **************************************************
+             * At the top:
+             **************************************************
+            var ret = await base.ExtractOneLyricTextAsync(uri).ConfigureAwait(false);
+
+             **************************************************
+             * At the bottom:
+             **************************************************
+
             // If found, add the found lyric to the list
-            // if (!ret.IsNullOrEmptyTrimmed())
-            //     AddFoundLyric(ret, new SerializableUri(uri.AbsoluteUri));
+            if (!ret.IsNullOrEmptyTrimmed())
+                AddFoundLyric(ret, new SerializableUri(uri.AbsoluteUri));
+            */
 
             return ret;
         }
@@ -362,6 +403,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
+            Exceptions.Clear();
             InternalFoundLyricList.Clear();
             LyricResult = LyricResultEnum.NotFound;
             CheckQuota();

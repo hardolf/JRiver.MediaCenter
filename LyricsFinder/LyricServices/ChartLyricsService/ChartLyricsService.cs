@@ -51,10 +51,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
 
             apiv1Soap client = null;
+            var msg = string.Empty;
 
             try
             {
+                msg = "CreateServiceClient";
                 client = CreateServiceClient<apiv1Soap>("apiv1Soap");
+                msg = "SearchLyric";
 
                 var rsp1 = client.SearchLyric(item.Artist, item.Name);
 
@@ -65,6 +68,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         if (rspLyricResult == null) continue;
                         if (rspLyricResult.LyricId == 0) continue;
 
+                        msg = "GetLyric";
                         var rsp2 = client.GetLyric(rspLyricResult.LyricId, rspLyricResult.LyricChecksum);
 
                         AddFoundLyric(rsp2.Lyric, new SerializableUri(rsp2.LyricUrl));
@@ -80,7 +84,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 }
                 catch { /* I don't care */ }
 
-                throw new CommunicationException($"Failed to get info from \"{Credit.ServiceName}\".", ex);
+                AddException(ex, msg);
             }
 
             return this;

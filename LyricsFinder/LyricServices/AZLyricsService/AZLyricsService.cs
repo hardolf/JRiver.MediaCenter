@@ -175,14 +175,14 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             var credit = Credit as CreditType;
             var html = string.Empty;
-            var urlString = string.Empty;
-            SerializableUri uri;
+            var uriString = string.Empty;
+            SerializableUri uri = null;
 
             try
             {
                 // First we try a rigorous test
-                urlString = $"{credit.ServiceUrl}?q={item.Artist} {item.Album} {item.Name}";
-                uri = new SerializableUri(Uri.EscapeUriString(urlString));
+                uriString = $"{credit.ServiceUrl}?q={item.Artist} {item.Album} {item.Name}";
+                uri = new SerializableUri(Uri.EscapeUriString(uriString));
                 html = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
 
                 await ExtractAllLyricTextsAsync(GetResultUris(html), getAll).ConfigureAwait(false);
@@ -190,16 +190,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 // If not found or if we want all possible results, we next try a more lax test without the album
                 if (getAll || (LyricResult != LyricResultEnum.Found))
                 {
-                    urlString = $"{credit.ServiceUrl}?q={item.Artist} {item.Name}";
-                    uri = new SerializableUri(Uri.EscapeUriString(urlString));
+                    uriString = $"{credit.ServiceUrl}?q={item.Artist} {item.Name}";
+                    uri = new SerializableUri(Uri.EscapeUriString(uriString));
                     html = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
 
                     await ExtractAllLyricTextsAsync(GetResultUris(html), getAll).ConfigureAwait(false);
                 }
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
-                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{urlString}\".", ex);
+                AddException(ex, uri.ToString());
             }
 
             return this;

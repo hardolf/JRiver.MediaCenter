@@ -246,11 +246,11 @@ namespace MediaCenter.LyricsFinder
             this.MainDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.MainDataGridView.Size = new System.Drawing.Size(738, 412);
             this.MainDataGridView.TabIndex = 0;
-            this.MainDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainDataGridView_CellDoubleClickAsync);
-            this.MainDataGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainDataGridView_CellMouseClickAsync);
-            this.MainDataGridView.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainDataGridView_CellMouseMoveAsync);
-            this.MainDataGridView.MouseLeave += new System.EventHandler(this.MainDataGridView_MouseLeaveAsync);
-            this.MainDataGridView.Resize += new System.EventHandler(this.MainDataGridView_ResizeAsync);
+            this.MainDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainDataGridView_CellDoubleClick);
+            this.MainDataGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainDataGridView_CellMouseClick);
+            this.MainDataGridView.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainDataGridView_CellMouseMove);
+            this.MainDataGridView.MouseLeave += new System.EventHandler(this.MainDataGridView_MouseLeave);
+            this.MainDataGridView.Resize += new System.EventHandler(this.MainDataGridView_Resize);
             // 
             // Key
             // 
@@ -645,7 +645,7 @@ namespace MediaCenter.LyricsFinder
             // UpdateCheckTimer
             // 
             this.UpdateCheckTimer.Interval = 5000;
-            this.UpdateCheckTimer.Tick += new System.EventHandler(this.UpdateCheckTimer_TickAsync);
+            this.UpdateCheckTimer.Tick += new System.EventHandler(this.UpdateCheckTimer_Tick);
             // 
             // LyricsFinderCore
             // 

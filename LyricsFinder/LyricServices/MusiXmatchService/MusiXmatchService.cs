@@ -38,6 +38,48 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Extracts the result text from a Uri and adds the found lyric text to the list.
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <returns>
+        /// If found, the found lyric text string; else null.
+        /// </returns>
+        protected override async Task<string> ExtractOneLyricTextAsync(Uri uri)
+        {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+
+            var ret = await base.ExtractOneLyricTextAsync(uri).ConfigureAwait(false);
+            var json = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
+
+            // Deserialize the returned JSON
+            var lyricDyn = JsonConvert.DeserializeObject<dynamic>(json);
+            var lyricDynBody = lyricDyn.message.body;
+            dynamic lyricsDyn;
+
+            try
+            {
+                lyricsDyn = lyricDynBody?.lyrics;
+            }
+            catch
+            {
+                return null;
+            }
+
+            ret = (string)lyricsDyn?.lyrics_body ?? string.Empty;
+
+            var lyricUrl = (lyricsDyn?.backlink_url == null) ? null : new SerializableUri((string)lyricsDyn?.backlink_url);
+            var lyricTrackingUrl = (lyricsDyn?.html_tracking_url == null) ? null : new SerializableUri((string)lyricsDyn?.html_tracking_url);
+            var copyright = (string)lyricsDyn?.lyrics_copyright ?? string.Empty;
+
+            // If found, add the found lyric to the list
+            if (!ret.IsNullOrEmptyTrimmed())
+                AddFoundLyric(ret, lyricUrl, lyricTrackingUrl, copyright);
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -66,61 +108,44 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var credit = Credit as CreditType;
 
             // First we search for the track
-            var urlString = $"{credit.ServiceUrl}track.search?apikey={credit.Token}&q_artist={item.Artist}&q_track={item.Name}";
-            var url = new SerializableUri(Uri.EscapeUriString(urlString));
+            var uriString = $"{credit.ServiceUrl}track.search?apikey={credit.Token}&q_artist={item.Artist}&q_track={item.Name}";
+            var uri = new SerializableUri(Uri.EscapeUriString(uriString));
             var json = string.Empty;
 
             try
             {
-                json = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
+                json = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{url.ToString()}\".", ex);
+                AddException(ex, uri.ToString());
             }
 
-            // Deserialize the returned JSON
-            var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
-            var trackDyns = searchDyn.message.body.track_list;
+            if (Exceptions.Count > 0)
+                return this;
 
-            // Now we get the lyrics for each search result
             try
             {
+                // Deserialize the returned JSON
+                var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
+                var trackDyns = searchDyn.message.body.track_list;
+
+                // Now we get the lyrics for each search result
+                var uris = new List<Uri>();
+
                 foreach (var trackDyn in trackDyns)
                 {
-                    urlString = $"{credit.ServiceUrl}track.lyrics.get?apikey={credit.Token}&track_id={trackDyn?.track?.track_id ?? 0}&commontrack_id={trackDyn?.track?.commontrack_id ?? 0}";
-                    url = new SerializableUri(Uri.EscapeUriString(urlString));
+                    uriString = $"{credit.ServiceUrl}track.lyrics.get?apikey={credit.Token}&track_id={trackDyn?.track?.track_id ?? 0}&commontrack_id={trackDyn?.track?.commontrack_id ?? 0}";
+                    uri = new SerializableUri(Uri.EscapeUriString(uriString));
 
-                    json = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
-
-                    // Deserialize the returned JSON
-                    var lyricDyn = JsonConvert.DeserializeObject<dynamic>(json);
-                    var lyricDynBody = lyricDyn.message.body;
-                    dynamic lyricsDyn;
-
-                    try
-                    {
-                        lyricsDyn = lyricDynBody?.lyrics;
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-
-                    var lyricText = (string)lyricsDyn?.lyrics_body ?? string.Empty;
-                    var lyricUrl = (lyricsDyn?.backlink_url == null) ? null : new SerializableUri((string)lyricsDyn?.backlink_url);
-                    var lyricTrackingUrl = (lyricsDyn?.html_tracking_url == null) ? null : new SerializableUri((string)lyricsDyn?.html_tracking_url);
-                    var copyright = (string)lyricsDyn?.lyrics_copyright ?? string.Empty;
-
-                    AddFoundLyric(lyricText, lyricUrl, lyricTrackingUrl, copyright);
-
-                    if (!getAll)
-                        break;
+                    uris.Add(uri);
                 }
+
+                await ExtractAllLyricTextsAsync(uris, getAll).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{url.ToString()}\".", ex);
+                AddException(ex, uri.ToString());
             }
 
             return this;

@@ -166,10 +166,10 @@ namespace MediaCenter.LyricsFinder
 
                 msg = "initializing the start/stop button delegates";
                 Logging.Log(_progressPercentage, msg + "...", true);
-                ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_StartingAsync;
-                ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_StoppingAsync;
-                SearchAllStartStopButton.Starting += StartStopButton_StartingAsync;
-                SearchAllStartStopButton.Stopping += StartStopButton_StoppingAsync;
+                ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
+                ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
+                SearchAllStartStopButton.Starting += StartStopButton_Starting;
+                SearchAllStartStopButton.Stopping += StartStopButton_Stopping;
 
                 msg = "initializing the Media Center MCWS connection parameters";
                 Logging.Log(_progressPercentage, msg + "...", true);
@@ -197,6 +197,15 @@ namespace MediaCenter.LyricsFinder
                 StatusMessage($"Error {msg} during initialization.", true, true);
                 ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
             }
+        }
+
+
+        /// <summary>
+        /// Tries to Find lyrics for all items in the current playlist.
+        /// </summary>
+        /// <returns></returns>
+        public async Task Process()
+        {
         }
 
 

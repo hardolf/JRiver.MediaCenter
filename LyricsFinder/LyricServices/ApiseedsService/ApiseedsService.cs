@@ -63,13 +63,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var credit = Credit as CreditType;
 
             // First we search for the track
-            var urlString = $"{credit.ServiceUrl}{item.Artist}/{item.Name}?apikey={credit.Token}";
-            var url = new SerializableUri(Uri.EscapeUriString(urlString));
+            var uriString = $"{credit.ServiceUrl}{item.Artist}/{item.Name}?apikey={credit.Token}";
+            var uri = new SerializableUri(Uri.EscapeUriString(uriString));
             var json = string.Empty;
 
             try
             {
-                json = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
+                json = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
@@ -77,16 +77,26 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 if (ex.Message.Contains("404"))
                     return this;
                 else
-                    throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\" Request: \"{url.ToString()}\".", ex);
+                    AddException(ex, uri.ToString());
             }
 
-            // Deserialize the returned JSON
-            var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
-            var lyricText = (string)searchDyn.result.track.text;
-            var copyright = searchDyn.result.copyright;
-            var copyrightText = SharedComponents.Utility.JoinTrimmedStrings(".\r\n", (string)copyright.notice, (string)copyright.artist, (string)copyright.text) + ".";
+            if (Exceptions.Count > 0)
+                return this;
 
-            AddFoundLyric(lyricText, null, null, copyrightText);
+            try
+            {
+                // Deserialize the returned JSON
+                var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
+                var lyricText = (string)searchDyn.result.track.text;
+                var copyright = searchDyn.result.copyright;
+                var copyrightText = SharedComponents.Utility.JoinTrimmedStrings(".\r\n", (string)copyright.notice, (string)copyright.artist, (string)copyright.text) + ".";
+
+                AddFoundLyric(lyricText, null, null, copyrightText);
+            }
+            catch (Exception ex)
+            {
+                AddException(ex, uri.ToString());
+            }
 
             return this;
         }
