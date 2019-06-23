@@ -38,10 +38,25 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Extracts the result text and sets the FoundLyricsText.
         /// </summary>
-        protected static async Task<string> ExtractLyricsText(Uri url)
+        /// <param name="uri">The URI.</param>
+        /// <returns>
+        /// If found, the found lyric text string; else null.
+        /// </returns>
+        /// <exception cref="NullReferenceException">
+        /// Document node not found in the lyric page.
+        /// or
+        /// Lyric \"div\" nodes not found.
+        /// or
+        /// Lyric main \"div\" node not found.
+        /// or
+        /// Lyric sub \"div\" nodes not found.
+        /// </exception>
+        protected override async Task<string> ExtractOneLyricTextAsync(Uri uri)
         {
-            var html = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
 
+            var ret = await base.ExtractOneLyricTextAsync(uri).ConfigureAwait(false);
+            var html = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
             var doc = new HtmlDocument();
 
             doc.LoadHtml(html);
@@ -83,10 +98,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 }
             }
 
-            var ret = divNode.InnerText;
-
+            ret = divNode.InnerText;
             ret = ret.LfToCrLf(); // Ensure proper Windows CRLF line endings
             ret = ret.Trim('\r', '\n');
+
+            // If found, add the found lyric to the list
+            if (!ret.IsNullOrEmptyTrimmed())
+                AddFoundLyric(ret, new SerializableUri(uri.AbsoluteUri));
 
             return ret;
         }
@@ -149,54 +167,34 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
-        public override async Task<AbstractLyricService> Process(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool getAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            await base.Process(item).ConfigureAwait(false); // Result: not found
+            await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
 
             var credit = Credit as CreditType;
             var html = string.Empty;
             var urlString = string.Empty;
-
-            // TODO: req.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            SerializableUri uri;
 
             try
             {
                 // First we try a rigorous test
                 urlString = $"{credit.ServiceUrl}?q={item.Artist} {item.Album} {item.Name}";
+                uri = new SerializableUri(Uri.EscapeUriString(urlString));
+                html = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
 
-                var url = new SerializableUri(Uri.EscapeUriString(urlString));
-
-                html = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
-
-                var resultUriList = GetResultUris(html);
-                var tasks = new List<Task>();
-
-                foreach (var uri in resultUriList)
-                {
-                    var lyricText = await ExtractLyricsText(uri).ConfigureAwait(false);
-
-                    AddFoundLyric(lyricText, new SerializableUri(uri.AbsoluteUri));
-                }
+                await ExtractAllLyricTextsAsync(GetResultUris(html), getAll).ConfigureAwait(false);
 
                 // If not found or if we want all possible results, we next try a more lax test without the album
                 if (getAll || (LyricResult != LyricResultEnum.Found))
                 {
                     urlString = $"{credit.ServiceUrl}?q={item.Artist} {item.Name}";
-                    url = new SerializableUri(Uri.EscapeUriString(urlString));
-                    tasks = new List<Task>();
+                    uri = new SerializableUri(Uri.EscapeUriString(urlString));
+                    html = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
 
-                    html = await Helpers.Utility.HttpGetStringAsync(url).ConfigureAwait(false);
-
-                    resultUriList = GetResultUris(html);
-
-                    foreach (var uri in resultUriList)
-                    {
-                        var lyricText = await ExtractLyricsText(uri).ConfigureAwait(false);
-
-                        AddFoundLyric(lyricText, new SerializableUri(uri.AbsoluteUri));
-                    }
+                    await ExtractAllLyricTextsAsync(GetResultUris(html), getAll).ConfigureAwait(false);
                 }
             }
             catch (HttpRequestException ex)

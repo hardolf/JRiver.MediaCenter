@@ -41,7 +41,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
         [TestMethod]
         public async Task Stands4TestMethod01()
         {
-            var resultService = await _service.Process(_item).ConfigureAwait(false);
+            var resultService = await _service.ProcessAsync(_item).ConfigureAwait(false);
 
             Assert.IsNotNull(resultService);
             Assert.AreNotEqual(0, resultService.FoundLyricList.Count);

@@ -433,7 +433,7 @@ namespace MediaCenter.LyricsFinder
                 {
                     if (!service.IsImplemented || !service.IsActive || service.IsQuotaExceeded) continue;
 
-                    var task = service.Process(_McItem, true);
+                    var task = service.ProcessAsync(_McItem, true);
 
                     tasks.Add(task);
                 }

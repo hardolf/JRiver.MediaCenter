@@ -53,11 +53,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
-        public override async Task<AbstractLyricService> Process(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool getAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            await base.Process(item).ConfigureAwait(false); // Result: not found
+            await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
 
             // Example requests:
             // http://api.musixmatch.com/ws/1.1/track.search?apikey=xxxxxxxxxxxxxxxxxxxxx&q_artist=Dire%20Straits&q_track=Lions

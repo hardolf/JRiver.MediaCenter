@@ -290,6 +290,65 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Extracts all the lyrics from all the Uris.
+        /// </summary>
+        /// <param name="uris">The uris.</param>
+        /// <param name="getAll">if set to <c>true</c> extracts all lyrics from all the Uris; else exits after the first hit.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">uris</exception>
+        protected virtual async Task ExtractAllLyricTextsAsync(IEnumerable<Uri> uris, bool getAll = false)
+        {
+            if (uris == null) throw new ArgumentNullException(nameof(uris));
+
+            if (getAll)
+            {
+                // Parallel search
+                var tasks = new List<Task>();
+
+                foreach (var uri in uris)
+                {
+                    tasks.Add(ExtractOneLyricTextAsync(uri));
+                }
+
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+            else
+            {
+                // Serial search, probably hits on the first try
+                foreach (var uri in uris)
+                {
+                    var lyricText = await ExtractOneLyricTextAsync(uri).ConfigureAwait(false);
+
+                    if (!lyricText.IsNullOrEmptyTrimmed())
+                        break;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Extracts the result text from a Uri and adds the found lyric text to the list.
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <returns>
+        /// If found, the found lyric text string; else null.
+        /// </returns>
+        protected virtual async Task<string> ExtractOneLyricTextAsync(Uri uri)
+        {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+
+            var ret = string.Empty;
+
+            // This must be done in every descendent routine:
+            // If found, add the found lyric to the list
+            // if (!ret.IsNullOrEmptyTrimmed())
+            //     AddFoundLyric(ret, new SerializableUri(uri.AbsoluteUri));
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -298,7 +357,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="LyricsQuotaExceededException"></exception>
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public virtual async Task<AbstractLyricService> Process(McMplItem item, bool getAll = false)
+        public virtual async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool getAll = false)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (item == null) throw new ArgumentNullException(nameof(item));

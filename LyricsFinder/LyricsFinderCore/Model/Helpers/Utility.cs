@@ -124,7 +124,11 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 else
                 {
                     _httpClientWithCredentials.Dispose();
-                    _httpClientHandler = new HttpClientHandler { Credentials = new NetworkCredential(userName, password) };
+                    _httpClientHandler = new HttpClientHandler
+                    {
+                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                        Credentials = new NetworkCredential(userName, password)
+                    };
                     _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
 
                     st = await _httpClientWithCredentials.GetStreamAsync(requestUrl).ConfigureAwait(false);
@@ -166,7 +170,11 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 else
                 {
                     _httpClientWithCredentials.Dispose();
-                    _httpClientHandler = new HttpClientHandler { Credentials = new NetworkCredential(userName, password) };
+                    _httpClientHandler = new HttpClientHandler
+                    {
+                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                        Credentials = new NetworkCredential(userName, password)
+                    };
                     _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
 
                     ret = await _httpClientWithCredentials.GetStringAsync(requestUrl).ConfigureAwait(false);
