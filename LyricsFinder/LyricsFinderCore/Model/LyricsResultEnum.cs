@@ -20,7 +20,8 @@ namespace MediaCenter.LyricsFinder.Model
         SkippedOldLyrics,
         ManuallyEdited,
         Error,
-        Processing
+        Processing,
+        Canceled
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 

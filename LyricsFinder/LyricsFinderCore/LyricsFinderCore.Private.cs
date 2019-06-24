@@ -39,6 +39,7 @@ namespace MediaCenter.LyricsFinder
         private bool _isConnectedToMc = false;
         private bool _isDesignTime = false;
         private bool _isGridDataChanged = false; // Do not change this in code, always change the <c>IsDataChanged</c> property instead.
+        private bool _isOnHandleDestroyedDone = false;
         private readonly bool _isStandAlone = true;
 
         private int _currentMouseColumnIndex = -1;
@@ -49,6 +50,7 @@ namespace MediaCenter.LyricsFinder
         private static int _mcStatusIntervalError = 5000; // 5 seconds
 
         private readonly string _logHeader = "".PadRight(80, '-');
+
         private DateTime _lastUpdateCheck = DateTime.MinValue;
 
         private BitmapForm _bitmapForm = null;
@@ -57,6 +59,7 @@ namespace MediaCenter.LyricsFinder
         private SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
         private McPlayListsResponse _currentUnsortedMcPlaylistsResponse = null;
         private McMplResponse _currentPlaylist = null;
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
 
         /**********************************/
@@ -384,11 +387,28 @@ namespace MediaCenter.LyricsFinder
                     // Load previously saved services
                     LyricsFinderData = LyricsFinderDataType.Load(dataFile);
                 }
+                catch (FileNotFoundException ex)
+                {
+                    ErrorHandling.ErrorLog($"LyricsFinder datafile \"{dataFile}\" not found, initializing a new set of services.", ex);
+                    LyricsFinderData = new LyricsFinderDataType(dataFile);
+                    LyricsFinderData.IsSaveOk = true;
+                }
                 catch (Exception ex)
                 {
-                    ErrorHandling.ErrorLog("Failed to load the lyric services, initializing a new set of services.", ex);
-
+                    ErrorHandling.ErrorLog("Failed to load the lyric services, ask if we should initialize a new set of services.", ex);
                     LyricsFinderData = new LyricsFinderDataType(dataFile);
+
+                    var result = MessageBox.Show(this, $"LyricsFinder data file \"{dataFile}\" is not found, "
+                        + "will you initialize and save a new set of services?",
+                        "LyricsFinder datafile not found", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        LyricsFinderData.IsSaveOk = true;
+                        LyricsFinderData.Save();
+                    }
+                    else
+                        LyricsFinderData.IsSaveOk = false;
                 }
 
                 // Add any lyric services that were not loaded before
@@ -420,13 +440,15 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Initializes the logging.
         /// </summary>
+        /// <param name="logName">Name of the log.</param>
         /// <param name="initMessages">The initialize messages.</param>
-        private static void InitLogging(string[] initMessages = null)
+        private static void InitLogging(string logName = nameof(LyricsFinder), string[] initMessages = null)
         {
             var assy = Assembly.GetExecutingAssembly();
             var configFile = $"{assy.Location}.config";
             var fi = new FileInfo(configFile);
 
+            Logging.Init(logName);
             log4net.Config.XmlConfigurator.ConfigureAndWatch(fi);
 
             if (LogManager.GetRepository().Configured)
@@ -551,9 +573,15 @@ namespace MediaCenter.LyricsFinder
             var name = "Playing Now";
             McMplResponse ret;
 
-            // If called from a select playlist menu, get the ID and name of the playlist
-            if (!menuItemName.IsNullOrEmptyTrimmed())
+            if (menuItemName.IsNullOrEmptyTrimmed())
             {
+                // If reload, get the ID and name of the current playlist
+                id = _currentPlaylist?.Id ?? 0;
+                name = _currentPlaylist?.Name ?? string.Empty;
+            }
+            else
+            {
+                // If called from a select playlist menu, get the ID and name of the playlist
                 var idx = menuItemName.LastIndexOf(_menuNameDelim, StringComparison.InvariantCultureIgnoreCase);
                 var idString = menuItemName.Substring(idx + 1);
                 var tmp = menuItemName.Substring(0, idx);

@@ -51,6 +51,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <value>
         /// The initial XML.
         /// </value>
+        [XmlIgnore]
         protected string InitialXml { get; set; }
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <value>
         ///   <c>true</c> if this instance data is changed; otherwise, <c>false</c>.
         /// </value>
+        [XmlIgnore]
         public bool IsChanged
         {
             get
@@ -69,6 +71,15 @@ namespace MediaCenter.LyricsFinder.Model
                 return ret;
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is save ok.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if it is OK to save; otherwise, <c>false</c>.
+        /// </value>
+        [XmlIgnore]
+        public bool IsSaveOk { get; set; }
 
         /// <summary>
         /// Gets or sets the service list.
@@ -94,6 +105,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         public LyricsFinderDataType()
         {
+            IsSaveOk = true;
             Services = new List<AbstractLyricService>();
         }
 
@@ -106,7 +118,6 @@ namespace MediaCenter.LyricsFinder.Model
             : this()
         {
             SavedDataFilePath = Environment.ExpandEnvironmentVariables(savedDataFilePath);
-            Services = new List<AbstractLyricService>();
         }
 
 
@@ -133,7 +144,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         public virtual void Save()
         {
-            if (IsChanged)
+            if (IsChanged && IsSaveOk)
             {
                 InitialXml = Serialize.XmlSerializeToString(this, XmlKnownTypes.ToArray());
                 Serialize.XmlSerializeToFile(this, SavedDataFilePath, XmlKnownTypes.ToArray());

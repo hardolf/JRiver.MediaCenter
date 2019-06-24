@@ -16,14 +16,19 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        /// <param name="disposing"><c>true</c> if managed resources should be disposed; else <c>false</c>.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (components != null) components.Dispose();
-                if (_lyricsForm != null) _lyricsForm.Dispose();
-                if (_bitmapForm != null) _bitmapForm.Dispose();
+                try { _currentPlaylist = null; } catch { /* Ignore */ }
+                try { _currentUnsortedMcPlaylistsResponse = null; } catch { /* Ignore */ }
+                try { if (_bitmapForm != null) _bitmapForm.Close(); } catch { /* Ignore */ }
+                try { if (_lyricsForm != null) _lyricsForm.Close(); } catch { /* Ignore */ }
+                try { if (_noLyricsSearchList != null) _noLyricsSearchList.Clear(); _noLyricsSearchList = null; } catch { /* Ignore */ }
+                try { if (_currentSortedMcPlaylists != null) _currentSortedMcPlaylists.Clear(); _currentSortedMcPlaylists = null; } catch { /* Ignore */ }
+                try { if (_cancellationTokenSource != null) _cancellationTokenSource.Dispose(); } catch { /* Ignore */ }
+                try { if (components != null) components.Dispose(); } catch { /* Ignore */ }
             }
 
             base.Dispose(disposing);

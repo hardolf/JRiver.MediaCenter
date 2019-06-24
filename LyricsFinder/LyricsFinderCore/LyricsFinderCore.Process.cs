@@ -69,7 +69,8 @@ namespace MediaCenter.LyricsFinder
                     else
                         throw;
                 }
-            } while (cnt < maxConnectAttempts);
+            } while (((alive == null) || (!alive.IsOk))
+                && (cnt < maxConnectAttempts));
 
             // If we got the MCWS connection, let's try to authenticate
             if ((alive != null) && alive.IsOk)
@@ -83,6 +84,7 @@ namespace MediaCenter.LyricsFinder
                         Authentication = await McRestService.GetAuthentication();
 
                         _isConnectedToMc = true;
+                        StatusMessage($"Connected successfully to the MCWS after {cnt} attempt(s).", true, true);
                     }
                     catch
                     {
@@ -124,8 +126,9 @@ namespace MediaCenter.LyricsFinder
                 StatusMessage("LyricsFinder initializes...", true, false);
 
                 // Init the log. This must be done as the very first thing, before trying to write to the log.
+                var logName = _isStandAlone ? $"{nameof(LyricsFinder)}.Standalone" : $"{nameof(LyricsFinder)}.Plugin";
                 msg = "LyricsFinder for JRiver Media Center is started" + (_isStandAlone ? " standalone." : " from Media Center.");
-                InitLogging(new[] { _logHeader, msg });
+                InitLogging(logName, new[] { _logHeader, msg });
 
                 msg = "initializing the application configuration handler";
                 Logging.Log(_progressPercentage, msg + "...", true);
@@ -204,9 +207,11 @@ namespace MediaCenter.LyricsFinder
         /// Tries to Find lyrics for all items in the current playlist.
         /// </summary>
         /// <returns></returns>
-        private async Task ProcessAsync()
+        private async Task ProcessAsync(CancellationTokenSource cancellationTokenSource)
         {
-            var ok = false;
+            if (cancellationTokenSource == null) throw new ArgumentNullException(nameof(cancellationTokenSource));
+
+            var isOk = false;
             var foundItemIndices = new List<int>();
             var queue = new Queue<int>(Enumerable.Range(0, _currentPlaylist.Items.Count));
             var workers = new List<Task>();
@@ -220,26 +225,34 @@ namespace MediaCenter.LyricsFinder
                 // Add the set of workers
                 for (var i = 0; i < LyricsFinderCorePrivateConfigurationSectionHandler.MaxQueueLength; i++)
                 {
-                    workers.Add(ProcessWorkerAsync(queue, foundItemIndices));
+                    workers.Add(ProcessWorkerAsync(queue, foundItemIndices, cancellationTokenSource));
                 }
 
                 // Run the search on the set of workers
                 await Task.WhenAll(workers);
 
-                ok = true;
+                isOk = true;
+            }
+            catch
+            {
+                _cancellationTokenSource.Cancel();
+                throw;
             }
             finally
             {
                 SearchAllStartStopButton.Stop();
 
-                var isCanceled = false;
-                var result = (ok)
-                    ? (isCanceled)
+                var processedCount = (queue.Count > 0)
+                    ? queue.Peek() + 1
+                    : _currentPlaylist.Items.Count;
+
+                var result = (isOk)
+                    ? (_cancellationTokenSource.IsCancellationRequested)
                         ? "was canceled"
                         : "completed successfully"
                     : "failed";
 
-                StatusMessage($"Finding lyrics for the current playlist {result} with {foundItemIndices.Count} lyrics found and {queue.Peek() + 1} processed.", true, true);
+                StatusMessage($"Finding lyrics for the current playlist {result} with {foundItemIndices.Count} lyrics found and {processedCount} processed.", true, true);
             }
         }
 
@@ -249,14 +262,28 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="queue">The queue.</param>
         /// <param name="foundItemIndices">The found item indices.</param>
+        /// <param name="cancellationTokenSource">The cancellation token source.</param>
         /// <returns></returns>
-        private async Task ProcessWorkerAsync(Queue<int> queue, List<int> foundItemIndices)
+        /// <exception cref="ArgumentNullException">
+        /// queue
+        /// or
+        /// foundItemIndices
+        /// or
+        /// foundItemIndices
+        /// </exception>
+        /// <exception cref="Exception">Process worker failed at item {i}, Artist \"{artist}\", Album \"{album}\" and Title \"{title}\": {ex.Message}</exception>
+        private async Task ProcessWorkerAsync(Queue<int> queue, List<int> foundItemIndices, CancellationTokenSource cancellationTokenSource)
         {
+            if (queue == null) throw new ArgumentNullException(nameof(queue));
+            if (foundItemIndices == null) throw new ArgumentNullException(nameof(foundItemIndices));
+            if (cancellationTokenSource == null) throw new ArgumentNullException(nameof(cancellationTokenSource));
+
             var i = 0;
             var artist = string.Empty;
             var album = string.Empty;
             var title = string.Empty;
             var oldLyric = string.Empty;
+            var row = MainDataGridView.Rows[0];
 
             try
             {
@@ -265,7 +292,11 @@ namespace MediaCenter.LyricsFinder
                     i = queue.Dequeue();
 
                     var found = false;
-                    var row = MainDataGridView.Rows[i];
+
+                    row = MainDataGridView.Rows[i];
+
+                    if (!int.TryParse(row.Cells[(int)GridColumnEnum.Key].Value?.ToString(), out var key))
+                        throw new Exception($"{row.Cells[(int)GridColumnEnum.Key].Value} could not be parsed as an integer.");
 
                     artist = row.Cells[(int)GridColumnEnum.Artist].Value?.ToString() ?? string.Empty;
                     album = row.Cells[(int)GridColumnEnum.Album].Value?.ToString() ?? string.Empty;
@@ -277,7 +308,7 @@ namespace MediaCenter.LyricsFinder
                         row.Cells[(int)GridColumnEnum.Status].Value = $"{LyricResultEnum.Processing.ResultText()}...";
 
                         // Try to get the first search hit
-                        await LyricSearch.Search(LyricsFinderData, _currentPlaylist.Items[i], false); // TODO: exception here (key not found)
+                        await LyricSearch.Search(LyricsFinderData, _currentPlaylist.Items[key], false);
 
                         // Process the results
                         // The first lyric found by any service is used for each item
@@ -294,8 +325,12 @@ namespace MediaCenter.LyricsFinder
                             }
                         }
 
+                        var processedCount = (queue.Count > 0)
+                            ? queue.Peek() + 1
+                            : _currentPlaylist.Items.Count;
+
                         _progressPercentage = Convert.ToInt32(100 * foundItemIndices.Count / _currentPlaylist.Items.Count);
-                        StatusMessage($"Processed {queue.Peek() + 1} items and found {foundItemIndices.Count} lyrics for the current playlist with {_currentPlaylist.Items.Count} items...", true, true);
+                        StatusMessage($"Processed {processedCount} items and found {foundItemIndices.Count} lyrics for the current playlist with {_currentPlaylist.Items.Count} items...", true, true);
 
                         row.Cells[(int)GridColumnEnum.Status].Value = (found)
                             ? LyricResultEnum.Found.ResultText()
@@ -307,8 +342,14 @@ namespace MediaCenter.LyricsFinder
                 }
 
             }
+            catch (OperationCanceledException)
+            {
+                // StatusMessage($"Process worker canceled at item {i}, Artist \"{artist}\", Album \"{album}\" and Title \"{title}\"", true, true);
+                row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.Canceled.ResultText();
+            }
             catch (Exception ex)
             {
+                row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.Error.ResultText();
                 throw new Exception($"Process worker failed at item {i}, Artist \"{artist}\", Album \"{album}\" and Title \"{title}\": {ex.Message}", ex);
             }
         }
@@ -328,10 +369,16 @@ namespace MediaCenter.LyricsFinder
             {
                 EnableOrDisableMenuItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem);
 
+                if (IsDataChanged)
+                    throw new Exception("The item data is changed, you should save it before loading playlist.");
+
                 if (!_isConnectedToMc || isReconnect)
                     await Connect();
 
-                _currentPlaylist = await LoadPlaylist(menuItemName);
+                _currentPlaylist = (menuItemName.IsNullOrEmptyTrimmed())
+                    ? await LoadPlaylist()
+                    : await LoadPlaylist(menuItemName);
+
                 await FillDataGrid();
 
                 ResetItemStates();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,7 +21,20 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     internal static class Logging
     {
 
-        private static readonly ILog _log = LogManager.GetLogger(nameof(LyricsFinder));
+        private static string _logName = nameof(LyricsFinder);
+
+        private static ILog _log = LogManager.GetLogger(_logName);
+
+
+        /// <summary>
+        /// Initializes the specified log name.
+        /// </summary>
+        /// <param name="logName">Name of the log.</param>
+        public static void Init(string logName)
+        {
+            _logName = logName ?? throw new ArgumentNullException(nameof(logName));
+            _log = LogManager.GetLogger(_logName);
+        }
 
 
         /// <summary>

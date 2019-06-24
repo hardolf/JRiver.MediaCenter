@@ -7,9 +7,10 @@ Core module creation date:
 2018.04.12
 
 Version Number:
-1.0.0
+1.2.0
 
 Modified: 2019.05.25 by Hardolf.
+Modified: 2019.07.01 by Hardolf.
 */
 
 
@@ -570,7 +571,7 @@ namespace MediaCenter.LyricsFinder
                         case nameof(ToolsLyricServicesMenuItem):
                             using (var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, ShowServicesCallback))
                             {
-                                lyricsServiceForm.ShowDialog(this); 
+                                lyricsServiceForm.ShowDialog(this);
                             }
                             break;
 
@@ -617,26 +618,20 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                if (!_isDesignTime)
+                if (!_isDesignTime && !_isOnHandleDestroyedDone)
                 {
+                    _isOnHandleDestroyedDone = true;
                     _progressPercentage = 0;
-
-                    //TODO: BackgroundWorker: 
-                    //if (ProcessWorker.WorkerSupportsCancellation)
-                    //    ProcessWorker.CancelAsync();
-
                     StatusLog("LyricsFinder for JRiver Media Center closed.");
                     StatusLog(_logHeader + Environment.NewLine);
+
+                    Dispose(true);
                 }
 
                 base.OnHandleDestroyed(e);
             }
             catch (Exception ex)
             {
-                //TODO: BackgroundWorker: 
-                //if (ProcessWorker.WorkerSupportsCancellation)
-                //    ProcessWorker.CancelAsync();
-
                 ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
@@ -664,7 +659,7 @@ namespace MediaCenter.LyricsFinder
                 _progressPercentage = 0;
 
                 // Start the automatic search process job
-                await ProcessAsync();
+                await ProcessAsync(_cancellationTokenSource);
             }
             catch (Exception ex)
             {
@@ -687,9 +682,7 @@ namespace MediaCenter.LyricsFinder
                 if (ToolsSearchAllStartStopButton.IsRunning)
                     ToolsSearchAllStartStopButton.Stop();
 
-                //TODO: BackgroundWorker: 
-                //if (ProcessWorker.WorkerSupportsCancellation)
-                //    ProcessWorker.CancelAsync();
+                _cancellationTokenSource.Cancel();
             }
             catch (Exception ex)
             {

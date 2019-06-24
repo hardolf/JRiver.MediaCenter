@@ -7,12 +7,13 @@ Plugin creation date:
 2018.04.12
 
 Version Number:
-1.0.0
+1.2.0
 
-Template Created by Mr ChriZ
+Inspired by template created by Mr ChriZ
 Source: http://accessories.jriver.com/mediacenter/mc_data/plugins/CSPlugin_Template.rar
 
 Modified: 2019.05.25 by Hardolf.
+Modified: 2019.07.01 by Hardolf.
 */
 
 using System;
