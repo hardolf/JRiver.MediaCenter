@@ -426,7 +426,7 @@ namespace MediaCenter.LyricsFinder
                 // Clear list and search for all the lyrics in each lyric service
                 _foundLyricList.Clear();
 
-                await LyricSearch.Search(LyricsFinderData, _McItem).ConfigureAwait(true);
+                await LyricSearch.Search(LyricsFinderData, _McItem, true).ConfigureAwait(true);
 
                 // Process the results
                 foreach (var service in LyricsFinderData.ActiveServices)

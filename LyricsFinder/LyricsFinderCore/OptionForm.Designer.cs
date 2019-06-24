@@ -42,10 +42,12 @@
             this.McWsUrlTextBox = new System.Windows.Forms.TextBox();
             this.UpdateCheckIntervalDaysLabel = new System.Windows.Forms.Label();
             this.UpdateCheckIntervalDaysUpDown = new System.Windows.Forms.NumericUpDown();
-            this.LastUpdateLabel = new System.Windows.Forms.Label();
+            this.LastUpdateCheckLabel = new System.Windows.Forms.Label();
             this.CloseButton = new System.Windows.Forms.Button();
-            this.LastUpdateTextBox = new System.Windows.Forms.TextBox();
+            this.LastUpdateCheckTextBox = new System.Windows.Forms.TextBox();
             this.OptionToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.MaxQueueLengthLabel = new System.Windows.Forms.Label();
+            this.MaxQueueLengthTextBox = new System.Windows.Forms.TextBox();
             this.OptionPanel.SuspendLayout();
             this.OptionLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UpdateCheckIntervalDaysUpDown)).BeginInit();
@@ -58,7 +60,7 @@
             this.OptionPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.OptionPanel.Location = new System.Drawing.Point(0, 0);
             this.OptionPanel.Name = "OptionPanel";
-            this.OptionPanel.Size = new System.Drawing.Size(451, 250);
+            this.OptionPanel.Size = new System.Drawing.Size(451, 272);
             this.OptionPanel.TabIndex = 0;
             // 
             // OptionLayoutPanel
@@ -78,13 +80,15 @@
             this.OptionLayoutPanel.Controls.Add(this.McWsUrlTextBox, 1, 4);
             this.OptionLayoutPanel.Controls.Add(this.UpdateCheckIntervalDaysLabel, 0, 5);
             this.OptionLayoutPanel.Controls.Add(this.UpdateCheckIntervalDaysUpDown, 1, 5);
-            this.OptionLayoutPanel.Controls.Add(this.LastUpdateLabel, 0, 6);
-            this.OptionLayoutPanel.Controls.Add(this.CloseButton, 1, 7);
-            this.OptionLayoutPanel.Controls.Add(this.LastUpdateTextBox, 1, 6);
+            this.OptionLayoutPanel.Controls.Add(this.LastUpdateCheckLabel, 0, 6);
+            this.OptionLayoutPanel.Controls.Add(this.CloseButton, 1, 8);
+            this.OptionLayoutPanel.Controls.Add(this.LastUpdateCheckTextBox, 1, 6);
+            this.OptionLayoutPanel.Controls.Add(this.MaxQueueLengthLabel, 0, 7);
+            this.OptionLayoutPanel.Controls.Add(this.MaxQueueLengthTextBox, 1, 7);
             this.OptionLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.OptionLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.OptionLayoutPanel.Name = "OptionLayoutPanel";
-            this.OptionLayoutPanel.RowCount = 8;
+            this.OptionLayoutPanel.RowCount = 9;
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
@@ -92,8 +96,9 @@
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.OptionLayoutPanel.Size = new System.Drawing.Size(451, 250);
+            this.OptionLayoutPanel.Size = new System.Drawing.Size(451, 272);
             this.OptionLayoutPanel.TabIndex = 0;
             // 
             // HeaderTextBox
@@ -217,38 +222,59 @@
             this.OptionToolTip.SetToolTip(this.UpdateCheckIntervalDaysUpDown, "> 0: days between check for updates\r\n0: Check for updates each start\r\n< 0: disabl" +
         "e check for updates\r\n");
             // 
-            // LastUpdateLabel
+            // LastUpdateCheckLabel
             // 
-            this.LastUpdateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.LastUpdateCheckLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.LastUpdateLabel.AutoSize = true;
-            this.LastUpdateLabel.Location = new System.Drawing.Point(3, 185);
-            this.LastUpdateLabel.Name = "LastUpdateLabel";
-            this.LastUpdateLabel.Size = new System.Drawing.Size(63, 25);
-            this.LastUpdateLabel.TabIndex = 11;
-            this.LastUpdateLabel.Text = "Last update";
-            this.LastUpdateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LastUpdateCheckLabel.AutoSize = true;
+            this.LastUpdateCheckLabel.Location = new System.Drawing.Point(3, 185);
+            this.LastUpdateCheckLabel.Name = "LastUpdateCheckLabel";
+            this.LastUpdateCheckLabel.Size = new System.Drawing.Size(96, 25);
+            this.LastUpdateCheckLabel.TabIndex = 11;
+            this.LastUpdateCheckLabel.Text = "Last update check";
+            this.LastUpdateCheckLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // CloseButton
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(373, 224);
+            this.CloseButton.Location = new System.Drawing.Point(373, 246);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
-            this.CloseButton.TabIndex = 13;
+            this.CloseButton.TabIndex = 15;
             this.CloseButton.Text = "&Close (Esc)";
             this.CloseButton.UseVisualStyleBackColor = true;
             this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
             // 
-            // LastUpdateTextBox
+            // LastUpdateCheckTextBox
             // 
-            this.LastUpdateTextBox.Location = new System.Drawing.Point(157, 188);
-            this.LastUpdateTextBox.Name = "LastUpdateTextBox";
-            this.LastUpdateTextBox.ReadOnly = true;
-            this.LastUpdateTextBox.Size = new System.Drawing.Size(150, 20);
-            this.LastUpdateTextBox.TabIndex = 12;
-            this.OptionToolTip.SetToolTip(this.LastUpdateTextBox, "Password from Media Center Options window > Media Network tab");
+            this.LastUpdateCheckTextBox.Location = new System.Drawing.Point(157, 188);
+            this.LastUpdateCheckTextBox.Name = "LastUpdateCheckTextBox";
+            this.LastUpdateCheckTextBox.ReadOnly = true;
+            this.LastUpdateCheckTextBox.Size = new System.Drawing.Size(150, 20);
+            this.LastUpdateCheckTextBox.TabIndex = 12;
+            this.OptionToolTip.SetToolTip(this.LastUpdateCheckTextBox, "Date of the last check for new updates");
+            // 
+            // MaxQueueLengthLabel
+            // 
+            this.MaxQueueLengthLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.MaxQueueLengthLabel.AutoSize = true;
+            this.MaxQueueLengthLabel.Location = new System.Drawing.Point(3, 210);
+            this.MaxQueueLengthLabel.Name = "MaxQueueLengthLabel";
+            this.MaxQueueLengthLabel.Size = new System.Drawing.Size(116, 25);
+            this.MaxQueueLengthLabel.TabIndex = 13;
+            this.MaxQueueLengthLabel.Text = "Maximum queue length";
+            this.MaxQueueLengthLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // MaxQueueLengthTextBox
+            // 
+            this.MaxQueueLengthTextBox.Location = new System.Drawing.Point(157, 213);
+            this.MaxQueueLengthTextBox.Name = "MaxQueueLengthTextBox";
+            this.MaxQueueLengthTextBox.Size = new System.Drawing.Size(150, 20);
+            this.MaxQueueLengthTextBox.TabIndex = 14;
+            this.OptionToolTip.SetToolTip(this.MaxQueueLengthTextBox, "Maximum songs to be queued during the automatic search.\r\nAdjust this number to th" +
+        "e number of virtual CPU cores you wish to be used.");
             // 
             // OptionForm
             // 
@@ -257,7 +283,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.CancelButton = this.CloseButton;
-            this.ClientSize = new System.Drawing.Size(451, 250);
+            this.ClientSize = new System.Drawing.Size(451, 272);
             this.Controls.Add(this.OptionPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -297,7 +323,9 @@
         private System.Windows.Forms.ToolTip OptionToolTip;
         private System.Windows.Forms.Label UpdateCheckIntervalDaysLabel;
         private System.Windows.Forms.NumericUpDown UpdateCheckIntervalDaysUpDown;
-        private System.Windows.Forms.Label LastUpdateLabel;
-        private System.Windows.Forms.TextBox LastUpdateTextBox;
+        private System.Windows.Forms.Label LastUpdateCheckLabel;
+        private System.Windows.Forms.TextBox LastUpdateCheckTextBox;
+        private System.Windows.Forms.Label MaxQueueLengthLabel;
+        private System.Windows.Forms.TextBox MaxQueueLengthTextBox;
     }
 }

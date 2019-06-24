@@ -204,8 +204,113 @@ namespace MediaCenter.LyricsFinder
         /// Tries to Find lyrics for all items in the current playlist.
         /// </summary>
         /// <returns></returns>
-        public async Task Process()
+        private async Task ProcessAsync()
         {
+            var ok = false;
+            var foundItemIndices = new List<int>();
+            var queue = new Queue<int>(Enumerable.Range(0, _currentPlaylist.Items.Count));
+            var workers = new List<Task>();
+
+            try
+            {
+                _progressPercentage = 0;
+                StatusMessage($"Finding lyrics for the current playlist with {_currentPlaylist.Items.Count} items...", true, true);
+                ResetItemStates();
+
+                // Add the set of workers
+                for (var i = 0; i < LyricsFinderCorePrivateConfigurationSectionHandler.MaxQueueLength; i++)
+                {
+                    workers.Add(ProcessWorkerAsync(queue, foundItemIndices));
+                }
+
+                // Run the search on the set of workers
+                await Task.WhenAll(workers);
+
+                ok = true;
+            }
+            finally
+            {
+                SearchAllStartStopButton.Stop();
+
+                var isCanceled = false;
+                var result = (ok)
+                    ? (isCanceled)
+                        ? "was canceled"
+                        : "completed successfully"
+                    : "failed";
+
+                StatusMessage($"Finding lyrics for the current playlist {result} with {foundItemIndices.Count} lyrics found and {queue.Peek() + 1} processed.", true, true);
+            }
+        }
+
+
+        /// <summary>
+        /// Asynchronous processes worker .
+        /// </summary>
+        /// <param name="queue">The queue.</param>
+        /// <param name="foundItemIndices">The found item indices.</param>
+        /// <returns></returns>
+        private async Task ProcessWorkerAsync(Queue<int> queue, List<int> foundItemIndices)
+        {
+            var i = 0;
+            var artist = string.Empty;
+            var album = string.Empty;
+            var title = string.Empty;
+            var oldLyric = string.Empty;
+
+            try
+            {
+                while (queue.Count > 0)
+                {
+                    i = queue.Dequeue();
+
+                    var found = false;
+                    var row = MainDataGridView.Rows[i];
+
+                    artist = row.Cells[(int)GridColumnEnum.Artist].Value?.ToString() ?? string.Empty;
+                    album = row.Cells[(int)GridColumnEnum.Album].Value?.ToString() ?? string.Empty;
+                    title = row.Cells[(int)GridColumnEnum.Title].Value?.ToString() ?? string.Empty;
+                    oldLyric = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString() ?? string.Empty;
+
+                    if (OverwriteMenuItem.Checked || oldLyric.IsNullOrEmptyTrimmed() || oldLyric.Contains(_noLyricsSearchList))
+                    {
+                        row.Cells[(int)GridColumnEnum.Status].Value = $"{LyricResultEnum.Processing.ResultText()}...";
+
+                        // Try to get the first search hit
+                        await LyricSearch.Search(LyricsFinderData, _currentPlaylist.Items[i], false); // TODO: exception here (key not found)
+
+                        // Process the results
+                        // The first lyric found by any service is used for each item
+                        foreach (var service in LyricsFinderData.ActiveServices)
+                        {
+                            if (service.LyricResult != LyricResultEnum.Found) continue;
+                            if (!service.FoundLyricList.IsNullOrEmpty())
+                            {
+                                found = true;
+                                foundItemIndices.Add(i);
+                                row.Cells[(int)GridColumnEnum.Lyrics].Value = service.FoundLyricList.First().LyricText;
+                                IsDataChanged = true;
+                                break;
+                            }
+                        }
+
+                        _progressPercentage = Convert.ToInt32(100 * foundItemIndices.Count / _currentPlaylist.Items.Count);
+                        StatusMessage($"Processed {queue.Peek() + 1} items and found {foundItemIndices.Count} lyrics for the current playlist with {_currentPlaylist.Items.Count} items...", true, true);
+
+                        row.Cells[(int)GridColumnEnum.Status].Value = (found)
+                            ? LyricResultEnum.Found.ResultText()
+                            : LyricResultEnum.NotFound.ResultText();
+                    }
+                    else if (!OverwriteMenuItem.Checked
+                        && !oldLyric.IsNullOrEmptyTrimmed())
+                        row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.SkippedOldLyrics.ResultText();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Process worker failed at item {i}, Artist \"{artist}\", Album \"{album}\" and Title \"{title}\": {ex.Message}", ex);
+            }
         }
 
 
@@ -229,6 +334,7 @@ namespace MediaCenter.LyricsFinder
                 _currentPlaylist = await LoadPlaylist(menuItemName);
                 await FillDataGrid();
 
+                ResetItemStates();
                 EnableOrDisableMenuItems(true);
             }
             catch (Exception ex)

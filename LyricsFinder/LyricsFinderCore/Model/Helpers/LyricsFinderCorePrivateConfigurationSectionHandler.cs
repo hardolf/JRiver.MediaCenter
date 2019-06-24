@@ -29,6 +29,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         private const string _mcWebServiceUserNamePropertyName = "mcWebServiceUserName";
         private const string _updateCheckIntervalDaysPropertyName = "updateCheckIntervalDays";
         private const string _lyricFormSizePropertyName = "lyricFormSize";
+        private const string _maxQueueLengthPropertyName = "maximumQueueLength";
 
         private static Configuration _privateConfiguration;
         private static AppSettingsSection _configurationSection;
@@ -101,6 +102,25 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
                 if (!int.TryParse(valueString, out var ret))
                     ret = 0;
+
+                return ret;
+            }
+        }
+
+        /// <summary>
+        /// Gets the maximum length of the queue.
+        /// </summary>
+        /// <value>
+        /// The maximum length of the queue.
+        /// </value>
+        public static int MaxQueueLength
+        {
+            get
+            {
+                var valueString = Instance?.Settings[_maxQueueLengthPropertyName]?.Value ?? string.Empty;
+
+                if (!int.TryParse(valueString, out var ret))
+                    ret = 10;
 
                 return ret;
             }
@@ -206,11 +226,16 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="password">The password.</param>
         /// <param name="lastUpdateCheck">The last update check.</param>
         /// <param name="updateCheckIntervalDays">The update check interval days.</param>
+        /// <param name="maximumQueueLength">Maximum length of the queue.</param>
         /// <param name="lyricFormSize">Size of the lyric form.</param>
         public static void Save(string accessKey = null, string serviceUrl = null, string username = null, string password = null
-            , DateTime? lastUpdateCheck = null, int? updateCheckIntervalDays = null, Size? lyricFormSize = null)
+            , DateTime? lastUpdateCheck = null, int? updateCheckIntervalDays = null, int? maximumQueueLength = null, Size? lyricFormSize = null)
         {
-            var intString = (updateCheckIntervalDays == null)
+            var intStringMax = (maximumQueueLength == null)
+                ? string.Empty
+                : maximumQueueLength.Value.ToString(CultureInfo.InvariantCulture);
+
+            var intStringUpd = (updateCheckIntervalDays == null)
                 ? string.Empty
                 : updateCheckIntervalDays.Value.ToString(CultureInfo.InvariantCulture);
 
@@ -227,7 +252,8 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             SaveProperty(_mcWebServiceUrlPropertyName, serviceUrl);
             SaveProperty(_mcWebServiceUserNamePropertyName, username);
             SaveProperty(_mcWebServicePasswordPropertyName, password);
-            SaveProperty(_updateCheckIntervalDaysPropertyName, intString);
+            SaveProperty(_maxQueueLengthPropertyName, intStringMax);
+            SaveProperty(_updateCheckIntervalDaysPropertyName, intStringUpd);
             SaveProperty(_lyricFormSizePropertyName, sizeString);
 
             _privateConfiguration.Save(ConfigurationSaveMode.Modified);

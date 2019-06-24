@@ -10,4 +10,5 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.Utility.JoinTrimmedStrings(System.String,System.String[])~System.String")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.Utility.Contains(System.String,System.Collections.Generic.IEnumerable{System.String})~System.Boolean")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.Serialize.PatchMissingNamespace(System.String)~System.String")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.Utility.Min(System.Int32[])~System.Int32")]
 

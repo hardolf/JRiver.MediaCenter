@@ -103,8 +103,8 @@ namespace MediaCenter.LyricsFinder
                     case DialogResult.Yes:
                         e.Cancel = false;
                         LyricsFinderCorePrivateConfigurationSectionHandler.Save(McAccessKeyTextBox.Text.Trim(), McWsUrlTextBox.Text.Trim(), 
-                            McWsUsernameTextBox.Text.Trim(), McWsPasswordTextBox.Text.Trim(), 
-                            null, (int)UpdateCheckIntervalDaysUpDown.Value);
+                            McWsUsernameTextBox.Text.Trim(), McWsPasswordTextBox.Text.Trim(), null, (int)UpdateCheckIntervalDaysUpDown.Value, 
+                            int.Parse(MaxQueueLengthTextBox.Text.Trim(), NumberStyles.None, CultureInfo.InvariantCulture));
                         break;
 
                     default:
@@ -130,7 +130,8 @@ namespace MediaCenter.LyricsFinder
                 Text = _title;
                 HeaderTextBox.Text = _headerText;
 
-                LastUpdateTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.LastUpdateCheck.ToString(CultureInfo.CurrentCulture);
+                LastUpdateCheckTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.LastUpdateCheck.ToString(CultureInfo.CurrentCulture);
+                MaxQueueLengthTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.MaxQueueLength.ToString(CultureInfo.InvariantCulture);
                 McAccessKeyTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey;
                 McWsPasswordTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword;
                 McWsUrlTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl;

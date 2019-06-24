@@ -250,6 +250,27 @@ namespace MediaCenter.SharedComponents
             return ret.ToString();
         }
 
+
+        /// <summary>
+        /// Determines the minimum of the parameters.
+        /// </summary>
+        /// <param name="integers">The integers.</param>
+        /// <returns>The lowest of the specified integers.</returns>
+        public static int Min(params int[] integers)
+        {
+            if (integers.IsNullOrEmpty()) throw new ArgumentException("You must specify 1 or more integers.");
+
+            var ret = integers[0];
+
+            for (int i = 1; i < integers.Length; i++)
+            {
+                if (integers[i] < ret)
+                    ret = integers[i];
+            }
+
+            return ret;
+        }
+
     }
 
 }

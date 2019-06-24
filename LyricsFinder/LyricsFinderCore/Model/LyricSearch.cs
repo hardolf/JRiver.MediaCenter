@@ -21,14 +21,13 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="lyricsFinderData">The lyrics finder data.</param>
         /// <param name="mcItem">The Media Center item.</param>
+        /// <param name="getAll">if set to <c>true</c> [get all].</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
-        /// lyricsFinderData
+        /// <exception cref="ArgumentNullException">lyricsFinderData
         /// or
-        /// mcItem
-        /// </exception>
+        /// mcItem</exception>
         /// <exception cref="Exception"></exception>
-        public static async Task Search(LyricsFinderDataType lyricsFinderData, McMplItem mcItem)
+        public static async Task Search(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, bool getAll = false)
         {
             if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
             if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
@@ -39,7 +38,7 @@ namespace MediaCenter.LyricsFinder.Model
 
             foreach (var service in lyricsFinderData.ActiveServices)
             {
-                var task = service.ProcessAsync(mcItem, true);
+                var task = service.ProcessAsync(mcItem, getAll);
 
                 services.Add(service);
                 tasks.Add(task);

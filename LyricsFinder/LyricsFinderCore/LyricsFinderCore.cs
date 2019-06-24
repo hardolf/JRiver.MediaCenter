@@ -647,7 +647,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void StartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void StartStopButton_Starting(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -663,10 +663,8 @@ namespace MediaCenter.LyricsFinder
 
                 _progressPercentage = 0;
 
-                // Start the bacground worker
-                //TODO: BackgroundWorker: 
-                //if (!ProcessWorker.IsBusy)
-                //    ProcessWorker.RunWorkerAsync();
+                // Start the automatic search process job
+                await ProcessAsync();
             }
             catch (Exception ex)
             {

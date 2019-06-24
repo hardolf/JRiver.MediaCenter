@@ -596,7 +596,7 @@ namespace MediaCenter.LyricsFinder
 
             if (firstNode.IsNullOrEmptyTrimmed())
                 return;
-            else if (remainingNodes.Count() < 1)
+            else if (remainingNodes.Count < 1)
             {
                 // Leaf node
                 var menuItem = new ToolStripMenuItem
@@ -615,7 +615,7 @@ namespace MediaCenter.LyricsFinder
                 var menuItems = parentMenuItem.DropDownItems.Find(menuName, false);
 
                 // Existing sub-menu found?
-                if (menuItems.Count() > 0)
+                if (menuItems.Length > 0)
                     LoadPlaylistMenu(menuItems.First() as ToolStripMenuItem, remainingNodes, itemId);
                 else
                 {
@@ -734,6 +734,21 @@ namespace MediaCenter.LyricsFinder
             await McRestService.PlayStop();
 
             await SetPlayingImagesAndMenus();
+        }
+
+
+        /// <summary>
+        /// Resets the items status.
+        /// </summary>
+        private void ResetItemStates()
+        {
+            var rows = MainDataGridView.Rows;
+
+            // Set the items' status
+            for (int i = 0; i < rows.Count; i++)
+            {
+                rows[i].Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.NotProcessedYet.ResultText();
+            }
         }
 
 
@@ -1035,19 +1050,19 @@ namespace MediaCenter.LyricsFinder
                 msg1 = msg1.Substring(0, 1).ToUpperInvariant() + msg1.Remove(0, 1);
             }
 
+            if (includeLogging)
+                StatusLog(msg1);
+
             if (MainStatusLabel.Text != msg1)
             {
                 MainStatusLabel.Text = msg1;
                 MainStatusLabel.ToolTipText = msg1;
-
-                MainStatusStrip.Update();
             }
-
-            if (includeLogging)
-                StatusLog(msg1);
 
             if (includeProgress && (_progressPercentage > 0))
                 MainProgressBar.Value = _progressPercentage;
+
+            MainStatusStrip.Update();
         }
 
     }
