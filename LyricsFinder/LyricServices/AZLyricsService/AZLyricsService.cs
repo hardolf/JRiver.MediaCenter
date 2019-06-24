@@ -144,7 +144,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             foreach (var href in hrefs)
             {
-                var uri = new Uri(href.GetAttributeValue("href", string.Empty));
+                var uri = new UriBuilder(href.GetAttributeValue("href", string.Empty)).Uri;
 
                 ret.Add(uri);
             }
@@ -175,31 +175,28 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             var credit = Credit as CreditType;
             var html = string.Empty;
-            var uriString = string.Empty;
-            SerializableUri uri = null;
+            var ub = new UriBuilder(credit.ServiceUrl);
 
             try
             {
-                // First we try a rigorous test
-                uriString = $"{credit.ServiceUrl}?q={item.Artist} {item.Album} {item.Name}";
-                uri = new SerializableUri(Uri.EscapeUriString(uriString));
-                html = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
+                // First we try a rigorous query
+                ub.Query = $"q={item.Artist} {item.Album} {item.Name}";
+                html = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                 await ExtractAllLyricTextsAsync(GetResultUris(html), getAll).ConfigureAwait(false);
 
-                // If not found or if we want all possible results, we next try a more lax test without the album
+                // If not found or if we want all possible results, we next try a more lax query without the album
                 if (getAll || (LyricResult != LyricResultEnum.Found))
                 {
-                    uriString = $"{credit.ServiceUrl}?q={item.Artist} {item.Name}";
-                    uri = new SerializableUri(Uri.EscapeUriString(uriString));
-                    html = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
+                    ub.Query = $"q={item.Artist} {item.Name}";
+                    html = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                     await ExtractAllLyricTextsAsync(GetResultUris(html), getAll).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
             {
-                AddException(ex, uri.ToString());
+                AddException(ex, ub.Uri.AbsoluteUri);
             }
 
             return this;

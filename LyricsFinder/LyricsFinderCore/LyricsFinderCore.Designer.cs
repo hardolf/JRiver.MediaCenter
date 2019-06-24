@@ -28,6 +28,8 @@ namespace MediaCenter.LyricsFinder
                 try { if (_noLyricsSearchList != null) _noLyricsSearchList.Clear(); _noLyricsSearchList = null; } catch { /* Ignore */ }
                 try { if (_currentSortedMcPlaylists != null) _currentSortedMcPlaylists.Clear(); _currentSortedMcPlaylists = null; } catch { /* Ignore */ }
                 try { if (_cancellationTokenSource != null) _cancellationTokenSource.Dispose(); } catch { /* Ignore */ }
+                try { if (_emptyCoverImage != null) _emptyCoverImage.Dispose(); } catch { /* Ignore */ }
+                try { if (_emptyPlayPauseImage != null) _emptyPlayPauseImage.Dispose(); } catch { /* Ignore */ }
                 try { if (components != null) components.Dispose(); } catch { /* Ignore */ }
             }
 

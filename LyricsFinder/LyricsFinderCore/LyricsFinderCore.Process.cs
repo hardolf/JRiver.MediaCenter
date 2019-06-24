@@ -123,12 +123,11 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 EnableOrDisableMenuItems(false, FileMenuItem, HelpMenuItem, ToolsMenuItem);
-                StatusMessage("LyricsFinder initializes...", true, false);
+                StatusMessage("LyricsFinder initializes...", true, false); // Do NOT log here, before the InitLogging!
 
                 // Init the log. This must be done as the very first thing, before trying to write to the log.
-                var logName = _isStandAlone ? $"{nameof(LyricsFinder)}.Standalone" : $"{nameof(LyricsFinder)}.Plugin";
                 msg = "LyricsFinder for JRiver Media Center is started" + (_isStandAlone ? " standalone." : " from Media Center.");
-                InitLogging(logName, new[] { _logHeader, msg });
+                InitLogging(new[] { _logHeader, msg });
 
                 msg = "initializing the application configuration handler";
                 Logging.Log(_progressPercentage, msg + "...", true);
@@ -171,8 +170,8 @@ namespace MediaCenter.LyricsFinder
                 Logging.Log(_progressPercentage, msg + "...", true);
                 ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
                 ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
-                SearchAllStartStopButton.Starting += StartStopButton_Starting;
-                SearchAllStartStopButton.Stopping += StartStopButton_Stopping;
+                SearchAllStartStopButton.Starting += SearchAllStartStopButton_Starting;
+                SearchAllStartStopButton.Stopping += SearchAllStartStopButton_Stopping;
 
                 msg = "initializing the Media Center MCWS connection parameters";
                 Logging.Log(_progressPercentage, msg + "...", true);
@@ -235,12 +234,13 @@ namespace MediaCenter.LyricsFinder
             }
             catch
             {
-                _cancellationTokenSource.Cancel();
+                SearchAllStartStopButton.Stop();
                 throw;
             }
             finally
             {
-                SearchAllStartStopButton.Stop();
+                SearchAllStartStopButton.SetRunningState(false);
+                ToolsSearchAllStartStopButton.SetRunningState(false);
 
                 var processedCount = (queue.Count > 0)
                     ? queue.Peek() + 1
@@ -344,7 +344,6 @@ namespace MediaCenter.LyricsFinder
             }
             catch (OperationCanceledException)
             {
-                // StatusMessage($"Process worker canceled at item {i}, Artist \"{artist}\", Album \"{album}\" and Title \"{title}\"", true, true);
                 row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.Canceled.ResultText();
             }
             catch (Exception ex)

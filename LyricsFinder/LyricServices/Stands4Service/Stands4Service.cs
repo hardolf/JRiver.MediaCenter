@@ -67,7 +67,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         && !result.Album.Equals(item.Album, StringComparison.InvariantCultureIgnoreCase))
                         continue;
 
-                    tasks.Add(ExtractOneLyricTextAsync(new Uri(result.SongLink)));
+                    tasks.Add(ExtractOneLyricTextAsync(new UriBuilder(result.SongLink).Uri));
                 }
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -86,7 +86,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         && !result.Album.Equals(item.Album, StringComparison.InvariantCultureIgnoreCase))
                         continue;
 
-                    var lyricText = await ExtractOneLyricTextAsync(new Uri(result.SongLink)).ConfigureAwait(false);
+                    var lyricText = await ExtractOneLyricTextAsync(new UriBuilder(result.SongLink).Uri).ConfigureAwait(false);
 
                     if (!lyricText.IsNullOrEmptyTrimmed())
                         break;
@@ -171,17 +171,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
 
             var credit = Credit as CreditType;
-            var uriString = $"{credit.ServiceUrl}?uid={credit.UserId}&tokenid={credit.Token}&term={item.Name}";
-            var uri = new SerializableUri(Uri.EscapeUriString(uriString));
+            var ub = new UriBuilder($"{credit.ServiceUrl}?uid={credit.UserId}&tokenid={credit.Token}&term={item.Name}");
             var txt = string.Empty;
 
             try
             {
-                txt = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
+                txt = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
-                AddException(ex, uri.ToString());
+                AddException(ex, ub.Uri.AbsoluteUri);
             }
 
             if (Exceptions.Count > 0)
@@ -205,7 +204,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
             catch (Exception ex)
             {
-                AddException(ex, uri.ToString());
+                AddException(ex, ub.Uri.AbsoluteUri);
             }
 
             return this;

@@ -60,6 +60,8 @@ namespace MediaCenter.LyricsFinder
         private McPlayListsResponse _currentUnsortedMcPlaylistsResponse = null;
         private McMplResponse _currentPlaylist = null;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private static Bitmap _emptyCoverImage = new Bitmap(400, 400);
+        private static Bitmap _emptyPlayPauseImage = new Bitmap(16, 16);
 
 
         /**********************************/
@@ -223,12 +225,11 @@ namespace MediaCenter.LyricsFinder
                 var row = new DataGridViewRow();
                 var value = item.Value;
                 var coverImage = GetCoverImage(value);
-                var playPauseImage = new Bitmap(16, 16);
 
-                playPauseImage.MakeTransparent();
+                _emptyPlayPauseImage.MakeTransparent();
 
                 // Create the row and make it's height equal to the width of the bitmap img
-                row.CreateCells(dgv, value.Key, playPauseImage, coverImage, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
+                row.CreateCells(dgv, value.Key, _emptyPlayPauseImage, coverImage, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
                 row.Height = dgv.Columns[(int)GridColumnEnum.Cover].Width;
 
                 dgv.Rows.Add(row);
@@ -263,7 +264,6 @@ namespace MediaCenter.LyricsFinder
         private static Bitmap GetCoverImage(McMplItem mcMplItem)
         {
             Bitmap ret = null;
-            var emptyImage = new Bitmap(400, 400);
 
             // Get the item's cover image
             if ((mcMplItem.Image == null) && !mcMplItem.ImageFile.IsNullOrEmptyTrimmed())
@@ -287,7 +287,7 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 if (ifn.IsNullOrEmptyTrimmed())
-                    ret = emptyImage;
+                    ret = _emptyCoverImage;
                 else
                 {
                     // Get the item's bitmap
@@ -300,7 +300,7 @@ namespace MediaCenter.LyricsFinder
                 }
             }
             else if (mcMplItem.Image == null)
-                ret = emptyImage;
+                ret = _emptyCoverImage;
             else
                 ret = mcMplItem.Image;
 
@@ -386,20 +386,23 @@ namespace MediaCenter.LyricsFinder
                 {
                     // Load previously saved services
                     LyricsFinderData = LyricsFinderDataType.Load(dataFile);
+                    LyricsFinderData.IsSaveOk = true;
                 }
                 catch (FileNotFoundException ex)
                 {
-                    ErrorHandling.ErrorLog($"LyricsFinder datafile \"{dataFile}\" not found, initializing a new set of services.", ex);
-                    LyricsFinderData = new LyricsFinderDataType(dataFile);
-                    LyricsFinderData.IsSaveOk = true;
+                    ErrorHandling.ErrorLog($"LyricsFinder data file \"{dataFile}\" not found, initializing a new set of services.", ex);
+                    LyricsFinderData = new LyricsFinderDataType(dataFile)
+                    {
+                        IsSaveOk = true
+                    };
                 }
                 catch (Exception ex)
                 {
                     ErrorHandling.ErrorLog("Failed to load the lyric services, ask if we should initialize a new set of services.", ex);
                     LyricsFinderData = new LyricsFinderDataType(dataFile);
 
-                    var result = MessageBox.Show(this, $"LyricsFinder data file \"{dataFile}\" is not found, "
-                        + "will you initialize and save a new set of services?",
+                    var result = MessageBox.Show(this, $"LyricsFinder data file \n\"{dataFile}\" \nwas found but could not be loaded, error: \n"
+                        + $"\"{ex.Message}\" \nWill you initialize and save a new set of services?",
                         "LyricsFinder datafile not found", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 
                     if (result == DialogResult.Yes)
@@ -440,16 +443,17 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Initializes the logging.
         /// </summary>
-        /// <param name="logName">Name of the log.</param>
         /// <param name="initMessages">The initialize messages.</param>
-        private static void InitLogging(string logName = nameof(LyricsFinder), string[] initMessages = null)
+        private void InitLogging(string[] initMessages = null)
         {
             var assy = Assembly.GetExecutingAssembly();
             var configFile = $"{assy.Location}.config";
             var fi = new FileInfo(configFile);
 
-            Logging.Init(logName);
-            log4net.Config.XmlConfigurator.ConfigureAndWatch(fi);
+            if (!fi.Exists)
+                throw new FileNotFoundException($"LyricsFinder configuration file is not found: \"{fi.FullName}\".");
+
+            Logging.Init(_isStandAlone, fi);
 
             if (LogManager.GetRepository().Configured)
             {
@@ -570,14 +574,14 @@ namespace MediaCenter.LyricsFinder
         private async Task<McMplResponse> LoadPlaylist(string menuItemName = null)
         {
             var id = 0;
-            var name = "Playing Now";
+            var name = string.Empty;
             McMplResponse ret;
 
             if (menuItemName.IsNullOrEmptyTrimmed())
             {
                 // If reload, get the ID and name of the current playlist
                 id = _currentPlaylist?.Id ?? 0;
-                name = _currentPlaylist?.Name ?? string.Empty;
+                name = _currentPlaylist?.Name ?? "Playing Now";
             }
             else
             {
@@ -918,7 +922,8 @@ namespace MediaCenter.LyricsFinder
             if (!(row.Cells[colIdx] is DataGridViewImageCell cell))
                 throw new ArgumentException($"Column {colIdx} is not a DataGridViewImageCell.");
 
-            if (!(cell.Value is Bitmap img))
+            if (!(cell.Value is Bitmap img)
+                || (img.Equals(_emptyCoverImage)))
                 return null;
 
             var pt = new Point(rect.Right, rect.Top);

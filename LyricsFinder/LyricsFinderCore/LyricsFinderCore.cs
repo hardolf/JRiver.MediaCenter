@@ -642,7 +642,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private async void StartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void SearchAllStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -673,7 +673,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void StartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private void SearchAllStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
         {
             try
             {

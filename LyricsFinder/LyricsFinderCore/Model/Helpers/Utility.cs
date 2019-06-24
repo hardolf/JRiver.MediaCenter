@@ -27,7 +27,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
         // Private constants
         private const string UnInitializedPrivateSettingText = "YOUR_OWN_STRING";
-        private static readonly Uri LatestReleaseUrl = new Uri("https://api.github.com/repos/hardolf/JRiver.MediaCenter/releases/latest");
+        private static readonly Uri LatestReleaseUrl = new UriBuilder("https://api.github.com/repos/hardolf/JRiver.MediaCenter/releases/latest").Uri;
 
         // We don't dispose of these objects
         private static HttpClientHandler _httpClientHandler = new HttpClientHandler();
@@ -41,7 +41,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         public const string AppConfigFileExt = ".config";
         public const string PrivateConfigFileExt = ".private.config";
         public const string PrivateConfigTemplateFileExt = ".template.config";
-        public static readonly Uri RepositoryUrl = new Uri("https://github.com/hardolf/JRiver.MediaCenter");
+        public static readonly Uri RepositoryUrl = new UriBuilder("https://github.com/hardolf/JRiver.MediaCenter").Uri;
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 

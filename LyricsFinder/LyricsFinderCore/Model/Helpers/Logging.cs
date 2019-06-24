@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using log4net;
 using log4net.Appender;
 
+using MediaCenter.SharedComponents;
 
 namespace MediaCenter.LyricsFinder.Model.Helpers
 {
@@ -21,19 +22,23 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     internal static class Logging
     {
 
-        private static string _logName = nameof(LyricsFinder);
-
-        private static ILog _log = LogManager.GetLogger(_logName);
+        private static ILog _log = null;
 
 
         /// <summary>
-        /// Initializes the specified log name.
+        /// Initializes the specified is stand alone.
         /// </summary>
-        /// <param name="logName">Name of the log.</param>
-        public static void Init(string logName)
+        /// <param name="isStandAlone">if set to <c>true</c> the application is running stand alone; else as Media Center plug-in.</param>
+        /// <param name="logConfigFileInfo">The log configuration file information object.</param>
+        public static void Init(bool isStandAlone, FileInfo logConfigFileInfo)
         {
-            _logName = logName ?? throw new ArgumentNullException(nameof(logName));
-            _log = LogManager.GetLogger(_logName);
+            if (logConfigFileInfo == null) throw new ArgumentNullException(nameof(logConfigFileInfo));
+
+            _log = (isStandAlone) 
+                ? LogManager.GetLogger($"{nameof(LyricsFinder)}.Standalone")
+                : LogManager.GetLogger($"{nameof(LyricsFinder)}.Plugin");
+
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(logConfigFileInfo);
         }
 
 
@@ -43,9 +48,9 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="progressPercentage">The progress percentage.</param>
         /// <param name="message">The message.</param>
         /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
-        public static void Log(int progressPercentage, string message, bool isDebug = false)
+        public static void Log(int progressPercentage, string message = null, bool isDebug = false)
         {
-            if (message.Length > 0)
+            if (!message.IsNullOrEmptyTrimmed())
                 message = message.Substring(0, 1).ToUpperInvariant() + message.Remove(0, 1);
 
             if (progressPercentage > 0)

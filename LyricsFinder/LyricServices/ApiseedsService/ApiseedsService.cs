@@ -61,15 +61,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             // https://orion.apiseeds.com/api/music/lyric/dire straits/brothers in arms?apikey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
             var credit = Credit as CreditType;
-
-            // First we search for the track
-            var uriString = $"{credit.ServiceUrl}{item.Artist}/{item.Name}?apikey={credit.Token}";
-            var uri = new SerializableUri(Uri.EscapeUriString(uriString));
+            var ub = new UriBuilder($"{credit.ServiceUrl}/{item.Artist}/{item.Name}?apikey={credit.Token}");
             var json = string.Empty;
 
+            // First we search for the track
             try
             {
-                json = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
+                json = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
@@ -77,15 +75,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 if (ex.Message.Contains("404"))
                     return this;
                 else
-                    AddException(ex, uri.ToString());
+                    AddException(ex, ub.Uri.AbsoluteUri);
             }
 
             if (Exceptions.Count > 0)
                 return this;
 
+            // Deserialize the returned JSON
             try
             {
-                // Deserialize the returned JSON
                 var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
                 var lyricText = (string)searchDyn.result.track.text;
                 var copyright = searchDyn.result.copyright;
@@ -95,7 +93,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
             catch (Exception ex)
             {
-                AddException(ex, uri.ToString());
+                AddException(ex, ub.Uri.AbsoluteUri);
             }
 
             return this;

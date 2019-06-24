@@ -105,14 +105,14 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <exception cref="ArgumentException">id must be specified.</exception>
         private static Uri CreateRequestUrl(McCommandEnum command, int key = -1, string field = null, string value = null)
         {
-            var url = McWsUrl;
-            var sb = new StringBuilder(url);
+            var sb = new StringBuilder(McWsUrl);
 
-            if (sb[sb.Length - 1] == '\\')
+            if ((sb[sb.Length - 1] == '\\')
+                || (sb[sb.Length - 1] == '/'))
                 sb.Length--;
 
-            if (!(new[] { McCommandEnum.Alive, McCommandEnum.Authenticate }).Contains(command))
-                if (McWsToken.IsNullOrEmptyTrimmed())
+            if (!(new[] { McCommandEnum.Alive, McCommandEnum.Authenticate }).Contains(command)
+                && McWsToken.IsNullOrEmptyTrimmed())
                     throw new ArgumentException(MissingTokenMessage);
 
             switch (command)
@@ -131,6 +131,8 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                     break;
 
                 case McCommandEnum.Info:
+                case McCommandEnum.PlayPause:
+                case McCommandEnum.Stop:
                     sb.Append($"/Playback/{command}?Token={McWsToken}");
                     break;
 
@@ -158,11 +160,6 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                     sb.Append($"/Playback/{command}?Token={McWsToken}&Playlist={key}");
                     break;
 
-                case McCommandEnum.PlayPause:
-                case McCommandEnum.Stop:
-                    sb.Append($"/Playback/{command}?Token={McWsToken}");
-                    break;
-
                 case McCommandEnum.SetInfo:
                     sb.Append($"/File/{command}?Token={McWsToken}&File={key}&FileType=Key&Formatted=1&Field={field}&Value={value}");
                     break;
@@ -171,9 +168,9 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
                     throw new NotImplementedException($"CreateRequestUrl for command \"{command}\" is not implemented.");
             }
 
-            var ret = new Uri(SerializableUri.EscapeUriString(sb.ToString()));
+            var ret = new UriBuilder(sb.ToString());
 
-            return ret;
+            return ret.Uri;
         }
 
 

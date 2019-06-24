@@ -108,17 +108,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var credit = Credit as CreditType;
 
             // First we search for the track
-            var uriString = $"{credit.ServiceUrl}track.search?apikey={credit.Token}&q_artist={item.Artist}&q_track={item.Name}";
-            var uri = new SerializableUri(Uri.EscapeUriString(uriString));
+            var ub = new UriBuilder($"{credit.ServiceUrl}/track.search?apikey={credit.Token}&q_artist={item.Artist}&q_track={item.Name}");
             var json = string.Empty;
 
             try
             {
-                json = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
+                json = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
-                AddException(ex, uri.ToString());
+                AddException(ex, ub.Uri.AbsoluteUri);
             }
 
             if (Exceptions.Count > 0)
@@ -135,17 +134,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 foreach (var trackDyn in trackDyns)
                 {
-                    uriString = $"{credit.ServiceUrl}track.lyrics.get?apikey={credit.Token}&track_id={trackDyn?.track?.track_id ?? 0}&commontrack_id={trackDyn?.track?.commontrack_id ?? 0}";
-                    uri = new SerializableUri(Uri.EscapeUriString(uriString));
+                    ub = new UriBuilder($"{credit.ServiceUrl}/track.lyrics.get?apikey={credit.Token}&track_id={trackDyn?.track?.track_id ?? 0}&commontrack_id={trackDyn?.track?.commontrack_id ?? 0}");
 
-                    uris.Add(uri);
+                    uris.Add(ub.Uri);
                 }
 
                 await ExtractAllLyricTextsAsync(uris, getAll).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
-                AddException(ex, uri.ToString());
+                AddException(ex, ub.Uri.AbsoluteUri);
             }
 
             return this;
