@@ -67,5 +67,14 @@ namespace MediaCenter.LyricsFinder.Properties {
                 return ((bool)(this["ShowRotButton"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Log4netInternalDebug {
+            get {
+                return ((bool)(this["Log4netInternalDebug"]));
+            }
+        }
     }
 }

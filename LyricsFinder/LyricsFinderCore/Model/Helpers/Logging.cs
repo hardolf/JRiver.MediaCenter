@@ -22,23 +22,18 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     internal static class Logging
     {
 
-        private static ILog _log = null;
+        private static ILog _log;
 
 
         /// <summary>
-        /// Initializes the specified is stand alone.
+        /// Initializes the logger with the specified parameters.
         /// </summary>
-        /// <param name="isStandAlone">if set to <c>true</c> the application is running stand alone; else as Media Center plug-in.</param>
-        /// <param name="logConfigFileInfo">The log configuration file information object.</param>
-        public static void Init(bool isStandAlone, FileInfo logConfigFileInfo)
+        /// <param name="loggerName">Name of the logger.</param>
+        /// <param name="xmlConfigfileInfo">The log4net XML configuration file information.</param>
+        public static void Init(string loggerName, FileInfo xmlConfigfileInfo)
         {
-            if (logConfigFileInfo == null) throw new ArgumentNullException(nameof(logConfigFileInfo));
-
-            _log = (isStandAlone) 
-                ? LogManager.GetLogger($"{nameof(LyricsFinder)}.Standalone")
-                : LogManager.GetLogger($"{nameof(LyricsFinder)}.Plugin");
-
-            log4net.Config.XmlConfigurator.ConfigureAndWatch(logConfigFileInfo);
+            _log = LogManager.GetLogger(loggerName);
+            log4net.Config.XmlConfigurator.ConfigureAndWatch(xmlConfigfileInfo);
         }
 
 
@@ -87,10 +82,11 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
 
         /// <summary>
-        /// Shows the log.
+        /// Shows the log folder.
         /// </summary>
+        /// <exception cref="System.Exception">No active log4net file appenders.</exception>
         /// <exception cref="Exception">No active log4net file appenders.</exception>
-        public static void ShowLog()
+        public static void ShowLogDir()
         {
             var appenders = _log.Logger.Repository.GetAppenders();
 

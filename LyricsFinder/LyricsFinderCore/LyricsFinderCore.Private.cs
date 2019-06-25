@@ -447,13 +447,15 @@ namespace MediaCenter.LyricsFinder
         private void InitLogging(string[] initMessages = null)
         {
             var assy = Assembly.GetExecutingAssembly();
-            var configFile = $"{assy.Location}.config";
-            var fi = new FileInfo(configFile);
+            var dir = Path.GetDirectoryName(assy.Location);
+            var xmlConfigFilePath = (_isStandAlone) ? Path.Combine(dir, "Log4net.Standalone.xml") : Path.Combine(dir, "Log4net.Plugin.xml");
+            var loggerName = (_isStandAlone) ? "LyricsFinder.Standalone" : "LyricsFinder.Plugin";
+            var fi = new FileInfo(xmlConfigFilePath);
+
+            Logging.Init(loggerName, fi);
 
             if (!fi.Exists)
                 throw new FileNotFoundException($"LyricsFinder configuration file is not found: \"{fi.FullName}\".");
-
-            Logging.Init(_isStandAlone, fi);
 
             if (LogManager.GetRepository().Configured)
             {

@@ -168,6 +168,12 @@
     <None Include="App.template.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Log4net.Plugin.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Log4net.standalone.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="LyricsFinderCore.snk" />
     <None Include="packages.config" />
     <EmbeddedResource Include="AboutBox.resx">

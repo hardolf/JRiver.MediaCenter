@@ -583,7 +583,7 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(ToolsShowLogMenuItem):
-                            Logging.ShowLog();
+                            Logging.ShowLogDir();
                             break;
 
                         case nameof(ToolsTestMenuItem):
