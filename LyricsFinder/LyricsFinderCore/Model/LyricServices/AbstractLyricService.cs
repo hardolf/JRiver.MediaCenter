@@ -13,8 +13,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-using log4net;
-
 using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
@@ -263,7 +261,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Checks the quota and adjusts the counters if necessary.
         /// </summary>
-        public void CheckQuota()
+        public virtual void CheckQuota()
         {
             // UTC date / time calculations for the quota
             var nowDate = DateTime.UtcNow.Date;
@@ -321,14 +319,14 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Extracts all the lyrics from all the Uris.
         /// </summary>
         /// <param name="uris">The uris.</param>
-        /// <param name="getAll">if set to <c>true</c> extracts all lyrics from all the Uris; else exits after the first hit.</param>
+        /// <param name="isGetAll">if set to <c>true</c> extracts all lyrics from all the Uris; else exits after the first hit.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">uris</exception>
-        protected virtual async Task ExtractAllLyricTextsAsync(IEnumerable<Uri> uris, bool getAll = false)
+        protected virtual async Task ExtractAllLyricTextsAsync(IEnumerable<Uri> uris, bool isGetAll = false)
         {
             if (uris == null) throw new ArgumentNullException(nameof(uris));
 
-            if (getAll)
+            if (isGetAll)
             {
                 // Parallel search
                 var tasks = new List<Task>();
@@ -393,12 +391,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <param name="getAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns><see cref="AbstractLyricService"/> descendent object.</returns>
         /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="LyricsQuotaExceededException"></exception>
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public virtual async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool getAll = false)
+        public virtual async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (item == null) throw new ArgumentNullException(nameof(item));

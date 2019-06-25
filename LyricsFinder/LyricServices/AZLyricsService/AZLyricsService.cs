@@ -144,9 +144,18 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             foreach (var href in hrefs)
             {
-                var uri = new UriBuilder(href.GetAttributeValue("href", string.Empty)).Uri;
+                var hrefValue = href.GetAttributeValue("href", string.Empty);
 
-                ret.Add(uri);
+                try
+                {
+                    var uri = new UriBuilder(hrefValue).Uri;
+
+                    ret.Add(uri);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Error parsing URI string from 'href' attribute: \"{hrefValue}\".", ex);
+                }
             }
 
             return ret;
@@ -157,7 +166,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <param name="getAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
         ///   <see cref="AbstractLyricService" /> descendent object of type <see cref="Stands4Service" />.
         /// </returns>
@@ -167,36 +176,39 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
-
-            var credit = Credit as CreditType;
             var html = string.Empty;
-            var ub = new UriBuilder(credit.ServiceUrl);
+            var ub = new UriBuilder(Credit.ServiceUrl);
 
             try
             {
+                await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
+
                 // First we try a rigorous query
                 ub.Query = $"q={item.Artist} {item.Album} {item.Name}";
                 html = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
-                await ExtractAllLyricTextsAsync(GetResultUris(html), getAll).ConfigureAwait(false);
+                await ExtractAllLyricTextsAsync(GetResultUris(html), isGetAll).ConfigureAwait(false);
 
                 // If not found or if we want all possible results, we next try a more lax query without the album
-                if (getAll || (LyricResult != LyricResultEnum.Found))
+                if (isGetAll || (LyricResult != LyricResultEnum.Found))
                 {
                     ub.Query = $"q={item.Artist} {item.Name}";
                     html = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
-                    await ExtractAllLyricTextsAsync(GetResultUris(html), getAll).ConfigureAwait(false);
+                    await ExtractAllLyricTextsAsync(GetResultUris(html), isGetAll).ConfigureAwait(false);
                 }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
             }
             catch (Exception ex)
             {
-                AddException(ex, ub.Uri.AbsoluteUri);
+                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
             }
 
             return this;

@@ -21,13 +21,13 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="lyricsFinderData">The lyrics finder data.</param>
         /// <param name="mcItem">The Media Center item.</param>
-        /// <param name="getAll">if set to <c>true</c> [get all].</param>
+        /// <param name="isGetAll">if set to <c>true</c> [get all].</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">lyricsFinderData
         /// or
         /// mcItem</exception>
         /// <exception cref="Exception"></exception>
-        public static async Task Search(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, bool getAll = false)
+        public static async Task Search(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, bool isGetAll = false)
         {
             if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
             if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
@@ -38,48 +38,16 @@ namespace MediaCenter.LyricsFinder.Model
 
             foreach (var service in lyricsFinderData.ActiveServices)
             {
-                var task = service.ProcessAsync(mcItem, getAll);
+                var task = service.ProcessAsync(mcItem, isGetAll);
 
                 services.Add(service);
                 tasks.Add(task);
             }
 
-            // Run the search and wait for all the results
-            List<Exception> exceptions = new List<Exception>();
-
-            try
-            {
-                var resultServices = await Task.WhenAll(tasks);
-
-                foreach (var service in resultServices)
-                {
-                    exceptions.AddRange(service.Exceptions);
-                }
-            }
-            catch (Exception ex)
-            {
-                exceptions.Add(ex);
-            }
+            _ = await Task.WhenAll(tasks);
 
             // Save the service counters
             lyricsFinderData.Save();
-
-            if (exceptions.Count > 0)
-            {
-                var msg = new StringBuilder();
-
-                msg.AppendLine($"Lyrics search for Artist \"{mcItem.Artist}\",  Album \"{mcItem.Album}\" and Song \"{mcItem.Name}\" failed with {exceptions.Count} errors:");
-
-                for (int i = 0; i < exceptions.Count; i++)
-                {
-                    if (i > 0)
-                        msg.AppendLine();
-
-                    msg.Append(exceptions[i].Message);
-                }
-
-                throw new Exception(msg.ToString());
-            }
         }
 
     }

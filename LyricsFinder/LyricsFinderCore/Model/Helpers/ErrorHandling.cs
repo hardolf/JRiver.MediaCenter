@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using log4net;
+using MediaCenter.LyricsFinder.Model.LyricServices;
 
 
 namespace MediaCenter.LyricsFinder.Model.Helpers
@@ -50,33 +49,103 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
 
         /// <summary>
+        /// Error handler with detailed inner exception messages.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="exception">The primary exeption.</param>
+        /// <param name="progressPercentage">The progress percentage.</param>
+        /// <param name="innerExceptionLevel">The inner exception level, i.e. the number of inner exception messages to list under the primary exception message. "0": show all inner exceptions.</param>
+        public static void ShowAndLogDetailedErrorHandler(string message, Exception exception, int progressPercentage = 0, int innerExceptionLevel = 0)
+        {
+            const string indent = "    ";
+            var sb = new StringBuilder(message.AppendProgressPercentage(progressPercentage));
+
+            ErrorLog(sb.ToString(), exception);
+
+            sb.AppendLine();
+            sb.AppendLine($"{indent}{exception.GetType().Name}: {exception.Message.Trim(' ', '"')}");
+            sb.AppendLine();
+            sb.AppendLine($"The failure occurred in class object {exception.Source}");
+            sb.AppendLine();
+            sb.AppendLine($"Inner exceptions: ({((innerExceptionLevel == 0) ? "all" : $"only {innerExceptionLevel}")})");
+
+            var cnt = 0;
+            var innerEx = exception.InnerException;
+
+            while ((innerEx != null)
+                && ((innerExceptionLevel < 1) || (cnt < innerExceptionLevel)))
+            {
+                var msg = innerEx.Message.Trim(' ', '"');
+
+                cnt++;
+
+                sb.Append($"{indent}{innerEx.GetType().Name}: ");
+
+                if (innerEx is LyricServiceCommunicationException ex1)
+                {
+                    sb.Append($"There was a communication error, i.e. a request failed during lyrics search ");
+                    sb.Append($"for Artist \"{ex1.McItem.Artist}\",  Album \"{ex1.McItem.Album}\" and Song \"{ex1.McItem.Name}\", ");
+                    sb.Append($"request: \"{ex1.RequestUri.AbsoluteUri}\", ");
+                    sb.Append($"error: {msg}");
+                }
+                else if (innerEx is GeneralLyricServiceException ex2)
+                {
+                    sb.Append($"There was a lyric service error during lyrics search ");
+                    sb.Append($"for Artist \"{ex2.McItem.Artist}\",  Album \"{ex2.McItem.Album}\" and Song \"{ex2.McItem.Name}\", ");
+                    sb.Append($"error: {msg}");
+                }
+                else
+                    sb.Append($"{indent}{msg}");
+
+                sb.AppendLine();
+                innerEx = innerEx.InnerException;
+            }
+
+            sb.AppendLine();
+            sb.AppendLine($"Stack trace:");
+            sb.AppendLine($"{exception.StackTrace}");
+
+            ShowErrorHandler(sb.ToString());
+        }
+
+
+        /// <summary>
         /// Error handler.
         /// </summary>
         /// <param name="message">The message.</param>
-        /// <param name="exception">The exeption.</param>
+        /// <param name="exception">The primary exeption.</param>
         /// <param name="progressPercentage">The progress percentage.</param>
-        public static void ShowAndLogErrorHandler(string message, Exception exception, int progressPercentage = 0)
+        /// <param name="innerExceptionLevel">The inner exception level, i.e. the number of inner exception messages to list under the primary exception message. "0": show all inner exceptions.</param>
+        public static void ShowAndLogErrorHandler(string message, Exception exception, int progressPercentage = 0, int innerExceptionLevel = 0)
         {
             const string indent = "    ";
+            var sb = new StringBuilder(message.AppendProgressPercentage(progressPercentage));
 
-            message = message.AppendProgressPercentage(progressPercentage);
+            ErrorLog(sb.ToString(), exception);
 
-            ErrorLog(message, exception);
+            sb.AppendLine();
+            sb.AppendLine($"{indent}{exception.Message.Trim(' ', '"')}");
+            sb.AppendLine();
+            sb.AppendLine($"The failure occurred in class object {exception.Source}");
+            sb.AppendLine();
+            sb.AppendLine($"Inner exception messages: ({((innerExceptionLevel == 0) ? "all" : $"only {innerExceptionLevel}")})");
 
-            message += $" \r\n"
-                + $"{indent}{exception.Message} \r\n\r\n"
-                + $"The failure occurred in class object {exception.Source} \r\n";
+            var cnt = 0;
+            var ex = exception.InnerException;
 
-            if (exception.InnerException != null)
-                message += " \r\n"
-                    + $"Inner exception: \r\n"
-                    + $"{indent}{exception.InnerException} \r\n";
+            while ((ex != null)
+                && ((innerExceptionLevel < 1) || (cnt < innerExceptionLevel)))
+            {
+                cnt++;
+                sb.AppendLine($"{indent}{ex.Message.Trim(' ', '"')}");
+                ex = ex.InnerException;
+            }
 
-            message += " \r\n"
-                + $"Stack trace: \r\n"
-                + $"{exception.StackTrace}";
+            sb.AppendLine();
+            sb.AppendLine($"Stack trace:");
+            sb.AppendLine($"{exception.StackTrace}");
 
-            ShowErrorHandler(message);
+            ShowErrorHandler(sb.ToString());
         }
 
 
@@ -109,58 +178,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 ret += $" Progress: {progressPercentage}%";
 
             return ret;
-        }
-
-    }
-
-
-
-    /// <summary>
-    /// Exception is thrown when the lyrics quota is exceeded.
-    /// </summary>
-    /// <seealso cref="System.Exception" />
-    [Serializable]
-    public class LyricsQuotaExceededException : Exception
-    {
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LyricsQuotaExceededException"/> class.
-        /// </summary>
-        public LyricsQuotaExceededException()
-            : base()
-        {
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LyricsQuotaExceededException"/> class.
-        /// </summary>
-        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected LyricsQuotaExceededException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LyricsQuotaExceededException"/> class.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public LyricsQuotaExceededException(string message)
-            : base(message)
-        {
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LyricsQuotaExceededException"/> class.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
-        public LyricsQuotaExceededException(string message, Exception innerException)
-            : base(message, innerException)
-        {
         }
 
     }

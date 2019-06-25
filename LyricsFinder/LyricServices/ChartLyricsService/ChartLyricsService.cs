@@ -12,7 +12,7 @@ using MediaCenter.LyricsFinder.Model.LyricServices.ChartLyricsReference;
 using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
-
+using System.Net.Http;
 
 namespace MediaCenter.LyricsFinder.Model.LyricServices
 {
@@ -38,23 +38,23 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <param name="getAll">If set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <param name="isGetAll">If set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
         ///   <see cref="AbstractLyricService" /> descendent object of type <see cref="Stands4Service" />.
         /// </returns>
         /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="CommunicationException">Failed to get info from \"{Credit.ServiceName}\".</exception>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
-
             apiv1Soap client = null;
             var msg = string.Empty;
+            var ub = new UriBuilder(Credit.ServiceUrl);
 
             try
             {
+                await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
                 msg = "CreateServiceClient";
                 client = CreateServiceClient<apiv1Soap>("apiv1Soap");
                 msg = "SearchLyric";
@@ -75,6 +75,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     }
                 }
             }
+            catch (HttpRequestException ex)
+            {
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed on {msg}.", isGetAll, Credit, item, ub.Uri, ex);
+            }
             catch (Exception ex)
             {
                 try
@@ -84,7 +88,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 }
                 catch { /* I don't care */ }
 
-                AddException(ex, msg);
+                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed on {msg}.", isGetAll, Credit, item, ex);
             }
 
             return this;

@@ -24,8 +24,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using log4net;
-
 using MediaCenter;
 using MediaCenter.LyricsFinder.Model;
 using MediaCenter.LyricsFinder.Model.Helpers;
@@ -644,6 +642,8 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
         private async void SearchAllStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
         {
+            string msg;
+
             try
             {
                 if (_isDesignTime) return;
@@ -657,13 +657,19 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 _progressPercentage = 0;
+                UseWaitCursor = true;
 
                 // Start the automatic search process job
                 await ProcessAsync(_cancellationTokenSource);
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
+                ErrorHandling.ShowAndLogDetailedErrorHandler(msg, ex);
+            }
+            finally
+            {
+                UseWaitCursor = false;
             }
         }
 

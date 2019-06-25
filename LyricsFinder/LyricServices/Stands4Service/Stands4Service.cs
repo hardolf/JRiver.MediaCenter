@@ -42,16 +42,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="resultList">The result list.</param>
-        /// <param name="getAll">if set to <c>true</c> extracts all lyrics from all the Uris; else exits after the first hit.</param>
+        /// <param name="isGetAll">if set to <c>true</c> extracts all lyrics from all the Uris; else exits after the first hit.</param>
         /// <param name="isRigorous">if set to <c>true</c> the match criteria are rigorous; else they are lax.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">uris</exception>
-        protected virtual async Task ExtractAllLyricTextsAsync(McMplItem item, StandsResultListType resultList, bool getAll = false, bool isRigorous = false)
+        protected virtual async Task ExtractAllLyricTextsAsync(McMplItem item, StandsResultListType resultList, bool isGetAll = false, bool isRigorous = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             if (resultList == null) throw new ArgumentNullException(nameof(resultList));
 
-            if (getAll)
+            if (isGetAll)
             {
                 // Parallel search
                 var tasks = new List<Task>();
@@ -154,7 +154,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <param name="getAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
         ///   <see cref="AbstractLyricService"/> descendent object of type <see cref="Stands4Service"/>.
         /// </returns>
@@ -164,30 +164,23 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
-
             var credit = Credit as CreditType;
-            var ub = new UriBuilder($"{credit.ServiceUrl}?uid={credit.UserId}&tokenid={credit.Token}&term={item.Name}");
+            var ub = new UriBuilder($"{Credit.ServiceUrl}?uid={Credit.UserId}&tokenid={Credit.Token}&term={item.Name}");
             var txt = string.Empty;
 
             try
             {
+                await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
+
                 txt = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
-            }
-            catch (HttpRequestException ex)
-            {
-                AddException(ex, ub.Uri.AbsoluteUri);
-            }
 
-            if (Exceptions.Count > 0)
-                return this;
+                if (Exceptions.Count > 0)
+                    return this;
 
-            try
-            {
                 // Deserialize the returned JSON
                 var results = txt.XmlDeserializeFromString<StandsResultListType>();
 
@@ -195,16 +188,20 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 if (results != null)
                 {
                     // First we try a rigorous test
-                    await ExtractAllLyricTextsAsync(item, results, getAll, true).ConfigureAwait(false);
+                    await ExtractAllLyricTextsAsync(item, results, isGetAll, true).ConfigureAwait(false);
 
                     // If not found or if we want all possible results, we next try a more lax test without the album
-                    if (getAll || (LyricResult != LyricResultEnum.Found))
-                        await ExtractAllLyricTextsAsync(item, results, getAll, false).ConfigureAwait(false);
+                    if (isGetAll || (LyricResult != LyricResultEnum.Found))
+                        await ExtractAllLyricTextsAsync(item, results, isGetAll, false).ConfigureAwait(false);
                 }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
             }
             catch (Exception ex)
             {
-                AddException(ex, ub.Uri.AbsoluteUri);
+                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
             }
 
             return this;

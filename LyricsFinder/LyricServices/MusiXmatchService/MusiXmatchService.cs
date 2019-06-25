@@ -83,7 +83,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <param name="getAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
         ///   <see cref="AbstractLyricService" /> descendent object of type <see cref="MusiXmatchService" />.
         /// </returns>
@@ -95,36 +95,27 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
-
-            // Example requests:
-            // http://api.musixmatch.com/ws/1.1/track.search?apikey=xxxxxxxxxxxxxxxxxxxxx&q_artist=Dire%20Straits&q_track=Lions
-            // http://api.musixmatch.com/ws/1.1/track.lyrics.get?apikey=xxxxxxxxxxxxxxxxxxxxx&track_id=72952844&commontrack_id=61695
-
-            var credit = Credit as CreditType;
-
-            // First we search for the track
-            var ub = new UriBuilder($"{credit.ServiceUrl}/track.search?apikey={credit.Token}&q_artist={item.Artist}&q_track={item.Name}");
             var json = string.Empty;
+            var ub = new UriBuilder($"{Credit.ServiceUrl}/track.search?apikey={Credit.Token}&q_artist={item.Artist}&q_track={item.Name}");
 
             try
             {
+                await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
+
+                // Example requests:
+                // http://api.musixmatch.com/ws/1.1/track.search?apikey=xxxxxxxxxxxxxxxxxxxxx&q_artist=Dire%20Straits&q_track=Lions
+                // http://api.musixmatch.com/ws/1.1/track.lyrics.get?apikey=xxxxxxxxxxxxxxxxxxxxx&track_id=72952844&commontrack_id=61695
+
+                // First we search for the track
                 json = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
-            }
-            catch (HttpRequestException ex)
-            {
-                AddException(ex, ub.Uri.AbsoluteUri);
-            }
 
-            if (Exceptions.Count > 0)
-                return this;
+                if (Exceptions.Count > 0)
+                    return this;
 
-            try
-            {
                 // Deserialize the returned JSON
                 var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
                 var trackDyns = searchDyn.message.body.track_list;
@@ -134,16 +125,20 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 foreach (var trackDyn in trackDyns)
                 {
-                    ub = new UriBuilder($"{credit.ServiceUrl}/track.lyrics.get?apikey={credit.Token}&track_id={trackDyn?.track?.track_id ?? 0}&commontrack_id={trackDyn?.track?.commontrack_id ?? 0}");
+                    ub = new UriBuilder($"{Credit.ServiceUrl}/track.lyrics.get?apikey={Credit.Token}&track_id={trackDyn?.track?.track_id ?? 0}&commontrack_id={trackDyn?.track?.commontrack_id ?? 0}");
 
                     uris.Add(ub.Uri);
                 }
 
-                await ExtractAllLyricTextsAsync(uris, getAll).ConfigureAwait(false);
+                await ExtractAllLyricTextsAsync(uris, isGetAll).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {
-                AddException(ex, ub.Uri.AbsoluteUri);
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
             }
 
             return this;

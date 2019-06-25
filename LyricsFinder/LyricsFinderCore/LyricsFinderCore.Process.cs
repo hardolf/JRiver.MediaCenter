@@ -224,18 +224,13 @@ namespace MediaCenter.LyricsFinder
                 // Add the set of workers
                 for (var i = 0; i < LyricsFinderCorePrivateConfigurationSectionHandler.MaxQueueLength; i++)
                 {
-                    workers.Add(ProcessWorkerAsync(queue, foundItemIndices, cancellationTokenSource));
+                    workers.Add(ProcessWorkerAsync(i, queue, foundItemIndices, cancellationTokenSource));
                 }
 
                 // Run the search on the set of workers
                 await Task.WhenAll(workers);
 
                 isOk = true;
-            }
-            catch
-            {
-                SearchAllStartStopButton.Stop();
-                throw;
             }
             finally
             {
@@ -260,48 +255,54 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Asynchronous processes worker .
         /// </summary>
+        /// <param name="workerNumber">The worker number.</param>
         /// <param name="queue">The queue.</param>
         /// <param name="foundItemIndices">The found item indices.</param>
         /// <param name="cancellationTokenSource">The cancellation token source.</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// queue
         /// or
         /// foundItemIndices
         /// or
-        /// foundItemIndices
+        /// cancellationTokenSource
         /// </exception>
+        /// <exception cref="System.Exception">
+        /// </exception>
+        /// <exception cref="LyricServiceCommunicationException"></exception>
+        /// <exception cref="ArgumentNullException">queue
+        /// or
+        /// foundItemIndices
+        /// or
+        /// foundItemIndices</exception>
         /// <exception cref="Exception">Process worker failed at item {i}, Artist \"{artist}\", Album \"{album}\" and Title \"{title}\": {ex.Message}</exception>
-        private async Task ProcessWorkerAsync(Queue<int> queue, List<int> foundItemIndices, CancellationTokenSource cancellationTokenSource)
+        private async Task ProcessWorkerAsync(int workerNumber, Queue<int> queue, List<int> foundItemIndices, CancellationTokenSource cancellationTokenSource)
         {
             if (queue == null) throw new ArgumentNullException(nameof(queue));
             if (foundItemIndices == null) throw new ArgumentNullException(nameof(foundItemIndices));
             if (cancellationTokenSource == null) throw new ArgumentNullException(nameof(cancellationTokenSource));
 
             var i = 0;
-            var artist = string.Empty;
-            var album = string.Empty;
-            var title = string.Empty;
-            var oldLyric = string.Empty;
             var row = MainDataGridView.Rows[0];
+            var msg = $"Process worker {workerNumber} failed. ";
 
             try
             {
                 while (queue.Count > 0)
                 {
-                    i = queue.Dequeue();
-
                     var found = false;
 
+                    i = queue.Dequeue();
                     row = MainDataGridView.Rows[i];
+                    msg = $"Process worker {workerNumber} failed at item {i}. ";
 
                     if (!int.TryParse(row.Cells[(int)GridColumnEnum.Key].Value?.ToString(), out var key))
                         throw new Exception($"{row.Cells[(int)GridColumnEnum.Key].Value} could not be parsed as an integer.");
 
-                    artist = row.Cells[(int)GridColumnEnum.Artist].Value?.ToString() ?? string.Empty;
-                    album = row.Cells[(int)GridColumnEnum.Album].Value?.ToString() ?? string.Empty;
-                    title = row.Cells[(int)GridColumnEnum.Title].Value?.ToString() ?? string.Empty;
-                    oldLyric = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString() ?? string.Empty;
+                    var artist = row.Cells[(int)GridColumnEnum.Artist].Value?.ToString() ?? string.Empty;
+                    var album = row.Cells[(int)GridColumnEnum.Album].Value?.ToString() ?? string.Empty;
+                    var title = row.Cells[(int)GridColumnEnum.Title].Value?.ToString() ?? string.Empty;
+                    var oldLyric = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString() ?? string.Empty;
 
                     if (OverwriteMenuItem.Checked || oldLyric.IsNullOrEmptyTrimmed() || oldLyric.Contains(_noLyricsSearchList))
                     {
@@ -340,7 +341,6 @@ namespace MediaCenter.LyricsFinder
                         && !oldLyric.IsNullOrEmptyTrimmed())
                         row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.SkippedOldLyrics.ResultText();
                 }
-
             }
             catch (OperationCanceledException)
             {
@@ -349,7 +349,7 @@ namespace MediaCenter.LyricsFinder
             catch (Exception ex)
             {
                 row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.Error.ResultText();
-                throw new Exception($"Process worker failed at item {i}, Artist \"{artist}\", Album \"{album}\" and Title \"{title}\": {ex.Message}", ex);
+                throw new Exception(msg, ex);
             }
         }
 

@@ -41,7 +41,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <param name="getAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
         ///   <see cref="AbstractLyricService" /> descendent object of type <see cref="Stands4Service" />.
         /// </returns>
@@ -51,39 +51,29 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>
         /// This routine gets the first (if any) search results from the lyric service.
         /// </remarks>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool getAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
-
-            // Example GET request:
-            // https://orion.apiseeds.com/api/music/lyric/dire straits/brothers in arms?apikey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-            var credit = Credit as CreditType;
-            var ub = new UriBuilder($"{credit.ServiceUrl}/{item.Artist}/{item.Name}?apikey={credit.Token}");
             var json = string.Empty;
+            UriBuilder ub = null;
 
-            // First we search for the track
             try
             {
+                await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
+
+                // Example GET request:
+                // https://orion.apiseeds.com/api/music/lyric/dire straits/brothers in arms?apikey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+                ub = new UriBuilder($"{Credit.ServiceUrl}/{item.Artist}/{item.Name}?apikey={Credit.Token}");
+
+                // First we search for the track
                 json = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
-            }
-            catch (HttpRequestException ex)
-            {
-                // Is this a normal situation? i.e. if the song was not found, the remote server returns HTML error 404
-                if (ex.Message.Contains("404"))
+
+                if (Exceptions.Count > 0)
                     return this;
-                else
-                    AddException(ex, ub.Uri.AbsoluteUri);
-            }
 
-            if (Exceptions.Count > 0)
-                return this;
-
-            // Deserialize the returned JSON
-            try
-            {
+                // Deserialize the returned JSON
                 var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
                 var lyricText = (string)searchDyn.result.track.text;
                 var copyright = searchDyn.result.copyright;
@@ -91,9 +81,17 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 AddFoundLyric(lyricText, null, null, copyrightText);
             }
+            catch (HttpRequestException ex)
+            {
+                // We assume this is a normal situation, i.e. if the song was not found, the remote server returns HTML error 404
+                if (ex.Message.Contains("404"))
+                    return this;
+                else
+                    throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
+            }
             catch (Exception ex)
             {
-                AddException(ex, ub.Uri.AbsoluteUri);
+                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
             }
 
             return this;

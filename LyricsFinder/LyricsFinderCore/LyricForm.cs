@@ -168,7 +168,6 @@ namespace MediaCenter.LyricsFinder
                 LyricFormTrackBar.Select();
                 SearchButton.Enabled = false;
                 SearchButton.Visible = false;
-                UseWaitCursor = true;
 
                 _McItem = new McMplItem
                 {
@@ -189,7 +188,6 @@ namespace MediaCenter.LyricsFinder
                 LyricTextBox.Text = _initLyric;
                 SearchButton.Enabled = true;
                 SearchButton.Visible = true;
-                UseWaitCursor = false;
 
                 _McItem = new McMplItem
                 {
@@ -327,19 +325,35 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void LyricForm_LoadAsync(object sender, EventArgs e)
         {
+            string msg;
+
             try
             {
                 if (_isSearch)
                 {
+                    UseWaitCursor = true;
                     LyricFormStatusLabel.Text = "Searching...";
 
                     // LyricFormTimer.Start();
                     await Search();
                 }
             }
+            //catch (LyricServiceCommunicationException ex)
+            //{
+            //    msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. "
+            //        + $"There was a communication error, i.e. a request failed during lyrics search for Artist \"{ex.McItem.Artist}\",  Album \"{ex.McItem.Album}\" and Song \"{ex.McItem.Name}\"";
+            //    ErrorHandling.ShowAndLogErrorHandler(msg, ex);
+            //}
+            //catch (GeneralLyricServiceException ex)
+            //{
+            //    msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. "
+            //        + $"There was a lyric service error during lyrics search for Artist \"{ex.McItem.Artist}\",  Album \"{ex.McItem.Album}\" and Song \"{ex.McItem.Name}\"";
+            //    ErrorHandling.ShowAndLogErrorHandler(msg, ex);
+            //}
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
+                ErrorHandling.ShowAndLogDetailedErrorHandler(msg, ex);
                 Close();
             }
             finally
@@ -406,7 +420,6 @@ namespace MediaCenter.LyricsFinder
 
                 _searchForm = new LyricForm(LyricCell, Location, Size, SearchLyricCallback, LyricsFinderData, true, ArtistTextBox.Text, AlbumTextBox.Text, TrackTextBox.Text);
                 _searchForm.Show(this);
-
             }
             catch (Exception ex)
             {
@@ -421,38 +434,31 @@ namespace MediaCenter.LyricsFinder
         /// <returns></returns>
         private async Task Search()
         {
-            try
+            // Clear list and search for all the lyrics in each lyric service
+            _foundLyricList.Clear();
+
+            await LyricSearch.Search(LyricsFinderData, _McItem, true).ConfigureAwait(true);
+
+            // Process the results
+            foreach (var service in LyricsFinderData.ActiveServices)
             {
-                // Clear list and search for all the lyrics in each lyric service
-                _foundLyricList.Clear();
+                if (service.LyricResult != LyricResultEnum.Found) continue;
 
-                await LyricSearch.Search(LyricsFinderData, _McItem, true).ConfigureAwait(true);
+                _serviceCounts.Add(service.Credit.ServiceName, service.FoundLyricList.Count);
 
-                // Process the results
-                foreach (var service in LyricsFinderData.ActiveServices)
+                foreach (var foundLyric in service.FoundLyricList)
                 {
-                    if (service.LyricResult != LyricResultEnum.Found) continue;
-
-                    _serviceCounts.Add(service.Credit.ServiceName, service.FoundLyricList.Count);
-
-                    foreach (var foundLyric in service.FoundLyricList)
-                    {
-                        _foundLyricList.Add(foundLyric);
-                    }
+                    _foundLyricList.Add(foundLyric);
                 }
-
-                // Set the trackbar and call the Scroll event handler to initialize the text box
-                LyricFormTrackBar.Maximum = _foundLyricList.Count - 1;
-                LyricFormTrackBar_Scroll(this, new EventArgs());
-
-                LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
-
-                LyricsFinderData.Save();
             }
-            catch (LyricsQuotaExceededException ex)
-            {
-                ErrorHandling.ShowAndLogErrorHandler(ex.Message, ex);
-            }
+
+            // Set the trackbar and call the Scroll event handler to initialize the text box
+            LyricFormTrackBar.Maximum = _foundLyricList.Count - 1;
+            LyricFormTrackBar_Scroll(this, new EventArgs());
+
+            LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
+
+            LyricsFinderData.Save();
         }
 
 
