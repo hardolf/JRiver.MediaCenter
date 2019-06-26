@@ -657,10 +657,10 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 _progressPercentage = 0;
-                UseWaitCursor = true;
+                // UseWaitCursor = true;
 
                 // Start the automatic search process job
-                await ProcessAsync(_cancellationTokenSource);
+                await SearchAllProcessAsync(_cancellationTokenSource);
             }
             catch (Exception ex)
             {
@@ -669,7 +669,7 @@ namespace MediaCenter.LyricsFinder
             }
             finally
             {
-                UseWaitCursor = false;
+                // UseWaitCursor = false;
             }
         }
 

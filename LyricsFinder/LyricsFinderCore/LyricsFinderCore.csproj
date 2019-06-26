@@ -29,7 +29,7 @@
     <SccProvider>SubversionScc</SccProvider>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-	<Features>IOperation</Features>
+    <Features>IOperation</Features>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,6 +91,7 @@
     <Compile Include="Model\Helpers\LyricsFinderCoreConfigurationSectionHandler.cs" />
     <Compile Include="Model\Helpers\LyricsFinderCorePrivateConfigurationSectionHandler.cs" />
     <Compile Include="Model\LyricSearch.cs" />
+    <Compile Include="Model\LyricServices\DisplayProperty.cs" />
     <Compile Include="Model\LyricServices\LyricServiceExceptions.cs" />
     <Compile Include="Model\McRestService\McPlayListsResponse.cs" />
     <Compile Include="OptionForm.cs">
@@ -136,7 +137,7 @@
       <DependentUpon>LyricServiceForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\LyricServices\AbstractLyricService.cs" />
-    <Compile Include="Model\CreditType.cs" />
+    <Compile Include="Model\LyricServices\CreditType.cs" />
     <Compile Include="Model\Helpers\Utility.cs" />
     <Compile Include="Model\LyricsResultEnum.cs" />
     <Compile Include="Model\GridColumnEnum.cs" />

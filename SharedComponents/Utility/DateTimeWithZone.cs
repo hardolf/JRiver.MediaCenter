@@ -99,6 +99,38 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Parses the specified s.
+        /// </summary>
+        /// <param name="s">The s.</param>
+        /// <returns></returns>
+        public static ServiceDateTimeWithZone Parse(string s)
+        {
+            if (s == null) throw new ArgumentNullException(nameof(s));
+
+            var zone = string.Empty;
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                char c = (char)s[i];
+
+                if (!":0123456789".Contains(c))
+                {
+                    zone = s.Substring(i).ToUpperInvariant();
+                    break;
+                }
+            }
+
+#pragma warning disable CA1305 // Specify IFormatProvider
+            var dt = DateTime.Parse(s);
+#pragma warning restore CA1305 // Specify IFormatProvider
+            var zoneId = TimeZoneInfo.FindSystemTimeZoneById(zone);
+            var ret = new ServiceDateTimeWithZone(dt, zoneId);
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Gets the local time for the service.
         /// </summary>
         /// <value>

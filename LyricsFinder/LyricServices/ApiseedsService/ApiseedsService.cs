@@ -28,6 +28,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     {
 
         /// <summary>
+        /// Gets or sets the token.
+        /// </summary>
+        /// <value>
+        /// The token.
+        /// </value>
+        [XmlIgnore]
+        public string Token { get; set; }
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ApiseedsService"/> class.
         /// </summary>
         public ApiseedsService()
@@ -43,14 +53,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <param name="item">The item.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
-        ///   <see cref="AbstractLyricService" /> descendent object of type <see cref="Stands4Service" />.
+        ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="Stands4Service" />.
         /// </returns>
-        /// <exception cref="ArgumentNullException">item</exception>
-        /// <exception cref="NullReferenceException">Response is null</exception>
-        /// <exception cref="Exception">\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".</exception>
-        /// <remarks>
-        /// This routine gets the first (if any) search results from the lyric service.
-        /// </remarks>
+        /// <exception cref="System.ArgumentNullException">item</exception>
+        /// <exception cref="LyricServiceCommunicationException"></exception>
+        /// <exception cref="GeneralLyricServiceException"></exception>
         public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
@@ -65,7 +72,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 // Example GET request:
                 // https://orion.apiseeds.com/api/music/lyric/dire straits/brothers in arms?apikey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-                ub = new UriBuilder($"{Credit.ServiceUrl}/{item.Artist}/{item.Name}?apikey={Credit.Token}");
+                ub = new UriBuilder($"{Credit.ServiceUrl}/{item.Artist}/{item.Name}?apikey={Token}");
 
                 // First we search for the track
                 json = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
@@ -95,6 +102,30 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
 
             return this;
+        }
+
+
+        /// <summary>
+        /// Refreshes the display properties.
+        /// </summary>
+        public override void RefreshDisplayProperties()
+        {
+            base.RefreshDisplayProperties();
+
+            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
+        }
+
+
+        /// <summary>
+        /// Refreshes the service settings from the service configuration file.
+        /// </summary>
+        public override void RefreshServiceSettings()
+        {
+            base.RefreshServiceSettings();
+
+            Token = PrivateSettings.Token;
+
+            RefreshDisplayProperties();
         }
 
     }

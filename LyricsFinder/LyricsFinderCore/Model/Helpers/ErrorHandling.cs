@@ -83,14 +83,14 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
                 if (innerEx is LyricServiceCommunicationException ex1)
                 {
-                    sb.Append($"There was a communication error, i.e. a request failed during lyrics search ");
+                    sb.Append($"A lyric service request failed during lyrics search ");
                     sb.Append($"for Artist \"{ex1.McItem.Artist}\",  Album \"{ex1.McItem.Album}\" and Song \"{ex1.McItem.Name}\", ");
                     sb.Append($"request: \"{ex1.RequestUri.AbsoluteUri}\", ");
                     sb.Append($"error: {msg}");
                 }
                 else if (innerEx is GeneralLyricServiceException ex2)
                 {
-                    sb.Append($"There was a lyric service error during lyrics search ");
+                    sb.Append($"The lyric service failed during lyrics search ");
                     sb.Append($"for Artist \"{ex2.McItem.Artist}\",  Album \"{ex2.McItem.Album}\" and Song \"{ex2.McItem.Name}\", ");
                     sb.Append($"error: {msg}");
                 }
@@ -102,8 +102,8 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             }
 
             sb.AppendLine();
-            sb.AppendLine($"Stack trace:");
-            sb.AppendLine($"{exception.StackTrace}");
+            sb.AppendLine($"Full exception details:");
+            sb.AppendLine($"{exception.ToString()}");
 
             ShowErrorHandler(sb.ToString());
         }

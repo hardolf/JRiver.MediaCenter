@@ -19,7 +19,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     /// <summary>
     /// Logging routines.
     /// </summary>
-    internal static class Logging
+    public static class Logging
     {
 
         private static ILog _log;
@@ -45,8 +45,9 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
         public static void Log(int progressPercentage, string message = null, bool isDebug = false)
         {
-            if (!message.IsNullOrEmptyTrimmed())
-                message = message.Substring(0, 1).ToUpperInvariant() + message.Remove(0, 1);
+            message = (message.IsNullOrEmptyTrimmed())
+                ? string.Empty
+                : message.Substring(0, 1).ToUpperInvariant() + message.Remove(0, 1);
 
             if (progressPercentage > 0)
                 message = $"{progressPercentage,3}% - {message}";

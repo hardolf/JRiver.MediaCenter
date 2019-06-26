@@ -203,10 +203,53 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Reloads the playlist.
+        /// </summary>
+        /// <param name="isReconnect">if set to <c>true</c> reconnect to MediaCenter; else do not.</param>
+        /// <param name="menuItemName">Name of the menu item.</param>
+        /// <returns></returns>
+        private async Task ReloadPlaylist(bool isReconnect = false, string menuItemName = null)
+        {
+            var msg = "connecting to the Media Center and/or loading the playlist";
+
+            try
+            {
+                EnableOrDisableMenuItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem);
+
+                if (IsDataChanged)
+                    throw new Exception("The item data is changed, you should save it before loading playlist.");
+
+                if (!_isConnectedToMc || isReconnect)
+                    await Connect();
+
+                _currentPlaylist = (menuItemName.IsNullOrEmptyTrimmed())
+                    ? await LoadPlaylist()
+                    : await LoadPlaylist(menuItemName);
+
+                await FillDataGrid();
+
+                ResetItemStates();
+                EnableOrDisableMenuItems(true);
+            }
+            catch (Exception ex)
+            {
+                EnableOrDisableMenuItems(true);
+                EnableOrDisableMenuItems(false, FileSaveMenuItem);
+
+                StatusMessage($"Error {msg}.", true, true);
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
+            }
+        }
+
+
+        /// <summary>
         /// Tries to Find lyrics for all items in the current playlist.
         /// </summary>
         /// <returns></returns>
-        private async Task ProcessAsync(CancellationTokenSource cancellationTokenSource)
+        /// <remarks>
+        /// This routine gets the first (if any) search results for each song from the lyric services.
+        /// </remarks>
+        private async Task SearchAllProcessAsync(CancellationTokenSource cancellationTokenSource)
         {
             if (cancellationTokenSource == null) throw new ArgumentNullException(nameof(cancellationTokenSource));
 
@@ -224,7 +267,7 @@ namespace MediaCenter.LyricsFinder
                 // Add the set of workers
                 for (var i = 0; i < LyricsFinderCorePrivateConfigurationSectionHandler.MaxQueueLength; i++)
                 {
-                    workers.Add(ProcessWorkerAsync(i, queue, foundItemIndices, cancellationTokenSource));
+                    workers.Add(SearchAllProcessWorkerAsync(i, queue, foundItemIndices, cancellationTokenSource));
                 }
 
                 // Run the search on the set of workers
@@ -276,7 +319,7 @@ namespace MediaCenter.LyricsFinder
         /// or
         /// foundItemIndices</exception>
         /// <exception cref="Exception">Process worker failed at item {i}, Artist \"{artist}\", Album \"{album}\" and Title \"{title}\": {ex.Message}</exception>
-        private async Task ProcessWorkerAsync(int workerNumber, Queue<int> queue, List<int> foundItemIndices, CancellationTokenSource cancellationTokenSource)
+        private async Task SearchAllProcessWorkerAsync(int workerNumber, Queue<int> queue, List<int> foundItemIndices, CancellationTokenSource cancellationTokenSource)
         {
             if (queue == null) throw new ArgumentNullException(nameof(queue));
             if (foundItemIndices == null) throw new ArgumentNullException(nameof(foundItemIndices));
@@ -320,7 +363,7 @@ namespace MediaCenter.LyricsFinder
                             {
                                 found = true;
                                 foundItemIndices.Add(i);
-                                row.Cells[(int)GridColumnEnum.Lyrics].Value = service.FoundLyricList.First().LyricText;
+                                row.Cells[(int)GridColumnEnum.Lyrics].Value = service.FoundLyricList.First().ToString();
                                 IsDataChanged = true;
                                 break;
                             }
@@ -350,46 +393,6 @@ namespace MediaCenter.LyricsFinder
             {
                 row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.Error.ResultText();
                 throw new Exception(msg, ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Reloads the playlist.
-        /// </summary>
-        /// <param name="isReconnect">if set to <c>true</c> reconnect to MediaCenter; else do not.</param>
-        /// <param name="menuItemName">Name of the menu item.</param>
-        /// <returns></returns>
-        private async Task ReloadPlaylist(bool isReconnect = false, string menuItemName = null)
-        {
-            var msg = "connecting to the Media Center and/or loading the playlist";
-
-            try
-            {
-                EnableOrDisableMenuItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem);
-
-                if (IsDataChanged)
-                    throw new Exception("The item data is changed, you should save it before loading playlist.");
-
-                if (!_isConnectedToMc || isReconnect)
-                    await Connect();
-
-                _currentPlaylist = (menuItemName.IsNullOrEmptyTrimmed())
-                    ? await LoadPlaylist()
-                    : await LoadPlaylist(menuItemName);
-
-                await FillDataGrid();
-
-                ResetItemStates();
-                EnableOrDisableMenuItems(true);
-            }
-            catch (Exception ex)
-            {
-                EnableOrDisableMenuItems(true);
-                EnableOrDisableMenuItems(false, FileSaveMenuItem);
-
-                StatusMessage($"Error {msg}.", true, true);
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
             }
         }
 

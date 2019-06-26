@@ -138,13 +138,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (!tableNode.GetAttributeValue("class", string.Empty).Equals("table table-condensed", StringComparison.InvariantCultureIgnoreCase))
                 throw new Exception("Result table node with attribute class=\"table table-condensed\" not found.");
 
-            var hrefs = tableNode.SelectNodes("./tr/td/a[@href]");
+            var anchors = tableNode.SelectNodes("./tr/td/a");
 
-            if (hrefs == null) return ret;
-
-            foreach (var href in hrefs)
+            foreach (var a in anchors)
             {
-                var hrefValue = href.GetAttributeValue("href", string.Empty);
+                // Skip page anchors
+                if (!a.GetAttributeValue("class", string.Empty).IsNullOrEmptyTrimmed())
+                    continue;
+
+                var hrefValue = a.GetAttributeValue("href", string.Empty);
 
                 try
                 {
@@ -168,14 +170,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <param name="item">The item.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
-        ///   <see cref="AbstractLyricService" /> descendent object of type <see cref="Stands4Service" />.
+        ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="Stands4Service" />.
         /// </returns>
-        /// <exception cref="ArgumentNullException">item</exception>
-        /// <exception cref="NullReferenceException">Response is null</exception>
-        /// <exception cref="Exception">\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".</exception>
-        /// <remarks>
-        /// This routine gets the first (if any) search results from the lyric service.
-        /// </remarks>
+        /// <exception cref="System.ArgumentNullException">item</exception>
+        /// <exception cref="LyricServiceCommunicationException"></exception>
+        /// <exception cref="GeneralLyricServiceException"></exception>
         public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));

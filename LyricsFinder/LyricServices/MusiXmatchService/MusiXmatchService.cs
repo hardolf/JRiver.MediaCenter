@@ -28,6 +28,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     {
 
         /// <summary>
+        /// Gets or sets the token.
+        /// </summary>
+        /// <value>
+        /// The token.
+        /// </value>
+        [XmlIgnore]
+        public string Token { get; set; }
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MusiXmatchService"/> class.
         /// </summary>
         public MusiXmatchService()
@@ -44,6 +54,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns>
         /// If found, the found lyric text string; else null.
         /// </returns>
+        /// <exception cref="System.ArgumentNullException">uri</exception>
         protected override async Task<string> ExtractOneLyricTextAsync(Uri uri)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
@@ -85,22 +96,17 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <param name="item">The item.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
-        ///   <see cref="AbstractLyricService" /> descendent object of type <see cref="MusiXmatchService" />.
+        ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="MusiXmatchService" />.
         /// </returns>
-        /// <exception cref="ArgumentNullException">item</exception>
-        /// <exception cref="NullReferenceException">Response is null</exception>
-        /// <exception cref="Exception">\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".
-        /// or
-        /// \"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".</exception>
-        /// <remarks>
-        /// This routine gets the first (if any) search results from the lyric service.
-        /// </remarks>
+        /// <exception cref="System.ArgumentNullException">item</exception>
+        /// <exception cref="LyricServiceCommunicationException"></exception>
+        /// <exception cref="GeneralLyricServiceException"></exception>
         public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
             var json = string.Empty;
-            var ub = new UriBuilder($"{Credit.ServiceUrl}/track.search?apikey={Credit.Token}&q_artist={item.Artist}&q_track={item.Name}");
+            var ub = new UriBuilder($"{Credit.ServiceUrl}/track.search?apikey={Token}&q_artist={item.Artist}&q_track={item.Name}");
 
             try
             {
@@ -125,7 +131,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 foreach (var trackDyn in trackDyns)
                 {
-                    ub = new UriBuilder($"{Credit.ServiceUrl}/track.lyrics.get?apikey={Credit.Token}&track_id={trackDyn?.track?.track_id ?? 0}&commontrack_id={trackDyn?.track?.commontrack_id ?? 0}");
+                    ub = new UriBuilder($"{Credit.ServiceUrl}/track.lyrics.get?apikey={Token}&track_id={trackDyn?.track?.track_id ?? 0}&commontrack_id={trackDyn?.track?.commontrack_id ?? 0}");
 
                     uris.Add(ub.Uri);
                 }
@@ -142,6 +148,30 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
 
             return this;
+        }
+
+
+        /// <summary>
+        /// Refreshes the display properties.
+        /// </summary>
+        public override void RefreshDisplayProperties()
+        {
+            base.RefreshDisplayProperties();
+
+            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
+        }
+
+
+        /// <summary>
+        /// Refreshes the service settings from the service configuration file.
+        /// </summary>
+        public override void RefreshServiceSettings()
+        {
+            base.RefreshServiceSettings();
+
+            Token = PrivateSettings.Token;
+
+            RefreshDisplayProperties();
         }
 
     }

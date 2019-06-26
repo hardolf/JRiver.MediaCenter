@@ -60,7 +60,7 @@ namespace MediaCenter.LyricsFinder
                 if (attributes.Length == 0)
                     return "";
 
-                return ((AssemblyCompanyAttribute)attributes[0]).Company;
+                return ((AssemblyCompanyAttribute)attributes.FirstOrDefault())?.Company;
             }
         }
 
@@ -80,7 +80,7 @@ namespace MediaCenter.LyricsFinder
                 if (attributes.Length == 0)
                     return "";
 
-                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+                return ((AssemblyCopyrightAttribute)attributes.FirstOrDefault())?.Copyright;
             }
         }
 
@@ -117,7 +117,7 @@ namespace MediaCenter.LyricsFinder
                 if (attributes.Length == 0)
                     return "";
 
-                return ((AssemblyDescriptionAttribute)attributes[0]).Description;
+                return ((AssemblyDescriptionAttribute)attributes.FirstOrDefault())?.Description;
             }
         }
 
@@ -137,7 +137,7 @@ namespace MediaCenter.LyricsFinder
                 if (attributes.Length == 0)
                     return "";
 
-                return ((AssemblyProductAttribute)attributes[0]).Product;
+                return ((AssemblyProductAttribute)attributes.FirstOrDefault())?.Product;
             }
         }
 
@@ -156,7 +156,7 @@ namespace MediaCenter.LyricsFinder
 
                 if (attributes.Length > 0)
                 {
-                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
+                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes.FirstOrDefault();
 
                     if (!titleAttribute.Title.IsNullOrEmptyTrimmed())
                         return titleAttribute.Title;

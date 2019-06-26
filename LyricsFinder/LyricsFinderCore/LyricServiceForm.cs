@@ -69,13 +69,12 @@ namespace MediaCenter.LyricsFinder.Model
 
             foreach (var service in _lyricsFinderData.Services)
             {
-                var dailyQuota = (service.DailyQuota > 0)
-                    ? service.DailyQuota.ToString(CultureInfo.InvariantCulture)
-                    : "-";
+                var value = service.DisplayProperties.GetPropertyValue("DailyQuota", true);
+                var dailyQuota = (value == null) ? "-" : value.ToString();
 
-                var quotaResetTime = service.QuotaResetTime.ClientLocalTime;
-                var quotaResetTimeString = (service.DailyQuota > 0)
-                    ? quotaResetTime.ToString(CultureInfo.InvariantCulture)
+                value = service.DisplayProperties.GetPropertyValue("QuotaResetTime", true);
+                var quotaResetTimeString = (value is ServiceDateTimeWithZone quotaResetTime)
+                    ? quotaResetTime.ClientLocalTime.ToString(CultureInfo.InvariantCulture)
                     : "-";
 
                 if (service.IsImplemented)
@@ -117,30 +116,36 @@ namespace MediaCenter.LyricsFinder.Model
         /// <summary>
         /// Fills the row.
         /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
         /// <param name="caption">The caption.</param>
         /// <param name="value">The value.</param>
         /// <param name="isEditAllowed">if set to <c>true</c> value edit is allowed; else it is read-only.</param>
-        /// <param name="tooltip">The tooltip.</param>
-        private void FillRow(string caption, string value, bool isEditAllowed = false, string tooltip = "")
+        /// <param name="toolTip">The tooltip.</param>
+        private void FillRow(string propertyName, string caption, string value, bool isEditAllowed = false, string toolTip = "")
         {
-            if (value.IsNullOrEmptyTrimmed())
-                return;
+            if (value.IsNullOrEmptyTrimmed()) return;
 
             var tlp = LyricServiceDetailsTableLayoutPanel;
 
             tlp.RowCount++;
 
             var rowIdx = tlp.RowCount - 1;
-
-            var lblHeader = new Label();
+            var lblPropertyName = new Label();
+            var lblCaption = new Label();
             var txtValue = new TextBox();
 
-            lblHeader.AutoSize = true;
-            lblHeader.Name = $"HeaderLabel{rowIdx}";
-            lblHeader.Text = caption;
+            lblPropertyName.AutoSize = true;
+            lblPropertyName.Name = $"PropertyNameLabel{rowIdx}";
+            lblPropertyName.Text = propertyName ?? string.Empty;
+            lblPropertyName.Visible = false;
+
+            lblCaption.AutoSize = true;
+            lblCaption.Name = $"CaptionLabel{rowIdx}";
+            lblCaption.Text = caption;
 
             txtValue.AutoSize = true;
             txtValue.BorderStyle = (isEditAllowed) ? BorderStyle.FixedSingle : BorderStyle.None;
+            txtValue.MinimumSize = new Size(50, 20);
             txtValue.Multiline = true;
             txtValue.Name = $"ValueTextbox{rowIdx}";
             txtValue.ReadOnly = !isEditAllowed;
@@ -150,15 +155,19 @@ namespace MediaCenter.LyricsFinder.Model
             txtValue.Text = value;
             txtValue.WordWrap = false;
 
-            if (!tooltip.IsNullOrEmptyTrimmed())
-                LyricServiceFormToolTip.SetToolTip(txtValue, tooltip);
-            else if (isEditAllowed)
-                LyricServiceFormToolTip.SetToolTip(txtValue, $"You can edit the \"{caption}\" value");
+            toolTip = (toolTip ?? string.Empty).Trim().TrimEnd('.');
+
+            if (!toolTip.IsNullOrEmptyTrimmed())
+                LyricServiceFormToolTip.SetToolTip(txtValue, toolTip);
+
+            if (isEditAllowed)
+                LyricServiceFormToolTip.SetToolTip(txtValue, $"{toolTip}. You can edit the value".TrimStart('.', ' '));
 
             txtValue.AutoSizeTextBox();
 
-            tlp.Controls.Add(lblHeader, 0, rowIdx);
-            tlp.Controls.Add(txtValue, 1, rowIdx);
+            tlp.Controls.Add(lblPropertyName, 0, rowIdx);
+            tlp.Controls.Add(lblCaption, 1, rowIdx);
+            tlp.Controls.Add(txtValue, 2, rowIdx);
 
             tlp.RowStyles.Clear();
 
@@ -323,20 +332,26 @@ namespace MediaCenter.LyricsFinder.Model
         {
             try
             {
-                // Store the visual rows with the data
-                foreach (DataGridViewRow row in LyricServiceListDataGridView.Rows)
+                // Validate the service details
+                e.Cancel = IsValidateCancel();
+
+                if (!e.Cancel)
                 {
-                    var cellChk = row.Cells[0];
-                    var cellName = row.Cells[1];
-                    var isChecked = (cellChk.Value == null) || (bool)cellChk.Value;
-                    var serviceName = (cellName.Value == null) ? string.Empty : (string)cellName.Value;
+                    // Store the visual rows with the data, i.e. the IsActive service property
+                    foreach (DataGridViewRow row in LyricServiceListDataGridView.Rows)
+                    {
+                        var cellChk = row.Cells[0];
+                        var cellName = row.Cells[1];
+                        var isChecked = (cellChk.Value == null) || (bool)cellChk.Value;
+                        var serviceName = (cellName.Value == null) ? string.Empty : (string)cellName.Value;
 
-                    _lyricsFinderData.Services.First(service => service.Credit.ServiceName
-                        .Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
-                        .IsActive = isChecked;
+                        _lyricsFinderData.Services.First(service => service.Credit.ServiceName
+                            .Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
+                            .IsActive = isChecked;
+                    }
+
+                    _callback(this); 
                 }
-
-                _callback(this);
             }
             catch (Exception ex)
             {
@@ -485,9 +500,6 @@ namespace MediaCenter.LyricsFinder.Model
         private void SaveSelectedService()
         {
             var tlp = LyricServiceDetailsTableLayoutPanel;
-            int quota = 0;
-            string token = null;
-            string userId = null;
             AbstractLyricService service = GetSelectedService(out _);
 
             if (service == null) return;
@@ -500,29 +512,37 @@ namespace MediaCenter.LyricsFinder.Model
                 {
                     if (txt.ReadOnly) continue;
 
-                    var lbl = tlp.Controls[i - 1]; // There is always a label before the text box
+                    var lbl = tlp.Controls[i - 2]; // There is always a hidden label before caption label and the text box
 
-                    if (lbl.Text.ToUpperInvariant().Contains("QUOTA"))
+                    if (service.DisplayProperties.TryGetValue(lbl.Text, out var dp))
                     {
-                        quota = int.Parse(txt.Text, NumberStyles.None, CultureInfo.InvariantCulture);
-                        service.DailyQuota = quota;
-                    }
+                        if (!dp.IsEditAllowed) continue;
 
-                    if (lbl.Text.ToUpperInvariant().Contains("TOKEN"))
-                    {
-                        token = txt.Text;
-                        service.Credit.Token = token;
-                    }
+                        if (dp.PropertyName.Equals("dailyQuota", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            if (!int.TryParse(txt.Text, out var dailyQuota))
+                                throw new Exception($"Cannot convert \"{txt.Text}\" to int.");
 
-                    if (lbl.Text.ToUpperInvariant().Contains("USERID"))
-                    {
-                        userId = txt.Text;
-                        service.Credit.UserId = userId;
+                            dp.Value = dailyQuota;
+                            service.PrivateSettings.Save(dailyQuota: dailyQuota);
+                        }
+                        else if (dp.PropertyName.Equals("token", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            dp.Value = txt.Text;
+                            service.PrivateSettings.Save(token: txt.Text);
+                        }
+                        else if (dp.PropertyName.Equals("userId", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            dp.Value = txt.Text;
+                            service.PrivateSettings.Save(userId: txt.Text);
+                        }
+                        else
+                            throw new Exception($"Cannot save unknown editable property: \"{dp.PropertyName}\".");
+
+                        dp.SetPropertyValue(service);
                     }
                 }
             }
-
-            service.PrivateSettings.Save(quota, token, userId);
         }
 
 
@@ -556,33 +576,11 @@ namespace MediaCenter.LyricsFinder.Model
             if (isChecked == null)
                 isChecked = service.IsActive;
 
-            // Create the rows and columns
-            FillRow("Name", $"{service.Credit.ServiceName} {(isChecked.Value ? "" : " - not enabled")}");
-            FillRow("Company", service.Credit.Company);
-            FillRow("Company Website", service.Credit.CreditUrl?.ToString() ?? string.Empty);
-            FillRow("Copyright text", service.Credit.Copyright);
-            FillRow("Credit text format", service.Credit.CreditTextFormat);
-            FillRow("URL", service.Credit.ServiceUrl?.ToString() ?? string.Empty);
-            FillRow("User ID", service.Credit.UserId, true);
-            FillRow("User token", service.Credit.Token, true);
-
-            if (service.DailyQuota > 0)
+            foreach (var dp in service.DisplayProperties)
             {
-                FillRow("Timezone", service.QuotaResetTime.ServiceTimeZone.StandardName);
-                FillRow("Daily quota", service.DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-                FillRow("Next quota reset local time, service", service.QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture));
-                FillRow("Next quota reset local time, this machine", service.QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture));
+                FillRow(dp.Key, dp.Value.Caption, dp.Value.Value?.ToString() ?? string.Empty, dp.Value.IsEditAllowed, dp.Value.ToolTips);
             }
-            else
-                FillRow("Daily quota", "None");
 
-            FillRow("Requests, today", service.RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            FillRow("Hits, today", service.HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-
-            FillRow("Requests, total", service.RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            FillRow("Hits, total", service.HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-
-            // Add the close button
             tlp.RowCount++;
 
             var btnClose = new Button
@@ -595,7 +593,7 @@ namespace MediaCenter.LyricsFinder.Model
             btnClose.Click += CloseButton_Click;
             LyricServiceFormToolTip.SetToolTip(btnClose, "Close the window (Esc)");
 
-            tlp.Controls.Add(btnClose, 1, tlp.RowCount - 1);
+            tlp.Controls.Add(btnClose, 2, tlp.RowCount - 1);
 
             AcceptButton = btnClose;
             CancelButton = btnClose;

@@ -40,10 +40,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <param name="item">The item.</param>
         /// <param name="isGetAll">If set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
-        ///   <see cref="AbstractLyricService" /> descendent object of type <see cref="Stands4Service" />.
+        ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="Stands4Service" />.
         /// </returns>
-        /// <exception cref="ArgumentNullException">item</exception>
-        /// <exception cref="CommunicationException">Failed to get info from \"{Credit.ServiceName}\".</exception>
+        /// <exception cref="System.ArgumentNullException">item</exception>
+        /// <exception cref="LyricServiceCommunicationException"></exception>
+        /// <exception cref="GeneralLyricServiceException"></exception>
         public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));

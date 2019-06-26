@@ -29,10 +29,10 @@ namespace MediaCenter.LyricsFinder.Model
         /// The active services.
         /// </value>
         [XmlIgnore]
-        public List<AbstractLyricService> ActiveServices {
+        public virtual List<AbstractLyricService> ActiveServices {
             get
             {
-                return Services.Where(s => s.IsImplemented && s.IsActive && !s.IsQuotaExceeded).ToList();
+                return Services.Where(s => s.IsImplemented && s.IsActive).ToList();
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -28,12 +29,59 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     {
 
         /// <summary>
+        /// Gets or sets the daily quota.
+        /// </summary>
+        /// <value>
+        /// The daily quota.
+        /// </value>
+        [XmlIgnore]
+        public virtual int DailyQuota { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quota reset time, with time zone of the lyric server.
+        /// </summary>
+        /// <value>
+        /// The quota reset time.
+        /// </value>
+        [XmlIgnore]
+        public virtual ServiceDateTimeWithZone QuotaResetTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quota reset time, with time zone of the lyric server.
+        /// </summary>
+        /// <value>
+        /// The quota reset time.
+        /// </value>
+        [XmlIgnore]
+        public virtual TimeZoneInfo QuotaResetTimeZone { get; set; }
+
+        /// <summary>
+        /// Gets or sets the token.
+        /// </summary>
+        /// <value>
+        /// The token.
+        /// </value>
+        [XmlIgnore]
+        public string Token { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user identifier.
+        /// </summary>
+        /// <value>
+        /// The user identifier.
+        /// </value>
+        [XmlIgnore]
+        public string UserId { get; set; }
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LyricsStandsService"/> class.
         /// </summary>
         public Stands4Service()
             : base()
         {
             IsImplemented = true;
+            QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Now.Date, TimeZoneInfo.Local); // Default is midnight in the client time zone
         }
 
 
@@ -151,31 +199,56 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Gets value indicating whether this service's quota is exceeded.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if this service's quota is exceeded; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool IsQuotaExceeded()
+        {
+            // UTC date / time calculations for the quota
+            var nowDate = DateTime.UtcNow.Date;
+            var quotaDate = QuotaResetTime.UniversalTime.Date;
+            var quotaDiffDays = (int)Math.Ceiling(nowDate.Subtract(quotaDate).TotalDays);
+
+            if (quotaDiffDays > 0)
+            {
+                // TODO: SetIsQuotaExceeded(false);
+                QuotaResetTime.AddDays(quotaDiffDays);
+                RequestCountToday = 0;
+                HitCountToday = 0;
+
+                Logging.Log(0, $"A new quota-day has begun for lyric service \"{Credit.ServiceName}\", request counters are reset.");
+            }
+
+            return (DailyQuota > 0) && (RequestCountToday > DailyQuota);
+        }
+
+
+        /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
-        ///   <see cref="AbstractLyricService"/> descendent object of type <see cref="Stands4Service"/>.
+        ///   <see cref="AbstractLyricService"/> descendant object of type <see cref="Stands4Service"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".</exception>
-        /// <remarks>
-        /// This routine gets the first (if any) search results from the lyric service.
-        /// </remarks>
         public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
             var credit = Credit as CreditType;
-            var ub = new UriBuilder($"{Credit.ServiceUrl}?uid={Credit.UserId}&tokenid={Credit.Token}&term={item.Name}");
+            var ub = new UriBuilder($"{Credit.ServiceUrl}?uid={UserId}&tokenid={Token}&term={item.Name}");
             var txt = string.Empty;
 
             try
             {
                 await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
 
+                // Do the request
                 txt = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                 if (Exceptions.Count > 0)
@@ -195,6 +268,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         await ExtractAllLyricTextsAsync(item, results, isGetAll, false).ConfigureAwait(false);
                 }
             }
+            catch (LyricsQuotaExceededException ex)
+            {
+                throw new LyricsQuotaExceededException($"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day "
+                    + $"and is now disabled in LyricsFinder, no more requests will be sent to this service until corrected.", ex);
+            }
             catch (HttpRequestException ex)
             {
                 throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
@@ -205,6 +283,39 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
 
             return this;
+        }
+
+
+        /// <summary>
+        /// Refreshes the display properties.
+        /// </summary>
+        public override void RefreshDisplayProperties()
+        {
+            base.RefreshDisplayProperties();
+
+            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
+            DisplayProperties.Add(nameof(UserId), new DisplayProperty("User ID", UserId, null, nameof(UserId), true));
+            DisplayProperties.Add(nameof(DailyQuota), new DisplayProperty("Daily quota", DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture), "Daily number of requests", nameof(DailyQuota), true));
+            DisplayProperties.Add("QuotaResetTimeZone", new DisplayProperty("Service time zone", QuotaResetTime.ServiceTimeZone.StandardName));
+            DisplayProperties.Add("QuotaResetTimeService", new DisplayProperty("Next quota reset local time, service", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture)));
+            DisplayProperties.Add("QuotaResetTimeClient", new DisplayProperty("Next quota reset local time, this machine", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture)));
+        }
+
+
+        /// <summary>
+        /// Refreshes the service settings from the service configuration file.
+        /// </summary>
+        public override void RefreshServiceSettings()
+        {
+            base.RefreshServiceSettings();
+
+            DailyQuota = PrivateSettings.DailyQuota;
+            QuotaResetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue(Settings, "QuotaResetTimeZone"));
+            QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Parse(ServiceSettingsValue(Settings, "QuotaResetTime"), CultureInfo.InvariantCulture), QuotaResetTimeZone);
+            Token = PrivateSettings.Token;
+            UserId = PrivateSettings.UserId;
+
+            RefreshDisplayProperties();
         }
 
     }

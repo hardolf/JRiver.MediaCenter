@@ -338,18 +338,6 @@ namespace MediaCenter.LyricsFinder
                     await Search();
                 }
             }
-            //catch (LyricServiceCommunicationException ex)
-            //{
-            //    msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. "
-            //        + $"There was a communication error, i.e. a request failed during lyrics search for Artist \"{ex.McItem.Artist}\",  Album \"{ex.McItem.Album}\" and Song \"{ex.McItem.Name}\"";
-            //    ErrorHandling.ShowAndLogErrorHandler(msg, ex);
-            //}
-            //catch (GeneralLyricServiceException ex)
-            //{
-            //    msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. "
-            //        + $"There was a lyric service error during lyrics search for Artist \"{ex.McItem.Artist}\",  Album \"{ex.McItem.Album}\" and Song \"{ex.McItem.Name}\"";
-            //    ErrorHandling.ShowAndLogErrorHandler(msg, ex);
-            //}
             catch (Exception ex)
             {
                 msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";

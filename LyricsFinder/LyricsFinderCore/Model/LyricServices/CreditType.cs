@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.Helpers;
+using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.SharedComponents;
 
 
@@ -66,6 +67,15 @@ namespace MediaCenter.LyricsFinder.Model
         public virtual string DateFormat { get; set; }
 
         /// <summary>
+        /// Gets or sets the display properties.
+        /// </summary>
+        /// <value>
+        /// The display properties.
+        /// </value>
+        [XmlIgnore]
+        public virtual Dictionary<string, DisplayProperty> DisplayProperties { get; private set; }
+
+        /// <summary>
         /// Gets or sets the name of the service.
         /// </summary>
         /// <value>
@@ -92,30 +102,14 @@ namespace MediaCenter.LyricsFinder.Model
         [XmlElement]
         public virtual SerializableUri ServiceUrl { get; set; }
 
-        /// <summary>
-        /// Gets or sets the user identifier.
-        /// </summary>
-        /// <value>
-        /// The user identifier.
-        /// </value>
-        [XmlElement]
-        public string UserId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the token.
-        /// </summary>
-        /// <value>
-        /// The token.
-        /// </value>
-        [XmlElement]
-        public string Token { get; set; }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreditType" /> class.
         /// </summary>
         public CreditType()
         {
+            DisplayProperties = new Dictionary<string, DisplayProperty>();
+
             var sb = new StringBuilder();
 
             sb.AppendLine();
@@ -129,6 +123,22 @@ namespace MediaCenter.LyricsFinder.Model
 
             CreditTextFormat = sb.ToString();
             DateFormat = "yyyy.MM.dd";
+        }
+
+
+        /// <summary>
+        /// Refreshes the display properties.
+        /// </summary>
+        public virtual void RefreshDisplayProperties()
+        {
+            DisplayProperties.Clear();
+
+            DisplayProperties.Add(nameof(ServiceName), new DisplayProperty("Name", ServiceName, null, nameof(ServiceName)));
+            DisplayProperties.Add(nameof(Company), new DisplayProperty("Company", Company));
+            DisplayProperties.Add(nameof(CreditUrl), new DisplayProperty("Company Website", CreditUrl?.ToString() ?? string.Empty));
+            DisplayProperties.Add(nameof(Copyright), new DisplayProperty("Copyright text", Copyright));
+            DisplayProperties.Add(nameof(CreditTextFormat), new DisplayProperty("Credit text format", CreditTextFormat));
+            DisplayProperties.Add(nameof(ServiceUrl), new DisplayProperty("Service URL", ServiceUrl?.ToString() ?? string.Empty));
         }
 
 

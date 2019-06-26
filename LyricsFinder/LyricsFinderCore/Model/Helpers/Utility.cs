@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.SharedComponents;
 
 using Newtonsoft.Json;
@@ -94,6 +95,34 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 else
                     ret = string.Empty; // No private settings file found / needed
             }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Gets the property value from the target object.
+        /// </summary>
+        /// <param name="displayPropertyDictionary">The display property dictionary.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="ignorePropertyNameError">if set to <c>true</c> ignore property name error; else throw an exception on this error.</param>
+        /// <returns>
+        /// String value of the property from the target object.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">obj</exception>
+        /// <exception cref="System.Exception">PropertyName</exception>
+        public static object GetPropertyValue(this Dictionary<string, DisplayProperty> displayPropertyDictionary, string propertyName, bool ignorePropertyNameError = false)
+        {
+            if (displayPropertyDictionary == null) throw new ArgumentNullException(nameof(displayPropertyDictionary));
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
+
+            var isOk = displayPropertyDictionary.TryGetValue(propertyName, out var dp);
+            object ret = null;
+
+            if (isOk)
+                ret = dp.Value;
+            else if (!ignorePropertyNameError)
+                throw new KeyNotFoundException($"The dictionary has no \"{propertyName}\" key.");
 
             return ret;
         }
@@ -246,6 +275,31 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             }
 
             return ret.ToString();
+        }
+
+
+        /// <summary>
+        /// Sets the property value on the target object.
+        /// </summary>
+        /// <param name="displayPropertyDictionary">The display property dictionary.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="ignorePropertyNameError">if set to <c>true</c> ignore property name error; else throw an exception on this error.</param>
+        /// <exception cref="System.ArgumentNullException">obj</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">The dictionary has no \"{propertyName}\" key.</exception>
+        /// <exception cref="System.Exception">PropertyName</exception>
+        public static void SetPropertyValue(this Dictionary<string, DisplayProperty> displayPropertyDictionary, string propertyName, object value, bool ignorePropertyNameError = false)
+        {
+            if (displayPropertyDictionary == null) throw new ArgumentNullException(nameof(displayPropertyDictionary));
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            var isOk = displayPropertyDictionary.TryGetValue(propertyName, out var dp);
+
+            if (isOk)
+                dp.Value = value;
+            else if (!ignorePropertyNameError)
+                throw new KeyNotFoundException($"The dictionary has no \"{propertyName}\" key.");
         }
 
 

@@ -44,7 +44,10 @@ namespace MediaCenter.LyricsFinder.Model
                 tasks.Add(task);
             }
 
-            _ = await Task.WhenAll(tasks);
+            if (isGetAll)
+                _ = await Task.WhenAll(tasks);
+            else
+                _ = await Task.WhenAny(tasks);
 
             // Save the service counters
             lyricsFinderData.Save();

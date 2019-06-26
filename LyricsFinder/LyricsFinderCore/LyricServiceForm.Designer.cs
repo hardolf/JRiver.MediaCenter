@@ -226,14 +226,14 @@
             // LyricServiceDetailsTableLayoutPanel
             // 
             this.LyricServiceDetailsTableLayoutPanel.AutoSize = true;
-            this.LyricServiceDetailsTableLayoutPanel.ColumnCount = 2;
+            this.LyricServiceDetailsTableLayoutPanel.ColumnCount = 3;
+            this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 113);
             this.LyricServiceDetailsTableLayoutPanel.Name = "LyricServiceDetailsTableLayoutPanel";
             this.LyricServiceDetailsTableLayoutPanel.RowCount = 1;
             this.LyricServiceDetailsTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.LyricServiceDetailsTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1F));
             this.LyricServiceDetailsTableLayoutPanel.Size = new System.Drawing.Size(220, 0);
             this.LyricServiceDetailsTableLayoutPanel.TabIndex = 0;
             // 

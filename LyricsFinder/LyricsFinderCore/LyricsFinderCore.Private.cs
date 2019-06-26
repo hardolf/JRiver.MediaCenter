@@ -540,7 +540,7 @@ namespace MediaCenter.LyricsFinder
                     if (!ret.Any(t => t.GetType() == assyServiceType))
                     {
                         if (!(Activator.CreateInstance(assyServiceType) is AbstractLyricService newService))
-                            throw new Exception($"Could not create instance of type \"{assyServiceType}\" or it was not an AbstractLyricService descendent type.");
+                            throw new Exception($"Could not create instance of type \"{assyServiceType}\" or it was not an AbstractLyricService descendant type.");
 
                         if (!newService.IsImplemented)
                             newService.IsActive = false;
