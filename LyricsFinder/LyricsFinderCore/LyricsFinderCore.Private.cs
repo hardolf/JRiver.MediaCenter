@@ -45,6 +45,7 @@ namespace MediaCenter.LyricsFinder
         private int _currentMouseColumnIndex = -1;
         private int _currentMouseRowIndex = -1;
         private int _playingIndex = -1;
+        private int _selectedKey = -1;
         private static int _progressPercentage = -1;
         private static int _mcStatusIntervalNormal = 500; // ½ second
         private static int _mcStatusIntervalError = 5000; // 5 seconds
@@ -99,7 +100,7 @@ namespace MediaCenter.LyricsFinder
         private async Task BlankPlayStatusBitmaps(int exceptionIndex = -1)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            var rows = MainDataGridView.Rows;
+            var rows = MainGridView.Rows;
             var blank = new Bitmap(16, 16);
 
             blank.MakeTransparent();
@@ -213,7 +214,7 @@ namespace MediaCenter.LyricsFinder
 
             // ErrorTest();
 
-            var dgv = MainDataGridView;
+            var dgv = MainGridView;
 
             // Clean up the previous list
             dgv.Rows.Clear();
@@ -375,6 +376,9 @@ namespace MediaCenter.LyricsFinder
 
                 // Prepare the load
                 Logging.Log(_progressPercentage, "Preparing list of known XML types...", true);
+                LyricsFinderDataType.XmlKnownTypes.Add(typeof(LyricsFinderDataType));
+                LyricsFinderDataType.XmlKnownTypes.Add(typeof(AbstractLyricService));
+                LyricsFinderDataType.XmlKnownTypes.Add(typeof(CreditType));
                 foreach (var service in services)
                 {
                     LyricsFinderDataType.XmlKnownTypes.Add(service.GetType());
@@ -418,12 +422,12 @@ namespace MediaCenter.LyricsFinder
                 Logging.Log(_progressPercentage, "Adding additional lyric services...", true);
                 foreach (var service in services)
                 {
-                    if (!LyricsFinderData.Services.Any(t => t.GetType() == service.GetType()))
-                        LyricsFinderData.Services.Add(service);
+                    if (!LyricsFinderData.LyricServices.Any(t => t.GetType() == service.GetType()))
+                        LyricsFinderData.LyricServices.Add(service);
                 }
 
-                Logging.Log(_progressPercentage, "Refreshing lyric services from their configurations...", true);
-                foreach (var service in LyricsFinderData.Services)
+                Logging.Log(_progressPercentage, "Refreshing lyric services from their old configurations...", true);
+                foreach (var service in LyricsFinderData.LyricServices)
                 {
                     service.DataDirectory = DataDirectory;
                     service.RefreshServiceSettings();
@@ -609,8 +613,6 @@ namespace MediaCenter.LyricsFinder
 
             StatusMessage($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.");
 
-            //TODO: BackgroundWorker: workerState.CurrentItemIndex = (_playingIndex >= 0) ? _playingIndex : 0;
-
             McStatusTimer.Start();
 
             return ret;
@@ -725,8 +727,8 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         private async Task PlayOrPause()
         {
-            var rows = MainDataGridView.Rows;
-            var selectedRows = MainDataGridView.SelectedRows;
+            var rows = MainGridView.Rows;
+            var selectedRows = MainGridView.SelectedRows;
 
             if (selectedRows.Count < 1)
                 return;
@@ -776,7 +778,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         private void ResetItemStates()
         {
-            var rows = MainDataGridView.Rows;
+            var rows = MainGridView.Rows;
 
             // Set the items' status
             for (int i = 0; i < rows.Count; i++)
@@ -793,16 +795,14 @@ namespace MediaCenter.LyricsFinder
         {
             if (!IsDataChanged) return;
 
-            //TODO: BackgroundWorker: if (ProcessWorker.IsBusy) throw new Exception("You cannot save while the search process is running.");
-
             LyricsFinderData.Save();
 
             var lyricsResultTest = $"{LyricResultEnum.Found.ResultText()}|{LyricResultEnum.ManuallyEdited.ResultText()}".ToUpperInvariant();
 
             // Iterate the displayed rows and save each row, if it is found or manually edited
-            for (int i = 0; i < MainDataGridView.Rows.Count; i++)
+            for (int i = 0; i < MainGridView.Rows.Count; i++)
             {
-                var row = MainDataGridView.Rows[i] as DataGridViewRow;
+                var row = MainGridView.Rows[i] as DataGridViewRow;
 
                 var keyTxt = row.Cells[(int)GridColumnEnum.Key].Value?.ToString();
                 var lyrics = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString();
@@ -816,9 +816,6 @@ namespace MediaCenter.LyricsFinder
                     var rsp = McRestService.SetInfo(key, "Lyrics", lyrics);
                 }
             }
-
-            // Force a list refresh
-            // TODO: reconnect
         }
 
 
@@ -830,13 +827,13 @@ namespace MediaCenter.LyricsFinder
         {
             McStatusTimer.Stop();
 
-            var rows = MainDataGridView.Rows;
-            var selectedRows = MainDataGridView.SelectedRows;
+            var rows = MainGridView.Rows;
+            var selectedRows = MainGridView.SelectedRows;
 
             if (selectedRows.Count < 1)
                 return;
 
-            var rowIdx = MainDataGridView.SelectedRows[0].Index;
+            var rowIdx = MainGridView.SelectedRows[0].Index;
             var mcInfo = await McRestService.Info();
 
             _playingIndex = -1;
@@ -913,7 +910,7 @@ namespace MediaCenter.LyricsFinder
         /// <exception cref="ArgumentException">Column {colIdx}</exception>
         private BitmapForm ShowBitmap(int colIdx, int rowIdx)
         {
-            var dgv = MainDataGridView;
+            var dgv = MainGridView;
 
             if ((colIdx < 0) || (colIdx > dgv.ColumnCount - 1)) return null;
             if ((rowIdx < 0) || (rowIdx > dgv.RowCount - 1)) return null;
@@ -947,7 +944,7 @@ namespace MediaCenter.LyricsFinder
         /// <exception cref="ArgumentException">Column {colIdx}</exception>
         private LyricForm ShowLyrics(int colIdx, int rowIdx)
         {
-            var dgv = MainDataGridView;
+            var dgv = MainGridView;
 
             if ((colIdx < 0) || (colIdx > dgv.ColumnCount - 1)) return null;
             if ((rowIdx < 0) || (rowIdx > dgv.RowCount - 1)) return null;

@@ -36,7 +36,7 @@ namespace MediaCenter.LyricsFinder.Model
             var tasks = new List<Task<AbstractLyricService>>();
             var services = new List<AbstractLyricService>();
 
-            foreach (var service in lyricsFinderData.ActiveServices)
+            foreach (var service in lyricsFinderData.ActiveLyricServices)
             {
                 var task = service.ProcessAsync(mcItem, isGetAll);
 

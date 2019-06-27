@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.Helpers;
@@ -22,6 +24,40 @@ namespace MediaCenter.LyricsFinder.Model
     public class LyricsFinderDataType
     {
 
+        private Version _dataVersion;
+
+
+        /// <summary>
+        /// Gets or sets the data version.
+        /// </summary>
+        /// <value>
+        /// The data version.
+        /// </value>
+        [XmlIgnore]
+        public Version DataVersion { get => _dataVersion; set => _dataVersion = value; }
+
+        /// <summary>
+        /// Gets or sets the data version text.
+        /// </summary>
+        /// <value>
+        /// The data version text.
+        /// </value>
+        [XmlElement(ElementName = "DataVersion")]
+        public string DataVersionText
+        {
+            get { return _dataVersion?.ToString() ?? new Version().ToString(); }
+            set { _dataVersion = (value.IsNullOrEmptyTrimmed()) ? new Version() : Version.Parse(value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the main data.
+        /// </summary>
+        /// <value>
+        /// The main data.
+        /// </value>
+        [XmlElement(IsNullable = true)]
+        public MainDataType MainData { get; set; }
+
         /// <summary>
         /// Gets the active services.
         /// </summary>
@@ -29,10 +65,11 @@ namespace MediaCenter.LyricsFinder.Model
         /// The active services.
         /// </value>
         [XmlIgnore]
-        public virtual List<AbstractLyricService> ActiveServices {
+        public virtual List<AbstractLyricService> ActiveLyricServices
+        {
             get
             {
-                return Services.Where(s => s.IsImplemented && s.IsActive).ToList();
+                return LyricServices.Where(s => s.IsImplemented && s.IsActive).ToList();
             }
         }
 
@@ -87,8 +124,8 @@ namespace MediaCenter.LyricsFinder.Model
         /// <value>
         /// The services.
         /// </value>
-        [XmlArray("Services"), XmlArrayItem("Service")]
-        public List<AbstractLyricService> Services { get; }
+        [XmlArray("LyricServices"), XmlArrayItem("LyricService")]
+        public List<AbstractLyricService> LyricServices { get; private set; }
 
         /// <summary>
         /// Gets or sets the XML known types.
@@ -106,7 +143,7 @@ namespace MediaCenter.LyricsFinder.Model
         public LyricsFinderDataType()
         {
             IsSaveOk = true;
-            Services = new List<AbstractLyricService>();
+            LyricServices = new List<AbstractLyricService>();
         }
 
 
@@ -122,6 +159,23 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
+        /// Creates from configuration.
+        /// </summary>
+        /// <returns></returns>
+        public static LyricsFinderDataType CreateFromConfiguration()
+        {
+            var ret = new LyricsFinderDataType();
+            var assy = Assembly.GetExecutingAssembly();
+            var appVersion = assy.GetName().Version;
+
+            ret.MainData = MainDataType.CreateFromConfiguration();
+            ret.DataVersion = appVersion;
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Loads this instance.
         /// </summary>
         /// <param name="xmlFilePath">The XML file path.</param>
@@ -130,12 +184,41 @@ namespace MediaCenter.LyricsFinder.Model
         {
             xmlFilePath = Environment.ExpandEnvironmentVariables(xmlFilePath);
 
-            var ret = Serialize.XmlDeserializeFromFile<LyricsFinderDataType>(xmlFilePath, XmlKnownTypes.ToArray());
+            // Conversion from v1.1 to v1.2
+            var dict = new Dictionary<string, string>
+            {
+                { "<Service ", "<LyricService " },
+                { "</Service>", "</LyricService>" }
+            };
+
+            var ret = Serialize.XmlDeserializeFromFile<LyricsFinderDataType>(xmlFilePath, OnUnknownElement, dict, XmlKnownTypes.ToArray());
 
             ret.SavedDataFilePath = xmlFilePath;
+            ret.Update();
             ret.InitialXml = Serialize.XmlSerializeToString(ret, XmlKnownTypes.ToArray());
 
             return ret;
+        }
+
+
+        /// <summary>
+        /// Handles the UnknownElement event of the LyricsFinderDataType.Load method.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="XmlElementEventArgs"/> instance containing the event data.</param>
+        public static void OnUnknownElement(object sender, XmlElementEventArgs e)
+        {
+            if (e == null) throw new ArgumentNullException(nameof(e));
+
+            // var elName = e.Element.Name;
+
+            // Not yet needed:
+            // if (elName.Equals("MainData", StringComparison.InvariantCultureIgnoreCase))
+            // {
+            //     var target = (MainDataType)e.ObjectBeingDeserialized;
+               
+            //     target.MainData = MainDataType.CreateFromConfiguration();
+            // }
         }
 
 
@@ -148,6 +231,25 @@ namespace MediaCenter.LyricsFinder.Model
             {
                 InitialXml = Serialize.XmlSerializeToString(this, XmlKnownTypes.ToArray());
                 Serialize.XmlSerializeToFile(this, SavedDataFilePath, XmlKnownTypes.ToArray());
+            }
+        }
+
+
+        /// <summary>
+        /// Checks the loaded lyrics finder XML data and updates, if necessary.
+        /// </summary>
+        private void Update()
+        {
+            var assy = Assembly.GetExecutingAssembly();
+            var appVersion = assy.GetName().Version;
+
+            // Is update necessary?
+            if ((DataVersion == null) || (DataVersion < new Version(1, 2)))
+            {
+                DataVersion = appVersion;
+
+                if (MainData == null)
+                    MainData = MainDataType.CreateFromConfiguration();
             }
         }
 

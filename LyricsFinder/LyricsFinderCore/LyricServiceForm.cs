@@ -67,7 +67,7 @@ namespace MediaCenter.LyricsFinder.Model
             _isListReady = false;
             _lyricsFinderData = lyricsFinderData ?? throw new ArgumentNullException(nameof(lyricsFinderData));
 
-            foreach (var service in _lyricsFinderData.Services)
+            foreach (var service in _lyricsFinderData.LyricServices)
             {
                 var value = service.DisplayProperties.GetPropertyValue("DailyQuota", true);
                 var dailyQuota = (value == null) ? "-" : value.ToString();
@@ -202,9 +202,9 @@ namespace MediaCenter.LyricsFinder.Model
 
             var serviceName = tmp.ToString();
 
-            for (int i = 0; i < _lyricsFinderData.Services.Count; i++)
+            for (int i = 0; i < _lyricsFinderData.LyricServices.Count; i++)
             {
-                var srv = _lyricsFinderData.Services[i];
+                var srv = _lyricsFinderData.LyricServices[i];
 
                 if (srv.Credit.ServiceName.Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -296,8 +296,8 @@ namespace MediaCenter.LyricsFinder.Model
                     _isListReady = true;
                     dgv.Rows.Insert(rowIdxBefore + 1, row);
 
-                    _lyricsFinderData.Services.RemoveAt(serviceIdx);
-                    _lyricsFinderData.Services.Insert(serviceIdx + 1, service);
+                    _lyricsFinderData.LyricServices.RemoveAt(serviceIdx);
+                    _lyricsFinderData.LyricServices.Insert(serviceIdx + 1, service);
                 }
                 else if (sender == MoveUpButton)
                 {
@@ -308,8 +308,8 @@ namespace MediaCenter.LyricsFinder.Model
                     _isListReady = true;
                     dgv.Rows.Insert(rowIdxBefore - 1, row);
 
-                    _lyricsFinderData.Services.RemoveAt(serviceIdx);
-                    _lyricsFinderData.Services.Insert(serviceIdx - 1, service);
+                    _lyricsFinderData.LyricServices.RemoveAt(serviceIdx);
+                    _lyricsFinderData.LyricServices.Insert(serviceIdx - 1, service);
                 }
 
                 row.Selected = true;
@@ -345,7 +345,7 @@ namespace MediaCenter.LyricsFinder.Model
                         var isChecked = (cellChk.Value == null) || (bool)cellChk.Value;
                         var serviceName = (cellName.Value == null) ? string.Empty : (string)cellName.Value;
 
-                        _lyricsFinderData.Services.First(service => service.Credit.ServiceName
+                        _lyricsFinderData.LyricServices.First(service => service.Credit.ServiceName
                             .Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
                             .IsActive = isChecked;
                     }

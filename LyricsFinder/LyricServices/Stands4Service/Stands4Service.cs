@@ -34,7 +34,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The daily quota.
         /// </value>
-        [XmlIgnore]
+        [XmlElement]
         public virtual int DailyQuota { get; set; }
 
         /// <summary>
@@ -43,17 +43,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The quota reset time.
         /// </value>
-        [XmlIgnore]
+        [XmlElement]
         public virtual ServiceDateTimeWithZone QuotaResetTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the quota reset time, with time zone of the lyric server.
-        /// </summary>
-        /// <value>
-        /// The quota reset time.
-        /// </value>
-        [XmlIgnore]
-        public virtual TimeZoneInfo QuotaResetTimeZone { get; set; }
 
         /// <summary>
         /// Gets or sets the token.
@@ -61,7 +52,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The token.
         /// </value>
-        [XmlIgnore]
+        [XmlElement]
         public string Token { get; set; }
 
         /// <summary>
@@ -70,7 +61,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The user identifier.
         /// </value>
-        [XmlIgnore]
+        [XmlElement]
         public string UserId { get; set; }
 
 
@@ -206,6 +197,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </returns>
         public override bool IsQuotaExceeded()
         {
+            var ret = base.IsQuotaExceeded();
+
             // UTC date / time calculations for the quota
             var nowDate = DateTime.UtcNow.Date;
             var quotaDate = QuotaResetTime.UniversalTime.Date;
@@ -213,7 +206,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             if (quotaDiffDays > 0)
             {
-                // TODO: SetIsQuotaExceeded(false);
                 QuotaResetTime.AddDays(quotaDiffDays);
                 RequestCountToday = 0;
                 HitCountToday = 0;
@@ -221,7 +213,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 Logging.Log(0, $"A new quota-day has begun for lyric service \"{Credit.ServiceName}\", request counters are reset.");
             }
 
-            return (DailyQuota > 0) && (RequestCountToday > DailyQuota);
+            ret = (DailyQuota > 0) && (RequestCountToday > DailyQuota);
+
+            return ret;
         }
 
 
@@ -309,9 +303,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             base.RefreshServiceSettings();
 
+            var quotaResetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue(Settings, "QuotaResetTimeZone"));
+
             DailyQuota = PrivateSettings.DailyQuota;
-            QuotaResetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue(Settings, "QuotaResetTimeZone"));
-            QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Parse(ServiceSettingsValue(Settings, "QuotaResetTime"), CultureInfo.InvariantCulture), QuotaResetTimeZone);
+            QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Parse(ServiceSettingsValue(Settings, "QuotaResetTime"), CultureInfo.InvariantCulture), quotaResetTimeZone);
             Token = PrivateSettings.Token;
             UserId = PrivateSettings.UserId;
 

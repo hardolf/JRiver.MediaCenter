@@ -428,7 +428,7 @@ namespace MediaCenter.LyricsFinder
             await LyricSearch.Search(LyricsFinderData, _McItem, true).ConfigureAwait(true);
 
             // Process the results
-            foreach (var service in LyricsFinderData.ActiveServices)
+            foreach (var service in LyricsFinderData.ActiveLyricServices)
             {
                 if (service.LyricResult != LyricResultEnum.Found) continue;
 

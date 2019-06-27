@@ -33,7 +33,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The token.
         /// </value>
-        [XmlIgnore]
+        [XmlElement]
         public string Token { get; set; }
 
 

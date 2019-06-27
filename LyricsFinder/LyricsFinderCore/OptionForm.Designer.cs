@@ -45,9 +45,9 @@
             this.LastUpdateCheckLabel = new System.Windows.Forms.Label();
             this.CloseButton = new System.Windows.Forms.Button();
             this.LastUpdateCheckTextBox = new System.Windows.Forms.TextBox();
-            this.OptionToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.MaxQueueLengthLabel = new System.Windows.Forms.Label();
             this.MaxQueueLengthTextBox = new System.Windows.Forms.TextBox();
+            this.OptionToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.OptionPanel.SuspendLayout();
             this.OptionLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UpdateCheckIntervalDaysUpDown)).BeginInit();
@@ -253,6 +253,7 @@
             this.LastUpdateCheckTextBox.ReadOnly = true;
             this.LastUpdateCheckTextBox.Size = new System.Drawing.Size(150, 20);
             this.LastUpdateCheckTextBox.TabIndex = 12;
+            this.LastUpdateCheckTextBox.TabStop = false;
             this.OptionToolTip.SetToolTip(this.LastUpdateCheckTextBox, "Date of the last check for new updates");
             // 
             // MaxQueueLengthLabel

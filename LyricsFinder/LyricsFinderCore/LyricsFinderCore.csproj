@@ -93,6 +93,7 @@
     <Compile Include="Model\LyricSearch.cs" />
     <Compile Include="Model\LyricServices\DisplayProperty.cs" />
     <Compile Include="Model\LyricServices\LyricServiceExceptions.cs" />
+    <Compile Include="Model\MainDataType.cs" />
     <Compile Include="Model\McRestService\McPlayListsResponse.cs" />
     <Compile Include="OptionForm.cs">
       <SubType>Form</SubType>
@@ -129,7 +130,7 @@
     <Compile Include="Model\Helpers\ErrorHandling.cs" />
     <Compile Include="Model\Helpers\Logging.cs" />
     <Compile Include="Model\Helpers\LyricServicesPrivateConfigurationSectionHandler.cs" />
-    <Compile Include="Model\LyricsFinderData.cs" />
+    <Compile Include="Model\LyricsFinderDataType.cs" />
     <Compile Include="LyricServiceForm.cs">
       <SubType>Form</SubType>
     </Compile>

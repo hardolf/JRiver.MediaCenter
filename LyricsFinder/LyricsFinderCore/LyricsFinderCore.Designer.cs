@@ -61,7 +61,7 @@ namespace MediaCenter.LyricsFinder
             this.MainStatusStrip = new System.Windows.Forms.StatusStrip();
             this.MainStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.MainProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.MainDataGridView = new System.Windows.Forms.DataGridView();
+            this.MainGridView = new System.Windows.Forms.DataGridView();
             this.Key = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PlayImage = new System.Windows.Forms.DataGridViewImageColumn();
             this.Cover = new System.Windows.Forms.DataGridViewImageColumn();
@@ -111,7 +111,7 @@ namespace MediaCenter.LyricsFinder
             this.MainContainer.SuspendLayout();
             this.BottomMenu.SuspendLayout();
             this.MainStatusStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MainDataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).BeginInit();
             this.TopMenu.SuspendLayout();
             this.TopSubMenu.SuspendLayout();
             this.MainContextMenu.SuspendLayout();
@@ -127,7 +127,7 @@ namespace MediaCenter.LyricsFinder
             // 
             // MainContainer.ContentPanel
             // 
-            this.MainContainer.ContentPanel.Controls.Add(this.MainDataGridView);
+            this.MainContainer.ContentPanel.Controls.Add(this.MainGridView);
             this.MainContainer.ContentPanel.Size = new System.Drawing.Size(738, 412);
             this.MainContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainContainer.LeftToolStripPanelVisible = false;
@@ -214,7 +214,7 @@ namespace MediaCenter.LyricsFinder
             this.MainStatusLabel.AutoToolTip = true;
             this.MainStatusLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.MainStatusLabel.Name = "MainStatusLabel";
-            this.MainStatusLabel.Size = new System.Drawing.Size(590, 17);
+            this.MainStatusLabel.Size = new System.Drawing.Size(621, 17);
             this.MainStatusLabel.Spring = true;
             this.MainStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -226,14 +226,14 @@ namespace MediaCenter.LyricsFinder
             this.MainProgressBar.Size = new System.Drawing.Size(100, 16);
             this.MainProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             // 
-            // MainDataGridView
+            // MainGridView
             // 
-            this.MainDataGridView.AllowUserToAddRows = false;
-            this.MainDataGridView.AllowUserToDeleteRows = false;
-            this.MainDataGridView.AllowUserToResizeColumns = false;
-            this.MainDataGridView.AllowUserToResizeRows = false;
-            this.MainDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.MainDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.MainGridView.AllowUserToAddRows = false;
+            this.MainGridView.AllowUserToDeleteRows = false;
+            this.MainGridView.AllowUserToResizeColumns = false;
+            this.MainGridView.AllowUserToResizeRows = false;
+            this.MainGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.MainGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Key,
             this.PlayImage,
             this.Cover,
@@ -242,22 +242,24 @@ namespace MediaCenter.LyricsFinder
             this.Title,
             this.Lyrics,
             this.Status});
-            this.MainDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainDataGridView.Location = new System.Drawing.Point(0, 0);
-            this.MainDataGridView.MultiSelect = false;
-            this.MainDataGridView.Name = "MainDataGridView";
-            this.MainDataGridView.ReadOnly = true;
-            this.MainDataGridView.RowHeadersVisible = false;
-            this.MainDataGridView.RowTemplate.Height = 30;
-            this.MainDataGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.MainDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.MainDataGridView.Size = new System.Drawing.Size(738, 412);
-            this.MainDataGridView.TabIndex = 0;
-            this.MainDataGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainDataGridView_CellDoubleClick);
-            this.MainDataGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainDataGridView_CellMouseClick);
-            this.MainDataGridView.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainDataGridView_CellMouseMove);
-            this.MainDataGridView.MouseLeave += new System.EventHandler(this.MainDataGridView_MouseLeave);
-            this.MainDataGridView.Resize += new System.EventHandler(this.MainDataGridView_Resize);
+            this.MainGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainGridView.Location = new System.Drawing.Point(0, 0);
+            this.MainGridView.MultiSelect = false;
+            this.MainGridView.Name = "MainGridView";
+            this.MainGridView.ReadOnly = true;
+            this.MainGridView.RowHeadersVisible = false;
+            this.MainGridView.RowTemplate.Height = 30;
+            this.MainGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.MainGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.MainGridView.Size = new System.Drawing.Size(738, 412);
+            this.MainGridView.TabIndex = 0;
+            this.MainGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainGridView_CellDoubleClick);
+            this.MainGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_CellMouseClick);
+            this.MainGridView.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_CellMouseMove);
+            this.MainGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_ColumnHeaderMouseClick);
+            this.MainGridView.SelectionChanged += new System.EventHandler(this.MainGridView_SelectionChanged);
+            this.MainGridView.MouseLeave += new System.EventHandler(this.MainGridView_MouseLeave);
+            this.MainGridView.Resize += new System.EventHandler(this.MainGridView_Resize);
             // 
             // Key
             // 
@@ -673,7 +675,7 @@ namespace MediaCenter.LyricsFinder
             this.BottomMenu.PerformLayout();
             this.MainStatusStrip.ResumeLayout(false);
             this.MainStatusStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MainDataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.MainGridView)).EndInit();
             this.TopMenu.ResumeLayout(false);
             this.TopMenu.PerformLayout();
             this.TopSubMenu.ResumeLayout(false);
@@ -699,7 +701,7 @@ namespace MediaCenter.LyricsFinder
         private System.Windows.Forms.MenuStrip BottomMenu;
         private StartStopToolStripButton SearchAllStartStopButton;
         private System.Windows.Forms.ToolStripProgressBar MainProgressBar;
-        private System.Windows.Forms.DataGridView MainDataGridView;
+        private System.Windows.Forms.DataGridView MainGridView;
         private System.Windows.Forms.ToolStripTextBox TestTextBox;
         private System.Windows.Forms.ToolStripMenuItem FileSaveMenuItem;
         private System.Windows.Forms.ToolStripTextBox DataChangedTextBox;

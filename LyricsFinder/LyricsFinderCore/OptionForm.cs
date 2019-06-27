@@ -1,5 +1,4 @@
-﻿using MediaCenter.LyricsFinder.Model.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,6 +12,7 @@ using System.Windows.Forms;
 
 using MediaCenter.SharedComponents;
 using MediaCenter.LyricsFinder.Model;
+using MediaCenter.LyricsFinder.Model.Helpers;
 
 namespace MediaCenter.LyricsFinder
 {
@@ -33,11 +33,13 @@ namespace MediaCenter.LyricsFinder
 
         private string _initialText = string.Empty;
 
+        private LyricsFinderDataType _lyricsFinderData = null;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionForm" /> class.
         /// </summary>
-        public OptionForm()
+        private OptionForm()
         {
             InitializeComponent();
 
@@ -46,13 +48,15 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OptionForm"/> class.
+        /// Initializes a new instance of the <see cref="OptionForm" /> class.
         /// </summary>
         /// <param name="title">The title text.</param>
-        public OptionForm(string title)
+        /// <param name="lyricsFinderData">The lyrics finder data.</param>
+        public OptionForm(string title, LyricsFinderDataType lyricsFinderData)
             : this()
         {
-            _title = title;
+            _title = title ?? _title;
+            _lyricsFinderData = lyricsFinderData ?? throw new ArgumentNullException(nameof(lyricsFinderData));
         }
 
 
@@ -102,9 +106,23 @@ namespace MediaCenter.LyricsFinder
 
                     case DialogResult.Yes:
                         e.Cancel = false;
-                        LyricsFinderCorePrivateConfigurationSectionHandler.Save(McAccessKeyTextBox.Text.Trim(), McWsUrlTextBox.Text.Trim(), 
-                            McWsUsernameTextBox.Text.Trim(), McWsPasswordTextBox.Text.Trim(), null, (int)UpdateCheckIntervalDaysUpDown.Value, 
-                            int.Parse(MaxQueueLengthTextBox.Text.Trim(), NumberStyles.None, CultureInfo.InvariantCulture));
+                        try
+                        {
+                            // _lyricsFinderData.MainData.LastUpdateCheck = DateTime.Parse(LastUpdateCheckTextBox.Text, CultureInfo.InvariantCulture); // Readonly!
+                            _lyricsFinderData.MainData.MaxQueueLength = int.Parse(MaxQueueLengthTextBox.Text, NumberStyles.None, CultureInfo.InvariantCulture);
+                            _lyricsFinderData.MainData.McAccessKey = McAccessKeyTextBox.Text;
+                            _lyricsFinderData.MainData.McWsPassword = McWsPasswordTextBox.Text;
+                            _lyricsFinderData.MainData.McWsUrl = McWsUrlTextBox.Text;
+                            _lyricsFinderData.MainData.McWsUsername = McWsUsernameTextBox.Text;
+                            _lyricsFinderData.MainData.UpdateCheckIntervalDays = (int)UpdateCheckIntervalDaysUpDown.Value;
+
+                            _lyricsFinderData.Save();
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrorHandling.ShowErrorHandler(this, $"Options failed to save, look at the error details and try again: \r\n{ex}");
+                            e.Cancel = true;
+                        }
                         break;
 
                     default:
@@ -130,13 +148,13 @@ namespace MediaCenter.LyricsFinder
                 Text = _title;
                 HeaderTextBox.Text = _headerText;
 
-                LastUpdateCheckTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.LastUpdateCheck.ToString(CultureInfo.CurrentCulture);
-                MaxQueueLengthTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.MaxQueueLength.ToString(CultureInfo.InvariantCulture);
-                McAccessKeyTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey;
-                McWsPasswordTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword;
-                McWsUrlTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl;
-                McWsUsernameTextBox.Text = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName;
-                UpdateCheckIntervalDaysUpDown.Value = LyricsFinderCorePrivateConfigurationSectionHandler.UpdateCheckIntervalDays;
+                LastUpdateCheckTextBox.Text = _lyricsFinderData.MainData.LastUpdateCheck.ToString(CultureInfo.CurrentCulture);
+                MaxQueueLengthTextBox.Text = _lyricsFinderData.MainData.MaxQueueLength.ToString(CultureInfo.InvariantCulture);
+                McAccessKeyTextBox.Text = _lyricsFinderData.MainData.McAccessKey;
+                McWsPasswordTextBox.Text = _lyricsFinderData.MainData.McWsPassword;
+                McWsUrlTextBox.Text = _lyricsFinderData.MainData.McWsUrl;
+                McWsUsernameTextBox.Text = _lyricsFinderData.MainData.McWsUsername;
+                UpdateCheckIntervalDaysUpDown.Value = _lyricsFinderData.MainData.UpdateCheckIntervalDays;
 
                 _initialText = OptionLayoutPanel.GetAllControlText();
             }

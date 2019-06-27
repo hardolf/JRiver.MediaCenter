@@ -65,3 +65,5 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.Model.LyricServices.DisplayProperty.SetPropertyValue(System.Object,System.Boolean)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.Model.LyricServices.DisplayProperty.GetPropertyValue(System.Object,System.Boolean)~System.Object")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.Model.LyricServiceForm.FillRow(System.String,System.String,System.String,System.Boolean,System.String)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "<Pending>", Scope = "member", Target = "~P:MediaCenter.LyricsFinder.Model.MainDataType.McWsUrl")]
+

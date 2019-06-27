@@ -254,19 +254,6 @@ namespace MediaCenter.LyricsFinder
         #region Private routines
 
         /// <summary>
-        /// Raises the <see cref="OnPaint" /> event.
-        /// </summary>
-        /// <param name="pe">The <see cref="System.Windows.Forms.PaintEventArgs" /> instance containing the event data.</param>
-        protected override void OnPaint(PaintEventArgs pe)
-        {
-            // TODO: Add custom paint code here
-
-            // Calling the base class OnPaint
-            base.OnPaint(pe);
-        } // OnPaint
-
-
-        /// <summary>
         /// Called when [start].
         /// </summary>
         /// <param name="sender">The sender.</param>

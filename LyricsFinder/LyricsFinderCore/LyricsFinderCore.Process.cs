@@ -148,7 +148,7 @@ namespace MediaCenter.LyricsFinder
                     && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName)
                     && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword)))
                 {
-                    using (var frm = new OptionForm("The LyricsFinder is not configured yet"))
+                    using (var frm = new OptionForm("The LyricsFinder is not configured yet", LyricsFinderData))
                     {
                         frm.ShowDialog(this);
                     }
@@ -185,7 +185,7 @@ namespace MediaCenter.LyricsFinder
                 Logging.Log(_progressPercentage, msg + "...", true);
                 UpdateCheckTimer.Start();
 
-                MainDataGridView.Select();
+                MainGridView.Select();
 
                 _progressPercentage = 0;
                 _noLyricsSearchList.AddRange(LyricsFinderCoreConfigurationSectionHandler.McNoLyricsSearchList.Split(',', ';'));
@@ -326,7 +326,7 @@ namespace MediaCenter.LyricsFinder
             if (cancellationTokenSource == null) throw new ArgumentNullException(nameof(cancellationTokenSource));
 
             var i = 0;
-            var row = MainDataGridView.Rows[0];
+            var row = MainGridView.Rows[0];
             var msg = $"Process worker {workerNumber} failed. ";
 
             try
@@ -336,7 +336,7 @@ namespace MediaCenter.LyricsFinder
                     var found = false;
 
                     i = queue.Dequeue();
-                    row = MainDataGridView.Rows[i];
+                    row = MainGridView.Rows[i];
                     msg = $"Process worker {workerNumber} failed at item {i}. ";
 
                     if (!int.TryParse(row.Cells[(int)GridColumnEnum.Key].Value?.ToString(), out var key))
@@ -356,7 +356,7 @@ namespace MediaCenter.LyricsFinder
 
                         // Process the results
                         // The first lyric found by any service is used for each item
-                        foreach (var service in LyricsFinderData.ActiveServices)
+                        foreach (var service in LyricsFinderData.ActiveLyricServices)
                         {
                             if (service.LyricResult != LyricResultEnum.Found) continue;
                             if (!service.FoundLyricList.IsNullOrEmpty())

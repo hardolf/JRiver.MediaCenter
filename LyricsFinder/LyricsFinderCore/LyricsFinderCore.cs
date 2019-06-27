@@ -237,7 +237,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                var rows = MainDataGridView.SelectedRows;
+                var rows = MainGridView.SelectedRows;
 
                 if (rows.Count < 1)
                     return;
@@ -277,7 +277,7 @@ namespace MediaCenter.LyricsFinder
 
                 await SetPlayingImagesAndMenus();
 
-                if (MainDataGridView.SelectedRows.Count < 1)
+                if (MainGridView.SelectedRows.Count < 1)
                 {
                     e.Cancel = true;
                     return;
@@ -291,11 +291,11 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the CellDoubleClick event of the MainDataGridView control.
+        /// Handles the CellDoubleClick event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void MainGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
@@ -310,18 +310,19 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the CellMouseClick event of the MainDataGridView control.
+        /// Handles the CellMouseClick event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void MainGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
                 if ((_lyricsForm != null) && _lyricsForm.Visible) return;
+                if (e.RowIndex < 0) return;
 
-                var rows = MainDataGridView.Rows;
+                var rows = MainGridView.Rows;
 
                 if (rows.Count > 1)
                     rows[e.RowIndex].Selected = true;
@@ -360,11 +361,11 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the CellMouseMove event of the MainDataGridView control.
+        /// Handles the CellMouseMove event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        private void MainGridView_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
@@ -408,11 +409,43 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the MouseLeave event of the MainDataGridView control.
+        /// Handles the ColumnHeaderMouseClick event of the MainGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
+        private void MainGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            try
+            {
+                var rows = MainGridView.Rows;
+
+                for (int i = 0; i < rows.Count; i++)
+                {
+                    var row = rows[i];
+                    var keyCell = row.Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+                    var key = (int)(keyCell?.Value ?? -1);
+
+                    if (key == _selectedKey)
+                    {
+                        row.Selected = true;
+                        MainGridView.FirstDisplayedScrollingRowIndex = (row.Index > 2) ? row.Index - 3 : 0;
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the MouseLeave event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_MouseLeave(object sender, EventArgs e)
+        private void MainGridView_MouseLeave(object sender, EventArgs e)
         {
             try
             {
@@ -420,7 +453,7 @@ namespace MediaCenter.LyricsFinder
                 if (!LyricsFinderCoreConfigurationSectionHandler.MouseMoveOpenLyricsForm) return;
 
                 var pt = Cursor.Position;
-                var rect = MainDataGridView.RectangleToScreen(MainDataGridView.ClientRectangle);
+                var rect = MainGridView.RectangleToScreen(MainGridView.ClientRectangle);
 
                 if (!rect.Contains(pt))
                 {
@@ -438,11 +471,11 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the Resize event of the MainDataGridView control.
+        /// Handles the Resize event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_Resize(object sender, EventArgs e)
+        private void MainGridView_Resize(object sender, EventArgs e)
         {
             const int fraction = 6;
 
@@ -450,9 +483,32 @@ namespace MediaCenter.LyricsFinder
             {
                 // Set the Artist, Album and Track columns' width to a 5th of the total width
                 // The Lyrics column is set to "Fill", so it will adjust itself
-                MainDataGridView.Columns[(int)GridColumnEnum.Artist].Width = (int)(MainDataGridView.Width / (1.5 * fraction));
-                MainDataGridView.Columns[(int)GridColumnEnum.Album].Width = (int)(MainDataGridView.Width / (1 * fraction));
-                MainDataGridView.Columns[(int)GridColumnEnum.Title].Width = (int)(MainDataGridView.Width / (1 * fraction));
+                MainGridView.Columns[(int)GridColumnEnum.Artist].Width = (int)(MainGridView.Width / (1.5 * fraction));
+                MainGridView.Columns[(int)GridColumnEnum.Album].Width = (int)(MainGridView.Width / (1 * fraction));
+                MainGridView.Columns[(int)GridColumnEnum.Title].Width = (int)(MainGridView.Width / (1 * fraction));
+            }
+            catch (Exception ex)
+            {
+                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the SelectionChanged event of the MainGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MainGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if ((MainGridView.SelectedRows == null) || (MainGridView.SelectedRows.Count == 0)) return;
+
+                var row = MainGridView.SelectedRows[0];
+                var selectedKeyCell = row.Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+
+                _selectedKey = (int)(selectedKeyCell?.Value ?? -1);
             }
             catch (Exception ex)
             {
@@ -574,7 +630,7 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(ToolsOptionsMenuItem):
-                            using (var frm = new OptionForm("LyricsFinder connection setup"))
+                            using (var frm = new OptionForm("LyricsFinder connection setup", LyricsFinderData))
                             {
                                 frm.ShowDialog(this);
                             }
@@ -708,7 +764,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                var dvg = MainDataGridView;
+                var dvg = MainGridView;
 
                 if (dvg.SelectedRows.Count > 0)
                     await PlayOrPause();

@@ -34,7 +34,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The credit.
         /// </value>
-        [XmlIgnore] // [XmlElement("Credit")] // No need to save this, it is read from the config file
+        [XmlElement("Credit")]
         public virtual CreditType Credit { get; set; }
 
         /// <summary>
