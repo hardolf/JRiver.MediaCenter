@@ -143,10 +143,11 @@ namespace MediaCenter.LyricsFinder
 
                 msg = "checking if private configuration is needed";
                 Logging.Log(_progressPercentage, msg + "...", true);
-                if (!(Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey)
-                    && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl)
-                    && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName)
-                    && Model.Helpers.Utility.IsPrivateSettingInitialized(LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword)))
+                if ((LyricsFinderData.MainData == null)
+                    || LyricsFinderData.MainData.McAccessKey.IsNullOrEmptyTrimmed()
+                    || LyricsFinderData.MainData.McWsUrl.IsNullOrEmptyTrimmed()
+                    || LyricsFinderData.MainData.McWsUsername.IsNullOrEmptyTrimmed()
+                    || LyricsFinderData.MainData.McWsPassword.IsNullOrEmptyTrimmed())
                 {
                     using (var frm = new OptionForm("The LyricsFinder is not configured yet", LyricsFinderData))
                     {
@@ -176,10 +177,10 @@ namespace MediaCenter.LyricsFinder
                 msg = "initializing the Media Center MCWS connection parameters";
                 Logging.Log(_progressPercentage, msg + "...", true);
                 McRestService.Init(
-                    LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey,
-                    LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl,
-                    LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName,
-                    LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword);
+                    LyricsFinderData.MainData.McAccessKey,
+                    LyricsFinderData.MainData.McWsUrl,
+                    LyricsFinderData.MainData.McWsUsername,
+                    LyricsFinderData.MainData.McWsPassword);
 
                 msg = "initializing the update check";
                 Logging.Log(_progressPercentage, msg + "...", true);

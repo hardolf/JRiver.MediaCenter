@@ -109,11 +109,14 @@ namespace MediaCenter.LyricsFinder
                         try
                         {
                             // _lyricsFinderData.MainData.LastUpdateCheck = DateTime.Parse(LastUpdateCheckTextBox.Text, CultureInfo.InvariantCulture); // Readonly!
-                            _lyricsFinderData.MainData.MaxQueueLength = int.Parse(MaxQueueLengthTextBox.Text, NumberStyles.None, CultureInfo.InvariantCulture);
+                            _lyricsFinderData.MainData.MaxQueueLength = (int)MaxQueueLengthUpDown.Value;
                             _lyricsFinderData.MainData.McAccessKey = McAccessKeyTextBox.Text;
+                            _lyricsFinderData.MainData.McWsConnectAttempts = (int)McWsConnectAttemptsUpDown.Value;
                             _lyricsFinderData.MainData.McWsPassword = McWsPasswordTextBox.Text;
                             _lyricsFinderData.MainData.McWsUrl = McWsUrlTextBox.Text;
                             _lyricsFinderData.MainData.McWsUsername = McWsUsernameTextBox.Text;
+                            _lyricsFinderData.MainData.MouseMoveOpenLyricsForm = MouseMoveOpenLyricsFormCheckBox.Checked;
+                            _lyricsFinderData.MainData.NoLyricsSearchFilter = NoLyricsSearchFilterTextBox.Text;
                             _lyricsFinderData.MainData.UpdateCheckIntervalDays = (int)UpdateCheckIntervalDaysUpDown.Value;
 
                             _lyricsFinderData.Save();
@@ -149,12 +152,19 @@ namespace MediaCenter.LyricsFinder
                 HeaderTextBox.Text = _headerText;
 
                 LastUpdateCheckTextBox.Text = _lyricsFinderData.MainData.LastUpdateCheck.ToString(CultureInfo.CurrentCulture);
-                MaxQueueLengthTextBox.Text = _lyricsFinderData.MainData.MaxQueueLength.ToString(CultureInfo.InvariantCulture);
+                MaxQueueLengthUpDown.Value = _lyricsFinderData.MainData.MaxQueueLength;
                 McAccessKeyTextBox.Text = _lyricsFinderData.MainData.McAccessKey;
+                McWsConnectAttemptsUpDown.Value = _lyricsFinderData.MainData.McWsConnectAttempts;
                 McWsPasswordTextBox.Text = _lyricsFinderData.MainData.McWsPassword;
                 McWsUrlTextBox.Text = _lyricsFinderData.MainData.McWsUrl;
                 McWsUsernameTextBox.Text = _lyricsFinderData.MainData.McWsUsername;
+                MouseMoveOpenLyricsFormCheckBox.Checked = _lyricsFinderData.MainData.MouseMoveOpenLyricsForm;
+                NoLyricsSearchFilterTextBox.Text = _lyricsFinderData.MainData.NoLyricsSearchFilter;
                 UpdateCheckIntervalDaysUpDown.Value = _lyricsFinderData.MainData.UpdateCheckIntervalDays;
+
+                McAccessKeyTextBox.Select();
+                McAccessKeyTextBox.SelectionLength = 0;
+                McAccessKeyTextBox.SelectionStart = 0;
 
                 _initialText = OptionLayoutPanel.GetAllControlText();
             }
@@ -162,6 +172,52 @@ namespace MediaCenter.LyricsFinder
             {
                 ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
+        }
+
+
+        /// <summary>
+        /// Handles the Validating event of all the TextBox controls.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
+        private void TextBox_Validating(object sender, CancelEventArgs e)
+        {
+            if (!(sender is Control ctl)) return;
+
+            var ctlName = ctl?.Name;
+
+            switch (ctlName)
+            {
+                case nameof(LastUpdateCheckTextBox):
+                case nameof(MouseMoveOpenLyricsFormCheckBox):
+                case nameof(NoLyricsSearchFilterTextBox):
+                    e.Cancel = false;
+                    break;
+
+                case nameof(MaxQueueLengthUpDown):
+                case nameof(McWsConnectAttemptsUpDown):
+                case nameof(UpdateCheckIntervalDaysUpDown):
+                    e.Cancel = !int.TryParse(ctl.Text, out _);
+                    break;
+
+                case nameof(McAccessKeyTextBox):
+                case nameof(McWsPasswordTextBox):
+                case nameof(McWsUrlTextBox):
+                case nameof(McWsUsernameTextBox):
+                    e.Cancel = ctl.Text.IsNullOrEmptyTrimmed();
+                    break;
+
+                default:
+                    throw new Exception($"Unknown control: \"{ctlName}\".");
+            }
+
+            if (e.Cancel)
+            {
+                Console.Beep();
+                ctl.ForeColor = Color.DarkRed;
+            }
+            else
+                ctl.ForeColor = SystemColors.WindowText;
         }
 
     }

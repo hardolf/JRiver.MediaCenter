@@ -29,10 +29,10 @@ namespace MediaCenter.LyricsFinder.Model
         public DateTime LastUpdateCheck { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum length of the queue.
+        /// Gets or sets the maximum length of the queue during automatic search all.
         /// </summary>
         /// <value>
-        /// The maximum length of the queue.
+        /// The maximum length of the queue (default: 10).
         /// </value>
         [XmlElement]
         public int MaxQueueLength { get; set; }
@@ -47,6 +47,15 @@ namespace MediaCenter.LyricsFinder.Model
         public string McAccessKey { get; set; }
 
         /// <summary>
+        /// Gets or sets the number of attempts to connect with the Media Center web service (MCWS) before showing an error.
+        /// </summary>
+        /// <value>
+        /// The Media Center web service (MCWS) connect attempts (default: 10).
+        /// </value>
+        [XmlElement]
+        public int McWsConnectAttempts { get; set; }
+
+        /// <summary>
         /// Gets or sets the Media Center web service (MCWS) password.
         /// </summary>
         /// <value>
@@ -59,7 +68,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// Gets or sets the Media Center web service (MCWS) URL.
         /// </summary>
         /// <value>
-        /// The Media Center web service (MCWS) URL.
+        /// The Media Center web service (MCWS) URL (default: http://localhost:52199/MCWS/v1).
         /// </value>
         [XmlElement]
         public string McWsUrl { get; set; }
@@ -74,13 +83,63 @@ namespace MediaCenter.LyricsFinder.Model
         public string McWsUsername { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether a mouse move in the lyrics column should open the lyrics form.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if a mouse move in the lyrics column should open the lyrics form; otherwise, <c>false</c> (default).
+        /// </value>
+        [XmlElement]
+        public bool MouseMoveOpenLyricsForm { get; set; }
+
+        /// <summary>
+        /// Gets or sets the lyrics search filter, a comma or semicolon separated list of strings.
+        /// </summary>
+        /// <value>
+        /// The lyrics search filter.
+        /// </value>
+        [XmlElement]
+        public string NoLyricsSearchFilter { get; set; }
+
+        /// <summary>
         /// Gets or sets the update check interval days.
         /// </summary>
         /// <value>
-        /// The update check interval days.
+        /// The update check interval days (default: 0, i.e. at each Media Center start).
         /// </value>
         [XmlElement]
         public int UpdateCheckIntervalDays { get; set; }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainDataType"/> class.
+        /// </summary>
+        public MainDataType()
+        {
+            // Set defaults
+            MaxQueueLength = 10;
+            McWsConnectAttempts = 10;
+            McWsUrl = "http://localhost:52199/MCWS/v1";
+            UpdateCheckIntervalDays = 0; // Default: 0, i.e. at each Media Center start
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainDataType" /> class.
+        /// </summary>
+        /// <param name="maxQueueLength">Maximum length of the queue.</param>
+        /// <param name="mcWsConnectAttempts">The mc ws connect attempts.</param>
+        /// <param name="mcWsUrl">The mc ws URL.</param>
+        /// <param name="mouseMoveOpenLyricsForm">if set to <c>true</c> [mouse move open lyrics form].</param>
+        /// <param name="updateCheckIntervalDays">The update check interval days.</param>
+        /// <exception cref="ArgumentNullException">mcWsUrl</exception>
+        public MainDataType(int maxQueueLength, int mcWsConnectAttempts, string mcWsUrl, bool mouseMoveOpenLyricsForm, int updateCheckIntervalDays)
+        {
+            MaxQueueLength = maxQueueLength;
+            McWsConnectAttempts = mcWsConnectAttempts;
+            McWsUrl = mcWsUrl ?? throw new ArgumentNullException(nameof(mcWsUrl));
+            MouseMoveOpenLyricsForm = mouseMoveOpenLyricsForm;
+            UpdateCheckIntervalDays = updateCheckIntervalDays;
+        }
 
 
         /// <summary>
@@ -102,9 +161,12 @@ namespace MediaCenter.LyricsFinder.Model
                 LastUpdateCheck = LyricsFinderCorePrivateConfigurationSectionHandler.LastUpdateCheck,
                 MaxQueueLength = LyricsFinderCorePrivateConfigurationSectionHandler.MaxQueueLength,
                 McAccessKey = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey,
+                McWsConnectAttempts = LyricsFinderCoreConfigurationSectionHandler.McWsConnectAttempts,
                 McWsPassword = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword,
                 McWsUrl = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl,
                 McWsUsername = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName,
+                MouseMoveOpenLyricsForm = LyricsFinderCoreConfigurationSectionHandler.MouseMoveOpenLyricsForm,
+                NoLyricsSearchFilter = LyricsFinderCoreConfigurationSectionHandler.McNoLyricsSearchList,
                 UpdateCheckIntervalDays = LyricsFinderCorePrivateConfigurationSectionHandler.UpdateCheckIntervalDays
             };
 
