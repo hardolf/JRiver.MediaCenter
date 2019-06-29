@@ -20,7 +20,7 @@ namespace MediaCenter.LyricsFinder.Model
     /// Contains the LyricsFinder data to be saved and loaded.
     /// </summary>
     [Serializable]
-    [XmlRoot(ElementName = "LyricsFinderData")]
+    [XmlRoot(ElementName = "LyricsFinderData")] // Namespace = "https://github.com/hardolf/JRiver.MediaCenter"
     public class LyricsFinderDataType
     {
 
@@ -176,6 +176,77 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
+        /// Gets the lyric service by name.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <returns><see cref="AbstractLyricService"/> descendant object.</returns>
+        public AbstractLyricService GetLyricService(string serviceName)
+        {
+            AbstractLyricService ret = null;
+
+            foreach (var service in LyricServices)
+            {
+                if (service.Credit.ServiceName.Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ret = service;
+                    break;
+                }
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Gets the lyric service T from the XML data file.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>
+        ///   <see cref="AbstractLyricService" /> descendant object.
+        /// </returns>
+        public static AbstractLyricService GetLyricService<T>() where T : AbstractLyricService
+        {
+            LyricsFinderCoreConfigurationSectionHandler.Init(Assembly.GetExecutingAssembly());
+
+            var xDataFile = Environment.ExpandEnvironmentVariables(LyricsFinderCoreConfigurationSectionHandler.LocalAppDataFile);
+            var dataDirectory = Path.GetDirectoryName(xDataFile);
+            var xDoc = new XmlDocument() { XmlResolver = null };
+            var nodeXml = string.Empty;
+
+            using (var sReader = new StreamReader(xDataFile))
+            using (var xReader = XmlReader.Create(sReader, new XmlReaderSettings() { XmlResolver = null }))
+                xDoc.Load(xReader);
+
+            var atts = xDoc.DocumentElement.Attributes;
+            var serviceNodes = xDoc.GetElementsByTagName("LyricService");
+            var knownTypes = new Type[] { typeof(AbstractLyricService), typeof(CreditType) };
+
+            foreach (XmlElement serviceElement in serviceNodes)
+            {
+                var typeAtt = serviceElement.GetAttributeNode("xsi:type");
+
+                if (typeAtt.Value == typeof(T).Name)
+                {
+                    // Cheat the serializer by faking/changing the root element name
+                    var newServiceElement = xDoc.CreateElement(typeof(T).Name);
+
+                    newServiceElement.InnerXml = serviceElement.InnerXml;
+                    newServiceElement.Attributes.Remove(typeAtt);
+                    nodeXml += "<?xml version=\"1.0\" encoding=\"utf - 8\"?>";
+                    nodeXml += newServiceElement.OuterXml;
+                    break;
+                }
+            }
+
+            var ret = nodeXml.XmlDeserializeFromString<T>(knownTypes: knownTypes);
+
+            ret.DataDirectory = dataDirectory;
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Loads this instance.
         /// </summary>
         /// <param name="xmlFilePath">The XML file path.</param>
@@ -194,7 +265,7 @@ namespace MediaCenter.LyricsFinder.Model
             var ret = Serialize.XmlDeserializeFromFile<LyricsFinderDataType>(xmlFilePath, OnUnknownElement, dict, XmlKnownTypes.ToArray());
 
             ret.SavedDataFilePath = xmlFilePath;
-            ret.Update();
+            ret.Upgrade();
             ret.InitialXml = Serialize.XmlSerializeToString(ret, XmlKnownTypes.ToArray());
 
             return ret;
@@ -216,7 +287,7 @@ namespace MediaCenter.LyricsFinder.Model
             // if (elName.Equals("MainData", StringComparison.InvariantCultureIgnoreCase))
             // {
             //     var target = (MainDataType)e.ObjectBeingDeserialized;
-               
+
             //     target.MainData = MainDataType.CreateFromConfiguration();
             // }
         }
@@ -236,9 +307,9 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
-        /// Checks the loaded lyrics finder XML data and updates, if necessary.
+        /// Checks the loaded lyrics finder XML data and upgrades it, if necessary.
         /// </summary>
-        private void Update()
+        private void Upgrade()
         {
             var assy = Assembly.GetExecutingAssembly();
             var appVersion = assy.GetName().Version;
@@ -250,6 +321,8 @@ namespace MediaCenter.LyricsFinder.Model
 
                 if (MainData == null)
                     MainData = MainDataType.CreateFromConfiguration();
+
+                MainData.LyricFormSize = LyricsFinderCorePrivateConfigurationSectionHandler.LyricFormSize;
             }
         }
 

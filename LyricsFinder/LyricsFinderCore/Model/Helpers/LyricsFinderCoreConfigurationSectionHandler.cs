@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -22,7 +23,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
         private const string _localAppDataFilePropertyName = "localAppDataFile";
         private const string _mcNoLyricsSearchListPropertyName = "mcNoLyricsSearchList";
-        private const string _mcWsConnectAttemptsPropertyName = "mcWsConnectAttempts";
+        private const string _MaxMcWsConnectAttemptsPropertyName = "MaxMcWsConnectAttempts";
         private const string _mouseMoveOpenLyricsFormPropertyName = "mouseMoveOpenLyricsForm";
 
         private static Configuration _configuration;
@@ -71,11 +72,11 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <value>
         /// The mc ws connect attempts.
         /// </value>
-        public static int McWsConnectAttempts
+        public static int MaxMcWsConnectAttempts
         {
             get
             {
-                var valueString = Instance?.Settings[_mcWsConnectAttemptsPropertyName]?.Value ?? string.Empty;
+                var valueString = Instance?.Settings[_MaxMcWsConnectAttemptsPropertyName]?.Value ?? string.Empty;
 
                 if (!int.TryParse(valueString, out var ret))
                     ret = 5;
@@ -83,7 +84,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 return ret;
             }
         }
-
 
         /// <summary>
         /// Gets the instance.
@@ -96,6 +96,13 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         {
             get
             {
+                // Get calling method name
+                var stackTrace = new StackTrace();
+                var callingMethod = stackTrace.GetFrame(1).GetMethod().Name;
+
+                if (!callingMethod.Contains(nameof(LocalAppDataFile)))
+                    IsUsed = true;
+
                 // Get the configuration section handler fom file only once
                 if (_configurationSection == null)
                 {
@@ -125,6 +132,26 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 }
 
                 return _configurationSection;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance have been used.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance have been; otherwise, <c>false</c>.
+        /// </value>
+        public static bool IsUsed { get; set; } = false;
+
+
+        /// <summary>
+        /// Checks if this handler have been used and if not, delete the config file.
+        /// </summary>
+        public static void CheckUse()
+        {
+            if (!IsUsed)
+            {
+                // Delete the config file
             }
         }
 

@@ -45,6 +45,8 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
         public static void Log(int progressPercentage, string message = null, bool isDebug = false)
         {
+            if (_log == null) return;
+
             message = (message.IsNullOrEmptyTrimmed())
                 ? string.Empty
                 : message.Substring(0, 1).ToUpperInvariant() + message.Remove(0, 1);
@@ -68,6 +70,8 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="exception">The exception.</param>
         public static void Log(int progressPercentage, string message, Exception exception)
         {
+            if (_log == null) return;
+
             var msg = message ?? string.Empty;
 
             msg += (exception == null)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.Helpers;
+using MediaCenter.LyricsFinder.Model.LyricServices;
 
 namespace MediaCenter.LyricsFinder.Model
 {
@@ -19,6 +21,9 @@ namespace MediaCenter.LyricsFinder.Model
     public class MainDataType
     {
 
+        private Size _lyricFormSize;
+
+
         /// <summary>
         /// Gets or sets the last update check date/time.
         /// </summary>
@@ -27,6 +32,28 @@ namespace MediaCenter.LyricsFinder.Model
         /// </value>
         [XmlElement]
         public DateTime LastUpdateCheck { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of the lyric form.
+        /// </summary>
+        /// <value>
+        /// The size of the lyric form.
+        /// </value>
+        [XmlElement]
+        public Size LyricFormSize
+        {
+            get => (_lyricFormSize.Height == 0 || _lyricFormSize.Width == 0) ? new Size(400, 600) : _lyricFormSize;
+            set => _lyricFormSize = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the number of attempts to connect with the Media Center web service (MCWS) before showing an error.
+        /// </summary>
+        /// <value>
+        /// The Media Center web service (MCWS) connect attempts (default: 10).
+        /// </value>
+        [XmlElement]
+        public int MaxMcWsConnectAttempts { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum length of the queue during automatic search all.
@@ -45,15 +72,6 @@ namespace MediaCenter.LyricsFinder.Model
         /// </value>
         [XmlElement]
         public string McAccessKey { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number of attempts to connect with the Media Center web service (MCWS) before showing an error.
-        /// </summary>
-        /// <value>
-        /// The Media Center web service (MCWS) connect attempts (default: 10).
-        /// </value>
-        [XmlElement]
-        public int McWsConnectAttempts { get; set; }
 
         /// <summary>
         /// Gets or sets the Media Center web service (MCWS) password.
@@ -117,7 +135,7 @@ namespace MediaCenter.LyricsFinder.Model
         {
             // Set defaults
             MaxQueueLength = 10;
-            McWsConnectAttempts = 10;
+            MaxMcWsConnectAttempts = 10;
             McWsUrl = "http://localhost:52199/MCWS/v1";
             UpdateCheckIntervalDays = 0; // Default: 0, i.e. at each Media Center start
         }
@@ -127,15 +145,15 @@ namespace MediaCenter.LyricsFinder.Model
         /// Initializes a new instance of the <see cref="MainDataType" /> class.
         /// </summary>
         /// <param name="maxQueueLength">Maximum length of the queue.</param>
-        /// <param name="mcWsConnectAttempts">The mc ws connect attempts.</param>
+        /// <param name="maxMcWsConnectAttempts">The mc ws connect attempts.</param>
         /// <param name="mcWsUrl">The mc ws URL.</param>
         /// <param name="mouseMoveOpenLyricsForm">if set to <c>true</c> [mouse move open lyrics form].</param>
         /// <param name="updateCheckIntervalDays">The update check interval days.</param>
         /// <exception cref="ArgumentNullException">mcWsUrl</exception>
-        public MainDataType(int maxQueueLength, int mcWsConnectAttempts, string mcWsUrl, bool mouseMoveOpenLyricsForm, int updateCheckIntervalDays)
+        public MainDataType(int maxQueueLength, int maxMcWsConnectAttempts, string mcWsUrl, bool mouseMoveOpenLyricsForm, int updateCheckIntervalDays)
         {
             MaxQueueLength = maxQueueLength;
-            McWsConnectAttempts = mcWsConnectAttempts;
+            MaxMcWsConnectAttempts = maxMcWsConnectAttempts;
             McWsUrl = mcWsUrl ?? throw new ArgumentNullException(nameof(mcWsUrl));
             MouseMoveOpenLyricsForm = mouseMoveOpenLyricsForm;
             UpdateCheckIntervalDays = updateCheckIntervalDays;
@@ -161,7 +179,7 @@ namespace MediaCenter.LyricsFinder.Model
                 LastUpdateCheck = LyricsFinderCorePrivateConfigurationSectionHandler.LastUpdateCheck,
                 MaxQueueLength = LyricsFinderCorePrivateConfigurationSectionHandler.MaxQueueLength,
                 McAccessKey = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey,
-                McWsConnectAttempts = LyricsFinderCoreConfigurationSectionHandler.McWsConnectAttempts,
+                MaxMcWsConnectAttempts = LyricsFinderCoreConfigurationSectionHandler.MaxMcWsConnectAttempts,
                 McWsPassword = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword,
                 McWsUrl = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl,
                 McWsUsername = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName,

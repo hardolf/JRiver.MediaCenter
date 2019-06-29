@@ -72,7 +72,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         msg = "GetLyric";
                         var rsp2 = client.GetLyric(rspLyricResult.LyricId, rspLyricResult.LyricChecksum);
 
-                        AddFoundLyric(rsp2.Lyric, new SerializableUri(rsp2.LyricUrl));
+                        AddFoundLyric(rsp2.Lyric, new Uri(rsp2.LyricUrl));
                     }
                 }
             }

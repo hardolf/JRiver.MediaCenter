@@ -42,8 +42,8 @@ namespace MediaCenter.LyricsFinder
         private async Task Connect()
         {
             var cnt = 0;
-            var maxConnectAttempts = LyricsFinderCoreConfigurationSectionHandler.McWsConnectAttempts;
-            var url = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl;
+            var maxConnectAttempts = LyricsFinderData.MainData.MaxMcWsConnectAttempts;
+            var url = LyricsFinderData.MainData.McWsUrl;
             McAliveResponse alive = null;
 
             _isConnectedToMc = false;
@@ -75,7 +75,7 @@ namespace MediaCenter.LyricsFinder
             // If we got the MCWS connection, let's try to authenticate
             if ((alive != null) && alive.IsOk)
             {
-                var expectedAccessKey = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey;
+                var expectedAccessKey = LyricsFinderData.MainData.McAccessKey;
 
                 if (alive.AccessKey == expectedAccessKey)
                 {
@@ -189,10 +189,12 @@ namespace MediaCenter.LyricsFinder
                 MainGridView.Select();
 
                 _progressPercentage = 0;
-                _noLyricsSearchList.AddRange(LyricsFinderCoreConfigurationSectionHandler.McNoLyricsSearchList.Split(',', ';'));
+                _noLyricsSearchList.AddRange(LyricsFinderData.MainData.NoLyricsSearchFilter.Split(',', ';'));
 
                 EnableOrDisableMenuItems(true);
                 await ReloadPlaylist(true);
+
+                CleanupObsoleteConfigurationFiles();
             }
             catch (Exception ex)
             {
@@ -215,7 +217,7 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                EnableOrDisableMenuItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem);
+                EnableOrDisableToolStripItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem, SearchAllStartStopButton);
 
                 if (IsDataChanged)
                     throw new Exception("The item data is changed, you should save it before loading playlist.");
@@ -230,12 +232,12 @@ namespace MediaCenter.LyricsFinder
                 await FillDataGrid();
 
                 ResetItemStates();
-                EnableOrDisableMenuItems(true);
+                EnableOrDisableToolStripItems(true);
             }
             catch (Exception ex)
             {
-                EnableOrDisableMenuItems(true);
-                EnableOrDisableMenuItems(false, FileSaveMenuItem);
+                EnableOrDisableToolStripItems(true);
+                EnableOrDisableToolStripItems(false, FileSaveMenuItem);
 
                 StatusMessage($"Error {msg}.", true, true);
                 ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
@@ -266,7 +268,7 @@ namespace MediaCenter.LyricsFinder
                 ResetItemStates();
 
                 // Add the set of workers
-                for (var i = 0; i < LyricsFinderCorePrivateConfigurationSectionHandler.MaxQueueLength; i++)
+                for (var i = 0; i < LyricsFinderData.MainData.MaxQueueLength; i++)
                 {
                     workers.Add(SearchAllProcessWorkerAsync(i, queue, foundItemIndices, cancellationTokenSource));
                 }

@@ -76,25 +76,26 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <exception cref="ArgumentNullException">assembly
         /// or
         /// dataDir</exception>
+        /// <remarks>Copying is no longer done after v1.2</remarks>
         public static string GetPrivateSettingsFilePath(Assembly assembly, string dataDir)
         {
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
             if (dataDir.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(dataDir));
 
             var ret = Path.Combine(dataDir, Path.GetFileName(assembly.Location) + PrivateConfigFileExt);
-            var appConfigFilePath = assembly.Location + PrivateConfigFileExt;
-            var templateConfigFilePath = assembly.Location + PrivateConfigTemplateFileExt;
+            //var appConfigFilePath = assembly.Location + PrivateConfigFileExt;
+            //var templateConfigFilePath = assembly.Location + PrivateConfigTemplateFileExt;
 
             // Create the private config. file if not found in the data dir.
-            if (!File.Exists(ret))
-            {
-                if (File.Exists(appConfigFilePath))
-                    File.Copy(appConfigFilePath, ret, false); // Upgrade from LyricsFinder 1.0
-                else if (File.Exists(templateConfigFilePath))
-                    File.Copy(templateConfigFilePath, ret, false); // First start
-                else
-                    ret = string.Empty; // No private settings file found / needed
-            }
+            //if (!File.Exists(ret))
+            //{
+            //    if (File.Exists(appConfigFilePath))
+            //        File.Copy(appConfigFilePath, ret, false); // Upgrade from LyricsFinder 1.0
+            //    else if (File.Exists(templateConfigFilePath))
+            //        File.Copy(templateConfigFilePath, ret, false); // First start
+            //    else
+            //        ret = string.Empty; // No private settings file found / needed
+            //}
 
             return ret;
         }
@@ -307,6 +308,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// Check for updates.
         /// </summary>
         /// <param name="currentVersion">The current version.</param>
+        /// <param name="maxWindowSize">Maximum size of the window.</param>
         /// <param name="isInteractive">if set to <c>true</c> [is interactive].</param>
         /// <returns>
         ///   <c>false</c> if a newer release is available; else <c>true</c>.
@@ -314,7 +316,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <exception cref="ArgumentNullException">currentVersion</exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}</exception>
-        public static bool UpdateCheck(Version currentVersion, bool isInteractive = false)
+        public static bool UpdateCheck(Version currentVersion, Size maxWindowSize, bool isInteractive = false)
         {
             if (currentVersion == null) throw new ArgumentNullException(nameof(currentVersion));
 
@@ -374,7 +376,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                     + $"You can visit the download site here:\r\n\r\n"
                     + $"{urlString}";
 
-            ErrorForm.Show(null, "Update information", msg);
+            ErrorForm.Show(null, "Update information", msg, maxWindowSize);
 
             return ret;
         }
@@ -384,15 +386,16 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// Check for updates and retries 5 times.
         /// </summary>
         /// <param name="currentVersion">The current version.</param>
+        /// <param name="maxWindowSize">Maximum size of the window.</param>
         /// <param name="isInteractive">if set to <c>true</c> [is interactive].</param>
         /// <param name="retryCount">The retry count.</param>
         /// <returns>
         ///   <c>false</c> if a newer release is available; else <c>true</c>.
         /// </returns>
+        /// <exception cref="WebException">Error contacting the latest release site ({LatestReleaseUrl}): {ex.Message}</exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}</exception>
-        /// <exception cref="WebException">Error contacting the latest release site ({LatestReleaseUrl}): {ex.Message}</exception>
-        public static bool UpdateCheckWithRetries(Version currentVersion, bool isInteractive = false, int retryCount = 5)
+        public static bool UpdateCheckWithRetries(Version currentVersion, Size maxWindowSize, bool isInteractive = false, int retryCount = 5)
         {
             const int retryInterval = 500; // Milliseconds
 
@@ -402,7 +405,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             {
                 try
                 {
-                    ret = UpdateCheck(currentVersion, isInteractive);
+                    ret = UpdateCheck(currentVersion, maxWindowSize, isInteractive);
 
                     break;
                 }

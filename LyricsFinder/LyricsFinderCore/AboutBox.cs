@@ -23,6 +23,7 @@ namespace MediaCenter.LyricsFinder
     {
 
         private Assembly _assembly = null;
+        private Size _maxWindowSize;
 
         private string _extraDescription = "\r\nThe LyricsFinder looks for lyrics in public lyric web services.\r\n"
             + "\r\nLookup is done for all - or just one at a time - of the current songs in the \"Playing Now\" list in the JRiver Media Center.\r\n"
@@ -33,15 +34,18 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Initializes a new instance of the <see cref="AboutBox" /> class.
         /// </summary>
-        /// <param name="entryAssembly">The entry assembly.</param>
+        /// <param name="lyricsFinderCore">The lyrics finder core.</param>
         /// <exception cref="ArgumentNullException">entryAssembly</exception>
-        public AboutBox(Assembly entryAssembly)
+        public AboutBox(LyricsFinderCore lyricsFinderCore)
         {
+            if (lyricsFinderCore == null) throw new ArgumentNullException(nameof(lyricsFinderCore));
+
             InitializeComponent();
 
             AllowTransparency = false;
 
-            _assembly = entryAssembly ?? throw new ArgumentNullException(nameof(entryAssembly));
+            _assembly = lyricsFinderCore.EntryAssembly;
+            _maxWindowSize = lyricsFinderCore.Size;
         }
 
 
@@ -261,7 +265,7 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                Model.Helpers.Utility.UpdateCheckWithRetries(_assembly.GetName().Version, true);
+                Model.Helpers.Utility.UpdateCheckWithRetries(_assembly.GetName().Version, _maxWindowSize, true);
             }
             catch (Exception ex)
             {

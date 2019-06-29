@@ -104,7 +104,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             // If found, add the found lyric to the list
             if (!ret.IsNullOrEmptyTrimmed())
-                AddFoundLyric(ret, new SerializableUri(uri.AbsoluteUri));
+                AddFoundLyric(ret, new Uri(uri.AbsoluteUri));
 
             return ret;
         }

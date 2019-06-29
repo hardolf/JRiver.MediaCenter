@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -160,7 +161,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             }
         }
 
-
         /// <summary>
         /// Gets the instance.
         /// </summary>
@@ -172,10 +172,16 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         {
             get
             {
+                IsUsed = true;
+
                 // Get the configuration section handler fom file only once
                 if (_configurationSection == null)
                 {
                     var privateConfigFile = Utility.GetPrivateSettingsFilePath(_assembly, _dataDirectory);
+
+                    if (privateConfigFile.IsNullOrEmptyTrimmed()
+                        || !File.Exists(privateConfigFile))
+                        return null;
 
                     try
                     {
@@ -204,6 +210,26 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance have been used.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance have been; otherwise, <c>false</c>.
+        /// </value>
+        public static bool IsUsed { get; set; } = false;
+
+
+        /// <summary>
+        /// Checks if this handler have been used and if not, delete the config file.
+        /// </summary>
+        public static void CheckUse()
+        {
+            if (!IsUsed)
+            {
+                // Delete the config file
+            }
+        }
+
 
         /// <summary>
         /// Initializes the LyricsFinder private configuration handler.
@@ -217,6 +243,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         }
 
 
+        /*
         /// <summary>
         /// Saves this instance.
         /// </summary>
@@ -273,6 +300,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 _privateConfiguration.AppSettings.Settings.Add(key, value);
             }
         }
+        */
 
     }
 

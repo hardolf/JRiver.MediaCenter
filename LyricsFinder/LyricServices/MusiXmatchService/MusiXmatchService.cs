@@ -78,8 +78,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             ret = (string)lyricsDyn?.lyrics_body ?? string.Empty;
 
-            var lyricUrl = (lyricsDyn?.backlink_url == null) ? null : new SerializableUri((string)lyricsDyn?.backlink_url);
-            var lyricTrackingUrl = (lyricsDyn?.html_tracking_url == null) ? null : new SerializableUri((string)lyricsDyn?.html_tracking_url);
+            var lyricUrl = (lyricsDyn?.backlink_url == null) ? null : new Uri((string)lyricsDyn?.backlink_url);
+            var lyricTrackingUrl = (lyricsDyn?.html_tracking_url == null) ? null : new Uri((string)lyricsDyn?.html_tracking_url);
             var copyright = (string)lyricsDyn?.lyrics_copyright ?? string.Empty;
 
             // If found, add the found lyric to the list
@@ -169,7 +169,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             base.RefreshServiceSettings();
 
-            Token = PrivateSettings.Token;
+            if (Token.IsNullOrEmptyTrimmed())
+                Token = PrivateSettings.Token;
 
             RefreshDisplayProperties();
         }

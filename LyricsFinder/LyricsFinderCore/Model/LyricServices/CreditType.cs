@@ -20,6 +20,9 @@ namespace MediaCenter.LyricsFinder.Model
     [Serializable]
     public class CreditType
     {
+        private Uri _creditUrl;
+        private Uri _serviceUrl;
+
 
         /// <summary>
         /// Gets or sets the company.
@@ -90,8 +93,21 @@ namespace MediaCenter.LyricsFinder.Model
         /// <value>
         /// The credit URL.
         /// </value>
+        [XmlIgnore]
+        public virtual Uri CreditUrl { get => _creditUrl; set => _creditUrl = value; }
+
+        /// <summary>
+        /// Gets or sets the credit URL text.
+        /// </summary>
+        /// <value>
+        /// The credit URL text.
+        /// </value>
         [XmlElement]
-        public virtual SerializableUri CreditUrl { get; set; }
+        public virtual string CreditUrlText
+        {
+            get { return _creditUrl?.AbsoluteUri; }
+            set { _creditUrl = (value.IsNullOrEmptyTrimmed()) ? null : new UriBuilder(value).Uri; }
+        }
 
         /// <summary>
         /// Gets or sets the service URL.
@@ -99,8 +115,21 @@ namespace MediaCenter.LyricsFinder.Model
         /// <value>
         /// The service URL.
         /// </value>
+        [XmlIgnore]
+        public virtual Uri ServiceUrl { get => _serviceUrl; set => _serviceUrl = value; }
+
+        /// <summary>
+        /// Gets or sets the service URL text.
+        /// </summary>
+        /// <value>
+        /// The service URL text.
+        /// </value>
         [XmlElement]
-        public virtual SerializableUri ServiceUrl { get; set; }
+        public virtual string ServiceUrlText
+        {
+            get { return _serviceUrl?.AbsoluteUri; }
+            set { _serviceUrl = (value.IsNullOrEmptyTrimmed()) ? null : new UriBuilder(value).Uri; }
+        }
 
 
         /// <summary>

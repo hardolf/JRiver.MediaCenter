@@ -65,6 +65,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         private FoundLyricListType<FoundLyricType> InternalFoundLyricList { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the obsolete configurations have been used.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the obsolete configurations have been used; otherwise, <c>false</c>.
+        /// </value>
+        [XmlIgnore]
+        public static bool IsObsoleteConfigurationsUsed { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the exceptions.
         /// </summary>
         /// <value>
@@ -226,7 +235,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns>
         ///   <see cref="FoundLyricType" /> object.
         /// </returns>
-        public virtual FoundLyricType AddFoundLyric(string lyricText, SerializableUri lyricUrl, SerializableUri trackingUrl = null, string copyright = null)
+        public virtual FoundLyricType AddFoundLyric(string lyricText, Uri lyricUrl, Uri trackingUrl = null, string copyright = null)
         {
             if (!copyright.IsNullOrEmptyTrimmed())
                 Credit.Copyright = copyright;
@@ -346,7 +355,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             // If found, add the found lyric to the list
             if (!ret.IsNullOrEmptyTrimmed())
-                AddFoundLyric(ret, new SerializableUri(uri.AbsoluteUri));
+                AddFoundLyric(ret, new UriBuilder(uri.AbsoluteUri).Uri);
             */
 
             return ret;
@@ -432,23 +441,35 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var assy = Assembly.GetAssembly(GetType());
             var config = ConfigurationManager.OpenExeConfiguration(assy.Location);
 
-            Settings = config.AppSettings.Settings;
-            PrivateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, DataDirectory);
-
             if (!IsImplemented)
                 IsActive = false;
 
-            Credit = new CreditType
-            {
-                Company = ServiceSettingsValue(Settings, "Company"),
-                CreditDate = DateTime.Now,
-                CreditTextFormat = ServiceSettingsValue(Settings, "CreditTextFormat"),
-                CreditUrl = new SerializableUri(ServiceSettingsValue(Settings, "CreditUrl")),
-                DateFormat = ServiceSettingsValue(Settings, "DateFormat"),
-                ServiceName = ServiceSettingsValue(Settings, "ServiceName"),
-                ServiceUrl = new SerializableUri(ServiceSettingsValue(Settings, "ServiceUrl")),
-            };
+            IsObsoleteConfigurationsUsed = ((Credit == null)
+                || ((Credit.CreditUrl == null) || Credit.CreditUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
+                || ((Credit.ServiceUrl == null) || Credit.ServiceUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
+                || Credit.Company.IsNullOrEmptyTrimmed()
+                || Credit.CreditTextFormat.IsNullOrEmptyTrimmed()
+                || Credit.DateFormat.IsNullOrEmptyTrimmed()
+                || Credit.ServiceName.IsNullOrEmptyTrimmed());
 
+            if (IsObsoleteConfigurationsUsed)
+            {
+                Settings = config.AppSettings.Settings;
+                PrivateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, DataDirectory);
+
+                Credit = new CreditType
+                {
+                    Company = ServiceSettingsValue(Settings, "Company"),
+                    CreditDate = DateTime.Now,
+                    CreditTextFormat = ServiceSettingsValue(Settings, "CreditTextFormat"),
+                    CreditUrl = new UriBuilder(ServiceSettingsValue(Settings, "CreditUrl")).Uri,
+                    DateFormat = ServiceSettingsValue(Settings, "DateFormat"),
+                    ServiceName = ServiceSettingsValue(Settings, "ServiceName"),
+                    ServiceUrl = new UriBuilder(ServiceSettingsValue(Settings, "ServiceUrl")).Uri,
+                };
+            }
+
+            Credit.CreditDate = DateTime.Now;
             Credit.RefreshDisplayProperties();
             RefreshDisplayProperties();
         }

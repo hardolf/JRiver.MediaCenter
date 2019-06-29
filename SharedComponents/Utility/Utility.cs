@@ -23,20 +23,20 @@ namespace MediaCenter.SharedComponents
         /// <summary>
         /// Make the TextBox fit its contents.
         /// </summary>
-        /// <param name="textBox">The text box.</param>
+        /// <param name="control">The text box.</param>
         /// <remarks>
         /// Source: http://csharphelper.com/blog/2018/02/resize-a-textbox-to-fit-its-text-in-c/ 
         /// </remarks>
-        public static void AutoSizeTextBox(this TextBox textBox)
+        public static void AutoSizeTextBox(this Control control)
         {
-            if (textBox == null) throw new ArgumentNullException(nameof(textBox));
+            if (control == null) throw new ArgumentNullException(nameof(control));
 
             const int x_margin = 0;
             const int y_margin = 2;
 
-            Size size = TextRenderer.MeasureText(textBox.Text, textBox.Font);
+            Size size = TextRenderer.MeasureText(control.Text, control.Font);
 
-            textBox.ClientSize =
+            control.ClientSize =
                 new Size(size.Width + x_margin, size.Height + y_margin);
         }
 
@@ -69,6 +69,22 @@ namespace MediaCenter.SharedComponents
             }
 
             return ret.ToString();
+        }
+
+
+        /// <summary>
+        /// Gets the size of the control text.
+        /// </summary>
+        /// <param name="control">The control.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">control</exception>
+        public static Size GetControlTextSize(this Control control)
+        {
+            if (control == null) throw new ArgumentNullException(nameof(control));
+
+            Size ret = TextRenderer.MeasureText(control.Text, control.Font);
+
+            return ret;
         }
 
 

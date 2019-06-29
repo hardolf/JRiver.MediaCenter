@@ -44,7 +44,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns>
         /// Added object.
         /// </returns>
-        public T Add(AbstractLyricService service, string lyricText, string lyricCreditText, SerializableUri lyricUrl, SerializableUri trackingUrl)
+        public T Add(AbstractLyricService service, string lyricText, string lyricCreditText, Uri lyricUrl, Uri trackingUrl)
         {
             var ret = new T
             {
@@ -91,7 +91,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// <summary>
     /// Lyrics search result type.
     /// </summary>
-    [Serializable]
     public class FoundLyricType
     {
 
@@ -105,7 +104,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The service.
         /// </value>
-        [XmlIgnore]
         public AbstractLyricService Service { get; set; }
 
 
@@ -115,7 +113,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The found lyrics credit text.
         /// </value>
-        [XmlElement]
         public virtual string LyricCreditText
         {
             get
@@ -137,7 +134,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The found lyrics text.
         /// </value>
-        [XmlElement]
         public virtual string LyricText
         {
             get { return _lyricText; }
@@ -150,8 +146,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The found lyrics text.
         /// </value>
-        [XmlElement]
-        public virtual SerializableUri LyricUrl { get; set; }
+        public virtual Uri LyricUrl { get; set; }
 
         /// <summary>
         /// Gets or sets the tracking URL.
@@ -159,8 +154,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <value>
         /// The tracking URL.
         /// </value>
-        [XmlElement]
-        public virtual SerializableUri TrackingUrl { get; set; }
+        public virtual Uri TrackingUrl { get; set; }
 
 
         /// <summary>

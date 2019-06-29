@@ -524,17 +524,17 @@ namespace MediaCenter.LyricsFinder.Model
                                 throw new Exception($"Cannot convert \"{txt.Text}\" to int.");
 
                             dp.Value = dailyQuota;
-                            service.PrivateSettings.Save(dailyQuota: dailyQuota);
+                            //service.PrivateSettings.Save(dailyQuota: dailyQuota);
                         }
                         else if (dp.PropertyName.Equals("token", StringComparison.InvariantCultureIgnoreCase))
                         {
                             dp.Value = txt.Text;
-                            service.PrivateSettings.Save(token: txt.Text);
+                            //service.PrivateSettings.Save(token: txt.Text);
                         }
                         else if (dp.PropertyName.Equals("userId", StringComparison.InvariantCultureIgnoreCase))
                         {
                             dp.Value = txt.Text;
-                            service.PrivateSettings.Save(userId: txt.Text);
+                            //service.PrivateSettings.Save(userId: txt.Text);
                         }
                         else
                             throw new Exception($"Cannot save unknown editable property: \"{dp.PropertyName}\".");

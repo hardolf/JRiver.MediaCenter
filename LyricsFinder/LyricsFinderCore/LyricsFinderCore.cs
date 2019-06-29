@@ -227,6 +227,17 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the Resize event of the LyricsFinderCore control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void LyricsFinderCore_Resize(object sender, EventArgs e)
+        {
+            ErrorHandling.Init(this.Size);
+        }
+
+
+        /// <summary>
         /// Handles the ItemClicked event of the ContextMenu control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -370,8 +381,8 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 if (_isDesignTime) return;
-                if ((_lyricsForm != null) && _lyricsForm.Visible && !LyricsFinderCoreConfigurationSectionHandler.MouseMoveOpenLyricsForm) return;
-                if ((e.ColumnIndex == (int)GridColumnEnum.Lyrics) && !LyricsFinderCoreConfigurationSectionHandler.MouseMoveOpenLyricsForm) return;
+                if ((_lyricsForm != null) && _lyricsForm.Visible && !LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
+                if ((e.ColumnIndex == (int)GridColumnEnum.Lyrics) && !LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
                 if ((e.ColumnIndex == _currentMouseColumnIndex) && (e.RowIndex == _currentMouseRowIndex)) return;
 
                 _bitmapForm?.Close();
@@ -450,7 +461,7 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 if (_isDesignTime) return;
-                if (!LyricsFinderCoreConfigurationSectionHandler.MouseMoveOpenLyricsForm) return;
+                if (!LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
 
                 var pt = Cursor.Position;
                 var rect = MainGridView.RectangleToScreen(MainGridView.ClientRectangle);
@@ -607,10 +618,8 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(HelpAboutMenuItem):
-                            using (var about = new AboutBox(EntryAssembly))
-                            {
+                            using (var about = new AboutBox(this))
                                 about.ShowDialog();
-                            }
                             break;
 
                         case nameof(HelpContentsMenuItem):
@@ -619,7 +628,7 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(HelpLookForUpdatesMenuItem):
-                            Model.Helpers.Utility.UpdateCheckWithRetries(EntryAssembly.GetName().Version, true);
+                            Model.Helpers.Utility.UpdateCheckWithRetries(EntryAssembly.GetName().Version, this.Size, true);
                             break;
 
                         case nameof(ToolsLyricServicesMenuItem):
@@ -631,9 +640,7 @@ namespace MediaCenter.LyricsFinder
 
                         case nameof(ToolsOptionsMenuItem):
                             using (var frm = new OptionForm("LyricsFinder connection setup", LyricsFinderData))
-                            {
                                 frm.ShowDialog(this);
-                            }
                             break;
 
                         case nameof(ToolsShowLogMenuItem):
@@ -850,20 +857,20 @@ namespace MediaCenter.LyricsFinder
                 UpdateCheckTimer.Stop();
 
                 // Is it about time for a check?
-                var updInterval = LyricsFinderCorePrivateConfigurationSectionHandler.UpdateCheckIntervalDays;
+                var updInterval = LyricsFinderData.MainData.UpdateCheckIntervalDays;
                 var daysSinceLast = (DateTime.Now - _lastUpdateCheck).TotalDays;
 
                 if ((updInterval == 0)
                     || ((updInterval > 0) && (daysSinceLast >= updInterval)))
                 {
                     var version = Assembly.GetExecutingAssembly().GetName().Version;
-                    var isUpdated = Model.Helpers.Utility.UpdateCheckWithRetries(version);
+                    var isUpdated = Model.Helpers.Utility.UpdateCheckWithRetries(version, this.Size);
 
                     if (!isUpdated)
-                        Model.Helpers.Utility.UpdateCheckWithRetries(version, true);
+                        Model.Helpers.Utility.UpdateCheckWithRetries(version, this.Size, true);
 
                     _lastUpdateCheck = DateTime.Now;
-                    LyricsFinderCorePrivateConfigurationSectionHandler.Save(lastUpdateCheck: _lastUpdateCheck);
+                    LyricsFinderData.MainData.LastUpdateCheck = _lastUpdateCheck;
                 }
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again

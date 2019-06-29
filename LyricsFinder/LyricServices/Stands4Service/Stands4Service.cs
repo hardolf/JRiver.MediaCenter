@@ -183,7 +183,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             // If found, add the found lyric to the list
             if (!ret.IsNullOrEmptyTrimmed())
-                AddFoundLyric(ret, new SerializableUri(uri.AbsoluteUri));
+                AddFoundLyric(ret, new Uri(uri.AbsoluteUri));
 
             return ret;
         }
@@ -303,12 +303,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             base.RefreshServiceSettings();
 
-            var quotaResetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue(Settings, "QuotaResetTimeZone"));
+            if (Token.IsNullOrEmptyTrimmed()
+                || UserId.IsNullOrEmptyTrimmed())
+            {
+                var quotaResetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue(Settings, "QuotaResetTimeZone"));
 
-            DailyQuota = PrivateSettings.DailyQuota;
-            QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Parse(ServiceSettingsValue(Settings, "QuotaResetTime"), CultureInfo.InvariantCulture), quotaResetTimeZone);
-            Token = PrivateSettings.Token;
-            UserId = PrivateSettings.UserId;
+                DailyQuota = PrivateSettings.DailyQuota;
+                QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Parse(ServiceSettingsValue(Settings, "QuotaResetTime"), CultureInfo.InvariantCulture), quotaResetTimeZone);
+                Token = PrivateSettings.Token;
+                UserId = PrivateSettings.UserId; 
+            }
 
             RefreshDisplayProperties();
         }

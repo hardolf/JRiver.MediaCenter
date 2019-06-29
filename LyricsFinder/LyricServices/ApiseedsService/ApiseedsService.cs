@@ -123,7 +123,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             base.RefreshServiceSettings();
 
-            Token = PrivateSettings.Token;
+            if (Token.IsNullOrEmptyTrimmed())
+                Token = PrivateSettings.Token;
 
             RefreshDisplayProperties();
         }

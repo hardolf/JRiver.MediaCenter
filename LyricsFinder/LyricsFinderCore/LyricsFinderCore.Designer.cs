@@ -664,6 +664,7 @@ namespace MediaCenter.LyricsFinder
             this.Name = "LyricsFinderCore";
             this.Size = new System.Drawing.Size(738, 509);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricsFinderCore_KeyDownAsync);
+            this.Resize += new System.EventHandler(this.LyricsFinderCore_Resize);
             this.MainContainer.BottomToolStripPanel.ResumeLayout(false);
             this.MainContainer.BottomToolStripPanel.PerformLayout();
             this.MainContainer.ContentPanel.ResumeLayout(false);

@@ -85,7 +85,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// </returns>
         public string UserId => Instance?.Settings[_UserIdPropertyName]?.Value ?? string.Empty;
 
-
         /// <summary>
         /// Gets the instance.
         /// </summary>
@@ -98,12 +97,15 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         {
             get
             {
+                IsUsed = true;
+
                 // Get the configuration section handler fom file only once
                 if (_configurationSection == null)
                 {
                     var privateConfigFile = Utility.GetPrivateSettingsFilePath(LyricServiceAssembly, DataDirectory);
 
-                    if (privateConfigFile.IsNullOrEmptyTrimmed())
+                    if (privateConfigFile.IsNullOrEmptyTrimmed()
+                        || !File.Exists(privateConfigFile))
                         return null;
 
                     // Avoid analyzer warning CA1812
@@ -136,6 +138,26 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance have been used.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance have been; otherwise, <c>false</c>.
+        /// </value>
+        public static bool IsUsed { get; set; } = false;
+
+
+        /// <summary>
+        /// Checks if this handler have been used and if not, delete the config file.
+        /// </summary>
+        public static void CheckUse()
+        {
+            if (!IsUsed)
+            {
+                // Delete the config file
+            }
+        }
+
 
         /// <summary>
         /// Creates the lyric services private configuration section handler.
@@ -155,6 +177,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         }
 
 
+        /*
         /// <summary>
         /// Saves this instance.
         /// </summary>
@@ -188,6 +211,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 _privateConfiguration.AppSettings.Settings.Add(key, value);
             }
         }
+        */
 
     }
 

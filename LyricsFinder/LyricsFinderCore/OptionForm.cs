@@ -108,10 +108,11 @@ namespace MediaCenter.LyricsFinder
                         e.Cancel = false;
                         try
                         {
+                            // Save the data contents
                             // _lyricsFinderData.MainData.LastUpdateCheck = DateTime.Parse(LastUpdateCheckTextBox.Text, CultureInfo.InvariantCulture); // Readonly!
                             _lyricsFinderData.MainData.MaxQueueLength = (int)MaxQueueLengthUpDown.Value;
                             _lyricsFinderData.MainData.McAccessKey = McAccessKeyTextBox.Text;
-                            _lyricsFinderData.MainData.McWsConnectAttempts = (int)McWsConnectAttemptsUpDown.Value;
+                            _lyricsFinderData.MainData.MaxMcWsConnectAttempts = (int)MaxMcWsConnectAttemptsUpDown.Value;
                             _lyricsFinderData.MainData.McWsPassword = McWsPasswordTextBox.Text;
                             _lyricsFinderData.MainData.McWsUrl = McWsUrlTextBox.Text;
                             _lyricsFinderData.MainData.McWsUsername = McWsUsernameTextBox.Text;
@@ -151,10 +152,11 @@ namespace MediaCenter.LyricsFinder
                 Text = _title;
                 HeaderTextBox.Text = _headerText;
 
+                // Set the data contents
                 LastUpdateCheckTextBox.Text = _lyricsFinderData.MainData.LastUpdateCheck.ToString(CultureInfo.CurrentCulture);
                 MaxQueueLengthUpDown.Value = _lyricsFinderData.MainData.MaxQueueLength;
                 McAccessKeyTextBox.Text = _lyricsFinderData.MainData.McAccessKey;
-                McWsConnectAttemptsUpDown.Value = _lyricsFinderData.MainData.McWsConnectAttempts;
+                MaxMcWsConnectAttemptsUpDown.Value = _lyricsFinderData.MainData.MaxMcWsConnectAttempts;
                 McWsPasswordTextBox.Text = _lyricsFinderData.MainData.McWsPassword;
                 McWsUrlTextBox.Text = _lyricsFinderData.MainData.McWsUrl;
                 McWsUsernameTextBox.Text = _lyricsFinderData.MainData.McWsUsername;
@@ -162,6 +164,7 @@ namespace MediaCenter.LyricsFinder
                 NoLyricsSearchFilterTextBox.Text = _lyricsFinderData.MainData.NoLyricsSearchFilter;
                 UpdateCheckIntervalDaysUpDown.Value = _lyricsFinderData.MainData.UpdateCheckIntervalDays;
 
+                // Select the top TextBox and minimize the selected text
                 McAccessKeyTextBox.Select();
                 McAccessKeyTextBox.SelectionLength = 0;
                 McAccessKeyTextBox.SelectionStart = 0;
@@ -195,7 +198,7 @@ namespace MediaCenter.LyricsFinder
                     break;
 
                 case nameof(MaxQueueLengthUpDown):
-                case nameof(McWsConnectAttemptsUpDown):
+                case nameof(MaxMcWsConnectAttemptsUpDown):
                 case nameof(UpdateCheckIntervalDaysUpDown):
                     e.Cancel = !int.TryParse(ctl.Text, out _);
                     break;

@@ -112,30 +112,26 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
             XmlDocument xDoc = new XmlDocument() { XmlResolver = null };
 
-            using (var sr = new StringReader(xml))
+            using (var sReader = new StringReader(xml))
+            using (var xReader = XmlReader.Create(sReader, new XmlReaderSettings() { XmlResolver = null }))
+                xDoc.Load(xReader);
+
+            var xmlRoot = xDoc.DocumentElement;
+
+            ret.PathSeparator = xmlRoot.GetAttribute("PathSeparator");
+            ret.Title = xmlRoot.GetAttribute("Title");
+            ret.Version = xmlRoot.GetAttribute("Version");
+
+            var xItems = xmlRoot.GetElementsByTagName("Item");
+
+            foreach (XmlElement xItem in xItems)
             {
-                using (var reader = XmlReader.Create(sr, new XmlReaderSettings() { XmlResolver = null }))
-                {
-                    xDoc.Load(reader);
-                }
+                var item = await McMplItem.CreateMcMplItem(xItem).ConfigureAwait(false);
 
-                var xmlRoot = xDoc.DocumentElement;
+                await item.FillPropertiesFromFields().ConfigureAwait(false);
 
-                ret.PathSeparator = xmlRoot.GetAttribute("PathSeparator");
-                ret.Title = xmlRoot.GetAttribute("Title");
-                ret.Version = xmlRoot.GetAttribute("Version");
-
-                var xItems = xmlRoot.GetElementsByTagName("Item");
-
-                foreach (XmlElement xItem in xItems)
-                {
-                    var item = await McMplItem.CreateMcMplItem(xItem).ConfigureAwait(false);
-
-                    await item.FillPropertiesFromFields().ConfigureAwait(false);
-
-                    if (!ret.Items.Keys.Contains(item.Key))
-                        ret.Items.Add(item.Key, item);
-                } 
+                if (!ret.Items.Keys.Contains(item.Key))
+                    ret.Items.Add(item.Key, item);
             }
 
             return ret;

@@ -285,7 +285,8 @@ namespace MediaCenter.LyricsFinder
                     }
                 }
 
-                LyricsFinderCorePrivateConfigurationSectionHandler.Save(lyricFormSize: Size);
+                LyricsFinderData.MainData.LyricFormSize = Size;
+                LyricsFinderData.Save();
             }
             catch (Exception ex)
             {

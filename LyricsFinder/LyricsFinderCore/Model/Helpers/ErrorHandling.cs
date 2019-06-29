@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -18,18 +19,33 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     internal static class ErrorHandling
     {
 
+        private static Size _maxWindowSize = new Size(0, 0);
+
+
+        /// <summary>
+        /// Initializes the specified maximum window size.
+        /// </summary>
+        /// <param name="maxWindowSize">Maximum size of the window.</param>
+        public static void Init(Size maxWindowSize)
+        {
+            _maxWindowSize = maxWindowSize;
+        }
+
+
         /// <summary>
         /// Error handler.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="progressPercentage">The progress percentage.</param>
-        /// <remarks>This routine does not write anything in the log, it is displaying a message on the screen only.</remarks>
+        /// <remarks>
+        /// This routine does not write anything in the log, it is displaying a message on the screen only.
+        /// </remarks>
         public static void ShowErrorHandler(string message, int progressPercentage = 0)
         {
             message = message.AppendProgressPercentage(progressPercentage);
 
             // MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            ErrorForm.Show(message);
+            ErrorForm.Show(message, _maxWindowSize);
         }
 
         /// <summary>
@@ -38,13 +54,15 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="owner">The owner.</param>
         /// <param name="message">The message.</param>
         /// <param name="progressPercentage">The progress percentage.</param>
-        /// <remarks>This routine does not write anything in the log, it is displaying a message on the screen only.</remarks>
+        /// <remarks>
+        /// This routine does not write anything in the log, it is displaying a message on the screen only.
+        /// </remarks>
         public static void ShowErrorHandler(IWin32Window owner, string message, int progressPercentage = 0)
         {
             message = message.AppendProgressPercentage(progressPercentage);
 
             // MessageBox.Show(owner, message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            ErrorForm.Show(owner, message);
+            ErrorForm.Show(owner, message, _maxWindowSize);
         }
 
 

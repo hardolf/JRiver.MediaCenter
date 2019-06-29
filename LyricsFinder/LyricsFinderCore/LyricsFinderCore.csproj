@@ -150,7 +150,6 @@
     <Compile Include="Model\McRestService\McResponse.cs" />
     <Compile Include="Model\McRestService\McRestService.cs" />
     <Compile Include="Model\McRestService\McResponseDescendents.cs" />
-    <Compile Include="Model\SerializableUri.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

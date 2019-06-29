@@ -39,9 +39,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 Name = "brothers in arms"
             };
 
-            _service = new AZLyricsService();
-            _service.DataDirectory = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\Documents\LyricsFinder");
-            _service.RefreshServiceSettings();
+            _service = (AZLyricsService)LyricsFinderDataType.GetLyricService<AZLyricsService>();
         }
 
 

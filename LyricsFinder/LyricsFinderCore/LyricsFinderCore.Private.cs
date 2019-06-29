@@ -120,22 +120,94 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Gets or sets a value indicating whether any obsolete configurations have been used.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if any obsolete configurations have been used; otherwise, <c>false</c>.
+        /// </value>
+        public void CleanupObsoleteConfigurationFiles()
+        {
+            var isUsed = (AbstractLyricService.IsObsoleteConfigurationsUsed
+                || LyricServicesPrivateConfigurationSectionHandler.IsUsed
+                || LyricsFinderCoreConfigurationSectionHandler.IsUsed
+                || LyricsFinderCorePrivateConfigurationSectionHandler.IsUsed);
+
+            if (!isUsed)
+            {
+                var isCleanupDone = true;
+                var assy = Assembly.GetExecutingAssembly();
+                var sb = new StringBuilder();
+                var files = new List<FileInfo>();
+                var path = Model.Helpers.Utility.GetPrivateSettingsFilePath(assy, DataDirectory);
+
+                files.Add(new FileInfo(path));
+
+                foreach (var service in LyricsFinderData.LyricServices)
+                {
+                    assy = Assembly.GetAssembly(service.GetType());
+                    path = Model.Helpers.Utility.GetPrivateSettingsFilePath(assy, DataDirectory);
+
+                    if (!path.IsNullOrEmptyTrimmed())
+                    {
+                        var file = new FileInfo(path);
+
+                        files.Add(file);
+
+                        if (file.Exists)
+                            isCleanupDone = false;
+                    }
+                }
+
+                if (isCleanupDone) return;
+
+                sb.Append("Your private local configuration files are now obsolete and are no longer used, ");
+                sb.AppendLine("as the information is now copied to the central \"LyricsFinder.xml\" file.");
+                sb.AppendLine("These files are no longer needed:");
+                sb.AppendLine();
+
+                foreach (var file in files)
+                {
+                    sb.AppendLine(file.FullName);
+                }
+
+                sb.AppendLine();
+                sb.AppendLine("Is it OK to delete them now?");
+
+                var result = MessageBox.Show(this, sb.ToString(), "Clean up obsolete files?"
+                    , MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+                if (result == DialogResult.Yes)
+                {
+                    foreach (var file in files)
+                    {
+                        file.Delete();
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Enables or disables ALL the menu items under the parent menu.
         /// </summary>
         /// <param name="parentMenu">The parent menu.</param>
         /// <param name="isEnable">If set to <c>true</c>, the menus are enabled; else they are disabled.</param>
+        /// <remarks>
+        /// <para>The process is recursive, i.e. if a menu is enabled, all its sub-menus are enabled too - and vice versa</para>
+        /// </remarks>
         private void EnableOrDisableMenuItems(ToolStripMenuItem parentMenu, bool isEnable)
         {
             parentMenu.Enabled = isEnable;
 
             foreach (var item in parentMenu.DropDownItems)
             {
-                if (!(item is ToolStripMenuItem menu)) continue;
+                if (item is ToolStripMenuItem menu)
+                {
+                    menu.Enabled = isEnable;
 
-                menu.Enabled = isEnable;
-
-                if (menu.DropDownItems.Count > 0)
-                    EnableOrDisableMenuItems(menu, isEnable);
+                    if (menu.DropDownItems.Count > 0)
+                        EnableOrDisableMenuItems(menu, isEnable);
+                }
             }
         }
 
@@ -147,7 +219,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="menuItems">Menu items to be enabled or disabled.</param>
         /// <remarks>
         /// <para>If empty menu item list, all sub-menus are enabled or disabled.</para>
-        /// <para>If selected menus are disabled, all other menus are enabled - and vice versa.</para>
+        /// <para>The process is recursive, i.e. if a menu is enabled, all its sub-menus are enabled too - and vice versa</para>
         /// </remarks>
         private void EnableOrDisableMenuItems(bool isEnable, params ToolStripMenuItem[] menuItems)
         {
@@ -156,9 +228,8 @@ namespace MediaCenter.LyricsFinder
                 // Set ALL the menus to isEnable value
                 foreach (var item in TopMenu.Items)
                 {
-                    if (!(item is ToolStripMenuItem menu)) continue;
-
-                    EnableOrDisableMenuItems(menu, isEnable);
+                    if (item is ToolStripMenuItem menu)
+                        EnableOrDisableMenuItems(menu, isEnable);
                 }
             }
             else
@@ -166,9 +237,50 @@ namespace MediaCenter.LyricsFinder
                 // Now set the specified menus to isEnable value
                 foreach (var item in menuItems)
                 {
-                    if (!(item is ToolStripMenuItem menu)) continue;
+                    if (item is ToolStripMenuItem menu)
+                        EnableOrDisableMenuItems(menu, isEnable);
+                }
+            }
+        }
 
-                    menu.Enabled = isEnable;
+
+        /// <summary>
+        /// Enables or disables the tool strip items named in the toolStripItems.
+        /// </summary>
+        /// <param name="isEnable">if set to <c>true</c>, the tool strip items are enabled; else they are disabled.</param>
+        /// <param name="toolStripItems">The tool strip items.</param>
+        /// <remarks>
+        /// <para>If empty tool strip item list, all tool strip items are enabled or disabled.</para>
+        /// </remarks>
+        private void EnableOrDisableToolStripItems(bool isEnable, params ToolStripItem[] toolStripItems)
+        {
+            if (toolStripItems.IsNullOrEmpty())
+            {
+                // Set ALL the items to isEnable value
+                foreach (var item in TopMenu.Items)
+                {
+                    if (item is ToolStripMenuItem menu)
+                        EnableOrDisableMenuItems(isEnable, menu);
+                    else if (item is ToolStripButton button)
+                        button.Enabled = isEnable;
+                }
+                foreach (var item in BottomMenu.Items)
+                {
+                    if (item is ToolStripMenuItem menu)
+                        EnableOrDisableMenuItems(isEnable, menu);
+                    else if (item is ToolStripButton button)
+                        button.Enabled = isEnable;
+                }
+            }
+            else
+            {
+                // Now set the specified items to isEnable value
+                foreach (var item in toolStripItems)
+                {
+                    if (item is ToolStripMenuItem menu)
+                        EnableOrDisableMenuItems(isEnable, menu);
+                    else if (item is ToolStripButton button)
+                        button.Enabled = isEnable;
                 }
             }
         }
@@ -305,8 +417,6 @@ namespace MediaCenter.LyricsFinder
             else
                 ret = mcMplItem.Image;
 
-            ret.MakeTransparent();
-
             return ret;
         }
 
@@ -338,7 +448,7 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Tests and initializes the data folder.
         /// </summary>
-        private void InitLocalData()
+        public void InitLocalData() // "public" due to the unit tests
         {
             var dataFile = string.Empty;
             var tmpFile = string.Empty;
@@ -564,7 +674,7 @@ namespace MediaCenter.LyricsFinder
         private void LoadFormSettings()
         {
             //Properties.Settings.Default.Reload();
-            _lastUpdateCheck = LyricsFinderCorePrivateConfigurationSectionHandler.LastUpdateCheck;
+            _lastUpdateCheck = LyricsFinderData.MainData.LastUpdateCheck;
 
             // Ensure the default of not overwriting (i.e. skipping) existing lyrics
             OverwriteMenuItem.Checked = false;
@@ -956,7 +1066,7 @@ namespace MediaCenter.LyricsFinder
                 throw new ArgumentException($"Column {colIdx} is not a DataGridViewTextBoxCell.");
 
             var location = new Point(MousePosition.X, MousePosition.Y);
-            var size = LyricsFinderCorePrivateConfigurationSectionHandler.LyricFormSize;
+            var size = LyricsFinderData.MainData.LyricFormSize;
             var ret = new LyricForm(cell, location, size, ShowLyricsCallback, LyricsFinderData)
             {
                 StartPosition = FormStartPosition.CenterParent

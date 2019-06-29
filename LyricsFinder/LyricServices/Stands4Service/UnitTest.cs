@@ -32,9 +32,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 Name = "Sultans of Swing"
             };
 
-            _service = new Stands4Service();
-            _service.DataDirectory = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\Documents\LyricsFinder");
-            _service.RefreshServiceSettings();
+            _service = (Stands4Service)LyricsFinderDataType.GetLyricService<Stands4Service>();
         }
 
 

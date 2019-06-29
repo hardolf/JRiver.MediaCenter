@@ -1,11 +1,14 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using System.Xml;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.SharedComponents;
 
 namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 {
@@ -45,9 +48,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 Name = "yyy" // Does not exist
             };
 
-            _service = new ApiseedsService();
-            _service.DataDirectory = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\Documents\LyricsFinder");
-            _service.RefreshServiceSettings();
+            _service = (ApiseedsService)LyricsFinderDataType.GetLyricService<ApiseedsService>();
         }
 
 
