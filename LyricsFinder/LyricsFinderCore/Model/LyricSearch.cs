@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using MediaCenter.LyricsFinder.Model.LyricServices;
@@ -21,16 +22,19 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="lyricsFinderData">The lyrics finder data.</param>
         /// <param name="mcItem">The Media Center item.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> [get all].</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">lyricsFinderData
         /// or
         /// mcItem</exception>
         /// <exception cref="Exception"></exception>
-        public static async Task Search(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, bool isGetAll = false)
+        public static async Task Search(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
         {
             if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
             if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             // Set up the tasks for the search
             var tasks = new List<Task<AbstractLyricService>>();
@@ -38,7 +42,7 @@ namespace MediaCenter.LyricsFinder.Model
 
             foreach (var service in lyricsFinderData.ActiveLyricServices)
             {
-                var task = service.ProcessAsync(mcItem, isGetAll);
+                var task = service.ProcessAsync(mcItem, cancellationToken, isGetAll);
 
                 services.Add(service);
                 tasks.Add(task);

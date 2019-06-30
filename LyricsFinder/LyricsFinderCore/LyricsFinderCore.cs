@@ -711,19 +711,17 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                if (!ToolsSearchAllStartStopButton.IsRunning)
-                {
-                    if (IsDataChanged && (DialogResult.No == MessageBox.Show("Data is changed and will be lost if you proceed\nDo you want to proceed.?", "Proceed?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)))
-                        return;
+                if (IsDataChanged && (DialogResult.No == MessageBox.Show("Data is changed and will be lost if you proceed\r\n"
+                    + "Do you want to proceed.?", "Proceed?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)))
+                    return;
 
-                    ToolsSearchAllStartStopButton.Start();
-                }
+                ToolsSearchAllStartStopButton.Start();
 
-                _progressPercentage = 0;
                 // UseWaitCursor = true;
 
                 // Start the automatic search process job
-                await SearchAllProcessAsync(_cancellationTokenSource);
+                _cancellationTokenSource = new CancellationTokenSource();
+                await SearchAllProcessAsync(_cancellationTokenSource.Token);
             }
             catch (Exception ex)
             {
@@ -748,8 +746,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                if (ToolsSearchAllStartStopButton.IsRunning)
-                    ToolsSearchAllStartStopButton.Stop();
+                ToolsSearchAllStartStopButton.Stop();
 
                 _cancellationTokenSource.Cancel();
             }
@@ -771,10 +768,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                var dvg = MainGridView;
-
-                if (dvg.SelectedRows.Count > 0)
-                    await PlayOrPause();
+                await PlayOrPause();
             }
             catch (Exception ex)
             {
@@ -814,8 +808,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                if (!SearchAllStartStopButton.IsRunning)
-                    SearchAllStartStopButton.Start();
+                SearchAllStartStopButton.Start();
             }
             catch (Exception ex)
             {
@@ -835,8 +828,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                if (SearchAllStartStopButton.IsRunning)
-                    SearchAllStartStopButton.Stop();
+                SearchAllStartStopButton.Stop();
             }
             catch (Exception ex)
             {

@@ -452,7 +452,7 @@ namespace MediaCenter.LyricsFinder
             this.ToolsSearchAllStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsSearchAllStartStopButton.ImageStart")));
             this.ToolsSearchAllStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsSearchAllStartStopButton.ImageStop")));
             this.ToolsSearchAllStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolsSearchAllStartStopButton.IsRunning = true;
+            this.ToolsSearchAllStartStopButton.IsRunning = false;
             this.ToolsSearchAllStartStopButton.Name = "ToolsSearchAllStartStopButton";
             this.ToolsSearchAllStartStopButton.Size = new System.Drawing.Size(103, 20);
             this.ToolsSearchAllStartStopButton.Text = "&Stop search all";
@@ -467,7 +467,7 @@ namespace MediaCenter.LyricsFinder
             this.ToolsPlayStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStart")));
             this.ToolsPlayStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStop")));
             this.ToolsPlayStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolsPlayStartStopButton.IsRunning = true;
+            this.ToolsPlayStartStopButton.IsRunning = false;
             this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
             this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(76, 20);
             this.ToolsPlayStartStopButton.Text = "Stop &play";

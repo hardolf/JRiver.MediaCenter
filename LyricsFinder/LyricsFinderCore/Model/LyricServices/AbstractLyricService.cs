@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.ServiceModel.Configuration;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -294,10 +295,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Extracts all the lyrics from all the Uris.
         /// </summary>
         /// <param name="uris">The uris.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> extracts all lyrics from all the Uris; else exits after the first hit.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">uris</exception>
-        protected virtual async Task ExtractAllLyricTextsAsync(IEnumerable<Uri> uris, bool isGetAll = false)
+        protected virtual async Task ExtractAllLyricTextsAsync(IEnumerable<Uri> uris, CancellationToken cancellationToken, bool isGetAll = false)
         {
             if (uris == null) throw new ArgumentNullException(nameof(uris));
 
@@ -308,7 +310,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 foreach (var uri in uris)
                 {
-                    tasks.Add(ExtractOneLyricTextAsync(uri));
+                    tasks.Add(ExtractOneLyricTextAsync(uri, cancellationToken));
                 }
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -318,7 +320,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 // Serial search, probably hits on the first try
                 foreach (var uri in uris)
                 {
-                    var lyricText = await ExtractOneLyricTextAsync(uri).ConfigureAwait(false);
+                    var lyricText = await ExtractOneLyricTextAsync(uri, cancellationToken).ConfigureAwait(false);
 
                     if (!lyricText.IsNullOrEmptyTrimmed())
                         break;
@@ -328,17 +330,39 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Get string asynchronous from HTTP request to the lyric service.
+        /// </summary>
+        /// <param name="requestUri">The request URI.</param>
+        /// <returns>Response text from lyric service.</returns>
+        /// <remarks>We use a central routine here, so that the request counters may be properly updated.</remarks>
+        protected virtual async Task<string> HttpGetStringAsync(Uri requestUri)
+        {
+            // One more request...
+            RequestCountToday++;
+            RequestCountTotal++;
+
+            var ret = await Helpers.Utility.HttpGetStringAsync(requestUri).ConfigureAwait(false);
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Extracts the result text from a Uri and adds the found lyric text to the list.
         /// </summary>
         /// <param name="uri">The URI.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// If found, the found lyric text string; else null.
         /// </returns>
+        /// <exception cref="ArgumentNullException">uri</exception>
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        protected virtual async Task<string> ExtractOneLyricTextAsync(Uri uri)
+        protected virtual async Task<string> ExtractOneLyricTextAsync(Uri uri, CancellationToken cancellationToken)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var ret = string.Empty;
 
@@ -378,17 +402,22 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
         ///   <see cref="AbstractLyricService" /> descendant object.
         /// </returns>
+        /// <exception cref="ArgumentNullException">item</exception>
+        /// <exception cref="LyricsQuotaExceededException">Lyric service \"{Credit.ServiceName}\" is exceeding its quota and is now disabled in LyricsFinder, "
+        /// + "no more requests will be sent to this service until corrected.</exception>
         /// <exception cref="System.ArgumentNullException">item</exception>
-        /// <exception cref="LyricsQuotaExceededException"></exception>
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public virtual async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
+        public virtual async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             Exceptions.Clear();
             InternalFoundLyricList.Clear();
@@ -402,12 +431,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 throw new LyricsQuotaExceededException($"Lyric service \"{Credit.ServiceName}\" is exceeding its quota and is now disabled in LyricsFinder, "
                     + "no more requests will be sent to this service until corrected.");
-            }
-            else
-            {
-                // We will query the service shortly, so we increment the counters now
-                RequestCountToday++;
-                RequestCountTotal++;
             }
 
             return this;

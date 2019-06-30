@@ -6,10 +6,10 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
 
@@ -51,16 +51,18 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Extracts the result text from a Uri and adds the found lyric text to the list.
         /// </summary>
         /// <param name="uri">The URI.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
         /// If found, the found lyric text string; else null.
         /// </returns>
+        /// <exception cref="ArgumentNullException">uri</exception>
         /// <exception cref="System.ArgumentNullException">uri</exception>
-        protected override async Task<string> ExtractOneLyricTextAsync(Uri uri)
+        protected override async Task<string> ExtractOneLyricTextAsync(Uri uri, CancellationToken cancellationToken)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
-            var ret = await base.ExtractOneLyricTextAsync(uri).ConfigureAwait(false);
-            var json = await Helpers.Utility.HttpGetStringAsync(uri).ConfigureAwait(false);
+            var ret = await base.ExtractOneLyricTextAsync(uri, cancellationToken).ConfigureAwait(false);
+            var json = await base.HttpGetStringAsync(uri).ConfigureAwait(false);
 
             // Deserialize the returned JSON
             var lyricDyn = JsonConvert.DeserializeObject<dynamic>(json);
@@ -94,14 +96,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
         ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="MusiXmatchService" />.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">item</exception>
+        /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="LyricServiceCommunicationException"></exception>
         /// <exception cref="GeneralLyricServiceException"></exception>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
+        /// <exception cref="System.ArgumentNullException">item</exception>
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -110,14 +114,14 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             try
             {
-                await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
+                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
 
                 // Example requests:
                 // http://api.musixmatch.com/ws/1.1/track.search?apikey=xxxxxxxxxxxxxxxxxxxxx&q_artist=Dire%20Straits&q_track=Lions
                 // http://api.musixmatch.com/ws/1.1/track.lyrics.get?apikey=xxxxxxxxxxxxxxxxxxxxx&track_id=72952844&commontrack_id=61695
 
                 // First we search for the track
-                json = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+                json = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                 if (Exceptions.Count > 0)
                     return this;
@@ -136,7 +140,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     uris.Add(ub.Uri);
                 }
 
-                await ExtractAllLyricTextsAsync(uris, isGetAll).ConfigureAwait(false);
+                await ExtractAllLyricTextsAsync(uris, cancellationToken, isGetAll).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {

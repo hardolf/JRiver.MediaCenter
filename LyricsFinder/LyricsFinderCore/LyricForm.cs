@@ -33,6 +33,11 @@ namespace MediaCenter.LyricsFinder
         private Action<LyricForm> _callback;
 
         /// <summary>
+        /// The cancellation token source.
+        /// </summary>
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        /// <summary>
         /// The initial lyric from as of the form load.
         /// </summary>
         private string _initLyric = string.Empty;
@@ -308,6 +313,7 @@ namespace MediaCenter.LyricsFinder
 
                 if (e.KeyCode == Keys.Escape)
                 {
+                    _cancellationTokenSource.Cancel();
                     e.Handled = true;
                     Close();
                 }
@@ -338,6 +344,18 @@ namespace MediaCenter.LyricsFinder
                     // LyricFormTimer.Start();
                     await Search();
                 }
+            }
+            catch (LyricsQuotaExceededException ex)
+            {
+                msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
+                ErrorHandling.ShowAndLogDetailedErrorHandler(msg, ex);
+                LyricFormStatusLabel.Text = "Service quota exceeded.";
+            }
+            catch (OperationCanceledException ex)
+            {
+                msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
+                ErrorHandling.ShowAndLogDetailedErrorHandler(msg, ex);
+                LyricFormStatusLabel.Text = "Search canceled.";
             }
             catch (Exception ex)
             {
@@ -426,7 +444,8 @@ namespace MediaCenter.LyricsFinder
             // Clear list and search for all the lyrics in each lyric service
             _foundLyricList.Clear();
 
-            await LyricSearch.Search(LyricsFinderData, _McItem, true).ConfigureAwait(true);
+            _cancellationTokenSource = new CancellationTokenSource();
+            await LyricSearch.Search(LyricsFinderData, _McItem, _cancellationTokenSource.Token, true).ConfigureAwait(true);
 
             // Process the results
             foreach (var service in LyricsFinderData.ActiveLyricServices)

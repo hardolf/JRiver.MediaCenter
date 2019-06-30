@@ -169,10 +169,15 @@ namespace MediaCenter.LyricsFinder
 
                 msg = "initializing the start/stop button delegates";
                 Logging.Log(_progressPercentage, msg + "...", true);
-                ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
-                ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
+                SearchAllStartStopButton.SetRunningState(false);
                 SearchAllStartStopButton.Starting += SearchAllStartStopButton_Starting;
                 SearchAllStartStopButton.Stopping += SearchAllStartStopButton_Stopping;
+                ToolsSearchAllStartStopButton.SetRunningState(false);
+                ToolsSearchAllStartStopButton.Starting += ToolsSearchAllStartStopButton_Starting;
+                ToolsSearchAllStartStopButton.Stopping += ToolsSearchAllStartStopButton_Stopping;
+                ToolsPlayStartStopButton.SetRunningState(false);
+                ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_StartingAsync;
+                ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_StoppingAsync;
 
                 msg = "initializing the Media Center MCWS connection parameters";
                 Logging.Log(_progressPercentage, msg + "...", true);
@@ -252,9 +257,9 @@ namespace MediaCenter.LyricsFinder
         /// <remarks>
         /// This routine gets the first (if any) search results for each song from the lyric services.
         /// </remarks>
-        private async Task SearchAllProcessAsync(CancellationTokenSource cancellationTokenSource)
+        private async Task SearchAllProcessAsync(CancellationToken cancellationToken)
         {
-            if (cancellationTokenSource == null) throw new ArgumentNullException(nameof(cancellationTokenSource));
+            if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
 
             var isOk = false;
             var foundItemIndices = new List<int>();
@@ -266,11 +271,12 @@ namespace MediaCenter.LyricsFinder
                 _progressPercentage = 0;
                 StatusMessage($"Finding lyrics for the current playlist with {_currentPlaylist.Items.Count} items...", true, true);
                 ResetItemStates();
+                cancellationToken.ThrowIfCancellationRequested();
 
                 // Add the set of workers
                 for (var i = 0; i < LyricsFinderData.MainData.MaxQueueLength; i++)
                 {
-                    workers.Add(SearchAllProcessWorkerAsync(i, queue, foundItemIndices, cancellationTokenSource));
+                    workers.Add(SearchAllProcessWorkerAsync(i, queue, foundItemIndices, cancellationToken));
                 }
 
                 // Run the search on the set of workers
@@ -288,11 +294,12 @@ namespace MediaCenter.LyricsFinder
                     : _currentPlaylist.Items.Count;
 
                 var result = (isOk)
-                    ? (_cancellationTokenSource.IsCancellationRequested)
+                    ? (cancellationToken.IsCancellationRequested)
                         ? "was canceled"
                         : "completed successfully"
                     : "failed";
 
+                _progressPercentage = Convert.ToInt32(100 * processedCount / _currentPlaylist.Items.Count);
                 StatusMessage($"Finding lyrics for the current playlist {result} with {foundItemIndices.Count} lyrics found and {processedCount} processed.", true, true);
             }
         }
@@ -304,29 +311,26 @@ namespace MediaCenter.LyricsFinder
         /// <param name="workerNumber">The worker number.</param>
         /// <param name="queue">The queue.</param>
         /// <param name="foundItemIndices">The found item indices.</param>
-        /// <param name="cancellationTokenSource">The cancellation token source.</param>
+        /// <param name="cancellationToken">The cancellation token source.</param>
         /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">
-        /// queue
-        /// or
-        /// foundItemIndices
-        /// or
-        /// cancellationTokenSource
-        /// </exception>
-        /// <exception cref="System.Exception">
-        /// </exception>
-        /// <exception cref="LyricServiceCommunicationException"></exception>
         /// <exception cref="ArgumentNullException">queue
         /// or
         /// foundItemIndices
         /// or
         /// foundItemIndices</exception>
         /// <exception cref="Exception">Process worker failed at item {i}, Artist \"{artist}\", Album \"{album}\" and Title \"{title}\": {ex.Message}</exception>
-        private async Task SearchAllProcessWorkerAsync(int workerNumber, Queue<int> queue, List<int> foundItemIndices, CancellationTokenSource cancellationTokenSource)
+        /// <exception cref="System.ArgumentNullException">queue
+        /// or
+        /// foundItemIndices
+        /// or
+        /// cancellationTokenSource</exception>
+        /// <exception cref="System.Exception"></exception>
+        /// <exception cref="LyricServiceCommunicationException"></exception>
+        private async Task SearchAllProcessWorkerAsync(int workerNumber, Queue<int> queue, List<int> foundItemIndices, CancellationToken cancellationToken)
         {
             if (queue == null) throw new ArgumentNullException(nameof(queue));
             if (foundItemIndices == null) throw new ArgumentNullException(nameof(foundItemIndices));
-            if (cancellationTokenSource == null) throw new ArgumentNullException(nameof(cancellationTokenSource));
+            if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
 
             var i = 0;
             var row = MainGridView.Rows[0];
@@ -338,6 +342,7 @@ namespace MediaCenter.LyricsFinder
                 {
                     var found = false;
 
+                    cancellationToken.ThrowIfCancellationRequested();
                     i = queue.Dequeue();
                     row = MainGridView.Rows[i];
                     msg = $"Process worker {workerNumber} failed at item {i}. ";
@@ -355,12 +360,13 @@ namespace MediaCenter.LyricsFinder
                         row.Cells[(int)GridColumnEnum.Status].Value = $"{LyricResultEnum.Processing.ResultText()}...";
 
                         // Try to get the first search hit
-                        await LyricSearch.Search(LyricsFinderData, _currentPlaylist.Items[key], false);
+                        await LyricSearch.Search(LyricsFinderData, _currentPlaylist.Items[key], cancellationToken, false);
 
                         // Process the results
                         // The first lyric found by any service is used for each item
                         foreach (var service in LyricsFinderData.ActiveLyricServices)
                         {
+
                             if (service.LyricResult != LyricResultEnum.Found) continue;
                             if (!service.FoundLyricList.IsNullOrEmpty())
                             {
@@ -376,7 +382,7 @@ namespace MediaCenter.LyricsFinder
                             ? queue.Peek() + 1
                             : _currentPlaylist.Items.Count;
 
-                        _progressPercentage = Convert.ToInt32(100 * foundItemIndices.Count / _currentPlaylist.Items.Count);
+                        _progressPercentage = Convert.ToInt32(100 * processedCount / _currentPlaylist.Items.Count);
                         StatusMessage($"Processed {processedCount} items and found {foundItemIndices.Count} lyrics for the current playlist with {_currentPlaylist.Items.Count} items...", true, true);
 
                         row.Cells[(int)GridColumnEnum.Status].Value = (found)
@@ -391,6 +397,7 @@ namespace MediaCenter.LyricsFinder
             catch (OperationCanceledException)
             {
                 row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.Canceled.ResultText();
+                throw;
             }
             catch (Exception ex)
             {

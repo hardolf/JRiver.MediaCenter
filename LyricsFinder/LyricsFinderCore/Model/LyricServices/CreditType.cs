@@ -34,12 +34,12 @@ namespace MediaCenter.LyricsFinder.Model
         public virtual string Company { get; set; }
 
         /// <summary>
-        /// Gets or sets the copyright.
+        /// Gets or sets the copyright of the individual song item.
         /// </summary>
         /// <value>
-        /// The copyright.
+        /// The copyright text.
         /// </value>
-        [XmlElement]
+        [XmlIgnore]
         public virtual string Copyright { get; set; }
 
         /// <summary>

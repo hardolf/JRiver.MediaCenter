@@ -6,10 +6,10 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
 
@@ -51,14 +51,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
         ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="Stands4Service" />.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">item</exception>
+        /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="LyricServiceCommunicationException"></exception>
         /// <exception cref="GeneralLyricServiceException"></exception>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
+        /// <exception cref="System.ArgumentNullException">item</exception>
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -67,7 +69,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             try
             {
-                await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
+                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
 
                 // Example GET request:
                 // https://orion.apiseeds.com/api/music/lyric/dire straits/brothers in arms?apikey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -75,7 +77,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 ub = new UriBuilder($"{Credit.ServiceUrl}/{item.Artist}/{item.Name}?apikey={Token}");
 
                 // First we search for the track
-                json = await Helpers.Utility.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+                json = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                 if (Exceptions.Count > 0)
                     return this;

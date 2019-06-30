@@ -13,6 +13,7 @@ using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
 using System.Net.Http;
+using System.Threading;
 
 namespace MediaCenter.LyricsFinder.Model.LyricServices
 {
@@ -38,14 +39,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">If set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
         ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="Stands4Service" />.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">item</exception>
+        /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="LyricServiceCommunicationException"></exception>
         /// <exception cref="GeneralLyricServiceException"></exception>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, bool isGetAll = false)
+        /// <exception cref="System.ArgumentNullException">item</exception>
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -55,7 +58,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             try
             {
-                await base.ProcessAsync(item).ConfigureAwait(false); // Result: not found
+                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
+
                 msg = "CreateServiceClient";
                 client = CreateServiceClient<apiv1Soap>("apiv1Soap");
                 msg = "SearchLyric";
@@ -68,6 +72,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     {
                         if (rspLyricResult == null) continue;
                         if (rspLyricResult.LyricId == 0) continue;
+
+                        cancellationToken.ThrowIfCancellationRequested();
 
                         msg = "GetLyric";
                         var rsp2 = client.GetLyric(rspLyricResult.LyricId, rspLyricResult.LyricChecksum);
