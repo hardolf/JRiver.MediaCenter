@@ -1050,9 +1050,10 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="colIdx">Index of the col.</param>
         /// <param name="rowIdx">Index of the row.</param>
-        /// <returns></returns>
+        /// <param name="isAutoOpen">if set to <c>true</c> the <see cref="LyricForm"/> is opened automatically when the mouse is moved over the lyrics column; else <c>false</c>.</param>
+        /// <returns><see cref="LyricForm"/> object.</returns>
         /// <exception cref="ArgumentException">Column {colIdx}</exception>
-        private LyricForm ShowLyrics(int colIdx, int rowIdx)
+        private LyricForm ShowLyrics(int colIdx, int rowIdx, bool isAutoOpen = false)
         {
             var dgv = MainGridView;
 
@@ -1069,10 +1070,13 @@ namespace MediaCenter.LyricsFinder
             var size = LyricsFinderData.MainData.LyricFormSize;
             var ret = new LyricForm(cell, location, size, ShowLyricsCallbackAsync, LyricsFinderData)
             {
-                StartPosition = FormStartPosition.CenterParent
+                StartPosition = (isAutoOpen) ? FormStartPosition.Manual : FormStartPosition.CenterParent
             };
 
-            ret.ShowDialog();
+            if (isAutoOpen)
+                ret.Show(this);
+            else
+                ret.ShowDialog(this);
 
             return ret;
         }

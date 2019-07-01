@@ -183,7 +183,7 @@ namespace MediaCenter.LyricsFinder
             }
             else
             {
-                // location.Offset(-Size.Width - 10, -Convert.ToInt32(Size.Height / 2));
+                location.Offset(-Size.Width - 10, -Convert.ToInt32(Size.Height / 2));
                 ArtistTextBox.ReadOnly = false;
                 AlbumTextBox.ReadOnly = false;
                 TrackTextBox.ReadOnly = false;

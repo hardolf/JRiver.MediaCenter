@@ -66,6 +66,8 @@ namespace MediaCenter.SharedComponents
                     ret.AppendLine($"{txt.Name}: {txt.Text.Trim()}");
                 else if (ctl is NumericUpDown ud)
                     ret.AppendLine($"{ud.Name}: {ud.Value.ToString(CultureInfo.InvariantCulture).Trim()}");
+                else if (ctl is CheckBox chk)
+                    ret.AppendLine($"{chk.Name}: {chk.Checked}");
             }
 
             return ret.ToString();

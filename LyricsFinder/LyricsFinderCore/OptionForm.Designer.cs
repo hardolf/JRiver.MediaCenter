@@ -324,8 +324,9 @@
             this.MaxQueueLengthUpDown.Name = "MaxQueueLengthUpDown";
             this.MaxQueueLengthUpDown.Size = new System.Drawing.Size(80, 20);
             this.MaxQueueLengthUpDown.TabIndex = 12;
-            this.OptionToolTip.SetToolTip(this.MaxQueueLengthUpDown, "Maximum songs to be queued during the automatic search.\r\nAdjust this number to th" +
-        "e number of virtual CPU cores you wish to be used.");
+            this.OptionToolTip.SetToolTip(this.MaxQueueLengthUpDown, "Maximum number of items/songs to be queued \r\nand processed concurrently during th" +
+        "e automatic search.\r\nAdjust this number to the number of virtual CPU cores\r\n(thr" +
+        "eads) you wish to be used concurrently.");
             this.MaxQueueLengthUpDown.Value = new decimal(new int[] {
             1,
             0,
@@ -417,6 +418,12 @@
             this.DelayMilliSecondsBetweenSearchesUpDown.TabIndex = 16;
             this.OptionToolTip.SetToolTip(this.DelayMilliSecondsBetweenSearchesUpDown, "Delay milliseconds between searches.\r\nCan be used as a countermeasure \r\nagainst s" +
         "ervice banning of your IP address.");
+            // 
+            // OptionToolTip
+            // 
+            this.OptionToolTip.AutoPopDelay = 25000;
+            this.OptionToolTip.InitialDelay = 500;
+            this.OptionToolTip.ReshowDelay = 100;
             // 
             // OptionForm
             // 

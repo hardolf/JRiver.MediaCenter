@@ -409,7 +409,7 @@ namespace MediaCenter.LyricsFinder
                         break;
 
                     case (int)GridColumnEnum.Lyrics:
-                        _lyricsForm = ShowLyrics(e.ColumnIndex, e.RowIndex);
+                        _lyricsForm = ShowLyrics(e.ColumnIndex, e.RowIndex, LyricsFinderData.MainData.MouseMoveOpenLyricsForm);
                         break;
 
                     default:
