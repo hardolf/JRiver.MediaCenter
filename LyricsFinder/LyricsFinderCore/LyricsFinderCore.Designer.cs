@@ -253,13 +253,13 @@ namespace MediaCenter.LyricsFinder
             this.MainGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.MainGridView.Size = new System.Drawing.Size(738, 412);
             this.MainGridView.TabIndex = 0;
-            this.MainGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainGridView_CellDoubleClick);
-            this.MainGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_CellMouseClick);
-            this.MainGridView.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_CellMouseMove);
-            this.MainGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_ColumnHeaderMouseClick);
-            this.MainGridView.SelectionChanged += new System.EventHandler(this.MainGridView_SelectionChanged);
-            this.MainGridView.MouseLeave += new System.EventHandler(this.MainGridView_MouseLeave);
-            this.MainGridView.Resize += new System.EventHandler(this.MainGridView_Resize);
+            this.MainGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MainGridView_CellDoubleClickAsync);
+            this.MainGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_CellMouseClickAsync);
+            this.MainGridView.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_CellMouseMoveAsync);
+            this.MainGridView.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.MainGridView_ColumnHeaderMouseClickAsync);
+            this.MainGridView.SelectionChanged += new System.EventHandler(this.MainGridView_SelectionChangedAsync);
+            this.MainGridView.MouseLeave += new System.EventHandler(this.MainGridView_MouseLeaveAsync);
+            this.MainGridView.Resize += new System.EventHandler(this.MainGridView_ResizeAsync);
             // 
             // Key
             // 
@@ -654,7 +654,7 @@ namespace MediaCenter.LyricsFinder
             // UpdateCheckTimer
             // 
             this.UpdateCheckTimer.Interval = 5000;
-            this.UpdateCheckTimer.Tick += new System.EventHandler(this.UpdateCheckTimer_Tick);
+            this.UpdateCheckTimer.Tick += new System.EventHandler(this.UpdateCheckTimer_TickAsync);
             // 
             // LyricsFinderCore
             // 
@@ -664,7 +664,7 @@ namespace MediaCenter.LyricsFinder
             this.Name = "LyricsFinderCore";
             this.Size = new System.Drawing.Size(738, 509);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricsFinderCore_KeyDownAsync);
-            this.Resize += new System.EventHandler(this.LyricsFinderCore_Resize);
+            this.Resize += new System.EventHandler(this.LyricsFinderCore_ResizeAsync);
             this.MainContainer.BottomToolStripPanel.ResumeLayout(false);
             this.MainContainer.BottomToolStripPanel.PerformLayout();
             this.MainContainer.ContentPanel.ResumeLayout(false);

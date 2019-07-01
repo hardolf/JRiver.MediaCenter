@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -37,15 +38,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </value>
         [XmlElement("Credit")]
         public virtual CreditType Credit { get; set; }
-
-        /// <summary>
-        /// Gets or sets the data directory.
-        /// </summary>
-        /// <value>
-        /// The data directory.
-        /// </value>
-        [XmlIgnore]
-        public virtual string DataDirectory { get; set; }
 
         /// <summary>
         /// Gets or sets the display properties.
@@ -91,6 +83,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </value>
         [XmlIgnore]
         public ReadOnlyCollection<FoundLyricType> FoundLyricList { get; }
+
+        /// <summary>
+        /// Gets or sets the lyrics finder data.
+        /// </summary>
+        /// <value>
+        /// The lyrics finder data.
+        /// </value>
+        [XmlIgnore]
+        public LyricsFinderDataType LyricsFinderData { get; set; }
 
         /// <summary>
         /// Gets or sets the lyric result. If set to <c>Found</c> increments the hit counters.
@@ -418,6 +419,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (item == null) throw new ArgumentNullException(nameof(item));
 
             cancellationToken.ThrowIfCancellationRequested();
+            await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
 
             Exceptions.Clear();
             InternalFoundLyricList.Clear();
@@ -446,7 +448,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             foreach (var dp in Credit.DisplayProperties)
             {
-                DisplayProperties.Add(dp.Key, dp.Value); 
+                DisplayProperties.Add(dp.Key, dp.Value);
             }
 
             DisplayProperties.Add(nameof(RequestCountToday), new DisplayProperty("Requests, today", RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
@@ -478,7 +480,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (IsObsoleteConfigurationsUsed)
             {
                 Settings = config.AppSettings.Settings;
-                PrivateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, DataDirectory);
+                PrivateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, Path.GetDirectoryName(LyricsFinderData.DataFilePath));
 
                 Credit = new CreditType
                 {

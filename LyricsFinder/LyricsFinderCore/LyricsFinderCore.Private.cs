@@ -295,7 +295,7 @@ namespace MediaCenter.LyricsFinder
         /// <remarks>
         /// Fatal error reporting, normally called from an event routine.
         /// </remarks>
-        private void ErrorReport(string methodName, Exception exception, string message = null)
+        private async Task ErrorReport(string methodName, Exception exception, string message = null)
         {
             // Stop the timers
             McStatusTimer.Stop();
@@ -304,7 +304,7 @@ namespace MediaCenter.LyricsFinder
             message = message?.Trim() ?? string.Empty;
             message += " ";
 
-            ErrorHandling.ShowAndLogErrorHandler($"Error {message}in {methodName} event.", exception, _progressPercentage);
+            await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error {message}in {methodName} event.", exception, _progressPercentage);
 
             // Start the timers
             McStatusTimer.Start();
@@ -448,44 +448,44 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Tests and initializes the data folder.
         /// </summary>
-        public void InitLocalData() // "public" due to the unit tests
+        public async Task InitLocalData() // "public" due to the unit tests
         {
             var dataFile = string.Empty;
             var tmpFile = string.Empty;
 
             try
             {
-                Logging.Log(_progressPercentage, "Preparing load of local data...", true);
+                await Logging.Log(_progressPercentage, "Preparing load of local data...", true);
                 dataFile = Path.GetFullPath(Environment.ExpandEnvironmentVariables(LyricsFinderCoreConfigurationSectionHandler.LocalAppDataFile));
                 DataDirectory = Path.GetDirectoryName(dataFile);
                 tmpFile = Path.Combine(DataDirectory, dataFile + ".tmp");
 
                 // Try to create the data folder if necessary
-                Logging.Log(_progressPercentage, $"Testing if local data directory \"{DataDirectory}\" is present, else creating it...", true);
+                await Logging.Log(_progressPercentage, $"Testing if local data directory \"{DataDirectory}\" is present, else creating it...", true);
                 if (!Directory.Exists(DataDirectory))
                     Directory.CreateDirectory(DataDirectory);
 
                 // Test if we may write files in the data folder
-                Logging.Log(_progressPercentage, $"Testing if we may write to a file in the local data directory \"{tmpFile}\"...", true);
+                await Logging.Log(_progressPercentage, $"Testing if we may write to a file in the local data directory \"{tmpFile}\"...", true);
                 using (var st = File.Create(tmpFile)) { }
 
-                Logging.Log(_progressPercentage, $"Testing if we may delete the test file in the local data directory \"{tmpFile}\"...", true);
+                await Logging.Log(_progressPercentage, $"Testing if we may delete the test file in the local data directory \"{tmpFile}\"...", true);
                 File.Delete(tmpFile);
             }
             catch (Exception ex)
             {
                 var msg = $"Failed writing to the data folder \"{DataDirectory}\": {ex.Message}";
-                ErrorHandling.ShowAndLogErrorHandler(msg, ex, _progressPercentage);
-                StatusMessage("Warning");
+                await ErrorHandling.ShowAndLogErrorHandlerAsync(msg, ex, _progressPercentage);
+                await StatusMessageAsync("Warning");
             }
 
             try
             {
-                Logging.Log(_progressPercentage, $"Initializing dynamic lyric services...", true);
-                var services = InitLyricServices();
+                await Logging.Log(_progressPercentage, $"Initializing dynamic lyric services...", true);
+                var services = await InitLyricServices();
 
                 // Prepare the load
-                Logging.Log(_progressPercentage, "Preparing list of known XML types...", true);
+                await Logging.Log(_progressPercentage, "Preparing list of known XML types...", true);
                 LyricsFinderDataType.XmlKnownTypes.Add(typeof(LyricsFinderDataType));
                 LyricsFinderDataType.XmlKnownTypes.Add(typeof(AbstractLyricService));
                 LyricsFinderDataType.XmlKnownTypes.Add(typeof(CreditType));
@@ -495,7 +495,7 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 // Create LyricsFinderData with its list of lyrics services
-                Logging.Log(_progressPercentage, "Loading local data from XML...", true);
+                await Logging.Log(_progressPercentage, "Loading local data from XML...", true);
                 try
                 {
                     // Load previously saved services
@@ -504,7 +504,7 @@ namespace MediaCenter.LyricsFinder
                 }
                 catch (FileNotFoundException ex)
                 {
-                    ErrorHandling.ErrorLog($"LyricsFinder data file \"{dataFile}\" not found, initializing a new set of services.", ex);
+                    await ErrorHandling.ErrorLogAsync($"LyricsFinder data file \"{dataFile}\" not found, initializing a new set of services.", ex);
                     LyricsFinderData = new LyricsFinderDataType(dataFile)
                     {
                         IsSaveOk = true
@@ -512,7 +512,7 @@ namespace MediaCenter.LyricsFinder
                 }
                 catch (Exception ex)
                 {
-                    ErrorHandling.ErrorLog("Failed to load the lyric services, ask if we should initialize a new set of services.", ex);
+                    await ErrorHandling.ErrorLogAsync("Failed to load the lyric services, ask if we should initialize a new set of services.", ex);
                     LyricsFinderData = new LyricsFinderDataType(dataFile);
 
                     var result = MessageBox.Show(this, $"LyricsFinder data file \n\"{dataFile}\" \nwas found but could not be loaded, error: \n"
@@ -529,17 +529,17 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 // Add any lyric services that were not loaded before
-                Logging.Log(_progressPercentage, "Adding additional lyric services...", true);
+                await Logging.Log(_progressPercentage, "Adding additional lyric services...", true);
                 foreach (var service in services)
                 {
                     if (!LyricsFinderData.LyricServices.Any(t => t.GetType() == service.GetType()))
                         LyricsFinderData.LyricServices.Add(service);
                 }
 
-                Logging.Log(_progressPercentage, "Refreshing lyric services from their old configurations...", true);
+                await Logging.Log(_progressPercentage, "Refreshing lyric services from their old configurations...", true);
                 foreach (var service in LyricsFinderData.LyricServices)
                 {
-                    service.DataDirectory = DataDirectory;
+                    service.LyricsFinderData = LyricsFinderData;
                     service.RefreshServiceSettings();
                 }
 
@@ -548,8 +548,8 @@ namespace MediaCenter.LyricsFinder
             catch (Exception ex)
             {
                 var msg = $"Failed initializing the lyric services.";
-                ErrorHandling.ShowAndLogErrorHandler(msg, ex, _progressPercentage);
-                StatusMessage("Warning");
+                await ErrorHandling.ShowAndLogErrorHandlerAsync(msg, ex, _progressPercentage);
+                await StatusMessageAsync("Warning");
             }
         }
 
@@ -558,7 +558,7 @@ namespace MediaCenter.LyricsFinder
         /// Initializes the logging.
         /// </summary>
         /// <param name="initMessages">The initialize messages.</param>
-        private void InitLogging(string[] initMessages = null)
+        private async Task InitLoggingAsync(string[] initMessages = null)
         {
             var assy = Assembly.GetExecutingAssembly();
             var dir = Path.GetDirectoryName(assy.Location);
@@ -577,7 +577,7 @@ namespace MediaCenter.LyricsFinder
                 {
                     foreach (var msg in initMessages)
                     {
-                        StatusLog(msg);
+                        await StatusLogAsync(msg);
                     }
                 }
             }
@@ -596,7 +596,7 @@ namespace MediaCenter.LyricsFinder
                     sb.AppendLine(logMsg.Message);
                 }
 
-                ErrorHandling.ShowErrorHandler(sb.ToString(), _progressPercentage);
+                await ErrorHandling.ShowErrorHandlerAsync(sb.ToString(), _progressPercentage);
             }
         }
 
@@ -608,26 +608,26 @@ namespace MediaCenter.LyricsFinder
         /// The lyric services are not referenced directly.
         /// Instead, they are loaded dynamically, thus making it easy to add or remove them from the application.
         /// </remarks>
-        private static List<AbstractLyricService> InitLyricServices()
+        private static async Task<List<AbstractLyricService>> InitLyricServices()
         {
             // Load the lyric service assemblies
             var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            Logging.Log(_progressPercentage, $"Finding lyric service client assemblies in \"{dir}\"...", true);
+            await Logging.Log(_progressPercentage, $"Finding lyric service client assemblies in \"{dir}\"...", true);
 
             var files = Directory.GetFiles(dir, "*.dll", SearchOption.TopDirectoryOnly);
             var ret = new List<AbstractLyricService>();
 
             // Load each assembly in the LyricServices folder
-            Logging.Log(_progressPercentage, $"Loading dynamic lyric service client assemblies from \"{dir}\"...", true);
+            await Logging.Log(_progressPercentage, $"Loading dynamic lyric service client assemblies from \"{dir}\"...", true);
             foreach (var file in files)
             {
-                Logging.Log(_progressPercentage, $"Looking at \"{file}\"...", true);
+                await Logging.Log(_progressPercentage, $"Looking at \"{file}\"...", true);
 
                 var assy = Assembly.LoadFrom(file);
 
                 // Get a list of the descendant lyrics service types
-                Logging.Log(_progressPercentage, $"Trying to find service types in \"{file}\"...", true);
+                await Logging.Log(_progressPercentage, $"Trying to find service types in \"{file}\"...", true);
 
                 IEnumerable<Type> assyLyricsServiceTypes;
 
@@ -643,7 +643,7 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 // Create service instance(s)
-                Logging.Log(_progressPercentage,
+                await Logging.Log(_progressPercentage,
                     ((assyLyricsServiceTypes != null) && (assyLyricsServiceTypes.Count<Type>() > 0))
                     ? $"Creating service instance(s) from \"{file}\"..."
                     : $"No lyric services in \"{file}\"."
@@ -711,7 +711,7 @@ namespace MediaCenter.LyricsFinder
                 name = tmp.Substring(idx + 1);
             }
 
-            StatusMessage($"Collecting the \"{name}\" playlist...");
+            await StatusMessageAsync($"Collecting the \"{name}\" playlist...");
             _playingIndex = -1;
             McStatusTimer.Stop();
 
@@ -721,7 +721,7 @@ namespace MediaCenter.LyricsFinder
             else
                 ret = await McRestService.GetPlayNowList();
 
-            StatusMessage($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.");
+            await StatusMessageAsync($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.");
 
             McStatusTimer.Start();
 
@@ -1067,7 +1067,7 @@ namespace MediaCenter.LyricsFinder
 
             var location = new Point(MousePosition.X, MousePosition.Y);
             var size = LyricsFinderData.MainData.LyricFormSize;
-            var ret = new LyricForm(cell, location, size, ShowLyricsCallback, LyricsFinderData)
+            var ret = new LyricForm(cell, location, size, ShowLyricsCallbackAsync, LyricsFinderData)
             {
                 StartPosition = FormStartPosition.CenterParent
             };
@@ -1082,7 +1082,7 @@ namespace MediaCenter.LyricsFinder
         /// Shows the lyrics callback.
         /// </summary>
         /// <param name="lyricsForm">The lyrics form.</param>
-        private void ShowLyricsCallback(LyricForm lyricsForm)
+        private async void ShowLyricsCallbackAsync(LyricForm lyricsForm)
         {
             try
             {
@@ -1101,7 +1101,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -1110,7 +1110,7 @@ namespace MediaCenter.LyricsFinder
         /// Shows the services callback.
         /// </summary>
         /// <param name="lyricsServiceForm">The lyrics service form.</param>
-        internal void ShowServicesCallback(LyricServiceForm lyricsServiceForm)
+        internal async void ShowServicesCallbackAsync(LyricServiceForm lyricsServiceForm)
         {
             try
             {
@@ -1118,7 +1118,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -1160,9 +1160,9 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
-        private static void StatusLog(string message, bool isDebug = false)
+        private static async Task StatusLogAsync(string message, bool isDebug = false)
         {
-            Logging.Log(_progressPercentage, message, isDebug);
+            await Logging.Log(_progressPercentage, message, isDebug);
         }
 
 
@@ -1171,9 +1171,9 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="ex">The exception.</param>
-        private void StatusLog(string message, Exception ex)
+        private async Task StatusLogAsync(string message, Exception ex)
         {
-            Logging.Log(_progressPercentage, message, ex);
+            await Logging.Log(_progressPercentage, message, ex);
         }
 
 
@@ -1183,7 +1183,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="message">The message.</param>
         /// <param name="includeProgress">if set to <c>true</c> [include progress].</param>
         /// <param name="includeLogging">if set to <c>true</c> [include logging].</param>
-        private void StatusMessage(string message, bool includeProgress = false, bool includeLogging = false)
+        private async Task StatusMessageAsync(string message, bool includeProgress = false, bool includeLogging = false)
         {
             var msg1 = message?.Trim() ?? string.Empty;
 
@@ -1193,7 +1193,7 @@ namespace MediaCenter.LyricsFinder
             }
 
             if (includeLogging)
-                StatusLog(msg1);
+                await StatusLogAsync(msg1);
 
             if (MainStatusLabel.Text != msg1)
             {

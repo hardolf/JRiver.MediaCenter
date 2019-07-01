@@ -69,7 +69,7 @@
             this.LyricFormTrackBar.TabIndex = 6;
             this.LyricFormToolTip.SetToolTip(this.LyricFormTrackBar, "Switch between all the lyrics search results (Arrows)");
             this.LyricFormTrackBar.Visible = false;
-            this.LyricFormTrackBar.Scroll += new System.EventHandler(this.LyricFormTrackBar_Scroll);
+            this.LyricFormTrackBar.Scroll += new System.EventHandler(this.LyricFormTrackBar_ScrollAsync);
             // 
             // SearchButton
             // 
@@ -82,7 +82,7 @@
             this.LyricFormToolTip.SetToolTip(this.SearchButton, "Search for more lyrics");
             this.SearchButton.UseVisualStyleBackColor = true;
             this.SearchButton.Visible = false;
-            this.SearchButton.Click += new System.EventHandler(this.SearchButton_Click);
+            this.SearchButton.Click += new System.EventHandler(this.SearchButton_ClickAsync);
             // 
             // CloseButton
             // 
@@ -95,7 +95,7 @@
             this.CloseButton.Text = "&Close (Esc)";
             this.LyricFormToolTip.SetToolTip(this.CloseButton, "Close the window (Esc)");
             this.CloseButton.UseVisualStyleBackColor = true;
-            this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
+            this.CloseButton.Click += new System.EventHandler(this.CloseButton_ClickAsync);
             // 
             // ArtistTextBox
             // 
@@ -241,9 +241,9 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "LyricsForm";
             this.TransparencyKey = System.Drawing.Color.Teal;
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricForm_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricForm_FormClosingAsync);
             this.Load += new System.EventHandler(this.LyricForm_LoadAsync);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricForm_KeyDown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricForm_KeyDownAsync);
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).EndInit();
             this.LyricFormPanel.ResumeLayout(false);
             this.LyricFormPanel.PerformLayout();

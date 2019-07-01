@@ -100,7 +100,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void CloseButton_Click(object sender, EventArgs e)
+        private async void CloseButton_ClickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -108,7 +108,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -266,7 +266,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricServicesContainer_RightPanelButton_Click(object sender, EventArgs e)
+        private async void LyricServicesContainer_RightPanelButton_ClickAsync(object sender, EventArgs e)
         {
             var dgv = LyricServiceListDataGridView;
             DataGridViewRow row = dgv.SelectedRows?[0] ?? null;
@@ -318,7 +318,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -328,7 +328,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="FormClosingEventArgs"/> instance containing the event data.</param>
-        private void LyricServiceForm_FormClosing(object sender, FormClosingEventArgs e)
+        private async void LyricServiceForm_FormClosingAsync(object sender, FormClosingEventArgs e)
         {
             try
             {
@@ -355,7 +355,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -365,7 +365,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private void LyricServiceForm_KeyDown(object sender, KeyEventArgs e)
+        private async void LyricServiceForm_KeyDownAsync(object sender, KeyEventArgs e)
         {
             try
             {
@@ -423,7 +423,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -433,7 +433,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
-        private void LyricServiceListDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        private async void LyricServiceListDataGridView_CellClickAsync(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
@@ -449,7 +449,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -459,7 +459,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellCancelEventArgs"/> instance containing the event data.</param>
-        private void LyricServiceListDataGridView_RowValidating(object sender, DataGridViewCellCancelEventArgs e)
+        private async void LyricServiceListDataGridView_RowValidatingAsync(object sender, DataGridViewCellCancelEventArgs e)
         {
             try
             {
@@ -467,7 +467,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -477,7 +477,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricServiceListDataGridView_SelectionChanged(object sender, EventArgs e)
+        private async void LyricServiceListDataGridView_SelectionChangedAsync(object sender, EventArgs e)
         {
             try
             {
@@ -489,7 +489,7 @@ namespace MediaCenter.LyricsFinder.Model
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -590,7 +590,7 @@ namespace MediaCenter.LyricsFinder.Model
                 TabStop = false,
                 Text = "&Close (Esc)"
             };
-            btnClose.Click += CloseButton_Click;
+            btnClose.Click += CloseButton_ClickAsync;
             LyricServiceFormToolTip.SetToolTip(btnClose, "Close the window (Esc)");
 
             tlp.Controls.Add(btnClose, 2, tlp.RowCount - 1);

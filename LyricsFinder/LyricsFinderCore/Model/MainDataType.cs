@@ -25,6 +25,15 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
+        /// Gets or sets the delay milliseconds between item searches.
+        /// </summary>
+        /// <value>
+        /// The delay milliseconds between searches.
+        /// </value>
+        [XmlElement]
+        public int DelayMilliSecondsBetweenSearches { get; set; }
+
+        /// <summary>
         /// Gets or sets the last update check date/time.
         /// </summary>
         /// <value>
@@ -138,25 +147,6 @@ namespace MediaCenter.LyricsFinder.Model
             MaxMcWsConnectAttempts = 10;
             McWsUrl = "http://localhost:52199/MCWS/v1";
             UpdateCheckIntervalDays = 0; // Default: 0, i.e. at each Media Center start
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MainDataType" /> class.
-        /// </summary>
-        /// <param name="maxQueueLength">Maximum length of the queue.</param>
-        /// <param name="maxMcWsConnectAttempts">The mc ws connect attempts.</param>
-        /// <param name="mcWsUrl">The mc ws URL.</param>
-        /// <param name="mouseMoveOpenLyricsForm">if set to <c>true</c> [mouse move open lyrics form].</param>
-        /// <param name="updateCheckIntervalDays">The update check interval days.</param>
-        /// <exception cref="ArgumentNullException">mcWsUrl</exception>
-        public MainDataType(int maxQueueLength, int maxMcWsConnectAttempts, string mcWsUrl, bool mouseMoveOpenLyricsForm, int updateCheckIntervalDays)
-        {
-            MaxQueueLength = maxQueueLength;
-            MaxMcWsConnectAttempts = maxMcWsConnectAttempts;
-            McWsUrl = mcWsUrl ?? throw new ArgumentNullException(nameof(mcWsUrl));
-            MouseMoveOpenLyricsForm = mouseMoveOpenLyricsForm;
-            UpdateCheckIntervalDays = updateCheckIntervalDays;
         }
 
 

@@ -28,6 +28,15 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
+        /// Gets the data file path.
+        /// </summary>
+        /// <value>
+        /// The data file path.
+        /// </value>
+        [XmlIgnore]
+        public string DataFilePath { get; set; }
+
+        /// <summary>
         /// Gets or sets the data version.
         /// </summary>
         /// <value>
@@ -55,7 +64,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <value>
         /// The main data.
         /// </value>
-        [XmlElement(IsNullable = true)]
+        [XmlElement]
         public MainDataType MainData { get; set; }
 
         /// <summary>
@@ -72,15 +81,6 @@ namespace MediaCenter.LyricsFinder.Model
                 return LyricServices.Where(s => s.IsImplemented && s.IsActive).ToList();
             }
         }
-
-        /// <summary>
-        /// Gets the saved data file path.
-        /// </summary>
-        /// <value>
-        /// The saved data file path.
-        /// </value>
-        [XmlIgnore]
-        private string SavedDataFilePath { get; set; }
 
         /// <summary>
         /// Gets or sets the initial XML of the serialized <see cref="LyricsFinderDataType"/> object.
@@ -144,17 +144,18 @@ namespace MediaCenter.LyricsFinder.Model
         {
             IsSaveOk = true;
             LyricServices = new List<AbstractLyricService>();
+            MainData = new MainDataType();
         }
 
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LyricsFinderDataType" /> class.
         /// </summary>
-        /// <param name="savedDataFilePath">The saved data file path.</param>
-        public LyricsFinderDataType(string savedDataFilePath)
+        /// <param name="dataFilePath">The saved data file path.</param>
+        public LyricsFinderDataType(string dataFilePath)
             : this()
         {
-            SavedDataFilePath = Environment.ExpandEnvironmentVariables(savedDataFilePath);
+            DataFilePath = Environment.ExpandEnvironmentVariables(dataFilePath);
         }
 
 
@@ -209,7 +210,6 @@ namespace MediaCenter.LyricsFinder.Model
             LyricsFinderCoreConfigurationSectionHandler.Init(Assembly.GetExecutingAssembly());
 
             var xDataFile = Environment.ExpandEnvironmentVariables(LyricsFinderCoreConfigurationSectionHandler.LocalAppDataFile);
-            var dataDirectory = Path.GetDirectoryName(xDataFile);
             var xDoc = new XmlDocument() { XmlResolver = null };
             var nodeXml = string.Empty;
 
@@ -240,7 +240,10 @@ namespace MediaCenter.LyricsFinder.Model
 
             var ret = nodeXml.XmlDeserializeFromString<T>(knownTypes: knownTypes);
 
-            ret.DataDirectory = dataDirectory;
+            ret.LyricsFinderData = new LyricsFinderDataType()
+            {
+                DataFilePath = xDataFile
+            };
 
             return ret;
         }
@@ -264,7 +267,7 @@ namespace MediaCenter.LyricsFinder.Model
 
             var ret = Serialize.XmlDeserializeFromFile<LyricsFinderDataType>(xmlFilePath, OnUnknownElement, dict, XmlKnownTypes.ToArray());
 
-            ret.SavedDataFilePath = xmlFilePath;
+            ret.DataFilePath = xmlFilePath;
             ret.Upgrade();
             ret.InitialXml = Serialize.XmlSerializeToString(ret, XmlKnownTypes.ToArray());
 
@@ -301,7 +304,7 @@ namespace MediaCenter.LyricsFinder.Model
             if (IsChanged && IsSaveOk)
             {
                 InitialXml = Serialize.XmlSerializeToString(this, XmlKnownTypes.ToArray());
-                Serialize.XmlSerializeToFile(this, SavedDataFilePath, XmlKnownTypes.ToArray());
+                Serialize.XmlSerializeToFile(this, DataFilePath, XmlKnownTypes.ToArray());
             }
         }
 

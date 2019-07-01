@@ -36,7 +36,7 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        private void CloseButton_Click(object sender, EventArgs e)
+        private async void CloseButton_ClickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -54,7 +54,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        private void CopyToClipboardButton_Click(object sender, EventArgs e)
+        private async void CopyToClipboardButton_ClickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -72,15 +72,15 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="maxWindowSize">Maximum size of the window.</param>
-        public static void Show(string message, Size maxWindowSize)
+        public static async Task ShowAsync(string message, Size maxWindowSize)
         {
             try
             {
-                Show(null, message, maxWindowSize);
+                await ShowAsync(null, message, maxWindowSize);
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -91,15 +91,15 @@ namespace MediaCenter.LyricsFinder
         /// <param name="owner">The owner window.</param>
         /// <param name="message">The message.</param>
         /// <param name="maxWindowSize">Maximum size of the window.</param>
-        public static void Show(IWin32Window owner, string message, Size maxWindowSize)
+        public static async Task ShowAsync(IWin32Window owner, string message, Size maxWindowSize)
         {
             try
             {
-                Show(owner, null, message, maxWindowSize);
+                await ShowAsync(owner, null, message, maxWindowSize);
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -111,7 +111,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="title">The title.</param>
         /// <param name="message">The message.</param>
         /// <param name="maxWindowSize">Maximum size of the window.</param>
-        public static void Show(IWin32Window owner, string title, string message, Size maxWindowSize)
+        public static async Task ShowAsync(IWin32Window owner, string title, string message, Size maxWindowSize)
         {
             try
             {
@@ -152,7 +152,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event..", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event..", ex);
             }
         }
 

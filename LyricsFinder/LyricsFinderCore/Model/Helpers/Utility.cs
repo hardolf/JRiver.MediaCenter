@@ -316,7 +316,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <exception cref="ArgumentNullException">currentVersion</exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}</exception>
-        public static bool UpdateCheck(Version currentVersion, Size maxWindowSize, bool isInteractive = false)
+        public static async Task<bool> UpdateCheckAsync(Version currentVersion, Size maxWindowSize, bool isInteractive = false)
         {
             if (currentVersion == null) throw new ArgumentNullException(nameof(currentVersion));
 
@@ -365,7 +365,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 return ret;
 
             // This is the interactive part
-            var msg = string.Empty;
+            string msg;
 
             if (ret)
                 msg = $"LyricsFinder v{currentVersion} is the latest release.\r\n"
@@ -376,7 +376,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                     + $"You can visit the download site here:\r\n\r\n"
                     + $"{urlString}";
 
-            ErrorForm.Show(null, "Update information", msg, maxWindowSize);
+            await ErrorForm.ShowAsync(null, "Update information", msg, maxWindowSize);
 
             return ret;
         }
@@ -395,7 +395,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <exception cref="WebException">Error contacting the latest release site ({LatestReleaseUrl}): {ex.Message}</exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}</exception>
-        public static bool UpdateCheckWithRetries(Version currentVersion, Size maxWindowSize, bool isInteractive = false, int retryCount = 5)
+        public static async Task<bool> UpdateCheckWithRetriesAsync(Version currentVersion, Size maxWindowSize, bool isInteractive = false, int retryCount = 5)
         {
             const int retryInterval = 500; // Milliseconds
 
@@ -405,7 +405,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             {
                 try
                 {
-                    ret = UpdateCheck(currentVersion, maxWindowSize, isInteractive);
+                    ret = await UpdateCheckAsync(currentVersion, maxWindowSize, isInteractive);
 
                     break;
                 }

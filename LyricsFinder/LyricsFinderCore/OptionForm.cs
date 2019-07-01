@@ -26,8 +26,8 @@ namespace MediaCenter.LyricsFinder
 
         private string _title = "Options";
 
-        private string _headerText = " Set the options here.\r\n"
-            + " Set the parameters in order to enable the LyricsFinder to connect with the Media Center.\r\n"
+        private string _headerText = " Set the LyricsFinder options here.\r\n"
+            + " Enable the LyricsFinder to connect with the Media Center by setting the connection options.\r\n"
             + " You can find the values in the Media Center (Tools menu > Options > Media Network).\r\n"
             + " Also, ensure that the Media Network service is enabled.";
 
@@ -65,7 +65,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void CloseButton_Click(object sender, EventArgs e)
+        private async void CloseButton_ClickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -83,7 +83,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="FormClosingEventArgs"/> instance containing the event data.</param>
-        private void OptionForm_FormClosing(object sender, FormClosingEventArgs e)
+        private async void OptionForm_FormClosingAsync(object sender, FormClosingEventArgs e)
         {
             try
             {
@@ -109,6 +109,7 @@ namespace MediaCenter.LyricsFinder
                         try
                         {
                             // Save the data contents
+                            _lyricsFinderData.MainData.DelayMilliSecondsBetweenSearches = (int)DelayMilliSecondsBetweenSearchesUpDown.Value;
                             // _lyricsFinderData.MainData.LastUpdateCheck = DateTime.Parse(LastUpdateCheckTextBox.Text, CultureInfo.InvariantCulture); // Readonly!
                             _lyricsFinderData.MainData.MaxQueueLength = (int)MaxQueueLengthUpDown.Value;
                             _lyricsFinderData.MainData.McAccessKey = McAccessKeyTextBox.Text;
@@ -124,7 +125,7 @@ namespace MediaCenter.LyricsFinder
                         }
                         catch (Exception ex)
                         {
-                            ErrorHandling.ShowErrorHandler(this, $"Options failed to save, look at the error details and try again: \r\n{ex}");
+                            await ErrorHandling.ShowErrorHandlerAsync(this, $"Options failed to save, look at the error details and try again: \r\n{ex}");
                             e.Cancel = true;
                         }
                         break;
@@ -135,7 +136,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -145,7 +146,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void OptionForm_Load(object sender, EventArgs e)
+        private async void OptionForm_LoadAsync(object sender, EventArgs e)
         {
             try
             {
@@ -153,6 +154,7 @@ namespace MediaCenter.LyricsFinder
                 HeaderTextBox.Text = _headerText;
 
                 // Set the data contents
+                DelayMilliSecondsBetweenSearchesUpDown.Value = _lyricsFinderData.MainData.DelayMilliSecondsBetweenSearches;
                 LastUpdateCheckTextBox.Text = _lyricsFinderData.MainData.LastUpdateCheck.ToString(CultureInfo.CurrentCulture);
                 MaxQueueLengthUpDown.Value = _lyricsFinderData.MainData.MaxQueueLength;
                 McAccessKeyTextBox.Text = _lyricsFinderData.MainData.McAccessKey;
@@ -173,7 +175,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -183,44 +185,52 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
-        private void TextBox_Validating(object sender, CancelEventArgs e)
+        private async void TextBox_ValidatingAsync(object sender, CancelEventArgs e)
         {
             if (!(sender is Control ctl)) return;
 
             var ctlName = ctl?.Name;
 
-            switch (ctlName)
+            try
             {
-                case nameof(LastUpdateCheckTextBox):
-                case nameof(MouseMoveOpenLyricsFormCheckBox):
-                case nameof(NoLyricsSearchFilterTextBox):
-                    e.Cancel = false;
-                    break;
+                switch (ctlName)
+                {
+                    case nameof(LastUpdateCheckTextBox):
+                    case nameof(MouseMoveOpenLyricsFormCheckBox):
+                    case nameof(NoLyricsSearchFilterTextBox):
+                        e.Cancel = false;
+                        break;
 
-                case nameof(MaxQueueLengthUpDown):
-                case nameof(MaxMcWsConnectAttemptsUpDown):
-                case nameof(UpdateCheckIntervalDaysUpDown):
-                    e.Cancel = !int.TryParse(ctl.Text, out _);
-                    break;
+                    case nameof(MaxQueueLengthUpDown):
+                    case nameof(MaxMcWsConnectAttemptsUpDown):
+                    case nameof(UpdateCheckIntervalDaysUpDown):
+                    case nameof(DelayMilliSecondsBetweenSearchesUpDown):
+                        e.Cancel = !int.TryParse(ctl.Text, out _);
+                        break;
 
-                case nameof(McAccessKeyTextBox):
-                case nameof(McWsPasswordTextBox):
-                case nameof(McWsUrlTextBox):
-                case nameof(McWsUsernameTextBox):
-                    e.Cancel = ctl.Text.IsNullOrEmptyTrimmed();
-                    break;
+                    case nameof(McAccessKeyTextBox):
+                    case nameof(McWsPasswordTextBox):
+                    case nameof(McWsUrlTextBox):
+                    case nameof(McWsUsernameTextBox):
+                        e.Cancel = ctl.Text.IsNullOrEmptyTrimmed();
+                        break;
 
-                default:
-                    throw new Exception($"Unknown control: \"{ctlName}\".");
+                    default:
+                        throw new Exception($"Unknown control: \"{ctlName}\".");
+                }
+
+                if (e.Cancel)
+                {
+                    Console.Beep();
+                    ctl.ForeColor = Color.DarkRed;
+                }
+                else
+                    ctl.ForeColor = SystemColors.WindowText;
             }
-
-            if (e.Cancel)
+            catch (Exception ex)
             {
-                Console.Beep();
-                ctl.ForeColor = Color.DarkRed;
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
-            else
-                ctl.ForeColor = SystemColors.WindowText;
         }
 
     }

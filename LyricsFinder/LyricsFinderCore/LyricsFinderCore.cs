@@ -184,7 +184,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -221,7 +221,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -231,9 +231,16 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricsFinderCore_Resize(object sender, EventArgs e)
+        private async void LyricsFinderCore_ResizeAsync(object sender, EventArgs e)
         {
-            ErrorHandling.Init(this.Size);
+            try
+            {
+                ErrorHandling.Init(this.Size);
+            }
+            catch (Exception ex)
+            {
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
         }
 
 
@@ -270,7 +277,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -296,7 +303,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -306,7 +313,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
-        private void MainGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private async void MainGridView_CellDoubleClickAsync(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
@@ -315,7 +322,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -325,7 +332,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private void MainGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private async void MainGridView_CellMouseClickAsync(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
@@ -366,7 +373,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -376,7 +383,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private void MainGridView_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        private async void MainGridView_CellMouseMoveAsync(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
@@ -414,7 +421,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -424,7 +431,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private void MainGridView_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private async void MainGridView_ColumnHeaderMouseClickAsync(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
@@ -446,7 +453,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -456,7 +463,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MainGridView_MouseLeave(object sender, EventArgs e)
+        private async void MainGridView_MouseLeaveAsync(object sender, EventArgs e)
         {
             try
             {
@@ -476,7 +483,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -486,7 +493,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MainGridView_Resize(object sender, EventArgs e)
+        private async void MainGridView_ResizeAsync(object sender, EventArgs e)
         {
             const int fraction = 6;
 
@@ -500,7 +507,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -510,7 +517,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MainGridView_SelectionChanged(object sender, EventArgs e)
+        private async void MainGridView_SelectionChangedAsync(object sender, EventArgs e)
         {
             try
             {
@@ -523,7 +530,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -552,7 +559,7 @@ namespace MediaCenter.LyricsFinder
                 // Also, we only log the first incident.
 
                 if (McStatusTimer.Interval == _mcStatusIntervalNormal)
-                    ErrorHandling.ErrorLog($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex, _progressPercentage);
+                    await ErrorHandling.ErrorLogAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex, _progressPercentage);
 
                 await BlankPlayStatusBitmaps();
 
@@ -628,18 +635,18 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(HelpLookForUpdatesMenuItem):
-                            Model.Helpers.Utility.UpdateCheckWithRetries(EntryAssembly.GetName().Version, this.Size, true);
+                            await Model.Helpers.Utility.UpdateCheckWithRetriesAsync(EntryAssembly.GetName().Version, this.Size, true);
                             break;
 
                         case nameof(ToolsLyricServicesMenuItem):
-                            using (var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, ShowServicesCallback))
+                            using (var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, ShowServicesCallbackAsync))
                             {
                                 lyricsServiceForm.ShowDialog(this);
                             }
                             break;
 
                         case nameof(ToolsOptionsMenuItem):
-                            using (var frm = new OptionForm("LyricsFinder connection setup", LyricsFinderData))
+                            using (var frm = new OptionForm("LyricsFinder setup", LyricsFinderData))
                                 frm.ShowDialog(this);
                             break;
 
@@ -664,8 +671,8 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                StatusMessage($"Error {(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item \"{itemName}\".", true, true);
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, $"{(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item: \"{itemName}\"");
+                await StatusMessageAsync($"Error {(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item \"{itemName}\".", true, true);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, $"{(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item: \"{itemName}\"");
             }
         }
 
@@ -683,17 +690,20 @@ namespace MediaCenter.LyricsFinder
                 {
                     _isOnHandleDestroyedDone = true;
                     _progressPercentage = 0;
-                    StatusLog("LyricsFinder for JRiver Media Center closed.");
-                    StatusLog(_logHeader + Environment.NewLine);
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    StatusLogAsync("LyricsFinder for JRiver Media Center closed.");
+                    StatusLogAsync(_logHeader + Environment.NewLine);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
                     Dispose(true);
                 }
 
                 base.OnHandleDestroyed(e);
             }
-            catch (Exception ex)
+            catch // (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                // Let's ignore this!
+                // ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -703,7 +713,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private async void SearchAllStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void SearchAllStartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
         {
             string msg;
 
@@ -726,7 +736,7 @@ namespace MediaCenter.LyricsFinder
             catch (Exception ex)
             {
                 msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
-                ErrorHandling.ShowAndLogDetailedErrorHandler(msg, ex);
+                await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync(msg, ex);
             }
             finally
             {
@@ -740,7 +750,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void SearchAllStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private async void SearchAllStartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -752,7 +762,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -772,7 +782,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -792,7 +802,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -802,7 +812,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void ToolsSearchAllStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void ToolsSearchAllStartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -812,7 +822,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -822,7 +832,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void ToolsSearchAllStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private async void ToolsSearchAllStartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
@@ -832,7 +842,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -842,7 +852,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void UpdateCheckTimer_Tick(object sender, EventArgs e)
+        private async void UpdateCheckTimer_TickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -856,10 +866,10 @@ namespace MediaCenter.LyricsFinder
                     || ((updInterval > 0) && (daysSinceLast >= updInterval)))
                 {
                     var version = Assembly.GetExecutingAssembly().GetName().Version;
-                    var isUpdated = Model.Helpers.Utility.UpdateCheckWithRetries(version, this.Size);
+                    var isUpdated = await Model.Helpers.Utility.UpdateCheckWithRetriesAsync(version, this.Size);
 
                     if (!isUpdated)
-                        Model.Helpers.Utility.UpdateCheckWithRetries(version, this.Size, true);
+                        await Model.Helpers.Utility.UpdateCheckWithRetriesAsync(version, this.Size, true);
 
                     _lastUpdateCheck = DateTime.Now;
                     LyricsFinderData.MainData.LastUpdateCheck = _lastUpdateCheck;

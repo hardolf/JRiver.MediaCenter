@@ -219,7 +219,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void CloseButton_Click(object sender, EventArgs e)
+        private async void CloseButton_ClickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -227,7 +227,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -237,7 +237,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="FormClosingEventArgs"/> instance containing the event data.</param>
-        private void LyricForm_FormClosing(object sender, FormClosingEventArgs e)
+        private async void LyricForm_FormClosingAsync(object sender, FormClosingEventArgs e)
         {
             try
             {
@@ -295,7 +295,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -305,7 +305,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private void LyricForm_KeyDown(object sender, KeyEventArgs e)
+        private async void LyricForm_KeyDownAsync(object sender, KeyEventArgs e)
         {
             try
             {
@@ -320,7 +320,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -348,19 +348,19 @@ namespace MediaCenter.LyricsFinder
             catch (LyricsQuotaExceededException ex)
             {
                 msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
-                ErrorHandling.ShowAndLogDetailedErrorHandler(msg, ex);
+                await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync(msg, ex);
                 LyricFormStatusLabel.Text = "Service quota exceeded.";
             }
             catch (OperationCanceledException ex)
             {
                 msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
-                ErrorHandling.ShowAndLogDetailedErrorHandler(msg, ex);
+                await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync(msg, ex);
                 LyricFormStatusLabel.Text = "Search canceled.";
             }
             catch (Exception ex)
             {
                 msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
-                ErrorHandling.ShowAndLogDetailedErrorHandler(msg, ex);
+                await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync(msg, ex);
                 Close();
             }
             finally
@@ -375,7 +375,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricFormTrackBar_Scroll(object sender, EventArgs e)
+        private async void LyricFormTrackBar_ScrollAsync(object sender, EventArgs e)
         {
             try
             {
@@ -390,12 +390,12 @@ namespace MediaCenter.LyricsFinder
 
                 Lyric = LyricTextBox.Text;
 
-                LyricFormFoundStatusLabel.Text = $"Source: {serviceName} {GetServiceCount(serviceName)}";
+                LyricFormFoundStatusLabel.Text = $"Source: {serviceName} {GetServiceCountText(serviceName)}";
                 LyricFormFoundStatusLabel.BorderSides = ToolStripStatusLabelBorderSides.Left;
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -405,7 +405,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
         /// <returns>Hit count of the specified service.</returns>
-        private object GetServiceCount(string serviceName)
+        private string GetServiceCountText(string serviceName)
         {
             var count = _serviceCounts.First(s => s.Key == serviceName).Value;
 
@@ -418,19 +418,19 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void SearchButton_Click(object sender, EventArgs e)
+        private async void SearchButton_ClickAsync(object sender, EventArgs e)
         {
             try
             {
                 // Create a pseudo MC playlist item for the search
                 var row = LyricCell.OwningRow;
 
-                _searchForm = new LyricForm(LyricCell, Location, Size, SearchLyricCallback, LyricsFinderData, true, ArtistTextBox.Text, AlbumTextBox.Text, TrackTextBox.Text);
+                _searchForm = new LyricForm(LyricCell, Location, Size, SearchLyricCallbackAsync, LyricsFinderData, true, ArtistTextBox.Text, AlbumTextBox.Text, TrackTextBox.Text);
                 _searchForm.Show(this);
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -462,7 +462,7 @@ namespace MediaCenter.LyricsFinder
 
             // Set the trackbar and call the Scroll event handler to initialize the text box
             LyricFormTrackBar.Maximum = _foundLyricList.Count - 1;
-            LyricFormTrackBar_Scroll(this, new EventArgs());
+            LyricFormTrackBar_ScrollAsync(this, new EventArgs());
 
             LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
 
@@ -470,7 +470,7 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        private void SearchLyricCallback(LyricForm lyricForm)
+        private async void SearchLyricCallbackAsync(LyricForm lyricForm)
         {
             try
             {
@@ -495,7 +495,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 

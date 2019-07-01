@@ -40,12 +40,12 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <remarks>
         /// This routine does not write anything in the log, it is displaying a message on the screen only.
         /// </remarks>
-        public static void ShowErrorHandler(string message, int progressPercentage = 0)
+        public static async Task ShowErrorHandlerAsync(string message, int progressPercentage = 0)
         {
             message = message.AppendProgressPercentage(progressPercentage);
 
             // MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            ErrorForm.Show(message, _maxWindowSize);
+            await ErrorForm.ShowAsync(message, _maxWindowSize);
         }
 
         /// <summary>
@@ -57,12 +57,12 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <remarks>
         /// This routine does not write anything in the log, it is displaying a message on the screen only.
         /// </remarks>
-        public static void ShowErrorHandler(IWin32Window owner, string message, int progressPercentage = 0)
+        public static async Task ShowErrorHandlerAsync(IWin32Window owner, string message, int progressPercentage = 0)
         {
             message = message.AppendProgressPercentage(progressPercentage);
 
             // MessageBox.Show(owner, message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            ErrorForm.Show(owner, message, _maxWindowSize);
+            await ErrorForm.ShowAsync(owner, message, _maxWindowSize);
         }
 
 
@@ -73,12 +73,12 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="exception">The primary exeption.</param>
         /// <param name="progressPercentage">The progress percentage.</param>
         /// <param name="innerExceptionLevel">The inner exception level, i.e. the number of inner exception messages to list under the primary exception message. "0": show all inner exceptions.</param>
-        public static void ShowAndLogDetailedErrorHandler(string message, Exception exception, int progressPercentage = 0, int innerExceptionLevel = 0)
+        public static async Task ShowAndLogDetailedErrorHandlerAsync(string message, Exception exception, int progressPercentage = 0, int innerExceptionLevel = 0)
         {
             const string indent = "    ";
             var sb = new StringBuilder(message.AppendProgressPercentage(progressPercentage));
 
-            ErrorLog(sb.ToString(), exception);
+            await ErrorLogAsync(sb.ToString(), exception);
 
             sb.AppendLine();
             sb.AppendLine($"{indent}{exception.GetType().Name}: {exception.Message.Trim(' ', '"')}");
@@ -123,7 +123,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             sb.AppendLine($"Full exception details:");
             sb.AppendLine($"{exception.ToString()}");
 
-            ShowErrorHandler(sb.ToString());
+            await ShowErrorHandlerAsync(sb.ToString());
         }
 
 
@@ -134,12 +134,12 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="exception">The primary exeption.</param>
         /// <param name="progressPercentage">The progress percentage.</param>
         /// <param name="innerExceptionLevel">The inner exception level, i.e. the number of inner exception messages to list under the primary exception message. "0": show all inner exceptions.</param>
-        public static void ShowAndLogErrorHandler(string message, Exception exception, int progressPercentage = 0, int innerExceptionLevel = 0)
+        public static async Task ShowAndLogErrorHandlerAsync(string message, Exception exception, int progressPercentage = 0, int innerExceptionLevel = 0)
         {
             const string indent = "    ";
             var sb = new StringBuilder(message.AppendProgressPercentage(progressPercentage));
 
-            ErrorLog(sb.ToString(), exception);
+            await ErrorLogAsync(sb.ToString(), exception);
 
             sb.AppendLine();
             sb.AppendLine($"{indent}{exception.Message.Trim(' ', '"')}");
@@ -163,7 +163,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             sb.AppendLine($"Stack trace:");
             sb.AppendLine($"{exception.StackTrace}");
 
-            ShowErrorHandler(sb.ToString());
+            await ShowErrorHandlerAsync(sb.ToString());
         }
 
 
@@ -173,9 +173,9 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="message">The message.</param>
         /// <param name="exception">The exception.</param>
         /// <param name="progressPercentage">The progress percentage.</param>
-        internal static void ErrorLog(string message, Exception exception, int progressPercentage = 0)
+        internal static async Task ErrorLogAsync(string message, Exception exception, int progressPercentage = 0)
         {
-            Logging.Log(progressPercentage, message, exception);
+            await Logging.Log(progressPercentage, message, exception);
         }
 
 

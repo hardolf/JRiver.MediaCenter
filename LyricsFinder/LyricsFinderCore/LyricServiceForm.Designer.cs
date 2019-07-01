@@ -133,9 +133,9 @@
             this.LyricServiceListDataGridView.Size = new System.Drawing.Size(453, 104);
             this.LyricServiceListDataGridView.TabIndex = 0;
             this.LyricServiceListDataGridView.TabStop = false;
-            this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClick);
-            this.LyricServiceListDataGridView.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.LyricServiceListDataGridView_RowValidating);
-            this.LyricServiceListDataGridView.SelectionChanged += new System.EventHandler(this.LyricServiceListDataGridView_SelectionChanged);
+            this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClickAsync);
+            this.LyricServiceListDataGridView.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.LyricServiceListDataGridView_RowValidatingAsync);
+            this.LyricServiceListDataGridView.SelectionChanged += new System.EventHandler(this.LyricServiceListDataGridView_SelectionChangedAsync);
             // 
             // Active
             // 
@@ -210,7 +210,7 @@
             this.MoveUpButton.Size = new System.Drawing.Size(22, 20);
             this.MoveUpButton.Text = "Up";
             this.MoveUpButton.ToolTipText = "Move the selected service up";
-            this.MoveUpButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_Click);
+            this.MoveUpButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_ClickAsync);
             // 
             // MoveDownButton
             // 
@@ -221,7 +221,7 @@
             this.MoveDownButton.Size = new System.Drawing.Size(22, 20);
             this.MoveDownButton.Text = "Down";
             this.MoveDownButton.ToolTipText = "Move the selected service down";
-            this.MoveDownButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_Click);
+            this.MoveDownButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_ClickAsync);
             // 
             // LyricServiceDetailsTableLayoutPanel
             // 
@@ -291,8 +291,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Lyric Services";
             this.TransparencyKey = System.Drawing.Color.Teal;
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricServiceForm_FormClosing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricServiceForm_KeyDown);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricServiceForm_FormClosingAsync);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricServiceForm_KeyDownAsync);
             this.LyricServiceMainTableLayoutPanel.ResumeLayout(false);
             this.LyricServiceMainTableLayoutPanel.PerformLayout();
             this.LyricServiceListPanel.ResumeLayout(false);

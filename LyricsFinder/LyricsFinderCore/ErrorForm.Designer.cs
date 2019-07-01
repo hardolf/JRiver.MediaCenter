@@ -89,7 +89,7 @@
             this.CopyToClipboardButton.TabIndex = 5;
             this.CopyToClipboardButton.Text = "C&opy to clipboard";
             this.CopyToClipboardButton.UseVisualStyleBackColor = true;
-            this.CopyToClipboardButton.Click += new System.EventHandler(this.CopyToClipboardButton_Click);
+            this.CopyToClipboardButton.Click += new System.EventHandler(this.CopyToClipboardButton_ClickAsync);
             // 
             // ErrorTextBox
             // 

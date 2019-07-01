@@ -43,7 +43,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="progressPercentage">The progress percentage.</param>
         /// <param name="message">The message.</param>
         /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
-        public static void Log(int progressPercentage, string message = null, bool isDebug = false)
+        public static async Task Log(int progressPercentage, string message = null, bool isDebug = false)
         {
             if (_log == null) return;
 
@@ -55,10 +55,10 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 message = $"{progressPercentage,3}% - {message}";
 
             if (isDebug && _log.IsDebugEnabled)
-                _log.Debug(message);
+                await Task.Run(() => _log.Debug(message));
 
             if (!isDebug && _log.IsInfoEnabled)
-                _log.Info(message);
+                await Task.Run(() => _log.Info(message));
         }
 
 
@@ -68,21 +68,21 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="progressPercentage">The progress percentage.</param>
         /// <param name="message">The message.</param>
         /// <param name="exception">The exception.</param>
-        public static void Log(int progressPercentage, string message, Exception exception)
+        public static async Task Log(int progressPercentage, string message, Exception exception)
         {
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
             if (_log == null) return;
 
             var msg = message ?? string.Empty;
 
-            msg += (exception == null)
-                ? string.Empty
-                : " " + exception.Message;
+            msg += " " + exception.Message + Environment.NewLine;
+            msg = msg.TrimStart();
 
             if (progressPercentage >= 0)
                 msg = $"{progressPercentage,3}% - {msg}";
 
             if (_log.IsErrorEnabled)
-                _log.Error(msg, exception);
+                await Task.Run(() => _log.Error(msg, exception));
         }
 
 
