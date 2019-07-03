@@ -168,13 +168,10 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="App.template.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Content Include="Log4net.Plugin.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Log4net.standalone.xml">
+    <Content Include="Log4net.Standalone.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="LyricsFinderCore.snk" />
@@ -258,8 +255,6 @@
   <PropertyGroup>
     <PostBuildEvent>set _tdir=..\..\..\Installation\Build\LyricServices
 del /q "%25_tdir%25\*.*"
-
-copy /y App.template.config $(TargetFileName).template.config
 
 del /q App*.config
 </PostBuildEvent>

@@ -131,9 +131,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rem copy /y App.template.config $(TargetFileName).template.config
-
-del /q App*.config
+    <PostBuildEvent>del /q App*.config
 call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.*
 </PostBuildEvent>
   </PropertyGroup>

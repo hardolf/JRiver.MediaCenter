@@ -36,8 +36,7 @@ namespace MediaCenter.SharedComponents
 
             Size size = TextRenderer.MeasureText(control.Text, control.Font);
 
-            control.ClientSize =
-                new Size(size.Width + x_margin, size.Height + y_margin);
+            control.ClientSize = new Size(size.Width + x_margin, size.Height + y_margin);
         }
 
 
@@ -255,9 +254,10 @@ namespace MediaCenter.SharedComponents
         /// <exception cref="ArgumentNullException">input</exception>
         public static string LfToCrLf(this string input)
         {
-            if (input.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(input));
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input.IsNullOrEmptyTrimmed()) return input;
 
-            var ret = new StringBuilder(input);
+                var ret = new StringBuilder(input);
 
             for (int i = 0; i < ret.Length; i++)
             {

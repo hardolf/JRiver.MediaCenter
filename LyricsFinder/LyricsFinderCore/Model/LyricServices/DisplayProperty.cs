@@ -75,7 +75,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public DisplayProperty(string caption, string value, string toolTips = null, string propertyName = null, bool isEditAllowed = false)
         {
             Caption = caption;
-            Value = value;
+            Value = value?.LfToCrLf();
             ToolTips = toolTips;
             PropertyName = propertyName;
             IsEditAllowed = isEditAllowed;

@@ -83,9 +83,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="App.template.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -100,9 +97,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y App.template.config $(TargetFileName).template.config
-
-del /q App*.config
+    <PostBuildEvent>del /q App*.config
 call ..\..\..\PostBuild.cmd $(OutDir) $(ProjectDir) "$(TargetName).*" Utility.*
 </PostBuildEvent>
   </PropertyGroup>

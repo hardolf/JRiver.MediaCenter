@@ -110,9 +110,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Refreshes the display properties.
         /// </summary>
-        public override void RefreshDisplayProperties()
+        public override void CreateDisplayProperties()
         {
-            base.RefreshDisplayProperties();
+            base.CreateDisplayProperties();
 
             DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
         }
@@ -128,7 +128,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (Token.IsNullOrEmptyTrimmed())
                 Token = PrivateSettings.Token;
 
-            RefreshDisplayProperties();
+            CreateDisplayProperties();
         }
 
     }

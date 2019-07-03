@@ -135,7 +135,7 @@ namespace MediaCenter.SharedComponents
             if (xml.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(xml));
 
             object ret;
-            var sb = new StringBuilder(xml);
+            var sb = new StringBuilder(xml.LfToCrLf());
             var serializer = new XmlSerializer(type, knownTypes);
 
             if (xmlElementEventHandler != null)
@@ -207,7 +207,7 @@ namespace MediaCenter.SharedComponents
                 serializer.Serialize(writer, objectInstance);
             }
 
-            return ret.ToString();
+            return ret.ToString().LfToCrLf();
         }
 
     }

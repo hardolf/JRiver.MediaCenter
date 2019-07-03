@@ -295,9 +295,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Refreshes the display properties.
         /// </summary>
-        public override void RefreshDisplayProperties()
+        public override void CreateDisplayProperties()
         {
-            base.RefreshDisplayProperties();
+            base.CreateDisplayProperties();
 
             DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
             DisplayProperties.Add(nameof(UserId), new DisplayProperty("User ID", UserId, null, nameof(UserId), true));
@@ -326,7 +326,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 UserId = PrivateSettings.UserId; 
             }
 
-            RefreshDisplayProperties();
+            CreateDisplayProperties();
         }
 
     }

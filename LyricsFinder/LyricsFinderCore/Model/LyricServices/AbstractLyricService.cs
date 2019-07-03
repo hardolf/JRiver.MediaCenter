@@ -31,6 +31,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     {
 
         /// <summary>
+        /// Gets or sets the lyric service comment.
+        /// </summary>
+        /// <value>
+        /// The comment.
+        /// </value>
+        [XmlElement]
+        public virtual string Comment { get; set; }
+
+        /// <summary>
         /// Gets or sets the credit.
         /// </summary>
         /// <value>
@@ -198,6 +207,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </summary>
         public AbstractLyricService()
         {
+            Comment = string.Empty;
             Credit = new CreditType();
             DisplayProperties = new Dictionary<string, DisplayProperty>();
             Exceptions = new List<Exception>();
@@ -254,6 +264,28 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             LyricResult = LyricResultEnum.Found;
 
             return ret;
+        }
+
+
+        /// <summary>
+        /// Creates the display properties.
+        /// </summary>
+        public virtual void CreateDisplayProperties()
+        {
+            DisplayProperties.Clear();
+
+            Credit.CreateDisplayProperties();
+
+            foreach (var dp in Credit.DisplayProperties)
+            {
+                DisplayProperties.Add(dp.Key, dp.Value);
+            }
+
+            DisplayProperties.Add(nameof(Comment), new DisplayProperty("Comment", Comment));
+            DisplayProperties.Add(nameof(RequestCountToday), new DisplayProperty("Requests, today", RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
+            DisplayProperties.Add(nameof(HitCountToday), new DisplayProperty("Hits, today", HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
+            DisplayProperties.Add(nameof(RequestCountTotal), new DisplayProperty("Requests, total", RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
+            DisplayProperties.Add(nameof(HitCountTotal), new DisplayProperty("Hits, total", HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
         }
 
 
@@ -440,25 +472,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Refreshes the display properties.
-        /// </summary>
-        public virtual void RefreshDisplayProperties()
-        {
-            DisplayProperties.Clear();
-
-            foreach (var dp in Credit.DisplayProperties)
-            {
-                DisplayProperties.Add(dp.Key, dp.Value);
-            }
-
-            DisplayProperties.Add(nameof(RequestCountToday), new DisplayProperty("Requests, today", RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
-            DisplayProperties.Add(nameof(HitCountToday), new DisplayProperty("Hits, today", HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
-            DisplayProperties.Add(nameof(RequestCountTotal), new DisplayProperty("Requests, total", RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
-            DisplayProperties.Add(nameof(HitCountTotal), new DisplayProperty("Hits, total", HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
-        }
-
-
-        /// <summary>
         /// Refreshes the service settings from the service configuration file.
         /// </summary>
         public virtual void RefreshServiceSettings()
@@ -482,6 +495,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 Settings = config.AppSettings.Settings;
                 PrivateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, Path.GetDirectoryName(LyricsFinderData.DataFilePath));
 
+                Comment = ServiceSettingsValue(Settings, "Comment");
+
                 Credit = new CreditType
                 {
                     Company = ServiceSettingsValue(Settings, "Company"),
@@ -495,8 +510,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
 
             Credit.CreditDate = DateTime.Now;
-            Credit.RefreshDisplayProperties();
-            RefreshDisplayProperties();
+
+            CreateDisplayProperties();
         }
 
 

@@ -352,7 +352,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <returns>
         ///   <see cref="McResponse" /> object.
         /// </returns>
-        public static async Task<McResponse> PlayByKey(int key)
+        public static async Task<McResponse> PlayByKeyAsync(int key)
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.PlayByKey, key);
             var rsp = await Helpers.Utility.HttpGetStringAsync(requestUrl).ConfigureAwait(false);

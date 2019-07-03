@@ -45,6 +45,7 @@ namespace MediaCenter.LyricsFinder
         private int _currentMouseColumnIndex = -1;
         private int _currentMouseRowIndex = -1;
         private int _playingIndex = -1;
+        private int _playingKey = -1;
         private int _selectedKey = -1;
         private static int _progressPercentage = -1;
         private static int _mcStatusIntervalNormal = 500; // ½ second
@@ -101,9 +102,8 @@ namespace MediaCenter.LyricsFinder
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var rows = MainGridView.Rows;
-            var blank = new Bitmap(16, 16);
 
-            blank.MakeTransparent();
+            _emptyPlayPauseImage.MakeTransparent();
 
             // Clear all other bitmaps than the one in exceptionIndex row
             foreach (DataGridViewRow r in rows)
@@ -113,8 +113,8 @@ namespace MediaCenter.LyricsFinder
 
                 var c = r.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
 
-                if (c.Value != blank)
-                    c.Value = blank;
+                if (c.Value != _emptyPlayPauseImage)
+                    c.Value = _emptyPlayPauseImage;
             }
         }
 
@@ -355,6 +355,7 @@ namespace MediaCenter.LyricsFinder
             {
                 dgv.Rows[_playingIndex].Selected = true;
                 dgv.FirstDisplayedScrollingRowIndex = (_playingIndex > 2) ? _playingIndex - 3 : 0;
+                _playingKey = (int)dgv.Rows[_playingIndex].Cells[(int)GridColumnEnum.Key].Value;
             }
 
             if (ToolsPlayStartStopButton.GetStartingEventSubscribers().Length == 0)
@@ -561,8 +562,8 @@ namespace MediaCenter.LyricsFinder
         private async Task InitLoggingAsync(string[] initMessages = null)
         {
             var assy = Assembly.GetExecutingAssembly();
-            var dir = Path.GetDirectoryName(assy.Location);
-            var xmlConfigFilePath = (_isStandAlone) ? Path.Combine(dir, "Log4net.Standalone.xml") : Path.Combine(dir, "Log4net.Plugin.xml");
+            var appDir = Path.GetDirectoryName(assy.Location);
+            var xmlConfigFilePath = (_isStandAlone) ? Path.Combine(appDir, "Log4net.Standalone.xml") : Path.Combine(appDir, "Log4net.Plugin.xml");
             var loggerName = (_isStandAlone) ? "LyricsFinder.Standalone" : "LyricsFinder.Plugin";
             var fi = new FileInfo(xmlConfigFilePath);
 
@@ -865,7 +866,10 @@ namespace MediaCenter.LyricsFinder
 
                 // Play the selected item
                 if (rsp.IsOk)
+                {
+                    _playingKey = selectedKey;
                     await McRestService.PlayByIndexAsync(rowIdx);
+                }
             }
 
             await SetPlayingImagesAndMenusAsync();
@@ -951,8 +955,6 @@ namespace MediaCenter.LyricsFinder
             if (mcInfo == null)
                 return;
 
-            var blank = new Bitmap(16, 16);
-
             // Try to find a song in the current list matching the one (if any) that Media Center is playing
             // and set the bitmap to play or blank accordingly.
             // The reason we don't just use the index is, that the current playlist in LyricsFinder 
@@ -966,6 +968,7 @@ namespace MediaCenter.LyricsFinder
 
                 if (mcInfo.FileKey.Equals(key, StringComparison.InvariantCultureIgnoreCase))
                 {
+                    _playingKey = int.Parse(mcInfo.FileKey, NumberStyles.None, CultureInfo.InvariantCulture);
                     _playingIndex = i;
 
                     await BlankPlayStatusBitmapsAsync(i); // Clear all other bitmaps than the one in playIdx row
@@ -975,7 +978,7 @@ namespace MediaCenter.LyricsFinder
                     else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
                         imgCell.Value = Properties.Resources.Pause;
                     else
-                        imgCell.Value = blank;
+                        imgCell.Value = _emptyPlayPauseImage;
 
                     break;
                 }

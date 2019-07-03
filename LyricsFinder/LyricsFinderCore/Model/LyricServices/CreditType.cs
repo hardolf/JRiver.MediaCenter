@@ -156,9 +156,9 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
-        /// Refreshes the display properties.
+        /// Creates the display properties.
         /// </summary>
-        public virtual void RefreshDisplayProperties()
+        public virtual void CreateDisplayProperties()
         {
             DisplayProperties.Clear();
 

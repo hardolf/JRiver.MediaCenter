@@ -267,10 +267,9 @@ namespace MediaCenter.LyricsFinder
                     _lyricsForm = ShowLyrics(colIdx, rowIdx);
                 else if (e.ClickedItem == ContextPlayPauseMenuItem)
                 {
-                    if (!ToolsPlayStartStopButton.IsRunning)
-                        ToolsPlayStartStopButton.PerformClick();
-                    else
-                        await PlayOrPauseAsync();
+                    await PlayOrPauseAsync();
+
+                    ToolsPlayStartStopButton.SetRunningState(!ToolsPlayStartStopButton.IsRunning);
                 }
                 else if (e.ClickedItem == ContextPlayStopMenuItem)
                     ToolsPlayStartStopButton.Stop();
@@ -337,6 +336,7 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 if (_isDesignTime) return;
+                if (LyricsFinderData?.MainData == null) return;
                 if ((_lyricsForm != null) && _lyricsForm.Visible) return;
                 if (e.RowIndex < 0) return;
 
@@ -388,6 +388,7 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 if (_isDesignTime) return;
+                if (LyricsFinderData?.MainData == null) return;
                 if ((_lyricsForm != null) && _lyricsForm.Visible && !LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
                 if ((e.ColumnIndex == (int)GridColumnEnum.Lyrics) && !LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
                 if ((e.ColumnIndex == _currentMouseColumnIndex) && (e.RowIndex == _currentMouseRowIndex)) return;
@@ -433,6 +434,8 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
         private async void MainGridView_ColumnHeaderMouseClickAsync(object sender, DataGridViewCellMouseEventArgs e)
         {
+            if (LyricsFinderData?.MainData == null) return;
+
             try
             {
                 var rows = MainGridView.Rows;
@@ -465,11 +468,11 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MainGridView_MouseLeaveAsync(object sender, EventArgs e)
         {
+            if (_isDesignTime) return;
+            if (LyricsFinderData?.MainData == null) return;
+
             try
             {
-                if (_isDesignTime) return;
-                if (!LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
-
                 var pt = Cursor.Position;
                 var rect = MainGridView.RectangleToScreen(MainGridView.ClientRectangle);
 

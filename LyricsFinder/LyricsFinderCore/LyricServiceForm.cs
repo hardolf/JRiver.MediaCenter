@@ -78,7 +78,10 @@ namespace MediaCenter.LyricsFinder.Model
                     : "-";
 
                 if (service.IsImplemented)
+                {
                     dgv.Rows.Add(service.IsActive, service.Credit.ServiceName, service.RequestCountToday, dailyQuota, quotaResetTimeString);
+                    dgv.Rows[dgv.Rows.Count - 1].Cells[1].ToolTipText = service.Comment;
+                }
             }
 
             _isListReady = true;
@@ -152,8 +155,8 @@ namespace MediaCenter.LyricsFinder.Model
             txtValue.ScrollBars = ScrollBars.None;
             txtValue.TabIndex = rowIdx;
             txtValue.TabStop = false;
+            txtValue.WordWrap = true;
             txtValue.Text = value;
-            txtValue.WordWrap = false;
 
             toolTip = (toolTip ?? string.Empty).Trim().TrimEnd('.');
 
