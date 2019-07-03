@@ -106,7 +106,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <param name="id">The identifier.</param>
         /// <param name="name">The name.</param>
         /// <returns><see cref="McMplResponse"/> object.</returns>
-        public static async Task<McMplResponse> CreateMcMplResponse(string xml, int id = -1, string name = null)
+        public static async Task<McMplResponse> CreateMcMplResponseAsync(string xml, int id = -1, string name = null)
         {
             var ret = new McMplResponse(id, name);
 
@@ -126,9 +126,9 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
             foreach (XmlElement xItem in xItems)
             {
-                var item = await McMplItem.CreateMcMplItem(xItem).ConfigureAwait(false);
+                var item = await McMplItem.CreateMcMplItemAsync(xItem).ConfigureAwait(false);
 
-                await item.FillPropertiesFromFields().ConfigureAwait(false);
+                await item.FillPropertiesFromFieldsAsync().ConfigureAwait(false);
 
                 if (!ret.Items.Keys.Contains(item.Key))
                     ret.Items.Add(item.Key, item);

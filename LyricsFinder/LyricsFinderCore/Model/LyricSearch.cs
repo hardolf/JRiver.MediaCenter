@@ -29,7 +29,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// or
         /// mcItem</exception>
         /// <exception cref="Exception"></exception>
-        public static async Task Search(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
+        public static async Task SearchAsync(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
         {
             if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
             if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));

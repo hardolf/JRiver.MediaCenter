@@ -342,7 +342,7 @@ namespace MediaCenter.LyricsFinder
                     LyricFormStatusLabel.Text = "Searching...";
 
                     // LyricFormTimer.Start();
-                    await Search();
+                    await SearchAsync();
                 }
             }
             catch (LyricsQuotaExceededException ex)
@@ -439,13 +439,13 @@ namespace MediaCenter.LyricsFinder
         /// Searches this instance.
         /// </summary>
         /// <returns></returns>
-        private async Task Search()
+        private async Task SearchAsync()
         {
             // Clear list and search for all the lyrics in each lyric service
             _foundLyricList.Clear();
 
             _cancellationTokenSource = new CancellationTokenSource();
-            await LyricSearch.Search(LyricsFinderData, _McItem, _cancellationTokenSource.Token, true).ConfigureAwait(true);
+            await LyricSearch.SearchAsync(LyricsFinderData, _McItem, _cancellationTokenSource.Token, true).ConfigureAwait(true);
 
             // Process the results
             foreach (var service in LyricsFinderData.ActiveLyricServices)

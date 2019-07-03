@@ -125,13 +125,13 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void InitTimer_Tick(object sender, EventArgs e)
+        private async void InitTimer_TickAsync(object sender, EventArgs e)
         {
             try
             {
                 InitTimer.Stop();
 
-                await LyricsFinderCore.InitCore();
+                await LyricsFinderCore.InitCoreAsync();
 
                 // We don't start this timer again!
             }

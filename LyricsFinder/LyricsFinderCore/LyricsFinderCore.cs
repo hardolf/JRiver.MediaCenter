@@ -180,11 +180,11 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                await LoadPlaylistMenus();
+                await LoadPlaylistMenusAsync();
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -216,12 +216,12 @@ namespace MediaCenter.LyricsFinder
                 {
                     e.Handled = true;
 
-                    await PlayOrPause();
+                    await PlayOrPauseAsync();
                 }
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -239,7 +239,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -270,14 +270,14 @@ namespace MediaCenter.LyricsFinder
                     if (!ToolsPlayStartStopButton.IsRunning)
                         ToolsPlayStartStopButton.PerformClick();
                     else
-                        await PlayOrPause();
+                        await PlayOrPauseAsync();
                 }
                 else if (e.ClickedItem == ContextPlayStopMenuItem)
                     ToolsPlayStartStopButton.Stop();
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -293,7 +293,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                await SetPlayingImagesAndMenus();
+                await SetPlayingImagesAndMenusAsync();
 
                 if (MainGridView.SelectedRows.Count < 1)
                 {
@@ -303,7 +303,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -322,7 +322,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -373,7 +373,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -421,7 +421,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -453,7 +453,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -483,7 +483,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -507,7 +507,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -530,7 +530,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -547,7 +547,7 @@ namespace MediaCenter.LyricsFinder
             {
                 McStatusTimer.Stop();
 
-                await SetPlayingImagesAndMenus();
+                await SetPlayingImagesAndMenusAsync();
 
                 McStatusTimer.Interval = _mcStatusIntervalNormal;
                 McStatusTimer.Start();
@@ -561,7 +561,7 @@ namespace MediaCenter.LyricsFinder
                 if (McStatusTimer.Interval == _mcStatusIntervalNormal)
                     await ErrorHandling.ErrorLogAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex, _progressPercentage);
 
-                await BlankPlayStatusBitmaps();
+                await BlankPlayStatusBitmapsAsync();
 
                 McStatusTimer.Interval = _mcStatusIntervalError;
                 McStatusTimer.Start();
@@ -606,7 +606,7 @@ namespace MediaCenter.LyricsFinder
                     }
 
                     // Get the MC playlist and let LyricsFinder know about it
-                    await ReloadPlaylist(false, itemName);
+                    await ReloadPlaylistAsync(false, itemName);
                 }
                 else
                 {
@@ -617,7 +617,7 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(FileReloadMenuItem):
-                            await ReloadPlaylist(true);
+                            await ReloadPlaylistAsync(true);
                             break;
 
                         case nameof(FileSaveMenuItem):
@@ -672,7 +672,7 @@ namespace MediaCenter.LyricsFinder
             catch (Exception ex)
             {
                 await StatusMessageAsync($"Error {(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item \"{itemName}\".", true, true);
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, $"{(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item: \"{itemName}\"");
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex, $"{(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item: \"{itemName}\"");
             }
         }
 
@@ -762,7 +762,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -778,11 +778,11 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                await PlayOrPause();
+                await PlayOrPauseAsync();
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -798,11 +798,11 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                await PlayStop();
+                await PlayStopAsync();
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -822,7 +822,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -842,7 +842,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 

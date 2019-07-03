@@ -97,7 +97,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="exceptionIndex">Index of the exception song that should not be blanked.</param>
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        private async Task BlankPlayStatusBitmaps(int exceptionIndex = -1)
+        private async Task BlankPlayStatusBitmapsAsync(int exceptionIndex = -1)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var rows = MainGridView.Rows;
@@ -295,7 +295,7 @@ namespace MediaCenter.LyricsFinder
         /// <remarks>
         /// Fatal error reporting, normally called from an event routine.
         /// </remarks>
-        private async Task ErrorReport(string methodName, Exception exception, string message = null)
+        private async Task ErrorReportAsync(string methodName, Exception exception, string message = null)
         {
             // Stop the timers
             McStatusTimer.Stop();
@@ -317,7 +317,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception">Current playlist is not initializes yet.</exception>
-        private async Task FillDataGrid()
+        private async Task FillDataGridAsync()
         {
             if ((_currentPlaylist == null) || ((_currentPlaylist.Items?.Count ?? -1) < 0))
                 throw new Exception("Current playlist is not initialized yet.");
@@ -348,7 +348,7 @@ namespace MediaCenter.LyricsFinder
                 dgv.Rows.Add(row);
             }
 
-            await SetPlayingImagesAndMenus();
+            await SetPlayingImagesAndMenusAsync();
 
             // Scroll if necessary
             if ((_playingIndex >= 0) && (dgv.Rows.Count >= _playingIndex + 1))
@@ -448,28 +448,28 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Tests and initializes the data folder.
         /// </summary>
-        public async Task InitLocalData() // "public" due to the unit tests
+        public async Task InitLocalDataAsync() // "public" due to the unit tests
         {
             var dataFile = string.Empty;
             var tmpFile = string.Empty;
 
             try
             {
-                await Logging.Log(_progressPercentage, "Preparing load of local data...", true);
+                await Logging.LogAsync(_progressPercentage, "Preparing load of local data...", true);
                 dataFile = Path.GetFullPath(Environment.ExpandEnvironmentVariables(LyricsFinderCoreConfigurationSectionHandler.LocalAppDataFile));
                 DataDirectory = Path.GetDirectoryName(dataFile);
                 tmpFile = Path.Combine(DataDirectory, dataFile + ".tmp");
 
                 // Try to create the data folder if necessary
-                await Logging.Log(_progressPercentage, $"Testing if local data directory \"{DataDirectory}\" is present, else creating it...", true);
+                await Logging.LogAsync(_progressPercentage, $"Testing if local data directory \"{DataDirectory}\" is present, else creating it...", true);
                 if (!Directory.Exists(DataDirectory))
                     Directory.CreateDirectory(DataDirectory);
 
                 // Test if we may write files in the data folder
-                await Logging.Log(_progressPercentage, $"Testing if we may write to a file in the local data directory \"{tmpFile}\"...", true);
+                await Logging.LogAsync(_progressPercentage, $"Testing if we may write to a file in the local data directory \"{tmpFile}\"...", true);
                 using (var st = File.Create(tmpFile)) { }
 
-                await Logging.Log(_progressPercentage, $"Testing if we may delete the test file in the local data directory \"{tmpFile}\"...", true);
+                await Logging.LogAsync(_progressPercentage, $"Testing if we may delete the test file in the local data directory \"{tmpFile}\"...", true);
                 File.Delete(tmpFile);
             }
             catch (Exception ex)
@@ -481,11 +481,11 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                await Logging.Log(_progressPercentage, $"Initializing dynamic lyric services...", true);
-                var services = await InitLyricServices();
+                await Logging.LogAsync(_progressPercentage, $"Initializing dynamic lyric services...", true);
+                var services = await InitLyricServicesAsync();
 
                 // Prepare the load
-                await Logging.Log(_progressPercentage, "Preparing list of known XML types...", true);
+                await Logging.LogAsync(_progressPercentage, "Preparing list of known XML types...", true);
                 LyricsFinderDataType.XmlKnownTypes.Add(typeof(LyricsFinderDataType));
                 LyricsFinderDataType.XmlKnownTypes.Add(typeof(AbstractLyricService));
                 LyricsFinderDataType.XmlKnownTypes.Add(typeof(CreditType));
@@ -495,7 +495,7 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 // Create LyricsFinderData with its list of lyrics services
-                await Logging.Log(_progressPercentage, "Loading local data from XML...", true);
+                await Logging.LogAsync(_progressPercentage, "Loading local data from XML...", true);
                 try
                 {
                     // Load previously saved services
@@ -529,14 +529,14 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 // Add any lyric services that were not loaded before
-                await Logging.Log(_progressPercentage, "Adding additional lyric services...", true);
+                await Logging.LogAsync(_progressPercentage, "Adding additional lyric services...", true);
                 foreach (var service in services)
                 {
                     if (!LyricsFinderData.LyricServices.Any(t => t.GetType() == service.GetType()))
                         LyricsFinderData.LyricServices.Add(service);
                 }
 
-                await Logging.Log(_progressPercentage, "Refreshing lyric services from their old configurations...", true);
+                await Logging.LogAsync(_progressPercentage, "Refreshing lyric services from their old configurations...", true);
                 foreach (var service in LyricsFinderData.LyricServices)
                 {
                     service.LyricsFinderData = LyricsFinderData;
@@ -608,26 +608,26 @@ namespace MediaCenter.LyricsFinder
         /// The lyric services are not referenced directly.
         /// Instead, they are loaded dynamically, thus making it easy to add or remove them from the application.
         /// </remarks>
-        private static async Task<List<AbstractLyricService>> InitLyricServices()
+        private static async Task<List<AbstractLyricService>> InitLyricServicesAsync()
         {
             // Load the lyric service assemblies
             var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            await Logging.Log(_progressPercentage, $"Finding lyric service client assemblies in \"{dir}\"...", true);
+            await Logging.LogAsync(_progressPercentage, $"Finding lyric service client assemblies in \"{dir}\"...", true);
 
             var files = Directory.GetFiles(dir, "*.dll", SearchOption.TopDirectoryOnly);
             var ret = new List<AbstractLyricService>();
 
             // Load each assembly in the LyricServices folder
-            await Logging.Log(_progressPercentage, $"Loading dynamic lyric service client assemblies from \"{dir}\"...", true);
+            await Logging.LogAsync(_progressPercentage, $"Loading dynamic lyric service client assemblies from \"{dir}\"...", true);
             foreach (var file in files)
             {
-                await Logging.Log(_progressPercentage, $"Looking at \"{file}\"...", true);
+                await Logging.LogAsync(_progressPercentage, $"Looking at \"{file}\"...", true);
 
                 var assy = Assembly.LoadFrom(file);
 
                 // Get a list of the descendant lyrics service types
-                await Logging.Log(_progressPercentage, $"Trying to find service types in \"{file}\"...", true);
+                await Logging.LogAsync(_progressPercentage, $"Trying to find service types in \"{file}\"...", true);
 
                 IEnumerable<Type> assyLyricsServiceTypes;
 
@@ -643,7 +643,7 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 // Create service instance(s)
-                await Logging.Log(_progressPercentage,
+                await Logging.LogAsync(_progressPercentage,
                     ((assyLyricsServiceTypes != null) && (assyLyricsServiceTypes.Count<Type>() > 0))
                     ? $"Creating service instance(s) from \"{file}\"..."
                     : $"No lyric services in \"{file}\"."
@@ -687,7 +687,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="menuItemName">Name of the menu item.</param>
         /// <returns>Playlist type <see cref="McMplResponse"/> object</returns>
-        private async Task<McMplResponse> LoadPlaylist(string menuItemName = null)
+        private async Task<McMplResponse> LoadPlaylistAsync(string menuItemName = null)
         {
             var id = 0;
             var name = string.Empty;
@@ -717,9 +717,9 @@ namespace MediaCenter.LyricsFinder
 
             // Get the playlist
             if (id > 0)
-                ret = await McRestService.GetPlaylistFiles(id, name);
+                ret = await McRestService.GetPlaylistFilesAsync(id, name);
             else
-                ret = await McRestService.GetPlayNowList();
+                ret = await McRestService.GetPlayNowListAsync();
 
             await StatusMessageAsync($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.");
 
@@ -782,9 +782,9 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Loads all the play lists from the Media Center.
         /// </summary>
-        private async Task LoadPlaylistMenus()
+        private async Task LoadPlaylistMenusAsync()
         {
-            var list = await McRestService.GetPlayLists();
+            var list = await McRestService.GetPlayListsAsync();
 
             if (!list.IsOk)
                 throw new Exception("Unknown error finding Media Center playlists.");
@@ -835,7 +835,7 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Plays the item in the Playing Now list by the selected row index.
         /// </summary>
-        private async Task PlayOrPause()
+        private async Task PlayOrPauseAsync()
         {
             var rows = MainGridView.Rows;
             var selectedRows = MainGridView.SelectedRows;
@@ -848,38 +848,38 @@ namespace MediaCenter.LyricsFinder
             // Is the selected file in the Playing Now list?
             var selectedKeyCell = rows[rowIdx].Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
             var selectedKey = (int)(selectedKeyCell?.Value ?? -1);
-            var playingNowList = await McRestService.GetPlayNowList();
+            var playingNowList = await McRestService.GetPlayNowListAsync();
             var isInPlayingNowList = playingNowList.Items.ContainsKey(selectedKey);
 
             if (isInPlayingNowList)
             {
                 if (rowIdx == _playingIndex)
-                    await McRestService.PlayPause();
+                    await McRestService.PlayPauseAsync();
                 else
-                    await McRestService.PlayByIndex(rowIdx);
+                    await McRestService.PlayByIndexAsync(rowIdx);
             }
             else if ((_currentPlaylist != null) && (_currentPlaylist.Id > 0))
             {
                 // Replace the MC Playing Now list with the current LyricsFinder playlist
-                var rsp = await McRestService.PlayPlaylist(_currentPlaylist.Id);
+                var rsp = await McRestService.PlayPlaylistAsync(_currentPlaylist.Id);
 
                 // Play the selected item
                 if (rsp.IsOk)
-                    await McRestService.PlayByIndex(rowIdx);
+                    await McRestService.PlayByIndexAsync(rowIdx);
             }
 
-            await SetPlayingImagesAndMenus();
+            await SetPlayingImagesAndMenusAsync();
         }
 
 
         /// <summary>
         /// Stops playing any item.
         /// </summary>
-        private async Task PlayStop()
+        private async Task PlayStopAsync()
         {
-            await McRestService.PlayStop();
+            await McRestService.PlayStopAsync();
 
-            await SetPlayingImagesAndMenus();
+            await SetPlayingImagesAndMenusAsync();
         }
 
 
@@ -933,7 +933,7 @@ namespace MediaCenter.LyricsFinder
         /// Sets the play images.
         /// </summary>
         /// <returns>Playing row index or -1 if nothing is playing.</returns>
-        private async Task SetPlayingImagesAndMenus()
+        private async Task SetPlayingImagesAndMenusAsync()
         {
             McStatusTimer.Stop();
 
@@ -944,7 +944,7 @@ namespace MediaCenter.LyricsFinder
                 return;
 
             var rowIdx = MainGridView.SelectedRows[0].Index;
-            var mcInfo = await McRestService.Info();
+            var mcInfo = await McRestService.InfoAsync();
 
             _playingIndex = -1;
 
@@ -968,7 +968,7 @@ namespace MediaCenter.LyricsFinder
                 {
                     _playingIndex = i;
 
-                    await BlankPlayStatusBitmaps(i); // Clear all other bitmaps than the one in playIdx row
+                    await BlankPlayStatusBitmapsAsync(i); // Clear all other bitmaps than the one in playIdx row
 
                     if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
                         imgCell.Value = Properties.Resources.Play;
@@ -983,7 +983,7 @@ namespace MediaCenter.LyricsFinder
 
             // If not found, blank all bitmaps
             if (_playingIndex < 0)
-                await BlankPlayStatusBitmaps();
+                await BlankPlayStatusBitmapsAsync();
 
             // Set the playing menus' states
             ContextPlayStopMenuItem.Text = "Stop play";
@@ -1105,7 +1105,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -1122,7 +1122,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -1166,7 +1166,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
         private static async Task StatusLogAsync(string message, bool isDebug = false)
         {
-            await Logging.Log(_progressPercentage, message, isDebug);
+            await Logging.LogAsync(_progressPercentage, message, isDebug);
         }
 
 
@@ -1177,7 +1177,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="ex">The exception.</param>
         private async Task StatusLogAsync(string message, Exception ex)
         {
-            await Logging.Log(_progressPercentage, message, ex);
+            await Logging.LogAsync(_progressPercentage, message, ex);
         }
 
 

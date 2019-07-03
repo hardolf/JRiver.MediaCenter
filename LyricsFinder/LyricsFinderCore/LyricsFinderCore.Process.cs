@@ -39,7 +39,7 @@ namespace MediaCenter.LyricsFinder
         /// Failed to connect to MediaCenter Web Service \"{url}
         /// or
         /// Error in MediaCenter routine \"{typeNs}.{typeName}.{routineName}</exception>
-        private async Task Connect()
+        private async Task ConnectAsync()
         {
             var cnt = 0;
             var maxConnectAttempts = LyricsFinderData.MainData.MaxMcWsConnectAttempts;
@@ -57,7 +57,7 @@ namespace MediaCenter.LyricsFinder
                 {
                     await StatusMessageAsync($"Connecting to the MCWS {((cnt > 1) ? "failed " : string.Empty)}- attempt {cnt}...", true, true);
 
-                    alive = await McRestService.GetAlive();
+                    alive = await McRestService.GetAliveAsync();
                 }
                 catch
                 {
@@ -81,7 +81,7 @@ namespace MediaCenter.LyricsFinder
                 {
                     try
                     {
-                        Authentication = await McRestService.GetAuthentication();
+                        Authentication = await McRestService.GetAuthenticationAsync();
 
                         _isConnectedToMc = true;
                         await StatusMessageAsync($"Connected successfully to the MCWS after {cnt} attempt(s).", true, true);
@@ -114,7 +114,7 @@ namespace MediaCenter.LyricsFinder
         /// Initializes this instance.
         /// </summary>
         /// <returns></returns>
-        public async Task InitCore()
+        public async Task InitCoreAsync()
         {
             if (_isDesignTime) return;
 
@@ -130,19 +130,19 @@ namespace MediaCenter.LyricsFinder
                 await InitLoggingAsync(new[] { _logHeader, msg });
 
                 msg = "initializing the application configuration handler";
-                await Logging.Log(_progressPercentage, msg + "...", true);
+                await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 LyricsFinderCoreConfigurationSectionHandler.Init(Assembly.GetExecutingAssembly());
 
                 msg = "initializing the local data";
-                await Logging.Log(_progressPercentage, msg + "...", true);
-                await InitLocalData();
+                await Logging.LogAsync(_progressPercentage, msg + "...", true);
+                await InitLocalDataAsync();
 
                 msg = "initializing the private configuration handler";
-                await Logging.Log(_progressPercentage, msg + "...", true);
+                await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 LyricsFinderCorePrivateConfigurationSectionHandler.Init(Assembly.GetExecutingAssembly(), DataDirectory);
 
                 msg = "checking if private configuration is needed";
-                await Logging.Log(_progressPercentage, msg + "...", true);
+                await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 if ((LyricsFinderData.MainData == null)
                     || LyricsFinderData.MainData.McAccessKey.IsNullOrEmptyTrimmed()
                     || LyricsFinderData.MainData.McWsUrl.IsNullOrEmptyTrimmed()
@@ -156,19 +156,19 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 msg = "initializing the key events";
-                await Logging.Log(_progressPercentage, msg + "...", true);
+                await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 InitKeyDownEvent();
 
                 msg = "loading the form settings";
-                await Logging.Log(_progressPercentage, msg + "...", true);
+                await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 LoadFormSettings();
 
                 msg = "initializing the shortcuts";
-                await Logging.Log(_progressPercentage, msg + "...", true);
+                await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 ShowShortcuts(_isStandAlone);
 
                 msg = "initializing the start/stop button delegates";
-                await Logging.Log(_progressPercentage, msg + "...", true);
+                await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 SearchAllStartStopButton.SetRunningState(false);
                 SearchAllStartStopButton.Starting += SearchAllStartStopButton_StartingAsync;
                 SearchAllStartStopButton.Stopping += SearchAllStartStopButton_StoppingAsync;
@@ -180,7 +180,7 @@ namespace MediaCenter.LyricsFinder
                 ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_StoppingAsync;
 
                 msg = "initializing the Media Center MCWS connection parameters";
-                await Logging.Log(_progressPercentage, msg + "...", true);
+                await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 McRestService.Init(
                     LyricsFinderData.MainData.McAccessKey,
                     LyricsFinderData.MainData.McWsUrl,
@@ -188,7 +188,7 @@ namespace MediaCenter.LyricsFinder
                     LyricsFinderData.MainData.McWsPassword);
 
                 msg = "initializing the update check";
-                await Logging.Log(_progressPercentage, msg + "...", true);
+                await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 UpdateCheckTimer.Start();
 
                 MainGridView.Select();
@@ -197,7 +197,7 @@ namespace MediaCenter.LyricsFinder
                 _noLyricsSearchList.AddRange(LyricsFinderData.MainData.NoLyricsSearchFilter.Split(',', ';'));
 
                 EnableOrDisableMenuItems(true);
-                await ReloadPlaylist(true);
+                await ReloadPlaylistAsync(true);
 
                 CleanupObsoleteConfigurationFiles();
             }
@@ -205,7 +205,7 @@ namespace MediaCenter.LyricsFinder
             {
                 EnableOrDisableMenuItems(true);
                 await StatusMessageAsync($"Error {msg} during initialization.", true, true);
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
             }
         }
 
@@ -216,7 +216,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="isReconnect">if set to <c>true</c> reconnect to MediaCenter; else do not.</param>
         /// <param name="menuItemName">Name of the menu item.</param>
         /// <returns></returns>
-        private async Task ReloadPlaylist(bool isReconnect = false, string menuItemName = null)
+        private async Task ReloadPlaylistAsync(bool isReconnect = false, string menuItemName = null)
         {
             var msg = "connecting to the Media Center and/or loading the playlist";
 
@@ -228,13 +228,13 @@ namespace MediaCenter.LyricsFinder
                     throw new Exception("The item data is changed, you should save it before loading playlist.");
 
                 if (!_isConnectedToMc || isReconnect)
-                    await Connect();
+                    await ConnectAsync();
 
                 _currentPlaylist = (menuItemName.IsNullOrEmptyTrimmed())
-                    ? await LoadPlaylist()
-                    : await LoadPlaylist(menuItemName);
+                    ? await LoadPlaylistAsync()
+                    : await LoadPlaylistAsync(menuItemName);
 
-                await FillDataGrid();
+                await FillDataGridAsync();
 
                 ResetItemStates();
                 EnableOrDisableToolStripItems(true);
@@ -245,7 +245,7 @@ namespace MediaCenter.LyricsFinder
                 EnableOrDisableToolStripItems(false, FileSaveMenuItem);
 
                 await StatusMessageAsync($"Error {msg}.", true, true);
-                await ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
             }
         }
 
@@ -371,7 +371,7 @@ namespace MediaCenter.LyricsFinder
                         row.Cells[(int)GridColumnEnum.Status].Value = $"{LyricResultEnum.Processing.ResultText()}...";
 
                         // Try to get the first search hit
-                        await LyricSearch.Search(LyricsFinderData, _currentPlaylist.Items[key], cancellationToken, false);
+                        await LyricSearch.SearchAsync(LyricsFinderData, _currentPlaylist.Items[key], cancellationToken, false);
 
                         // Process the results
                         // The first lyric found by any service is used for each item

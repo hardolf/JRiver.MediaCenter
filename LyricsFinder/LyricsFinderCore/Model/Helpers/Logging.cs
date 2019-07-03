@@ -43,7 +43,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="progressPercentage">The progress percentage.</param>
         /// <param name="message">The message.</param>
         /// <param name="isDebug">if set to <c>true</c> [is debug].</param>
-        public static async Task Log(int progressPercentage, string message = null, bool isDebug = false)
+        public static async Task LogAsync(int progressPercentage, string message = null, bool isDebug = false)
         {
             if (_log == null) return;
 
@@ -68,7 +68,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="progressPercentage">The progress percentage.</param>
         /// <param name="message">The message.</param>
         /// <param name="exception">The exception.</param>
-        public static async Task Log(int progressPercentage, string message, Exception exception)
+        public static async Task LogAsync(int progressPercentage, string message, Exception exception)
         {
             if (exception == null) throw new ArgumentNullException(nameof(exception));
             if (_log == null) return;

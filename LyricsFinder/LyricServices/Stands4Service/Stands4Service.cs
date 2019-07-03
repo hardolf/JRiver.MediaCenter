@@ -216,7 +216,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 HitCountToday = 0;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                Logging.Log(0, $"A new quota-day has begun for lyric service \"{Credit.ServiceName}\", request counters are reset.");
+                Logging.LogAsync(0, $"A new quota-day has begun for lyric service \"{Credit.ServiceName}\", request counters are reset.");
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 

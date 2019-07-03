@@ -108,7 +108,7 @@ namespace MediaCenter.LyricsFinder
             // 
             // InitTimer
             // 
-            this.InitTimer.Tick += new System.EventHandler(this.InitTimer_Tick);
+            this.InitTimer.Tick += new System.EventHandler(this.InitTimer_TickAsync);
             // 
             // MainForm
             // 

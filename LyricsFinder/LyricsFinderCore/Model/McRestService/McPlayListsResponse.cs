@@ -64,7 +64,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <param name="xml">The XML.</param>
         /// <returns><see cref="McPlayListsResponse"/> object.</returns>
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public static async Task<McPlayListsResponse> CreateMcPlayListsResponse(string xml)
+        public static async Task<McPlayListsResponse> CreateMcPlayListsResponseAsync(string xml)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var ret = new McPlayListsResponse();

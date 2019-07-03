@@ -164,7 +164,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         ///   <see cref="McMplItem" /> object.
         /// </returns>
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public static async Task<McMplItem> CreateMcMplItem(XmlElement root)
+        public static async Task<McMplItem> CreateMcMplItemAsync(XmlElement root)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (root == null) throw new ArgumentNullException(nameof(root));
@@ -187,7 +187,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         /// <summary>
         /// Fills the properties from the <see cref="Fields"/> dictionary.
         /// </summary>
-        public virtual async Task FillPropertiesFromFields()
+        public virtual async Task FillPropertiesFromFieldsAsync()
         {
             foreach (var field in this.Fields)
             {
@@ -220,7 +220,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
                         if ((propKey == "Image File") && field.Value.Equals("internal", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            var rsp = await McRestService.GetImage(Key).ConfigureAwait(false);
+                            var rsp = await McRestService.GetImageAsync(Key).ConfigureAwait(false);
 
                             Image = rsp.Image;
                         }

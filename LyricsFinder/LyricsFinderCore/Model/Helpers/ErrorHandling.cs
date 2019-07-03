@@ -175,7 +175,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="progressPercentage">The progress percentage.</param>
         internal static async Task ErrorLogAsync(string message, Exception exception, int progressPercentage = 0)
         {
-            await Logging.Log(progressPercentage, message, exception);
+            await Logging.LogAsync(progressPercentage, message, exception);
         }
 
 
