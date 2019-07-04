@@ -440,6 +440,11 @@ namespace MediaCenter.LyricsFinder
             {
                 var rows = MainGridView.Rows;
 
+                if ((e.ColumnIndex == (int)GridColumnEnum.Cover) || (e.ColumnIndex == (int)GridColumnEnum.PlayImage))
+                {
+                    MainGridView.Sort(Index, (MainGridView.SortOrder == SortOrder.Ascending) ? ListSortDirection.Descending : ListSortDirection.Ascending);
+                }
+
                 for (int i = 0; i < rows.Count; i++)
                 {
                     var row = rows[i];

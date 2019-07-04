@@ -100,6 +100,41 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
 
         /// <summary>
+        /// Clones this Media Center MPL response instance.
+        /// </summary>
+        /// <returns>A shallow copy of this <see cref="McMplResponse"/> object.</returns>
+        public McMplResponse Clone()
+        {
+            var ret = new McMplResponse()
+            {
+                Id = Id,
+                Name = Name,
+                PathSeparator = PathSeparator,
+                Title = Title,
+                Version = Version
+            };
+
+            foreach (var item in Items)
+            {
+                ret.Items.Add(item.Key, item.Value);
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Clones the specified Media Center MPL response object.
+        /// </summary>
+        /// <param name="mcMplResponse">The Media Center MPL response.</param>
+        /// <returns>A shallow copy of the specified <see cref="McMplResponse"/> object.</returns>
+        public static McMplResponse Clone(McMplResponse mcMplResponse)
+        {
+            return mcMplResponse.Clone();
+        }
+
+
+        /// <summary>
         /// Creates the mc MPL response.
         /// </summary>
         /// <param name="xml">The XML.</param>

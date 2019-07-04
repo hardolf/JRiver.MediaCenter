@@ -39,7 +39,6 @@ namespace MediaCenter.LyricsFinder
             this.LyricsFinderCore = new MediaCenter.LyricsFinder.LyricsFinderCore();
             this.RotButton = new System.Windows.Forms.Button();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.InitTimer = new System.Windows.Forms.Timer(this.components);
             this.TablePanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -106,10 +105,6 @@ namespace MediaCenter.LyricsFinder
             this.MainToolTip.InitialDelay = 200;
             this.MainToolTip.ReshowDelay = 40;
             // 
-            // InitTimer
-            // 
-            this.InitTimer.Tick += new System.EventHandler(this.InitTimer_TickAsync);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -123,7 +118,7 @@ namespace MediaCenter.LyricsFinder
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Lyrics finder";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.Shown += new System.EventHandler(this.MainForm_ShownAsync);
             this.TablePanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -136,7 +131,6 @@ namespace MediaCenter.LyricsFinder
         private MediaCenter.LyricsFinder.LyricsFinderCore LyricsFinderCore;
         private System.Windows.Forms.Button RotButton;
         private System.Windows.Forms.ToolTip MainToolTip;
-        private System.Windows.Forms.Timer InitTimer;
     }
 
 }

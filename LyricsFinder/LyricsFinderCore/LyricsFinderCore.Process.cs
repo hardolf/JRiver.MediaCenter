@@ -231,9 +231,13 @@ namespace MediaCenter.LyricsFinder
                 if (!_isConnectedToMc || isReconnect)
                     await ConnectAsync();
 
-                _currentPlaylist = (menuItemName.IsNullOrEmptyTrimmed())
-                    ? await LoadPlaylistAsync()
-                    : await LoadPlaylistAsync(menuItemName);
+                if (menuItemName.IsNullOrEmptyTrimmed())
+                {
+                    _currentMcPlaylist = await LoadPlaylistAsync();
+                    _currentLyricsFinderPlaylist = _currentMcPlaylist.Clone(); // Don't just make a reference to _currentMcPlaylist
+                }
+                else
+                    _currentLyricsFinderPlaylist = await LoadPlaylistAsync(menuItemName);
 
                 await FillDataGridAsync();
 
@@ -265,14 +269,14 @@ namespace MediaCenter.LyricsFinder
             var isCanceled = false;
             var isOk = false;
             var foundItemIndices = new List<int>();
-            var queue = new Queue<int>(Enumerable.Range(0, _currentPlaylist.Items.Count));
+            var queue = new Queue<int>(Enumerable.Range(0, _currentLyricsFinderPlaylist.Items.Count));
             var workers = new List<Task>();
 
             try
             {
                 _progressPercentage = 0;
                 EnableOrDisableToolStripItems(false, FileMenuItem);
-                await StatusMessageAsync($"Finding lyrics for the current playlist with {_currentPlaylist.Items.Count} items...", true, true);
+                await StatusMessageAsync($"Finding lyrics for the current playlist with {_currentLyricsFinderPlaylist.Items.Count} items...", true, true);
                 ResetItemStates();
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -300,7 +304,7 @@ namespace MediaCenter.LyricsFinder
 
                 var processedCount = (queue.Count > 0)
                     ? queue.Peek() + 1
-                    : _currentPlaylist.Items.Count;
+                    : _currentLyricsFinderPlaylist.Items.Count;
 
                 var result = (isOk)
                     ? (isCanceled)
@@ -308,7 +312,7 @@ namespace MediaCenter.LyricsFinder
                         : "completed successfully"
                     : "failed";
 
-                _progressPercentage = Convert.ToInt32(100 * processedCount / _currentPlaylist.Items.Count);
+                _progressPercentage = Convert.ToInt32(100 * processedCount / _currentLyricsFinderPlaylist.Items.Count);
                 await StatusMessageAsync($"Finding lyrics for the current playlist {result} with {foundItemIndices.Count} lyrics found and {processedCount} items processed.", true, true);
             }
         }
@@ -372,7 +376,7 @@ namespace MediaCenter.LyricsFinder
                         row.Cells[(int)GridColumnEnum.Status].Value = $"{LyricResultEnum.Processing.ResultText()}...";
 
                         // Try to get the first search hit
-                        await LyricSearch.SearchAsync(LyricsFinderData, _currentPlaylist.Items[key], cancellationToken, false);
+                        await LyricSearch.SearchAsync(LyricsFinderData, _currentLyricsFinderPlaylist.Items[key], cancellationToken, false);
 
                         // Process the results
                         // The first lyric found by any service is used for each item
@@ -392,10 +396,10 @@ namespace MediaCenter.LyricsFinder
 
                         var processedCount = (queue.Count > 0)
                             ? queue.Peek() + 1
-                            : _currentPlaylist.Items.Count;
+                            : _currentLyricsFinderPlaylist.Items.Count;
 
-                        _progressPercentage = Convert.ToInt32(100 * processedCount / _currentPlaylist.Items.Count);
-                        await StatusMessageAsync($"Processed {processedCount} items and found {foundItemIndices.Count} lyrics for the current playlist with {_currentPlaylist.Items.Count} items...", true, true);
+                        _progressPercentage = Convert.ToInt32(100 * processedCount / _currentLyricsFinderPlaylist.Items.Count);
+                        await StatusMessageAsync($"Processed {processedCount} items and found {foundItemIndices.Count} lyrics for the current playlist with {_currentLyricsFinderPlaylist.Items.Count} items...", true, true);
 
                         row.Cells[(int)GridColumnEnum.Status].Value = (found)
                             ? LyricResultEnum.Found.ResultText()

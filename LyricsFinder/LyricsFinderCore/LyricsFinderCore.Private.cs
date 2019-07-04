@@ -60,7 +60,8 @@ namespace MediaCenter.LyricsFinder
         private List<string> _noLyricsSearchList = new List<string>();
         private SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
         private McPlayListsResponse _currentUnsortedMcPlaylistsResponse = null;
-        private McMplResponse _currentPlaylist = null;
+        private McMplResponse _currentLyricsFinderPlaylist = null;
+        private McMplResponse _currentMcPlaylist = null;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private static Bitmap _emptyCoverImage = new Bitmap(400, 400);
         private static Bitmap _emptyPlayPauseImage = new Bitmap(16, 16);
@@ -319,20 +320,21 @@ namespace MediaCenter.LyricsFinder
         /// <exception cref="Exception">Current playlist is not initializes yet.</exception>
         private async Task FillDataGridAsync()
         {
-            if ((_currentPlaylist == null) || ((_currentPlaylist.Items?.Count ?? -1) < 0))
+            if ((_currentLyricsFinderPlaylist == null) || ((_currentLyricsFinderPlaylist.Items?.Count ?? -1) < 0))
                 throw new Exception("Current playlist is not initialized yet.");
 
             McStatusTimer.Stop();
 
             // ErrorTest();
 
+            var idx = 0;
             var dgv = MainGridView;
 
             // Clean up the previous list
             dgv.Rows.Clear();
             IsDataChanged = false;
 
-            foreach (var item in _currentPlaylist.Items)
+            foreach (var item in _currentLyricsFinderPlaylist.Items)
             {
                 var initStatus = LyricResultEnum.NotProcessedYet.ResultText();
                 var row = new DataGridViewRow();
@@ -342,7 +344,7 @@ namespace MediaCenter.LyricsFinder
                 _emptyPlayPauseImage.MakeTransparent();
 
                 // Create the row and make it's height equal to the width of the bitmap img
-                row.CreateCells(dgv, value.Key, _emptyPlayPauseImage, coverImage, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
+                row.CreateCells(dgv, idx++, value.Key, _emptyPlayPauseImage, coverImage, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
                 row.Height = dgv.Columns[(int)GridColumnEnum.Cover].Width;
 
                 dgv.Rows.Add(row);
@@ -697,8 +699,8 @@ namespace MediaCenter.LyricsFinder
             if (menuItemName.IsNullOrEmptyTrimmed())
             {
                 // If reload, get the ID and name of the current playlist
-                id = _currentPlaylist?.Id ?? 0;
-                name = _currentPlaylist?.Name ?? "Playing Now";
+                id = _currentLyricsFinderPlaylist?.Id ?? 0;
+                name = _currentLyricsFinderPlaylist?.Name ?? "Playing Now";
             }
             else
             {
@@ -844,31 +846,31 @@ namespace MediaCenter.LyricsFinder
             if (selectedRows.Count < 1)
                 return;
 
+            // Is the selected file in the Media Center's Playing Now list?
             var rowIdx = selectedRows[0].Index;
-
-            // Is the selected file in the Playing Now list?
+            var selectedIndexCell = rows[rowIdx].Cells[(int)GridColumnEnum.Index] as DataGridViewTextBoxCell;
             var selectedKeyCell = rows[rowIdx].Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+            var selectedIndex = (int)(selectedIndexCell?.Value ?? -1);
             var selectedKey = (int)(selectedKeyCell?.Value ?? -1);
-            var playingNowList = await McRestService.GetPlayNowListAsync();
-            var isInPlayingNowList = playingNowList.Items.ContainsKey(selectedKey);
+            var isInPlayingNowList = _currentMcPlaylist.Items.ContainsKey(selectedKey);
 
             if (isInPlayingNowList)
             {
-                if (rowIdx == _playingIndex)
+                if (selectedIndex == _playingIndex)
                     await McRestService.PlayPauseAsync();
                 else
-                    await McRestService.PlayByIndexAsync(rowIdx);
+                    await McRestService.PlayByIndexAsync(selectedIndex);
             }
-            else if ((_currentPlaylist != null) && (_currentPlaylist.Id > 0))
+            else if ((_currentLyricsFinderPlaylist != null) && (_currentLyricsFinderPlaylist.Id > 0))
             {
                 // Replace the MC Playing Now list with the current LyricsFinder playlist
-                var rsp = await McRestService.PlayPlaylistAsync(_currentPlaylist.Id);
+                var rsp = await McRestService.PlayPlaylistAsync(_currentLyricsFinderPlaylist.Id);
 
                 // Play the selected item
                 if (rsp.IsOk)
                 {
                     _playingKey = selectedKey;
-                    await McRestService.PlayByIndexAsync(rowIdx);
+                    await McRestService.PlayByIndexAsync(selectedIndex);
                 }
             }
 
@@ -947,7 +949,8 @@ namespace MediaCenter.LyricsFinder
             if (selectedRows.Count < 1)
                 return;
 
-            var rowIdx = MainGridView.SelectedRows[0].Index;
+            var selectedKeyCell = selectedRows[0].Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+            var selectedKey = (int)(selectedKeyCell?.Value ?? -1);
             var mcInfo = await McRestService.InfoAsync();
 
             _playingIndex = -1;
@@ -962,14 +965,16 @@ namespace MediaCenter.LyricsFinder
             for (int i = 0; i < rows.Count; i++)
             {
                 var row = rows[i];
+                var indexCell = row.Cells[(int)GridColumnEnum.Index] as DataGridViewTextBoxCell;
                 var keyCell = row.Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+                var index = (int)(indexCell?.Value ?? -1);
                 var key = keyCell?.Value?.ToString() ?? string.Empty;
                 var imgCell = row.Cells[(int)GridColumnEnum.PlayImage] as DataGridViewImageCell;
 
                 if (mcInfo.FileKey.Equals(key, StringComparison.InvariantCultureIgnoreCase))
                 {
+                    _playingIndex = index;
                     _playingKey = int.Parse(mcInfo.FileKey, NumberStyles.None, CultureInfo.InvariantCulture);
-                    _playingIndex = i;
 
                     await BlankPlayStatusBitmapsAsync(i); // Clear all other bitmaps than the one in playIdx row
 
@@ -993,14 +998,14 @@ namespace MediaCenter.LyricsFinder
 
             if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
             {
-                ContextPlayPauseMenuItem.Text = (_playingIndex == rowIdx) ? "Pause play" : "Play";
+                ContextPlayPauseMenuItem.Text = (_playingKey == selectedKey) ? "Pause play" : "Play";
                 ContextPlayStopMenuItem.Visible = true;
                 ToolsPlayStartStopButton.SetRunningState(true);
             }
             else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
             {
-                ContextPlayPauseMenuItem.Text = (_playingIndex == rowIdx) ? "Continue play" : "Play";
-                ContextPlayStopMenuItem.Visible = true;
+                ContextPlayPauseMenuItem.Text = (_playingKey == selectedKey) ? "Continue play" : "Play";
+                ContextPlayStopMenuItem.Visible = false;
                 ToolsPlayStartStopButton.SetRunningState(false);
             }
             else
