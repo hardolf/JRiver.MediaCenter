@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,20 +23,24 @@ namespace MediaCenter.SharedComponents
         /// <summary>
         /// Make the TextBox fit its contents.
         /// </summary>
-        /// <param name="textBox">The text box.</param>
+        /// <param name="control">The text box.</param>
         /// <remarks>
         /// Source: http://csharphelper.com/blog/2018/02/resize-a-textbox-to-fit-its-text-in-c/ 
         /// </remarks>
-        public static void AutoSizeTextBox(this TextBox textBox)
+        public static void AutoSizeTextBox(this Control control)
         {
+            if (control == null) throw new ArgumentNullException(nameof(control));
+
             const int x_margin = 0;
             const int y_margin = 2;
 
-            Size size = TextRenderer.MeasureText(textBox.Text, textBox.Font);
+            Size size = TextRenderer.MeasureText(control.Text, control.Font);
 
-            textBox.ClientSize =
-                new Size(size.Width + x_margin, size.Height + y_margin);
+            control.ClientSize = new Size(size.Width + x_margin, size.Height + y_margin);
         }
+
+
+        public static string GetActualAsyncMethodName([CallerMemberName]string name = null) => name;
 
 
         /// <summary>
@@ -46,16 +51,41 @@ namespace MediaCenter.SharedComponents
         /// Appended string with all the text boxes' trimmed texts, with CR+LF as separators.
         /// </returns>
         /// <remarks>This routine can be used as a simple "serialization" function.</remarks>
-        public static string GetAllTextBoxesText(this Control parentControl)
+        public static string GetAllControlText(this Control parentControl)
         {
+            if (parentControl == null) throw new ArgumentNullException(nameof(parentControl));
+
             var ret = new StringBuilder();
+
+            ret.AppendLine($"{parentControl.Name}: {parentControl.Text.Trim()}");
 
             foreach (var ctl in parentControl.Controls)
             {
-                if (ctl is TextBox txt) ret.AppendLine($"{txt.Name}: {txt.Text.Trim()}");
+                if (ctl is TextBox txt)
+                    ret.AppendLine($"{txt.Name}: {txt.Text.Trim()}");
+                else if (ctl is NumericUpDown ud)
+                    ret.AppendLine($"{ud.Name}: {ud.Value.ToString(CultureInfo.InvariantCulture).Trim()}");
+                else if (ctl is CheckBox chk)
+                    ret.AppendLine($"{chk.Name}: {chk.Checked}");
             }
 
             return ret.ToString();
+        }
+
+
+        /// <summary>
+        /// Gets the size of the control text.
+        /// </summary>
+        /// <param name="control">The control.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">control</exception>
+        public static Size GetControlTextSize(this Control control)
+        {
+            if (control == null) throw new ArgumentNullException(nameof(control));
+
+            Size ret = TextRenderer.MeasureText(control.Text, control.Font);
+
+            return ret;
         }
 
 
@@ -64,7 +94,10 @@ namespace MediaCenter.SharedComponents
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <param name="target">The target.</param>
-        /// <returns>The assembly build datetime.</returns>
+        /// <returns>
+        /// The assembly build datetime.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">assembly</exception>
         /// <remarks>
         /// <para>Sources:</para>
         /// <para>https://stackoverflow.com/questions/1600962/displaying-the-build-date</para>
@@ -72,10 +105,12 @@ namespace MediaCenter.SharedComponents
         /// </remarks>
         public static DateTime GetLinkerTime(this Assembly assembly, TimeZoneInfo target = null)
         {
-            var filePath = assembly.Location;
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+
             const int c_PeHeaderOffset = 60;
             const int c_LinkerTimestampOffset = 8;
 
+            var filePath = assembly.Location;
             var buffer = new byte[2048];
 
             using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
@@ -99,9 +134,14 @@ namespace MediaCenter.SharedComponents
         /// </summary>
         /// <param name="separator">The separator.</param>
         /// <param name="strings">The strings.</param>
-        /// <returns>Joined string.</returns>
+        /// <returns>
+        /// Joined string.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">separator
+        /// or
+        /// separator</exception>
         /// <remarks>
-        /// <para>This function is an improved version of the <see cref="string.Join"/> method.</para>
+        /// <para>This function is an improved version of the <see cref="string.Join" /> method.</para>
         /// <para>It removes any duplicate trailing separators.</para>
         /// </remarks>
         public static string JoinTrimmedStrings(string separator, params string[] strings)
@@ -138,8 +178,11 @@ namespace MediaCenter.SharedComponents
         /// <returns>
         ///   <c>true</c> if the input string contains one or more of the strings in the specified compare list; otherwise, <c>false</c>.
         /// </returns>
+        /// <exception cref="ArgumentNullException">input</exception>
         public static bool Contains(this string input, IEnumerable<string> compareList)
         {
+            if (input.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(input));
+
             input = input.ToUpperInvariant();
 
             var ret = compareList.Any(s => input.Contains(s.ToUpperInvariant()));
@@ -208,9 +251,13 @@ namespace MediaCenter.SharedComponents
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException">input</exception>
         public static string LfToCrLf(this string input)
         {
-            var ret = new StringBuilder(input);
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input.IsNullOrEmptyTrimmed()) return input;
+
+                var ret = new StringBuilder(input);
 
             for (int i = 0; i < ret.Length; i++)
             {
@@ -219,6 +266,27 @@ namespace MediaCenter.SharedComponents
             }
 
             return ret.ToString();
+        }
+
+
+        /// <summary>
+        /// Determines the minimum of the parameters.
+        /// </summary>
+        /// <param name="integers">The integers.</param>
+        /// <returns>The lowest of the specified integers.</returns>
+        public static int Min(params int[] integers)
+        {
+            if (integers.IsNullOrEmpty()) throw new ArgumentException("You must specify 1 or more integers.");
+
+            var ret = integers[0];
+
+            for (int i = 1; i < integers.Length; i++)
+            {
+                if (integers[i] < ret)
+                    ret = integers[i];
+            }
+
+            return ret;
         }
 
     }

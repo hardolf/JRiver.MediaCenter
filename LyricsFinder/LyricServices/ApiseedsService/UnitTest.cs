@@ -1,10 +1,14 @@
 ﻿using System;
+using System.IO;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Xml;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.SharedComponents;
 
 namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 {
@@ -44,44 +48,52 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 Name = "yyy" // Does not exist
             };
 
-            _service = new ApiseedsService();
-            _service.RefreshServiceSettings();
+            _service = (ApiseedsService)LyricsFinderDataType.GetLyricService<ApiseedsService>();
         }
 
 
         [TestMethod]
-        public void TestMethod01()
+        public async Task ApiseedsTestMethod01()
         {
-            var resultService = _service.Process(_item1);
+            using (var cancellationTokenSource = new CancellationTokenSource())
+            {
+                var resultService = await _service.ProcessAsync(_item1, cancellationTokenSource.Token).ConfigureAwait(false);
 
-            Assert.IsNotNull(resultService);
-            Assert.AreNotEqual(0, resultService.FoundLyricList.Count);
-            Assert.IsNotNull(resultService.FoundLyricList[0]);
-            Assert.IsNotNull(resultService.FoundLyricList[0].LyricText);
-            Assert.AreNotEqual(0, resultService.FoundLyricList[0].LyricText.Trim().Length);
-            Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("APISEEDS"));
+                Assert.IsNotNull(resultService);
+                Assert.AreNotEqual(0, resultService.FoundLyricList.Count);
+                Assert.IsNotNull(resultService.FoundLyricList[0]);
+                Assert.IsNotNull(resultService.FoundLyricList[0].LyricText);
+                Assert.AreNotEqual(0, resultService.FoundLyricList[0].LyricText.Trim().Length);
+                Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("APISEEDS"));
+            }
         }
 
 
         [TestMethod]
-        public void TestMethod02()
+        public async Task ApiseedsTestMethod02()
         {
-            var resultService = _service.Process(_item2);
+            using (var cancellationTokenSource = new CancellationTokenSource())
+            {
+                var resultService = await _service.ProcessAsync(_item2, cancellationTokenSource.Token).ConfigureAwait(false);
 
-            Assert.IsNotNull(resultService);
-            Assert.AreEqual(0, resultService.FoundLyricList.Count);
-            Assert.AreEqual(resultService.LyricResult, LyricResultEnum.NotFound);
+                Assert.IsNotNull(resultService);
+                Assert.AreEqual(0, resultService.FoundLyricList.Count);
+                Assert.AreEqual(resultService.LyricResult, LyricResultEnum.NotFound);
+            }
         }
 
 
         [TestMethod]
-        public void TestMethod03()
+        public async Task ApiseedsTestMethod03()
         {
-            var resultService = _service.Process(_item3);
+            using (var cancellationTokenSource = new CancellationTokenSource())
+            {
+                var resultService = await _service.ProcessAsync(_item3, cancellationTokenSource.Token).ConfigureAwait(false);
 
-            Assert.IsNotNull(resultService);
-            Assert.AreEqual(0, resultService.FoundLyricList.Count);
-            Assert.AreEqual(resultService.LyricResult, LyricResultEnum.NotFound);
+                Assert.IsNotNull(resultService);
+                Assert.AreEqual(0, resultService.FoundLyricList.Count);
+                Assert.AreEqual(resultService.LyricResult, LyricResultEnum.NotFound);
+            }
         }
 
     }

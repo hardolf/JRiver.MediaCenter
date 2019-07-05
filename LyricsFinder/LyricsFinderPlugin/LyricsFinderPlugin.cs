@@ -7,17 +7,20 @@ Plugin creation date:
 2018.04.12
 
 Version Number:
-1.0.0
+1.2.0
 
-Template Created by Mr ChriZ
+Inspired by template created by Mr ChriZ
 Source: http://accessories.jriver.com/mediacenter/mc_data/plugins/CSPlugin_Template.rar
 
 Modified: 2019.05.25 by Hardolf.
+Modified: 2019.07.01 by Hardolf.
 */
 
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -60,38 +63,49 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="exception">The exeption.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private static void ErrorHandler(string message, Exception exception)
         {
             const string indent = "    ";
 
-            // StatusLog(ex);
+            try
+            {
+                // StatusLog(ex);
 
-            message += $" \r\n"
-                + $"{indent}{exception.Message} \r\n\r\n"
-                + $"The failure occurred in class object {exception.Source} \r\n"
-                + $"when calling Method {exception.TargetSite}.\r\n";
+                message += $" \r\n"
+                    + $"{indent}{exception.Message} \r\n\r\n"
+                    + $"The failure occurred in class object {exception.Source} \r\n"
+                    + $"when calling Method {exception.TargetSite}.\r\n";
 
-            if (exception.InnerException != null)
+                if (exception.InnerException != null)
+                    message += " \r\n"
+                        + $"Inner exception: \r\n"
+                        + $"{indent}{exception.InnerException} \r\n";
+
                 message += " \r\n"
-                    + $"Inner exception: \r\n"
-                    + $"{indent}{exception.InnerException} \r\n";
+                    + $"Stack trace: \r\n"
+                    + $"{exception.StackTrace}";
 
-            message += " \r\n"
-                + $"Stack trace: \r\n"
-                + $"{exception.StackTrace}";
-
-            MessageBox.Show(message, "Fatal plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(message, "Fatal plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error displaying error message: " + ex.Message, "Fatal plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
 
         /// <summary>
-        /// After the plugin has been created Media Center will call the following method, 
+        /// After the plugin has been created Media Center will call the following method,
         /// giving us a reference to the Media Center interface.
         /// </summary>
         /// <param name="mediaCenterReference">Media Center Reference.</param>
+        /// <exception cref="ArgumentNullException">mediaCenterReference</exception>
+        /// <remarks>
+        /// <para>The "async Task" construct seems to work instead of just "void".</para>
+        /// <para>The routine name must be "Init", otherwise Media Center won't find it.</para>
+        /// </remarks>
         [ComVisible(true)]
-        public void Init(MCAutomation mediaCenterReference)
+        public async void Init(MCAutomation mediaCenterReference)
         {
             try
             {
@@ -99,6 +113,8 @@ namespace MediaCenter.LyricsFinder
 
                 // This tells MC to also call our MJEvent method
                 MediaCenterReference.FireMJEvent += new IMJAutomationEvents_FireMJEventEventHandler(MJEvent);
+
+                await InitCoreAsync();
             }
             catch (Exception ex)
             {

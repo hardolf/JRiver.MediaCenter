@@ -76,15 +76,6 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
         [XmlIgnore]
         public virtual Dictionary<int, McMplItem> Items { get; set; }
 
-        /// <summary>
-        /// Gets or sets the XML root element.
-        /// </summary>
-        /// <value>
-        /// The XML root element.
-        /// </value>
-        [XmlIgnore]
-        private XmlElement XmlRoot { get; set; }
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="McMplResponse"/> class.
@@ -109,39 +100,76 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="McMplResponse" /> class.
+        /// Clones this Media Center MPL response instance.
         /// </summary>
-        /// <param name="xml">The XML string.</param>
-        /// <param name="id">The identifier.</param>
-        /// <param name="name">The name, optional name of the playlist.</param>
-        public McMplResponse(string xml, int id = -1, string name = null)
-            : this(id, name)
+        /// <returns>A shallow copy of this <see cref="McMplResponse"/> object.</returns>
+        public McMplResponse Clone()
         {
+            var ret = new McMplResponse()
+            {
+                Id = Id,
+                Name = Name,
+                PathSeparator = PathSeparator,
+                Title = Title,
+                Version = Version
+            };
+
+            foreach (var item in Items)
+            {
+                ret.Items.Add(item.Key, item.Value);
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Clones the specified Media Center MPL response object.
+        /// </summary>
+        /// <param name="mcMplResponse">The Media Center MPL response.</param>
+        /// <returns>A shallow copy of the specified <see cref="McMplResponse"/> object.</returns>
+        public static McMplResponse Clone(McMplResponse mcMplResponse)
+        {
+            return mcMplResponse.Clone();
+        }
+
+
+        /// <summary>
+        /// Creates the mc MPL response.
+        /// </summary>
+        /// <param name="xml">The XML.</param>
+        /// <param name="id">The identifier.</param>
+        /// <param name="name">The name.</param>
+        /// <returns><see cref="McMplResponse"/> object.</returns>
+        public static async Task<McMplResponse> CreateMcMplResponseAsync(string xml, int id = -1, string name = null)
+        {
+            var ret = new McMplResponse(id, name);
+
             XmlDocument xDoc = new XmlDocument() { XmlResolver = null };
-            McMplItem item = null;
-            XmlNodeList xItems = null;
 
-            var sr = new StringReader(xml);
-            var reader = XmlReader.Create(sr, new XmlReaderSettings() { XmlResolver = null });
-            xDoc.Load(reader);
+            using (var sReader = new StringReader(xml))
+            using (var xReader = XmlReader.Create(sReader, new XmlReaderSettings() { XmlResolver = null }))
+                xDoc.Load(xReader);
 
-            XmlRoot = xDoc.DocumentElement;
-            PathSeparator = XmlRoot.GetAttribute("PathSeparator");
-            Title = XmlRoot.GetAttribute("Title");
-            Version = XmlRoot.GetAttribute("Version");
-            xItems = XmlRoot.GetElementsByTagName("Item");
+            var xmlRoot = xDoc.DocumentElement;
+
+            ret.PathSeparator = xmlRoot.GetAttribute("PathSeparator");
+            ret.Title = xmlRoot.GetAttribute("Title");
+            ret.Version = xmlRoot.GetAttribute("Version");
+
+            var xItems = xmlRoot.GetElementsByTagName("Item");
 
             foreach (XmlElement xItem in xItems)
             {
-                item = new McMplItem(xItem);
+                var item = await McMplItem.CreateMcMplItemAsync(xItem).ConfigureAwait(false);
 
-                var task = Task.Run(async () => { await item.FillPropertiesFromFields(); });
+                await item.FillPropertiesFromFieldsAsync().ConfigureAwait(false);
 
-                task.Wait();
-
-                if (!Items.Keys.Contains(item.Key))
-                    Items.Add(item.Key, item);
+                if (!ret.Items.Keys.Contains(item.Key))
+                    ret.Items.Add(item.Key, item);
             }
+
+            return ret;
         }
 
     }

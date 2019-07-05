@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
 using System.ServiceModel;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,10 +9,11 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.LyricServices.ChartLyricsReference;
-using MediaCenter.LyricsFinder.Model.LyricServices.Properties;
+using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
-
+using System.Net.Http;
+using System.Threading;
 
 namespace MediaCenter.LyricsFinder.Model.LyricServices
 {
@@ -40,17 +39,30 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <param name="getAll">If set to <c>true</c> get all search hits; else get the first one only.</param>
-        /// <returns></returns>
-        public override AbstractLyricService Process(McMplItem item, bool getAll = false)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="isGetAll">If set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <returns>
+        ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="Stands4Service" />.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">item</exception>
+        /// <exception cref="LyricServiceCommunicationException"></exception>
+        /// <exception cref="GeneralLyricServiceException"></exception>
+        /// <exception cref="System.ArgumentNullException">item</exception>
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            base.Process(item); // Result: not found
+            if (item == null) throw new ArgumentNullException(nameof(item));
 
             apiv1Soap client = null;
+            var msg = string.Empty;
+            var ub = new UriBuilder(Credit.ServiceUrl);
 
             try
             {
+                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
+
+                msg = "CreateServiceClient";
                 client = CreateServiceClient<apiv1Soap>("apiv1Soap");
+                msg = "SearchLyric";
 
                 var rsp1 = client.SearchLyric(item.Artist, item.Name);
 
@@ -61,11 +73,18 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         if (rspLyricResult == null) continue;
                         if (rspLyricResult.LyricId == 0) continue;
 
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        msg = "GetLyric";
                         var rsp2 = client.GetLyric(rspLyricResult.LyricId, rspLyricResult.LyricChecksum);
 
-                        AddFoundLyric(rsp2.Lyric, new SerializableUri(rsp2.LyricUrl));
+                        AddFoundLyric(rsp2.Lyric, new Uri(rsp2.LyricUrl));
                     }
                 }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed on {msg}.", isGetAll, Credit, item, ub.Uri, ex);
             }
             catch (Exception ex)
             {
@@ -76,7 +95,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 }
                 catch { /* I don't care */ }
 
-                throw new CommunicationException($"Failed to get info from \"{Credit.ServiceName}\".", ex);
+                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed on {msg}.", isGetAll, Credit, item, ex);
             }
 
             return this;

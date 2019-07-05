@@ -175,7 +175,7 @@
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
             this.CloseButton.TabIndex = 8;
             this.CloseButton.Text = "&Close (Esc)";
-            this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
+            this.CloseButton.Click += new System.EventHandler(this.CloseButton_ClickAsync);
             // 
             // ReleaseNotesLinkLabel
             // 
@@ -189,7 +189,7 @@
             this.ReleaseNotesLinkLabel.TabIndex = 2;
             this.ReleaseNotesLinkLabel.TabStop = true;
             this.ReleaseNotesLinkLabel.Text = "Release notes";
-            this.ReleaseNotesLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
+            this.ReleaseNotesLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClickedAsync);
             // 
             // BuildDateLabel
             // 
@@ -216,7 +216,7 @@
             this.ProjectLinkLabel.TabStop = true;
             this.ProjectLinkLabel.Text = "LyricsFinder project source on GitHub";
             this.AboutToolTip.SetToolTip(this.ProjectLinkLabel, "https://github.com/hardolf/JRiver.MediaCenter");
-            this.ProjectLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClicked);
+            this.ProjectLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClickedAsync);
             // 
             // UpdateCheckButton
             // 
@@ -227,7 +227,7 @@
             this.UpdateCheckButton.TabIndex = 7;
             this.UpdateCheckButton.Text = "Check for Updates...";
             this.UpdateCheckButton.UseVisualStyleBackColor = true;
-            this.UpdateCheckButton.Click += new System.EventHandler(this.UpdateCheckButton_Click);
+            this.UpdateCheckButton.Click += new System.EventHandler(this.UpdateCheckButton_ClickAsync);
             // 
             // AboutBox
             // 
@@ -247,7 +247,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "AboutBox";
             this.TransparencyKey = System.Drawing.Color.Teal;
-            this.Load += new System.EventHandler(this.AboutBox_Load);
+            this.Load += new System.EventHandler(this.AboutBox_LoadAsync);
             this.AboutBoxPanel.ResumeLayout(false);
             this.AboutBoxLayoutPanel.ResumeLayout(false);
             this.AboutBoxLayoutPanel.PerformLayout();

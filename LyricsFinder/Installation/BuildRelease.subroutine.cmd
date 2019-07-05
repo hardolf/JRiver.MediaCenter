@@ -11,7 +11,7 @@ setlocal
 set _my_dir=%~dp0
 set _my_name=%~n0
 set _exit_code=0
-set _cmd=MSBuild.exe ..\..\LyricsFinder.sln -property:Configuration=Release
+set _cmd=MSBuild.exe ..\..\LyricsFinder.sln -property:Configuration=Release -t:Clean,Build
 set _vs_versions=2017 2019
 set _vs_net_var1=C:\Program Files (x86)\Microsoft Visual Studio
 set _vs_net_var2=Community\Common7\Tools\VsDevCmd.bat

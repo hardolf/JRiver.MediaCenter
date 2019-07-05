@@ -28,16 +28,10 @@ The LyricsFinder is expected to be compatible with future versions of JRiver Med
 Current lyrics services
 -----------------------
 Apiseeds Lyrics API          : https://apiseeds.com (Account required, no other restrictions)
+AZLyrics                     : https://www.azlyrics.com (No restrictions, but best suited to manual searches, otherwise risk of temporary IP address banning)
 Chart Lyrics                 : http://www.chartlyrics.com (No restrictions)
 Musixmatch                   : https://www.musixmatch.com (Account required, max. 2.000 free requests per day for 30% of the lyrics text, paid plans for full lyrics)
 STANDS4 Network Lyrics.com   : https://www.lyrics.com (Account required, max. 100 free requests per day)
-
-
-Relevant links
---------------
-JRiver                       : https://www.jriver.com/
-Forum                        : https://yabb.jriver.com/interact/
-Wiki                         : https://wiki.jriver.com/
 
 
 Installation
@@ -51,4 +45,13 @@ Installation notes
 ------------------
 The Setup.exe automatically finds any installed JRiver Media Center versions and the user can select which one to install the plug-in to.
 Only one version of JRiver Media Center can be "plugged-in" on the same machine, as the plug-in is registered via COM.
-The standalone program connects to the JRiver Media Center version matching the URL in the standalone program's configuration.
+The standalone program connects to the JRiver Media Center version matching the URL in the standalone program's configuration (GUI Tools menu > Options).
+
+
+Relevant links
+--------------
+LyricsFinder Wiki            : https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder
+LyricsFinder bug reports     : https://github.com/hardolf/JRiver.MediaCenter/projects/3
+JRiver                       : https://www.jriver.com/
+Forum                        : https://yabb.jriver.com/interact/
+Wiki                         : https://wiki.jriver.com/

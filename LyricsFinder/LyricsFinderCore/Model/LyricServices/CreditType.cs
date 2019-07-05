@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.Helpers;
+using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.SharedComponents;
 
 
@@ -19,6 +20,9 @@ namespace MediaCenter.LyricsFinder.Model
     [Serializable]
     public class CreditType
     {
+        private Uri _creditUrl;
+        private Uri _serviceUrl;
+
 
         /// <summary>
         /// Gets or sets the company.
@@ -30,12 +34,12 @@ namespace MediaCenter.LyricsFinder.Model
         public virtual string Company { get; set; }
 
         /// <summary>
-        /// Gets or sets the copyright.
+        /// Gets or sets the copyright of the individual song item.
         /// </summary>
         /// <value>
-        /// The copyright.
+        /// The copyright text.
         /// </value>
-        [XmlElement]
+        [XmlIgnore]
         public virtual string Copyright { get; set; }
 
         /// <summary>
@@ -66,6 +70,15 @@ namespace MediaCenter.LyricsFinder.Model
         public virtual string DateFormat { get; set; }
 
         /// <summary>
+        /// Gets or sets the display properties.
+        /// </summary>
+        /// <value>
+        /// The display properties.
+        /// </value>
+        [XmlIgnore]
+        public virtual Dictionary<string, DisplayProperty> DisplayProperties { get; private set; }
+
+        /// <summary>
         /// Gets or sets the name of the service.
         /// </summary>
         /// <value>
@@ -80,8 +93,21 @@ namespace MediaCenter.LyricsFinder.Model
         /// <value>
         /// The credit URL.
         /// </value>
+        [XmlIgnore]
+        public virtual Uri CreditUrl { get => _creditUrl; set => _creditUrl = value; }
+
+        /// <summary>
+        /// Gets or sets the credit URL text.
+        /// </summary>
+        /// <value>
+        /// The credit URL text.
+        /// </value>
         [XmlElement]
-        public virtual SerializableUri CreditUrl { get; set; }
+        public virtual string CreditUrlText
+        {
+            get { return _creditUrl?.AbsoluteUri; }
+            set { _creditUrl = (value.IsNullOrEmptyTrimmed()) ? null : new UriBuilder(value).Uri; }
+        }
 
         /// <summary>
         /// Gets or sets the service URL.
@@ -89,26 +115,21 @@ namespace MediaCenter.LyricsFinder.Model
         /// <value>
         /// The service URL.
         /// </value>
-        [XmlElement]
-        public virtual SerializableUri ServiceUrl { get; set; }
+        [XmlIgnore]
+        public virtual Uri ServiceUrl { get => _serviceUrl; set => _serviceUrl = value; }
 
         /// <summary>
-        /// Gets or sets the user identifier.
+        /// Gets or sets the service URL text.
         /// </summary>
         /// <value>
-        /// The user identifier.
+        /// The service URL text.
         /// </value>
         [XmlElement]
-        public string UserId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the token.
-        /// </summary>
-        /// <value>
-        /// The token.
-        /// </value>
-        [XmlElement]
-        public string Token { get; set; }
+        public virtual string ServiceUrlText
+        {
+            get { return _serviceUrl?.AbsoluteUri; }
+            set { _serviceUrl = (value.IsNullOrEmptyTrimmed()) ? null : new UriBuilder(value).Uri; }
+        }
 
 
         /// <summary>
@@ -116,6 +137,8 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         public CreditType()
         {
+            DisplayProperties = new Dictionary<string, DisplayProperty>();
+
             var sb = new StringBuilder();
 
             sb.AppendLine();
@@ -129,6 +152,22 @@ namespace MediaCenter.LyricsFinder.Model
 
             CreditTextFormat = sb.ToString();
             DateFormat = "yyyy.MM.dd";
+        }
+
+
+        /// <summary>
+        /// Creates the display properties.
+        /// </summary>
+        public virtual void CreateDisplayProperties()
+        {
+            DisplayProperties.Clear();
+
+            DisplayProperties.Add(nameof(ServiceName), new DisplayProperty("Name", ServiceName, null, nameof(ServiceName)));
+            DisplayProperties.Add(nameof(Company), new DisplayProperty("Company", Company));
+            DisplayProperties.Add(nameof(CreditUrl), new DisplayProperty("Company Website", CreditUrl?.ToString() ?? string.Empty));
+            DisplayProperties.Add(nameof(Copyright), new DisplayProperty("Copyright text", Copyright));
+            DisplayProperties.Add(nameof(CreditTextFormat), new DisplayProperty("Credit text format", CreditTextFormat));
+            DisplayProperties.Add(nameof(ServiceUrl), new DisplayProperty("Service URL", ServiceUrl?.ToString() ?? string.Empty));
         }
 
 

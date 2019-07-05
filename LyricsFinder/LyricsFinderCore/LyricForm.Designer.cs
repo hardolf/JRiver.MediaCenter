@@ -18,6 +18,9 @@
                 if (components != null)
                     components.Dispose();
 
+                if (_cancellationTokenSource != null)
+                    _cancellationTokenSource.Dispose();
+
                 if (_searchForm != null)
                     _searchForm.Dispose();
             }
@@ -41,7 +44,6 @@
             this.ArtistTextBox = new System.Windows.Forms.TextBox();
             this.AlbumTextBox = new System.Windows.Forms.TextBox();
             this.TrackTextBox = new System.Windows.Forms.TextBox();
-            this.LyricFormTimer = new System.Windows.Forms.Timer(this.components);
             this.LyricFormPanel = new System.Windows.Forms.Panel();
             this.LyricParmsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ArtistLabel = new System.Windows.Forms.Label();
@@ -60,19 +62,19 @@
             // LyricFormTrackBar
             // 
             this.LyricFormTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.LyricFormTrackBar.Location = new System.Drawing.Point(3, 391);
+            this.LyricFormTrackBar.Location = new System.Drawing.Point(3, 491);
             this.LyricFormTrackBar.Maximum = 0;
             this.LyricFormTrackBar.Name = "LyricFormTrackBar";
             this.LyricFormTrackBar.Size = new System.Drawing.Size(283, 45);
             this.LyricFormTrackBar.TabIndex = 6;
             this.LyricFormToolTip.SetToolTip(this.LyricFormTrackBar, "Switch between all the lyrics search results (Arrows)");
             this.LyricFormTrackBar.Visible = false;
-            this.LyricFormTrackBar.Scroll += new System.EventHandler(this.LyricFormTrackBar_Scroll);
+            this.LyricFormTrackBar.Scroll += new System.EventHandler(this.LyricFormTrackBar_ScrollAsync);
             // 
             // SearchButton
             // 
             this.SearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchButton.Location = new System.Drawing.Point(211, 401);
+            this.SearchButton.Location = new System.Drawing.Point(211, 501);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(75, 23);
             this.SearchButton.TabIndex = 7;
@@ -80,20 +82,20 @@
             this.LyricFormToolTip.SetToolTip(this.SearchButton, "Search for more lyrics");
             this.SearchButton.UseVisualStyleBackColor = true;
             this.SearchButton.Visible = false;
-            this.SearchButton.Click += new System.EventHandler(this.SearchButton_Click);
+            this.SearchButton.Click += new System.EventHandler(this.SearchButton_ClickAsync);
             // 
             // CloseButton
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(300, 401);
+            this.CloseButton.Location = new System.Drawing.Point(300, 501);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(74, 23);
             this.CloseButton.TabIndex = 8;
             this.CloseButton.Text = "&Close (Esc)";
             this.LyricFormToolTip.SetToolTip(this.CloseButton, "Close the window (Esc)");
             this.CloseButton.UseVisualStyleBackColor = true;
-            this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
+            this.CloseButton.Click += new System.EventHandler(this.CloseButton_ClickAsync);
             // 
             // ArtistTextBox
             // 
@@ -128,10 +130,6 @@
             this.TrackTextBox.TabIndex = 1;
             this.LyricFormToolTip.SetToolTip(this.TrackTextBox, "Track title, change to refine search");
             // 
-            // LyricFormTimer
-            // 
-            this.LyricFormTimer.Tick += new System.EventHandler(this.LyricFormTimer_Tick);
-            // 
             // LyricFormPanel
             // 
             this.LyricFormPanel.Controls.Add(this.LyricParmsPanel);
@@ -143,7 +141,7 @@
             this.LyricFormPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricFormPanel.Location = new System.Drawing.Point(0, 0);
             this.LyricFormPanel.Name = "LyricFormPanel";
-            this.LyricFormPanel.Size = new System.Drawing.Size(384, 461);
+            this.LyricFormPanel.Size = new System.Drawing.Size(384, 561);
             this.LyricFormPanel.TabIndex = 0;
             // 
             // LyricParmsPanel
@@ -200,7 +198,7 @@
             this.LyricFormStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.LyricFormStatusLabel,
             this.LyricFormFoundStatusLabel});
-            this.LyricFormStatusStrip.Location = new System.Drawing.Point(0, 439);
+            this.LyricFormStatusStrip.Location = new System.Drawing.Point(0, 539);
             this.LyricFormStatusStrip.Name = "LyricFormStatusStrip";
             this.LyricFormStatusStrip.Size = new System.Drawing.Size(384, 22);
             this.LyricFormStatusStrip.TabIndex = 9;
@@ -225,7 +223,7 @@
             this.LyricTextBox.Multiline = true;
             this.LyricTextBox.Name = "LyricTextBox";
             this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.LyricTextBox.Size = new System.Drawing.Size(378, 311);
+            this.LyricTextBox.Size = new System.Drawing.Size(378, 411);
             this.LyricTextBox.TabIndex = 5;
             // 
             // LyricForm
@@ -233,19 +231,19 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.CloseButton;
-            this.ClientSize = new System.Drawing.Size(384, 461);
+            this.ClientSize = new System.Drawing.Size(384, 561);
             this.Controls.Add(this.LyricFormPanel);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.KeyPreview = true;
             this.MaximumSize = new System.Drawing.Size(800, 1000);
-            this.MinimumSize = new System.Drawing.Size(100, 120);
+            this.MinimumSize = new System.Drawing.Size(250, 200);
             this.Name = "LyricForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "LyricsForm";
             this.TransparencyKey = System.Drawing.Color.Teal;
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricForm_FormClosing);
-            this.Load += new System.EventHandler(this.LyricForm_Load);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricForm_KeyDown);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricForm_FormClosingAsync);
+            this.Load += new System.EventHandler(this.LyricForm_LoadAsync);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricForm_KeyDownAsync);
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).EndInit();
             this.LyricFormPanel.ResumeLayout(false);
             this.LyricFormPanel.PerformLayout();
@@ -260,7 +258,6 @@
         #endregion
 
         private System.Windows.Forms.ToolTip LyricFormToolTip;
-        private System.Windows.Forms.Timer LyricFormTimer;
         private System.Windows.Forms.Panel LyricFormPanel;
         private System.Windows.Forms.StatusStrip LyricFormStatusStrip;
         private System.Windows.Forms.ToolStripStatusLabel LyricFormStatusLabel;

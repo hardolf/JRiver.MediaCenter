@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.SharedComponents;
 
 using Newtonsoft.Json;
@@ -20,18 +23,46 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     /// <summary>
     /// Utilities for the LyricsFinder.
     /// </summary>
-    internal static class Utility
+    public static class Utility
     {
 
         // Private constants
         private const string UnInitializedPrivateSettingText = "YOUR_OWN_STRING";
-        private static readonly Uri LatestReleaseUrl = new Uri("https://api.github.com/repos/hardolf/JRiver.MediaCenter/releases/latest");
+        private static readonly Uri LatestReleaseUrl = new UriBuilder("https://api.github.com/repos/hardolf/JRiver.MediaCenter/releases/latest").Uri;
+
+        // We don't dispose of these objects
+        private static HttpClientHandler _httpClientHandler = new HttpClientHandler();
+        private static HttpClient _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
+        private static readonly HttpClient _httpClientAnonymous = new HttpClient();
+
 
         // Public constants
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public const string AppSettingsSectionName = "appSettings";
+        public const string AppConfigFileExt = ".config";
         public const string PrivateConfigFileExt = ".private.config";
         public const string PrivateConfigTemplateFileExt = ".template.config";
-        public static readonly Uri RepositoryUrl = new Uri("https://github.com/hardolf/JRiver.MediaCenter");
+        public static readonly Uri RepositoryUrl = new UriBuilder("https://github.com/hardolf/JRiver.MediaCenter").Uri;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
+
+
+        /// <summary>
+        /// Gets the application settings file path.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <returns>
+        /// String with the application settings file path.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">assembly</exception>
+        public static string GetAppSettingsFilePath(Assembly assembly)
+        {
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+
+            var ret = assembly.Location + AppConfigFileExt;
+
+            return ret;
+        }
 
 
         /// <summary>
@@ -42,21 +73,147 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <returns>
         /// String with the private settings file path.
         /// </returns>
+        /// <exception cref="ArgumentNullException">assembly
+        /// or
+        /// dataDir</exception>
+        /// <remarks>Copying is no longer done after v1.2</remarks>
         public static string GetPrivateSettingsFilePath(Assembly assembly, string dataDir)
         {
-            var ret = Path.Combine(dataDir, Path.GetFileName(assembly.Location) + Utility.PrivateConfigFileExt);
-            var appConfigFilePath = assembly.Location + Utility.PrivateConfigFileExt;
-            var templateConfigFilePath = assembly.Location + Utility.PrivateConfigTemplateFileExt;
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            if (dataDir.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(dataDir));
+
+            var ret = Path.Combine(dataDir, Path.GetFileName(assembly.Location) + PrivateConfigFileExt);
+            //var appConfigFilePath = assembly.Location + PrivateConfigFileExt;
+            //var templateConfigFilePath = assembly.Location + PrivateConfigTemplateFileExt;
 
             // Create the private config. file if not found in the data dir.
-            if (!File.Exists(ret))
+            //if (!File.Exists(ret))
+            //{
+            //    if (File.Exists(appConfigFilePath))
+            //        File.Copy(appConfigFilePath, ret, false); // Upgrade from LyricsFinder 1.0
+            //    else if (File.Exists(templateConfigFilePath))
+            //        File.Copy(templateConfigFilePath, ret, false); // First start
+            //    else
+            //        ret = string.Empty; // No private settings file found / needed
+            //}
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Gets the property value from the target object.
+        /// </summary>
+        /// <param name="displayPropertyDictionary">The display property dictionary.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="ignorePropertyNameError">if set to <c>true</c> ignore property name error; else throw an exception on this error.</param>
+        /// <returns>
+        /// String value of the property from the target object.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">obj</exception>
+        /// <exception cref="System.Exception">PropertyName</exception>
+        public static object GetPropertyValue(this Dictionary<string, DisplayProperty> displayPropertyDictionary, string propertyName, bool ignorePropertyNameError = false)
+        {
+            if (displayPropertyDictionary == null) throw new ArgumentNullException(nameof(displayPropertyDictionary));
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
+
+            var isOk = displayPropertyDictionary.TryGetValue(propertyName, out var dp);
+            object ret = null;
+
+            if (isOk)
+                ret = dp.Value;
+            else if (!ignorePropertyNameError)
+                throw new KeyNotFoundException($"The dictionary has no \"{propertyName}\" key.");
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Sends the request to the MC server and reads the response.
+        /// </summary>
+        /// <param name="requestUrl">The request URL.</param>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <returns>
+        /// Complete REST service Web request image.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">requestUrl</exception>
+        /// <exception cref="HttpRequestException">\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".</exception>
+        public static async Task<Bitmap> HttpGetImageAsync(Uri requestUrl, string userName = "", string password = "")
+        {
+            if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
+
+            Bitmap ret = null;
+            Stream st;
+
+            try
             {
-                if (File.Exists(appConfigFilePath))
-                    File.Copy(appConfigFilePath, ret, false); // Upgrade from LyricsFinder 1.0
-                else if (File.Exists(templateConfigFilePath))
-                    File.Copy(templateConfigFilePath, ret, false); // First start
+                if (userName.IsNullOrEmptyTrimmed())
+                    st = await _httpClientAnonymous.GetStreamAsync(requestUrl).ConfigureAwait(false);
                 else
-                    ret = string.Empty; // No private settings file found / needed
+                {
+                    _httpClientWithCredentials.Dispose();
+                    _httpClientHandler = new HttpClientHandler
+                    {
+                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                        Credentials = new NetworkCredential(userName, password)
+                    };
+                    _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
+
+                    st = await _httpClientWithCredentials.GetStreamAsync(requestUrl).ConfigureAwait(false);
+                }
+
+                using (st)
+                {
+                    ret = new Bitmap(st);
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new HttpRequestException($"\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".", ex);
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Sends the request to the MC server and reads the response.
+        /// </summary>
+        /// <param name="requestUrl">The request URL.</param>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <returns>
+        /// Complete REST service Web request string.
+        /// </returns>
+        public static async Task<string> HttpGetStringAsync(Uri requestUrl, string userName = "", string password = "")
+        {
+            if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
+
+            string ret;
+
+            try
+            {
+                if (userName.IsNullOrEmptyTrimmed())
+                    ret = await _httpClientAnonymous.GetStringAsync(requestUrl).ConfigureAwait(false);
+                else
+                {
+                    _httpClientWithCredentials.Dispose();
+                    _httpClientHandler = new HttpClientHandler
+                    {
+                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                        Credentials = new NetworkCredential(userName, password)
+                    };
+                    _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
+
+                    ret = await _httpClientWithCredentials.GetStringAsync(requestUrl).ConfigureAwait(false);
+                }
+
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new HttpRequestException($"\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".", ex);
             }
 
             return ret;
@@ -74,6 +231,28 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         {
             return (!value.IsNullOrEmptyTrimmed() && !value.Equals(UnInitializedPrivateSettingText, StringComparison.InvariantCultureIgnoreCase));
         }
+
+
+        /// <summary>
+        /// Shows the server error message.
+        /// </summary>
+        /// <param name="response">The HTTP Web response.</param>
+        /// <returns>HTTP error message.</returns>
+        /// <exception cref="ArgumentNullException">response</exception>
+        public static string HttpWebServerErrorMessage(HttpWebResponse response)
+        {
+            if (response == null) throw new ArgumentNullException(nameof(response));
+
+            return $"Server error (HTTP {response.StatusCode}: {response.StatusDescription}).";
+        }
+
+        /// <summary>
+        /// Gets the null responce message.
+        /// </summary>
+        /// <value>
+        /// The null responce message.
+        /// </value>
+        public static string NullResponseMessage => "Response is null";
 
 
         /// <summary>
@@ -101,15 +280,46 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
 
         /// <summary>
+        /// Sets the property value on the target object.
+        /// </summary>
+        /// <param name="displayPropertyDictionary">The display property dictionary.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="ignorePropertyNameError">if set to <c>true</c> ignore property name error; else throw an exception on this error.</param>
+        /// <exception cref="System.ArgumentNullException">obj</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">The dictionary has no \"{propertyName}\" key.</exception>
+        /// <exception cref="System.Exception">PropertyName</exception>
+        public static void SetPropertyValue(this Dictionary<string, DisplayProperty> displayPropertyDictionary, string propertyName, object value, bool ignorePropertyNameError = false)
+        {
+            if (displayPropertyDictionary == null) throw new ArgumentNullException(nameof(displayPropertyDictionary));
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            var isOk = displayPropertyDictionary.TryGetValue(propertyName, out var dp);
+
+            if (isOk)
+                dp.Value = value;
+            else if (!ignorePropertyNameError)
+                throw new KeyNotFoundException($"The dictionary has no \"{propertyName}\" key.");
+        }
+
+
+        /// <summary>
         /// Check for updates.
         /// </summary>
         /// <param name="currentVersion">The current version.</param>
+        /// <param name="maxWindowSize">Maximum size of the window.</param>
         /// <param name="isInteractive">if set to <c>true</c> [is interactive].</param>
-        /// <returns><c>false</c> if a newer release is available; else <c>true</c>.</returns>
+        /// <returns>
+        ///   <c>false</c> if a newer release is available; else <c>true</c>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">currentVersion</exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}</exception>
-        public static bool UpdateCheck(Version currentVersion, bool isInteractive = false)
+        public static async Task<bool> UpdateCheckAsync(Version currentVersion, Size maxWindowSize, bool isInteractive = false)
         {
+            if (currentVersion == null) throw new ArgumentNullException(nameof(currentVersion));
+
             var req = WebRequest.Create(LatestReleaseUrl) as HttpWebRequest;
             var json = string.Empty;
 
@@ -122,9 +332,9 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             using (var rsp = req.GetResponse() as HttpWebResponse)
             {
                 if (rsp == null)
-                    throw new NullReferenceException("Response is null");
+                    throw new NullReferenceException(NullResponseMessage);
                 if (rsp.StatusCode != HttpStatusCode.OK)
-                    throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
+                    throw new Exception(HttpWebServerErrorMessage(rsp));
 
                 using (var reader = new StreamReader(rsp.GetResponseStream(), Encoding.UTF8))
                 {
@@ -155,7 +365,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 return ret;
 
             // This is the interactive part
-            var msg = string.Empty;
+            string msg;
 
             if (ret)
                 msg = $"LyricsFinder v{currentVersion} is the latest release.\r\n"
@@ -166,7 +376,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                     + $"You can visit the download site here:\r\n\r\n"
                     + $"{urlString}";
 
-            ErrorForm.Show(null, "Update information", msg);
+            await ErrorForm.ShowAsync(null, "Update information", msg, maxWindowSize);
 
             return ret;
         }
@@ -176,15 +386,16 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// Check for updates and retries 5 times.
         /// </summary>
         /// <param name="currentVersion">The current version.</param>
+        /// <param name="maxWindowSize">Maximum size of the window.</param>
         /// <param name="isInteractive">if set to <c>true</c> [is interactive].</param>
         /// <param name="retryCount">The retry count.</param>
         /// <returns>
         ///   <c>false</c> if a newer release is available; else <c>true</c>.
         /// </returns>
+        /// <exception cref="WebException">Error contacting the latest release site ({LatestReleaseUrl}): {ex.Message}</exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}</exception>
-        /// <exception cref="WebException">Error contacting the latest release site ({LatestReleaseUrl}): {ex.Message}</exception>
-        public static bool UpdateCheckWithRetries(Version currentVersion, bool isInteractive = false, int retryCount = 5)
+        public static async Task<bool> UpdateCheckWithRetriesAsync(Version currentVersion, Size maxWindowSize, bool isInteractive = false, int retryCount = 5)
         {
             const int retryInterval = 500; // Milliseconds
 
@@ -194,7 +405,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             {
                 try
                 {
-                    ret = UpdateCheck(currentVersion, isInteractive);
+                    ret = await UpdateCheckAsync(currentVersion, maxWindowSize, isInteractive);
 
                     break;
                 }

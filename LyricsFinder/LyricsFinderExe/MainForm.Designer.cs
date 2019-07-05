@@ -76,6 +76,7 @@ namespace MediaCenter.LyricsFinder
             // 
             this.TablePanel.SetColumnSpan(this.LyricsFinderCore, 2);
             this.LyricsFinderCore.DataBindings.Add(new System.Windows.Forms.Binding("Location", global::MediaCenter.LyricsFinder.Properties.Settings.Default, "MainFormLocation", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.LyricsFinderCore.DataDirectory = null;
             this.LyricsFinderCore.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricsFinderCore.IsDataChanged = false;
             this.LyricsFinderCore.Location = global::MediaCenter.LyricsFinder.Properties.Settings.Default.MainFormLocation;
@@ -117,6 +118,7 @@ namespace MediaCenter.LyricsFinder
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Lyrics finder";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Shown += new System.EventHandler(this.MainForm_ShownAsync);
             this.TablePanel.ResumeLayout(false);
             this.ResumeLayout(false);
 

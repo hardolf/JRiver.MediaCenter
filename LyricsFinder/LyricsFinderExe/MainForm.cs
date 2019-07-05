@@ -158,6 +158,25 @@ namespace MediaCenter.LyricsFinder
         }
 
 
+
+        /// <summary>
+        /// Handles the Shown event of the MainForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MainForm_ShownAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                await LyricsFinderCore.InitCoreAsync();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler(ex);
+            }
+        }
+
+
         /// <summary>
         /// Handles the Click event of the RotButton control.
         /// </summary>
@@ -168,9 +187,11 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 var rot = ExamineRot.GetRotText();
-                var textForm = new TextForm("Running Object Table (ROT)", rot);
 
-                textForm.ShowDialog(this);
+                using (var textForm = new TextForm("Running Object Table (ROT)", rot))
+                {
+                    textForm.ShowDialog(this); 
+                }
             }
             catch (Exception ex)
             {

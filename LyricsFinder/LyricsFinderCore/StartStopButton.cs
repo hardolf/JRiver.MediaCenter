@@ -18,7 +18,7 @@ namespace MediaCenter.LyricsFinder
     /// <seealso cref="System.Windows.Forms.ToolStripButton" />
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
     internal partial class StartStopToolStripButton : ToolStripButton
-	{
+    {
 
         /// <summary>
         /// Occurs when starting.
@@ -31,14 +31,14 @@ namespace MediaCenter.LyricsFinder
         internal event StopEventHandler Stopping;
 
 
-		private bool _clicked = false;
-		private bool _isRunning = false;
+        private bool _clicked = false;
+        private bool _isRunning = false;
 
-		private string _textStart = "&Start";
-		private string _textStop = "&Stop";
+        private string _textStart = "&Start";
+        private string _textStop = "&Stop";
 
-		private Bitmap _imageStart = null;
-		private Bitmap _imageStop = null;
+        private Bitmap _imageStart = null;
+        private Bitmap _imageStop = null;
 
 
         #region Constructors and Destructors
@@ -47,11 +47,11 @@ namespace MediaCenter.LyricsFinder
         /// Initializes a new instance of the <see cref="StartStopToolStripButton"/> class.
         /// </summary>
         public StartStopToolStripButton()
-		{
-			InitializeComponent();
+        {
+            InitializeComponent();
 
-			this.IsRunning = false;
-		} // StartStopToolStripButton constructor
+            this.IsRunning = false;
+        } // StartStopToolStripButton constructor
 
         #endregion Constructors and Destructors
 
@@ -65,17 +65,17 @@ namespace MediaCenter.LyricsFinder
         ///   <c>true</c> if clicked; otherwise, <c>false</c>.
         /// </value>
         [Browsable(true)]
-		public bool Clicked
-		{
-			get
-			{
-				return _clicked;
-			}
-			set
-			{
-				_clicked = value;
-			}
-		}
+        public bool Clicked
+        {
+            get
+            {
+                return _clicked;
+            }
+            set
+            {
+                _clicked = value;
+            }
+        }
 
 
         /// <summary>
@@ -85,18 +85,18 @@ namespace MediaCenter.LyricsFinder
         /// The image start.
         /// </value>
         [Browsable(true)]
-		[EditorAttribute(typeof(ImageEditor), typeof(UITypeEditor))]
-		public Bitmap ImageStart
-		{
-			get
-			{
-				return _imageStart;
-			}
-			set
-			{
-				_imageStart = value;
-			}
-		}
+        [EditorAttribute(typeof(ImageEditor), typeof(UITypeEditor))]
+        public Bitmap ImageStart
+        {
+            get
+            {
+                return _imageStart;
+            }
+            set
+            {
+                _imageStart = value;
+            }
+        }
 
 
         /// <summary>
@@ -106,18 +106,18 @@ namespace MediaCenter.LyricsFinder
         /// The image stop.
         /// </value>
         [Browsable(true)]
-		[EditorAttribute(typeof(ImageEditor), typeof(UITypeEditor))]
-		public Bitmap ImageStop
-		{
-			get
-			{
-				return _imageStop;
-			}
-			set
-			{
-				_imageStop = value;
-			}
-		}
+        [EditorAttribute(typeof(ImageEditor), typeof(UITypeEditor))]
+        public Bitmap ImageStop
+        {
+            get
+            {
+                return _imageStop;
+            }
+            set
+            {
+                _imageStop = value;
+            }
+        }
 
 
         /// <summary>
@@ -127,17 +127,17 @@ namespace MediaCenter.LyricsFinder
         /// The text start.
         /// </value>
         [Browsable(true)]
-		public string TextStart
-		{
-			get
-			{
-				return _textStart;
-			}
-			set
-			{
-				_textStart = value;
-			}
-		}
+        public string TextStart
+        {
+            get
+            {
+                return _textStart;
+            }
+            set
+            {
+                _textStart = value;
+            }
+        }
 
 
         /// <summary>
@@ -147,17 +147,17 @@ namespace MediaCenter.LyricsFinder
         /// The text stop.
         /// </value>
         [Browsable(true)]
-		public string TextStop
-		{
-			get
-			{
-				return _textStop;
-			}
-			set
-			{
-				_textStop = value;
-			}
-		}
+        public string TextStop
+        {
+            get
+            {
+                return _textStop;
+            }
+            set
+            {
+                _textStop = value;
+            }
+        }
 
 
         /// <summary>
@@ -167,25 +167,23 @@ namespace MediaCenter.LyricsFinder
         ///   <c>true</c> if this instance is running; otherwise, <c>false</c>.
         /// </value>
         public bool IsRunning
-		{
-			get
-			{
-				return _isRunning;
-			}
-			set
-			{
-				_isRunning = value;
+        {
+            get
+            {
+                return _isRunning;
+            }
+            set
+            {
+                if (value == _isRunning) return;
 
-				if (_isRunning)
-				{
-					this.OnStart(this, new StartStopButtonEventArgs(this._clicked));
-				}
-				else
-				{
-					this.OnStop(this, new StartStopButtonEventArgs(this._clicked));
-				}
-			}
-		}
+                SetRunningState(value);
+
+                if (value)
+                    this.OnStart(this, new StartStopButtonEventArgs(this._clicked));
+                else
+                    this.OnStop(this, new StartStopButtonEventArgs(this._clicked));
+            }
+        }
 
         #endregion Properties
 
@@ -218,6 +216,8 @@ namespace MediaCenter.LyricsFinder
         /// <param name="isRunning">if set to <c>true</c> [is running].</param>
         public void SetRunningState(bool isRunning)
         {
+            _isRunning = isRunning;
+
             if (isRunning)
             {
                 this.Image = this.ImageStop;
@@ -235,18 +235,18 @@ namespace MediaCenter.LyricsFinder
         /// Starts this instance.
         /// </summary>
         public void Start()
-		{
-			this.IsRunning = true;
-		} // Start
+        {
+            this.IsRunning = true;
+        } // Start
 
 
         /// <summary>
         /// Stops this instance.
         /// </summary>
         public void Stop()
-		{
-			this.IsRunning = false;
-		} // Stop
+        {
+            this.IsRunning = false;
+        } // Stop
 
         #endregion Public Methods
 
@@ -254,28 +254,13 @@ namespace MediaCenter.LyricsFinder
         #region Private routines
 
         /// <summary>
-        /// Raises the <see cref="OnPaint" /> event.
-        /// </summary>
-        /// <param name="pe">The <see cref="System.Windows.Forms.PaintEventArgs" /> instance containing the event data.</param>
-        protected override void OnPaint(PaintEventArgs pe)
-        {
-            // TODO: Add custom paint code here
-
-            // Calling the base class OnPaint
-            base.OnPaint(pe);
-        } // OnPaint
-
-
-        /// <summary>
         /// Called when [start].
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
         internal virtual void OnStart(object sender, StartStopButtonEventArgs e)
-		{
-			StartEventHandler handler = Starting;
-
-            SetRunningState(true);
+        {
+            StartEventHandler handler = Starting;
 
             // Invokes the delegates.
             handler?.Invoke(this, e);
@@ -291,8 +276,6 @@ namespace MediaCenter.LyricsFinder
         {
             StopEventHandler handler = Stopping;
 
-            SetRunningState(false);
-
             // Invokes the delegates.
             handler?.Invoke(this, e);
         } // OnStop
@@ -304,17 +287,17 @@ namespace MediaCenter.LyricsFinder
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void StartStopButton_Click(object sender, EventArgs e)
-		{
-			this._clicked = true;
+        {
+            this._clicked = true;
 
-			this.IsRunning = !this.IsRunning;
+            this.IsRunning = !this.IsRunning;
 
-			this._clicked = false;
-		} // StartStopButton_Click
+            this._clicked = false;
+        } // StartStopButton_Click
 
-		#endregion Private routines
+        #endregion Private routines
 
-	} // class StartStopToolStripButton
+    } // class StartStopToolStripButton
 
 
 

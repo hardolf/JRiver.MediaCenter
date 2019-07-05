@@ -4,15 +4,16 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.ServiceModel.Configuration;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-
-using log4net;
 
 using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.McRestService;
@@ -30,6 +31,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     {
 
         /// <summary>
+        /// Gets or sets the lyric service comment.
+        /// </summary>
+        /// <value>
+        /// The comment.
+        /// </value>
+        [XmlElement]
+        public virtual string Comment { get; set; }
+
+        /// <summary>
         /// Gets or sets the credit.
         /// </summary>
         /// <value>
@@ -39,22 +49,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual CreditType Credit { get; set; }
 
         /// <summary>
-        /// Gets or sets the daily quota.
+        /// Gets or sets the display properties.
         /// </summary>
         /// <value>
-        /// The daily quota.
-        /// </value>
-        [XmlElement]
-        public virtual int DailyQuota { get; set; }
-
-        /// <summary>
-        /// Gets or sets the data directory.
-        /// </summary>
-        /// <value>
-        /// The data directory.
+        /// The display properties.
         /// </value>
         [XmlIgnore]
-        public virtual string DataDirectory { get; set; }
+        public virtual Dictionary<string, DisplayProperty> DisplayProperties { get; private set; }
 
         /// <summary>
         /// Gets or sets the internal found lyric list.
@@ -66,14 +67,40 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         private FoundLyricListType<FoundLyricType> InternalFoundLyricList { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the obsolete configurations have been used.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the obsolete configurations have been used; otherwise, <c>false</c>.
+        /// </value>
+        [XmlIgnore]
+        public static bool IsObsoleteConfigurationsUsed { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the exceptions.
+        /// </summary>
+        /// <value>
+        /// The exceptions.
+        /// </value>
+        [XmlIgnore]
+        public List<Exception> Exceptions { get; private set; }
+
+        /// <summary>
         /// Gets or sets a list of the found lyric texts.
         /// </summary>
         /// <value>
         /// The list of found lyric texts.
         /// </value>
-        [ComVisible(false)]
         [XmlIgnore]
         public ReadOnlyCollection<FoundLyricType> FoundLyricList { get; }
+
+        /// <summary>
+        /// Gets or sets the lyrics finder data.
+        /// </summary>
+        /// <value>
+        /// The lyrics finder data.
+        /// </value>
+        [XmlIgnore]
+        public LyricsFinderDataType LyricsFinderData { get; set; }
 
         /// <summary>
         /// Gets or sets the lyric result. If set to <c>Found</c> increments the hit counters.
@@ -103,13 +130,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual bool IsImplemented { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this service quota is exceeded.
+        /// Gets or sets the settings.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this service quota is exceeded; otherwise, <c>false</c>.
+        /// The settings.
         /// </value>
         [XmlIgnore]
-        public virtual bool IsQuotaExceeded { get; set; }
+        protected virtual KeyValueConfigurationCollection Settings { get; private set; }
 
         /// <summary>
         /// Gets or sets the private settings.
@@ -119,15 +146,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </value>
         [XmlIgnore]
         public virtual LyricServicesPrivateConfigurationSectionHandler PrivateSettings { get; set; }
-
-        /// <summary>
-        /// Gets or sets the quota reset time, with time zone of the lyric server.
-        /// </summary>
-        /// <value>
-        /// The quota reset time.
-        /// </value>
-        [XmlElement]
-        public virtual ServiceDateTimeWithZone QuotaResetTime { get; set; }
 
         /// <summary>
         /// Gets the result text.
@@ -183,20 +201,39 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         [XmlElement]
         public virtual int HitCountTotal { get; set; }
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AbstractLyricService"/> class.
         /// </summary>
         public AbstractLyricService()
         {
+            Comment = string.Empty;
             Credit = new CreditType();
-            DailyQuota = 0;
+            DisplayProperties = new Dictionary<string, DisplayProperty>();
+            Exceptions = new List<Exception>();
             InternalFoundLyricList = new FoundLyricListType<FoundLyricType>();
             FoundLyricList = new ReadOnlyCollection<FoundLyricType>(InternalFoundLyricList);
             IsActive = false;
             IsImplemented = false;
-            IsQuotaExceeded = false;
             LyricResult = LyricResultEnum.NotProcessedYet;
-            QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Now.Date, TimeZoneInfo.Local); // Default is midnight in the client time zone
+        }
+
+
+        /// <summary>
+        /// Adds the exception.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <param name="request">Optional request.</param>
+        public void AddException(Exception exception, string request = null)
+        {
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
+
+            var msg = $"\"{Credit.ServiceName}\" call failed: \"{exception.Message}\"";
+
+            if (!request.IsNullOrEmptyTrimmed())
+                msg += $" Request: \"{request}\".";
+
+            Exceptions.Add(new Exception(msg, exception));
         }
 
 
@@ -210,7 +247,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns>
         ///   <see cref="FoundLyricType" /> object.
         /// </returns>
-        public virtual FoundLyricType AddFoundLyric(string lyricText, SerializableUri lyricUrl, SerializableUri trackingUrl = null, string copyright = null)
+        public virtual FoundLyricType AddFoundLyric(string lyricText, Uri lyricUrl, Uri trackingUrl = null, string copyright = null)
         {
             if (!copyright.IsNullOrEmptyTrimmed())
                 Credit.Copyright = copyright;
@@ -231,24 +268,24 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Checks the quota and adjusts the counters if necessary.
+        /// Creates the display properties.
         /// </summary>
-        public void CheckQuota()
+        public virtual void CreateDisplayProperties()
         {
-            // UTC date / time calculations for the quota
-            var nowDate = DateTime.UtcNow.Date;
-            var quotaDate = QuotaResetTime.UniversalTime.Date;
-            var quotaDiffDays = (int)Math.Ceiling(nowDate.Subtract(quotaDate).TotalDays);
+            DisplayProperties.Clear();
 
-            if (quotaDiffDays > 0)
+            Credit.CreateDisplayProperties();
+
+            foreach (var dp in Credit.DisplayProperties)
             {
-                IsQuotaExceeded = false;
-                QuotaResetTime.AddDays(quotaDiffDays);
-                RequestCountToday = 0;
-                HitCountToday = 0;
-
-                Logging.Log(0, $"A new quota-day has begun for lyric service \"{Credit.ServiceName}\", request counters are reset.");
+                DisplayProperties.Add(dp.Key, dp.Value);
             }
+
+            DisplayProperties.Add(nameof(Comment), new DisplayProperty("Comment", Comment));
+            DisplayProperties.Add(nameof(RequestCountToday), new DisplayProperty("Requests, today", RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
+            DisplayProperties.Add(nameof(HitCountToday), new DisplayProperty("Hits, today", HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
+            DisplayProperties.Add(nameof(RequestCountTotal), new DisplayProperty("Requests, total", RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
+            DisplayProperties.Add(nameof(HitCountTotal), new DisplayProperty("Hits, total", HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
         }
 
 
@@ -288,32 +325,146 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Processes the specified MediaCenter item.
+        /// Extracts all the lyrics from all the Uris.
         /// </summary>
-        /// <param name="item">The item.</param>
-        /// <param name="getAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <param name="uris">The uris.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="isGetAll">if set to <c>true</c> extracts all lyrics from all the Uris; else exits after the first hit.</param>
         /// <returns></returns>
-        public virtual AbstractLyricService Process(McMplItem item, bool getAll = false)
+        /// <exception cref="ArgumentNullException">uris</exception>
+        protected virtual async Task ExtractAllLyricTextsAsync(IEnumerable<Uri> uris, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            InternalFoundLyricList.Clear();
-            LyricResult = LyricResultEnum.NotFound;
-            CheckQuota();
+            if (uris == null) throw new ArgumentNullException(nameof(uris));
 
-            // Skip if we are over the daily limit
-            if ((DailyQuota > 0) && (RequestCountToday > DailyQuota))
+            if (isGetAll)
             {
-                IsActive = false;
-                IsQuotaExceeded = true;
+                // Parallel search
+                var tasks = new List<Task>();
 
-                var msg = $"Lyric service \"{Credit.ServiceName}\" is over the daily limit of {DailyQuota} requests per day. \"{Credit.ServiceName}\" is now disabled in LyricsFinder and no more requests will be sent to this service today.";
+                foreach (var uri in uris)
+                {
+                    tasks.Add(ExtractOneLyricTextAsync(uri, cancellationToken));
+                }
 
-                throw new LyricsQuotaExceededException(msg);
+                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
             else
             {
-                // We will query the service shortly, so we increment the counters now
-                RequestCountToday++;
-                RequestCountTotal++;
+                // Serial search, probably hits on the first try
+                foreach (var uri in uris)
+                {
+                    var lyricText = await ExtractOneLyricTextAsync(uri, cancellationToken).ConfigureAwait(false);
+
+                    if (!lyricText.IsNullOrEmptyTrimmed())
+                        break;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Get string asynchronous from HTTP request to the lyric service.
+        /// </summary>
+        /// <param name="requestUri">The request URI.</param>
+        /// <returns>Response text from lyric service.</returns>
+        /// <remarks>We use a central routine here, so that the request counters may be properly updated.</remarks>
+        protected virtual async Task<string> HttpGetStringAsync(Uri requestUri)
+        {
+            // One more request...
+            RequestCountToday++;
+            RequestCountTotal++;
+
+            var ret = await Helpers.Utility.HttpGetStringAsync(requestUri).ConfigureAwait(false);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Extracts the result text from a Uri and adds the found lyric text to the list.
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// If found, the found lyric text string; else null.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">uri</exception>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        protected virtual async Task<string> ExtractOneLyricTextAsync(Uri uri, CancellationToken cancellationToken)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var ret = string.Empty;
+
+            /**************************************************
+             * This must be done in every descendant routine: *
+             **************************************************
+             * At the top:
+             **************************************************
+            var ret = await base.ExtractOneLyricTextAsync(uri).ConfigureAwait(false);
+
+             **************************************************
+             * At the bottom:
+             **************************************************
+
+            // If found, add the found lyric to the list
+            if (!ret.IsNullOrEmptyTrimmed())
+                AddFoundLyric(ret, new UriBuilder(uri.AbsoluteUri).Uri);
+            */
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Gets value indicating whether this service's quota is exceeded.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if this service's quota is exceeded; otherwise, <c>false</c>.
+        /// </returns>
+        public virtual bool IsQuotaExceeded()
+        {
+            return false;
+        }
+
+
+        /// <summary>
+        /// Processes the specified MediaCenter item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <returns>
+        ///   <see cref="AbstractLyricService" /> descendant object.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">item</exception>
+        /// <exception cref="LyricsQuotaExceededException">Lyric service \"{Credit.ServiceName}\" is exceeding its quota and is now disabled in LyricsFinder, "
+        /// + "no more requests will be sent to this service until corrected.</exception>
+        /// <exception cref="System.ArgumentNullException">item</exception>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public virtual async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
+            cancellationToken.ThrowIfCancellationRequested();
+            await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
+
+            Exceptions.Clear();
+            InternalFoundLyricList.Clear();
+            LyricResult = LyricResultEnum.NotFound;
+
+
+            // Skip if we are over the quota limit
+            if (IsQuotaExceeded())
+            {
+                IsActive = false;
+
+                throw new LyricsQuotaExceededException($"Lyric service \"{Credit.ServiceName}\" is exceeding its quota and is now disabled in LyricsFinder, "
+                    + "no more requests will be sent to this service until corrected.");
             }
 
             return this;
@@ -327,35 +478,40 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             var assy = Assembly.GetAssembly(GetType());
             var config = ConfigurationManager.OpenExeConfiguration(assy.Location);
-            var settings = config.AppSettings.Settings;
-
-            PrivateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, DataDirectory);
 
             if (!IsImplemented)
                 IsActive = false;
 
-            Credit = new CreditType
+            IsObsoleteConfigurationsUsed = ((Credit == null)
+                || ((Credit.CreditUrl == null) || Credit.CreditUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
+                || ((Credit.ServiceUrl == null) || Credit.ServiceUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
+                || Credit.Company.IsNullOrEmptyTrimmed()
+                || Credit.CreditTextFormat.IsNullOrEmptyTrimmed()
+                || Credit.DateFormat.IsNullOrEmptyTrimmed()
+                || Credit.ServiceName.IsNullOrEmptyTrimmed());
+
+            if (IsObsoleteConfigurationsUsed)
             {
-                Company = ServiceSettingsValue(settings, "Company"),
-                CreditDate = DateTime.Now,
-                CreditTextFormat = ServiceSettingsValue(settings, "CreditTextFormat"),
-                CreditUrl = new SerializableUri(ServiceSettingsValue(settings, "CreditUrl")),
-                DateFormat = ServiceSettingsValue(settings, "DateFormat"),
-                ServiceName = ServiceSettingsValue(settings, "ServiceName"),
-                ServiceUrl = new SerializableUri(ServiceSettingsValue(settings, "ServiceUrl")),
-                Token = PrivateSettings.Token,
-                UserId = PrivateSettings.UserId
-            };
+                Settings = config.AppSettings.Settings;
+                PrivateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, Path.GetDirectoryName(LyricsFinderData.DataFilePath));
 
-            var dailyQuotaString = PrivateSettings.DailyQuota;
+                Comment = ServiceSettingsValue(Settings, "Comment");
 
-            DailyQuota = (dailyQuotaString.IsNullOrEmptyTrimmed())
-                ? 0
-                : int.Parse(dailyQuotaString, CultureInfo.InvariantCulture);
+                Credit = new CreditType
+                {
+                    Company = ServiceSettingsValue(Settings, "Company"),
+                    CreditDate = DateTime.Now,
+                    CreditTextFormat = ServiceSettingsValue(Settings, "CreditTextFormat"),
+                    CreditUrl = new UriBuilder(ServiceSettingsValue(Settings, "CreditUrl")).Uri,
+                    DateFormat = ServiceSettingsValue(Settings, "DateFormat"),
+                    ServiceName = ServiceSettingsValue(Settings, "ServiceName"),
+                    ServiceUrl = new UriBuilder(ServiceSettingsValue(Settings, "ServiceUrl")).Uri,
+                };
+            }
 
-            QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Now.Date, TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue(settings, "QuotaResetTimeZone")));
+            Credit.CreditDate = DateTime.Now;
 
-            CheckQuota();
+            CreateDisplayProperties();
         }
 
 
@@ -367,14 +523,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns>
         /// String representing the value of the setting.
         /// </returns>
-        /// <exception cref="ArgumentException">Argument '{nameof(key)}</exception>
+        /// <exception cref="ArgumentNullException">settings</exception>
         /// <exception cref="IndexOutOfRangeException">Configuration value for key '{key}</exception>
-        private string ServiceSettingsValue(
+        /// <exception cref="ArgumentException">Argument '{nameof(key)}</exception>
+        protected static string ServiceSettingsValue(
             KeyValueConfigurationCollection settings,
             string key)
         {
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (key.IsNullOrEmptyTrimmed()) throw new ArgumentException(nameof(settings));
+            if ((settings == null) || (key.IsNullOrEmptyTrimmed()))
+                throw new ArgumentNullException(nameof(settings));
 
             var ret = string.Empty;
 

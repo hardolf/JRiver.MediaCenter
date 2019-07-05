@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-using MediaCenter.LyricsFinder.Model.LyricServices.Properties;
 using MediaCenter.LyricsFinder.Model.McRestService;
 using MediaCenter.SharedComponents;
 
@@ -28,6 +28,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     {
 
         /// <summary>
+        /// Gets or sets the token.
+        /// </summary>
+        /// <value>
+        /// The token.
+        /// </value>
+        [XmlElement]
+        public string Token { get; set; }
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ApiseedsService"/> class.
         /// </summary>
         public ApiseedsService()
@@ -41,64 +51,84 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <param name="getAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
-        /// <returns></returns>
-        /// <exception cref="NullReferenceException">Response is null</exception>
-        /// <exception cref="Exception"></exception>
-        /// <remarks>
-        /// This routine gets the first (if any) search results from the lyric service.
-        /// </remarks>
-        public override AbstractLyricService Process(McMplItem item, bool getAll = false)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <returns>
+        ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="Stands4Service" />.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">item</exception>
+        /// <exception cref="LyricServiceCommunicationException"></exception>
+        /// <exception cref="GeneralLyricServiceException"></exception>
+        /// <exception cref="System.ArgumentNullException">item</exception>
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            base.Process(item); // Result: not found
+            if (item == null) throw new ArgumentNullException(nameof(item));
 
-            // Example GET request:
-            // https://orion.apiseeds.com/api/music/lyric/dire straits/brothers in arms?apikey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-            var credit = Credit as CreditType;
-
-            // First we search for the track
-            var urlString = $"{credit.ServiceUrl}{item.Artist}/{item.Name}?apikey={credit.Token}";
-            var url = new SerializableUri(Uri.EscapeUriString(urlString));
-
-            var req = WebRequest.Create(url) as HttpWebRequest;
             var json = string.Empty;
+            UriBuilder ub = null;
 
             try
             {
-                using (var rsp = req.GetResponse() as HttpWebResponse)
-                {
-                    if (rsp == null)
-                        throw new NullReferenceException("Response is null");
-                    if (rsp.StatusCode != HttpStatusCode.OK)
-                        throw new Exception($"Server error (HTTP {rsp.StatusCode}: {rsp.StatusDescription}).");
+                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
 
-                    using (var rspStream = rsp.GetResponseStream())
-                    {
-                        var reader = new StreamReader(rspStream, Encoding.UTF8);
+                // Example GET request:
+                // https://orion.apiseeds.com/api/music/lyric/dire straits/brothers in arms?apikey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-                        json = reader.ReadToEnd();
-                    }
-                }
+                ub = new UriBuilder($"{Credit.ServiceUrl}/{item.Artist}/{item.Name}?apikey={Token}");
+
+                // First we search for the track
+                json = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+
+                if (Exceptions.Count > 0)
+                    return this;
+
+                // Deserialize the returned JSON
+                var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
+                var lyricText = (string)searchDyn.result.track.text;
+                var copyright = searchDyn.result.copyright;
+                var copyrightText = SharedComponents.Utility.JoinTrimmedStrings(".\r\n", (string)copyright.notice, (string)copyright.artist, (string)copyright.text) + ".";
+
+                AddFoundLyric(lyricText, null, null, copyrightText);
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                // Is this a normal situation? i.e. if the song was not found, the remote server returns HTML error 404
+                // We assume this is a normal situation, i.e. if the song was not found, the remote server returns HTML error 404
                 if (ex.Message.Contains("404"))
                     return this;
                 else
-                    throw new Exception($"\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".", ex); 
+                    throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
             }
 
-            // Deserialize the returned JSON
-            var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
-            var lyricText = (string)searchDyn.result.track.text;
-            var copyright = searchDyn.result.copyright;
-            var copyrightText = Utility.JoinTrimmedStrings(".\r\n", (string)copyright.notice, (string)copyright.artist, (string)copyright.text) + ".";
-
-            AddFoundLyric(lyricText, null, null, copyrightText);
-
             return this;
+        }
+
+
+        /// <summary>
+        /// Refreshes the display properties.
+        /// </summary>
+        public override void CreateDisplayProperties()
+        {
+            base.CreateDisplayProperties();
+
+            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
+        }
+
+
+        /// <summary>
+        /// Refreshes the service settings from the service configuration file.
+        /// </summary>
+        public override void RefreshServiceSettings()
+        {
+            base.RefreshServiceSettings();
+
+            if (Token.IsNullOrEmptyTrimmed())
+                Token = PrivateSettings.Token;
+
+            CreateDisplayProperties();
         }
 
     }

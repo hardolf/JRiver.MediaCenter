@@ -30,19 +30,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricServiceForm));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricServiceForm));
             this.LyricServiceMainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.LyricServiceListPanel = new System.Windows.Forms.Panel();
             this.LyricServiceListContainer = new System.Windows.Forms.ToolStripContainer();
             this.LyricServiceListDataGridView = new System.Windows.Forms.DataGridView();
-            this.Active = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Service = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DailyCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DailyMaximum = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.QuotaResetTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LyricServiceListRightToolbar = new System.Windows.Forms.ToolStrip();
             this.MoveUpButton = new System.Windows.Forms.ToolStripButton();
             this.MoveDownButton = new System.Windows.Forms.ToolStripButton();
@@ -53,6 +48,11 @@
             this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.LyricServiceFormToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.Active = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Service = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DailyCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DailyMaximum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.QuotaResetTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LyricServiceMainTableLayoutPanel.SuspendLayout();
             this.LyricServiceListPanel.SuspendLayout();
             this.LyricServiceListContainer.ContentPanel.SuspendLayout();
@@ -74,9 +74,9 @@
             this.LyricServiceMainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.LyricServiceMainTableLayoutPanel.Name = "LyricServiceMainTableLayoutPanel";
             this.LyricServiceMainTableLayoutPanel.RowCount = 2;
-            this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 110F));
+            this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.LyricServiceMainTableLayoutPanel.Size = new System.Drawing.Size(483, 116);
+            this.LyricServiceMainTableLayoutPanel.Size = new System.Drawing.Size(483, 156);
             this.LyricServiceMainTableLayoutPanel.TabIndex = 1;
             // 
             // LyricServiceListPanel
@@ -85,7 +85,7 @@
             this.LyricServiceListPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricServiceListPanel.Location = new System.Drawing.Point(3, 3);
             this.LyricServiceListPanel.Name = "LyricServiceListPanel";
-            this.LyricServiceListPanel.Size = new System.Drawing.Size(477, 104);
+            this.LyricServiceListPanel.Size = new System.Drawing.Size(477, 144);
             this.LyricServiceListPanel.TabIndex = 14;
             // 
             // LyricServiceListContainer
@@ -95,7 +95,7 @@
             // LyricServiceListContainer.ContentPanel
             // 
             this.LyricServiceListContainer.ContentPanel.Controls.Add(this.LyricServiceListDataGridView);
-            this.LyricServiceListContainer.ContentPanel.Size = new System.Drawing.Size(453, 104);
+            this.LyricServiceListContainer.ContentPanel.Size = new System.Drawing.Size(453, 144);
             this.LyricServiceListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricServiceListContainer.LeftToolStripPanelVisible = false;
             this.LyricServiceListContainer.Location = new System.Drawing.Point(0, 0);
@@ -104,7 +104,7 @@
             // LyricServiceListContainer.RightToolStripPanel
             // 
             this.LyricServiceListContainer.RightToolStripPanel.Controls.Add(this.LyricServiceListRightToolbar);
-            this.LyricServiceListContainer.Size = new System.Drawing.Size(477, 104);
+            this.LyricServiceListContainer.Size = new System.Drawing.Size(477, 144);
             this.LyricServiceListContainer.TabIndex = 5;
             this.LyricServiceListContainer.Text = "Lyrics services";
             this.LyricServiceListContainer.TopToolStripPanelVisible = false;
@@ -130,64 +130,12 @@
             this.LyricServiceListDataGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.LyricServiceListDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.LyricServiceListDataGridView.ShowEditingIcon = false;
-            this.LyricServiceListDataGridView.Size = new System.Drawing.Size(453, 104);
+            this.LyricServiceListDataGridView.Size = new System.Drawing.Size(453, 144);
             this.LyricServiceListDataGridView.TabIndex = 0;
             this.LyricServiceListDataGridView.TabStop = false;
-            this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClick);
-            this.LyricServiceListDataGridView.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.LyricServiceListDataGridView_RowValidating);
-            this.LyricServiceListDataGridView.SelectionChanged += new System.EventHandler(this.LyricServiceListDataGridView_SelectionChanged);
-            // 
-            // Active
-            // 
-            this.Active.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Active.HeaderText = "Active";
-            this.Active.Name = "Active";
-            this.Active.ToolTipText = "Check if this lyrics service should be used during searhes";
-            this.Active.Width = 40;
-            // 
-            // Service
-            // 
-            this.Service.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.Service.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Service.HeaderText = "Service name";
-            this.Service.Name = "Service";
-            this.Service.ReadOnly = true;
-            this.Service.ToolTipText = "Lyrics service name";
-            // 
-            // DailyCount
-            // 
-            this.DailyCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.DailyCount.DefaultCellStyle = dataGridViewCellStyle2;
-            this.DailyCount.FillWeight = 80F;
-            this.DailyCount.HeaderText = "Today";
-            this.DailyCount.MinimumWidth = 60;
-            this.DailyCount.Name = "DailyCount";
-            this.DailyCount.ReadOnly = true;
-            this.DailyCount.ToolTipText = "Search count today to this service";
-            this.DailyCount.Width = 60;
-            // 
-            // DailyMaximum
-            // 
-            this.DailyMaximum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.DailyMaximum.DefaultCellStyle = dataGridViewCellStyle3;
-            this.DailyMaximum.HeaderText = "Maximum";
-            this.DailyMaximum.MinimumWidth = 60;
-            this.DailyMaximum.Name = "DailyMaximum";
-            this.DailyMaximum.ReadOnly = true;
-            this.DailyMaximum.ToolTipText = "Maximum allowed searches today to this service";
-            this.DailyMaximum.Width = 60;
-            // 
-            // QuotaResetTime
-            // 
-            this.QuotaResetTime.HeaderText = "Next reset time";
-            this.QuotaResetTime.MinimumWidth = 120;
-            this.QuotaResetTime.Name = "QuotaResetTime";
-            this.QuotaResetTime.ReadOnly = true;
-            this.QuotaResetTime.ToolTipText = "Local time of next quota reset";
-            this.QuotaResetTime.Width = 120;
+            this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClickAsync);
+            this.LyricServiceListDataGridView.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.LyricServiceListDataGridView_RowValidatingAsync);
+            this.LyricServiceListDataGridView.SelectionChanged += new System.EventHandler(this.LyricServiceListDataGridView_SelectionChangedAsync);
             // 
             // LyricServiceListRightToolbar
             // 
@@ -210,7 +158,7 @@
             this.MoveUpButton.Size = new System.Drawing.Size(22, 20);
             this.MoveUpButton.Text = "Up";
             this.MoveUpButton.ToolTipText = "Move the selected service up";
-            this.MoveUpButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_Click);
+            this.MoveUpButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_ClickAsync);
             // 
             // MoveDownButton
             // 
@@ -221,19 +169,19 @@
             this.MoveDownButton.Size = new System.Drawing.Size(22, 20);
             this.MoveDownButton.Text = "Down";
             this.MoveDownButton.ToolTipText = "Move the selected service down";
-            this.MoveDownButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_Click);
+            this.MoveDownButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_ClickAsync);
             // 
             // LyricServiceDetailsTableLayoutPanel
             // 
             this.LyricServiceDetailsTableLayoutPanel.AutoSize = true;
-            this.LyricServiceDetailsTableLayoutPanel.ColumnCount = 2;
+            this.LyricServiceDetailsTableLayoutPanel.ColumnCount = 3;
+            this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 113);
+            this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 153);
             this.LyricServiceDetailsTableLayoutPanel.Name = "LyricServiceDetailsTableLayoutPanel";
             this.LyricServiceDetailsTableLayoutPanel.RowCount = 1;
             this.LyricServiceDetailsTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.LyricServiceDetailsTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 1F));
             this.LyricServiceDetailsTableLayoutPanel.Size = new System.Drawing.Size(220, 0);
             this.LyricServiceDetailsTableLayoutPanel.TabIndex = 0;
             // 
@@ -273,26 +221,88 @@
             // 
             this.ContentPanel.Size = new System.Drawing.Size(417, 124);
             // 
+            // LyricServiceFormToolTip
+            // 
+            this.LyricServiceFormToolTip.AutoPopDelay = 15000;
+            this.LyricServiceFormToolTip.InitialDelay = 500;
+            this.LyricServiceFormToolTip.ReshowDelay = 100;
+            // 
+            // Active
+            // 
+            this.Active.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Active.HeaderText = "Active";
+            this.Active.Name = "Active";
+            this.Active.ToolTipText = "Check if this lyrics service should be used during searhes";
+            this.Active.Width = 40;
+            // 
+            // Service
+            // 
+            this.Service.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.Service.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Service.HeaderText = "Service name";
+            this.Service.Name = "Service";
+            this.Service.ReadOnly = true;
+            this.Service.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Service.ToolTipText = "Lyrics service name";
+            // 
+            // DailyCount
+            // 
+            this.DailyCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.DailyCount.DefaultCellStyle = dataGridViewCellStyle2;
+            this.DailyCount.FillWeight = 80F;
+            this.DailyCount.HeaderText = "Today";
+            this.DailyCount.MinimumWidth = 60;
+            this.DailyCount.Name = "DailyCount";
+            this.DailyCount.ReadOnly = true;
+            this.DailyCount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DailyCount.ToolTipText = "Search count today to this service";
+            this.DailyCount.Width = 60;
+            // 
+            // DailyMaximum
+            // 
+            this.DailyMaximum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.DailyMaximum.DefaultCellStyle = dataGridViewCellStyle3;
+            this.DailyMaximum.HeaderText = "Maximum";
+            this.DailyMaximum.MinimumWidth = 60;
+            this.DailyMaximum.Name = "DailyMaximum";
+            this.DailyMaximum.ReadOnly = true;
+            this.DailyMaximum.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DailyMaximum.ToolTipText = "Maximum allowed searches today to this service";
+            this.DailyMaximum.Width = 60;
+            // 
+            // QuotaResetTime
+            // 
+            this.QuotaResetTime.HeaderText = "Next reset time";
+            this.QuotaResetTime.MinimumWidth = 120;
+            this.QuotaResetTime.Name = "QuotaResetTime";
+            this.QuotaResetTime.ReadOnly = true;
+            this.QuotaResetTime.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.QuotaResetTime.ToolTipText = "Local time of next quota reset";
+            this.QuotaResetTime.Width = 120;
+            // 
             // LyricServiceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(484, 166);
+            this.ClientSize = new System.Drawing.Size(484, 211);
             this.Controls.Add(this.LyricServiceMainTableLayoutPanel);
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(500, 205);
+            this.MinimumSize = new System.Drawing.Size(500, 250);
             this.Name = "LyricServiceForm";
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Lyric Services";
             this.TransparencyKey = System.Drawing.Color.Teal;
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricServiceForm_FormClosing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricServiceForm_KeyDown);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricServiceForm_FormClosingAsync);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricServiceForm_KeyDownAsync);
             this.LyricServiceMainTableLayoutPanel.ResumeLayout(false);
             this.LyricServiceMainTableLayoutPanel.PerformLayout();
             this.LyricServiceListPanel.ResumeLayout(false);

@@ -104,10 +104,13 @@
         </member>
         <member name="M:MediaCenter.SharedComponents.MessageInspectorEndpointBehavior.ApplyClientBehavior(System.ServiceModel.Description.ServiceEndpoint,System.ServiceModel.Dispatcher.ClientRuntime)">
             <summary>
-                Implements a modification or extension of the client across an endpoint.
+            Implements a modification or extension of the client across an endpoint.
             </summary>
             <param name="endpoint">The endpoint that is to be customized.</param>
             <param name="clientRuntime">The client runtime to be customized.</param>
+            <exception cref="T:System.ArgumentNullException">endpoint
+            or
+            clientRuntime</exception>
         </member>
         <member name="M:MediaCenter.SharedComponents.MessageInspectorEndpointBehavior.ApplyDispatchBehavior(System.ServiceModel.Description.ServiceEndpoint,System.ServiceModel.Dispatcher.EndpointDispatcher)">
             <summary>
@@ -141,26 +144,30 @@
         </member>
         <member name="M:MediaCenter.SharedComponents.MessageInspector.AfterReceiveReply(System.ServiceModel.Channels.Message@,System.Object)">
             <summary>
-                Enables inspection or modification of a message after a reply message is received but prior to passing it back to
-                the client application.
+            Enables inspection or modification of a message after a reply message is received but prior to passing it back to
+            the client application.
             </summary>
             <param name="reply">The message to be transformed into types and handed back to the client application.</param>
             <param name="correlationState">Correlation state data.</param>
+            <exception cref="T:System.ArgumentNullException">reply</exception>
         </member>
         <member name="M:MediaCenter.SharedComponents.MessageInspector.BeforeSendRequest(System.ServiceModel.Channels.Message@,System.ServiceModel.IClientChannel)">
             <summary>
-                Enables inspection or modification of a message before a request message is sent to a service.
+            Enables inspection or modification of a message before a request message is sent to a service.
             </summary>
             <param name="request">The message to be sent to the service.</param>
             <param name="channel">The WCF client object channel.</param>
             <returns>
-                The object that is returned as the <paramref name="correlationState" />argument of the
-                <see cref="!:IClientMessageInspector.AfterReceiveReply(System.ServiceModel.Channels.Message, object)" />
-                method. This is null if no correlation state is used.The best practice is to make this a
-                <see cref="T:System.Guid" /> to ensure that no two <paramref name="correlationState" /> objects are the same.
+            The object that is returned as the <paramref name="correlationState" />argument of the
+            <see cref="!:IClientMessageInspector.AfterReceiveReply(System.ServiceModel.Channels.Message, object)" />
+            method. This is null if no correlation state is used.The best practice is to make this a
+            <see cref="T:System.Guid" /> to ensure that no two <paramref name="correlationState" /> objects are the same.
             </returns>
+            <exception cref="T:System.ArgumentNullException">request
+            or
+            channel</exception>
             <remarks>
-                <para>The method writes the SOAP request to a file prior to the send.</para>
+            The method writes the SOAP request to a file prior to the send.
             </remarks>
         </member>
         <member name="M:MediaCenter.SharedComponents.MessageInspector.PatchFilePath(System.String@,System.Int32)">

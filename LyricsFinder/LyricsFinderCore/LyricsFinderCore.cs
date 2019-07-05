@@ -7,9 +7,10 @@ Core module creation date:
 2018.04.12
 
 Version Number:
-1.0.0
+1.2.0
 
 Modified: 2019.05.25 by Hardolf.
+Modified: 2019.07.01 by Hardolf.
 */
 
 
@@ -22,8 +23,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using log4net;
 
 using MediaCenter;
 using MediaCenter.LyricsFinder.Model;
@@ -118,6 +117,7 @@ namespace MediaCenter.LyricsFinder
         /***** Constructors *****/
         /************************/
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LyricsFinderCore"/> class.
         /// </summary>
@@ -149,16 +149,6 @@ namespace MediaCenter.LyricsFinder
             _isStandAlone = isStandAlone;
             _isDesignTime = (LicenseManager.UsageMode == LicenseUsageMode.Designtime);
 
-            if (!_isDesignTime)
-            {
-                // Upgrade User Settings from previous version the first time
-                if (Properties.Settings.Default.UpgradeSettings)
-                {
-                    Properties.Settings.Default.Upgrade();
-                    Properties.Settings.Default.UpgradeSettings = false;
-                }
-            }
-
             InitializeComponent();
         }
 
@@ -186,15 +176,15 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void FileSelectPlaylistMenuItem_DropDownOpening(object sender, EventArgs e)
+        private async void FileSelectPlaylistMenuItem_DropDownOpeningAsync(object sender, EventArgs e)
         {
             try
             {
-                await LoadPlaylistMenus().ConfigureAwait(false);
+                await LoadPlaylistMenusAsync();
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -204,7 +194,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs" /> instance containing the event data.</param>
-        private async void LyricsFinderCore_KeyDown(object sender, KeyEventArgs e)
+        private async void LyricsFinderCore_KeyDownAsync(object sender, KeyEventArgs e)
         {
             try
             {
@@ -226,46 +216,30 @@ namespace MediaCenter.LyricsFinder
                 {
                     e.Handled = true;
 
-                    await PlayOrPause().ConfigureAwait(false);
+                    await PlayOrPauseAsync();
                 }
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
 
         /// <summary>
-        /// Handles the Load event of the LyricsFinderCore control.
+        /// Handles the Resize event of the LyricsFinderCore control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricsFinderCore_Load(object sender, EventArgs e)
+        private async void LyricsFinderCore_ResizeAsync(object sender, EventArgs e)
         {
             try
             {
-                if (_isDesignTime) return;
-                if (ProcessWorker.IsBusy) return;
-
-                var msg = "LyricsFinder initializes...";
-
-                Init();
-
-                MainDataGridView.Select();
-                Thread.Sleep(100);
-
-                _progressPercentage = 0;
-                _noLyricsSearchList.AddRange(Properties.Settings.Default.McNoLyricsSearchList.Split(',', ';'));
-
-                StatusLog(msg);
-                StatusMessage(msg);
-
-                ProcessWorker.RunWorkerAsync();
+                ErrorHandling.Init(this.Size);
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -275,13 +249,13 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ToolStripItemClickedEventArgs"/> instance containing the event data.</param>
-        private async void MainContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private async void MainContextMenu_ItemClickedAsync(object sender, ToolStripItemClickedEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
 
-                var rows = MainDataGridView.SelectedRows;
+                var rows = MainGridView.SelectedRows;
 
                 if (rows.Count < 1)
                     return;
@@ -293,17 +267,16 @@ namespace MediaCenter.LyricsFinder
                     _lyricsForm = ShowLyrics(colIdx, rowIdx);
                 else if (e.ClickedItem == ContextPlayPauseMenuItem)
                 {
-                    if (!ToolsPlayStartStopButton.IsRunning)
-                        ToolsPlayStartStopButton.PerformClick();
-                    else
-                        await PlayOrPause().ConfigureAwait(false);
+                    await PlayOrPauseAsync();
+
+                    ToolsPlayStartStopButton.SetRunningState(!ToolsPlayStartStopButton.IsRunning);
                 }
                 else if (e.ClickedItem == ContextPlayStopMenuItem)
                     ToolsPlayStartStopButton.Stop();
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -313,15 +286,15 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
-        private async void MainContextMenu_Opening(object sender, CancelEventArgs e)
+        private async void MainContextMenu_OpeningAsync(object sender, CancelEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
 
-                await SetPlayingImagesAndMenus().ConfigureAwait(false);
+                await SetPlayingImagesAndMenusAsync();
 
-                if (MainDataGridView.SelectedRows.Count < 1)
+                if (MainGridView.SelectedRows.Count < 1)
                 {
                     e.Cancel = true;
                     return;
@@ -329,17 +302,17 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
 
         /// <summary>
-        /// Handles the CellDoubleClick event of the MainDataGridView control.
+        /// Handles the CellDoubleClick event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellEventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private async void MainGridView_CellDoubleClickAsync(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
@@ -348,24 +321,26 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
 
         /// <summary>
-        /// Handles the CellMouseClick event of the MainDataGridView control.
+        /// Handles the CellMouseClick event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private async void MainGridView_CellMouseClickAsync(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
+                if (LyricsFinderData?.MainData == null) return;
                 if ((_lyricsForm != null) && _lyricsForm.Visible) return;
+                if (e.RowIndex < 0) return;
 
-                var rows = MainDataGridView.Rows;
+                var rows = MainGridView.Rows;
 
                 if (rows.Count > 1)
                     rows[e.RowIndex].Selected = true;
@@ -398,23 +373,24 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
 
         /// <summary>
-        /// Handles the CellMouseMove event of the MainDataGridView control.
+        /// Handles the CellMouseMove event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        private async void MainGridView_CellMouseMoveAsync(object sender, DataGridViewCellMouseEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
-                if ((_lyricsForm != null) && _lyricsForm.Visible && !Properties.Settings.Default.MouseMoveOpenLyricsForm) return;
-                if ((e.ColumnIndex == (int)GridColumnEnum.Lyrics) && !Properties.Settings.Default.MouseMoveOpenLyricsForm) return;
+                if (LyricsFinderData?.MainData == null) return;
+                if ((_lyricsForm != null) && _lyricsForm.Visible && !LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
+                if ((e.ColumnIndex == (int)GridColumnEnum.Lyrics) && !LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
                 if ((e.ColumnIndex == _currentMouseColumnIndex) && (e.RowIndex == _currentMouseRowIndex)) return;
 
                 _bitmapForm?.Close();
@@ -434,7 +410,7 @@ namespace MediaCenter.LyricsFinder
                         break;
 
                     case (int)GridColumnEnum.Lyrics:
-                        _lyricsForm = ShowLyrics(e.ColumnIndex, e.RowIndex);
+                        _lyricsForm = ShowLyrics(e.ColumnIndex, e.RowIndex, LyricsFinderData.MainData.MouseMoveOpenLyricsForm);
                         break;
 
                     default:
@@ -446,25 +422,64 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
 
         /// <summary>
-        /// Handles the MouseLeave event of the MainDataGridView control.
+        /// Handles the ColumnHeaderMouseClick event of the MainGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
+        private async void MainGridView_ColumnHeaderMouseClickAsync(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (LyricsFinderData?.MainData == null) return;
+
+            try
+            {
+                var rows = MainGridView.Rows;
+
+                if ((e.ColumnIndex == (int)GridColumnEnum.Cover) || (e.ColumnIndex == (int)GridColumnEnum.PlayImage))
+                {
+                    MainGridView.Sort(Index, (MainGridView.SortOrder == SortOrder.Ascending) ? ListSortDirection.Descending : ListSortDirection.Ascending);
+                }
+
+                for (int i = 0; i < rows.Count; i++)
+                {
+                    var row = rows[i];
+                    var keyCell = row.Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+                    var key = (int)(keyCell?.Value ?? -1);
+
+                    if (key == _selectedKey)
+                    {
+                        row.Selected = true;
+                        MainGridView.FirstDisplayedScrollingRowIndex = (row.Index > 2) ? row.Index - 3 : 0;
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the MouseLeave event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_MouseLeave(object sender, EventArgs e)
+        private async void MainGridView_MouseLeaveAsync(object sender, EventArgs e)
         {
+            if (_isDesignTime) return;
+            if (LyricsFinderData?.MainData == null) return;
+
             try
             {
-                if (_isDesignTime) return;
-                if (!Properties.Settings.Default.MouseMoveOpenLyricsForm) return;
-
                 var pt = Cursor.Position;
-                var rect = MainDataGridView.RectangleToScreen(MainDataGridView.ClientRectangle);
+                var rect = MainGridView.RectangleToScreen(MainGridView.ClientRectangle);
 
                 if (!rect.Contains(pt))
                 {
@@ -476,17 +491,17 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
 
         /// <summary>
-        /// Handles the Resize event of the MainDataGridView control.
+        /// Handles the Resize event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MainDataGridView_Resize(object sender, EventArgs e)
+        private async void MainGridView_ResizeAsync(object sender, EventArgs e)
         {
             const int fraction = 6;
 
@@ -494,13 +509,36 @@ namespace MediaCenter.LyricsFinder
             {
                 // Set the Artist, Album and Track columns' width to a 5th of the total width
                 // The Lyrics column is set to "Fill", so it will adjust itself
-                MainDataGridView.Columns[(int)GridColumnEnum.Artist].Width = (int)(MainDataGridView.Width / (1.5 * fraction));
-                MainDataGridView.Columns[(int)GridColumnEnum.Album].Width = (int)(MainDataGridView.Width / (1 * fraction));
-                MainDataGridView.Columns[(int)GridColumnEnum.Title].Width = (int)(MainDataGridView.Width / (1 * fraction));
+                MainGridView.Columns[(int)GridColumnEnum.Artist].Width = (int)(MainGridView.Width / (1.5 * fraction));
+                MainGridView.Columns[(int)GridColumnEnum.Album].Width = (int)(MainGridView.Width / (1 * fraction));
+                MainGridView.Columns[(int)GridColumnEnum.Title].Width = (int)(MainGridView.Width / (1 * fraction));
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the SelectionChanged event of the MainGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MainGridView_SelectionChangedAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                if ((MainGridView.SelectedRows == null) || (MainGridView.SelectedRows.Count == 0)) return;
+
+                var row = MainGridView.SelectedRows[0];
+                var selectedKeyCell = row.Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+
+                _selectedKey = (int)(selectedKeyCell?.Value ?? -1);
+            }
+            catch (Exception ex)
+            {
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -511,13 +549,13 @@ namespace MediaCenter.LyricsFinder
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         /// <remarks>The timer polls Media Center for the playing item, if any, and sets the PlayImage accordingly.</remarks>
-        private async void McStatusTimer_Tick(object sender, EventArgs e)
+        private async void McStatusTimer_TickAsync(object sender, EventArgs e)
         {
             try
             {
                 McStatusTimer.Stop();
 
-                await SetPlayingImagesAndMenus().ConfigureAwait(false);
+                await SetPlayingImagesAndMenusAsync();
 
                 McStatusTimer.Interval = _mcStatusIntervalNormal;
                 McStatusTimer.Start();
@@ -529,9 +567,9 @@ namespace MediaCenter.LyricsFinder
                 // Also, we only log the first incident.
 
                 if (McStatusTimer.Interval == _mcStatusIntervalNormal)
-                    ErrorHandling.ErrorLog($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex, _progressPercentage);
+                    await ErrorHandling.ErrorLogAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex, _progressPercentage);
 
-                await BlankPlayStatusBitmaps().ConfigureAwait(false);
+                await BlankPlayStatusBitmapsAsync();
 
                 McStatusTimer.Interval = _mcStatusIntervalError;
                 McStatusTimer.Start();
@@ -547,6 +585,7 @@ namespace MediaCenter.LyricsFinder
         private async void MenuItem_ClickAsync(object sender, EventArgs e)
         {
             var itemName = "Undefined item";
+            var msg = string.Empty;
 
             try
             {
@@ -558,10 +597,7 @@ namespace MediaCenter.LyricsFinder
                 else
                     itemName = menuItem.Name;
 
-                var position = menuItem.Owner.Location;
-
-                position.Offset(menuItem.Bounds.Size.Width, 0);
-
+                // Special handling of the select playlist menu
                 if (itemName.StartsWith(nameof(FileSelectPlaylistMenuItem), StringComparison.InvariantCultureIgnoreCase))
                 {
                     // Ignore any "Select playlist "branch" menu and only accept the "leaf"
@@ -578,7 +614,7 @@ namespace MediaCenter.LyricsFinder
                     }
 
                     // Get the MC playlist and let LyricsFinder know about it
-                    await LoadPlaylist(itemName).ConfigureAwait(false);
+                    await ReloadPlaylistAsync(false, itemName);
                 }
                 else
                 {
@@ -589,8 +625,7 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(FileReloadMenuItem):
-                            _isConnectedToMc = false;
-                            ProcessWorker.RunWorkerAsync();
+                            await ReloadPlaylistAsync(true);
                             break;
 
                         case nameof(FileSaveMenuItem):
@@ -598,8 +633,8 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(HelpAboutMenuItem):
-                            var about = new AboutBox(EntryAssembly);
-                            about.ShowDialog();
+                            using (var about = new AboutBox(this))
+                                about.ShowDialog();
                             break;
 
                         case nameof(HelpContentsMenuItem):
@@ -608,21 +643,23 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(HelpLookForUpdatesMenuItem):
-                            Model.Helpers.Utility.UpdateCheckWithRetries(EntryAssembly.GetName().Version, true);
+                            await Model.Helpers.Utility.UpdateCheckWithRetriesAsync(EntryAssembly.GetName().Version, this.Size, true);
                             break;
 
-                        case nameof(ToolsLyricsServicesMenuItem):
-                            var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, position, ShowServicesCallback);
-                            lyricsServiceForm.ShowDialog(this);
+                        case nameof(ToolsLyricServicesMenuItem):
+                            using (var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, ShowServicesCallbackAsync))
+                            {
+                                lyricsServiceForm.ShowDialog(this);
+                            }
                             break;
 
                         case nameof(ToolsOptionsMenuItem):
-                            var frm = new OptionForm("LyricsFinder connection setup");
-                            frm.ShowDialog(this);
+                            using (var frm = new OptionForm("LyricsFinder setup", LyricsFinderData))
+                                frm.ShowDialog(this);
                             break;
 
                         case nameof(ToolsShowLogMenuItem):
-                            Logging.ShowLog();
+                            Logging.ShowLogDir();
                             break;
 
                         case nameof(ToolsTestMenuItem):
@@ -642,7 +679,8 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex, $"in menu item: \"{itemName}\"");
+                await StatusMessageAsync($"Error {(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item \"{itemName}\".", true, true);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex, $"{(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item: \"{itemName}\"");
             }
         }
 
@@ -656,146 +694,24 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                if (!_isDesignTime)
+                if (!_isDesignTime && !_isOnHandleDestroyedDone)
                 {
+                    _isOnHandleDestroyedDone = true;
                     _progressPercentage = 0;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    StatusLogAsync("LyricsFinder for JRiver Media Center closed.");
+                    StatusLogAsync(_logHeader + Environment.NewLine);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
-                    if (ProcessWorker.WorkerSupportsCancellation)
-                        ProcessWorker.CancelAsync();
-
-                    StatusLog("LyricsFinder for JRiver Media Center closed.");
-                    StatusLog(_logHeader + Environment.NewLine);
-
-                    SaveFormSettings();
+                    Dispose(true);
                 }
 
                 base.OnHandleDestroyed(e);
             }
-            catch (Exception ex)
+            catch // (Exception ex)
             {
-                if (ProcessWorker.WorkerSupportsCancellation)
-                    ProcessWorker.CancelAsync();
-
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the DoWork event of the ProcessWorker control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.ComponentModel.DoWorkEventArgs" /> instance containing the event data.</param>
-        private async void ProcessWorker_DoWorkAsync(object sender, DoWorkEventArgs e)
-        {
-            try
-            {
-                if (_isDesignTime) return;
-
-                var worker = sender as BackgroundWorker;
-
-                if (_isConnectedToMc)
-                    Process(worker, e);
-                else
-                {
-                    await Connect(worker).ConfigureAwait(false);
-                }
-            }
-            catch
-            {
-                if (ProcessWorker.WorkerSupportsCancellation)
-                    ProcessWorker.CancelAsync();
-
-                throw; // This exception is available in the RunWorkerCompletedEventArgs in the ProcessWorker_RunWorkerCompleted event
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the ProgressChanged event of the ProcessWorker control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.ComponentModel.ProgressChangedEventArgs" /> instance containing the event data.</param>
-        private async void ProcessWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            try
-            {
-                if (_isDesignTime) return;
-
-                _progressPercentage = e.ProgressPercentage;
-
-                var userState = e.UserState as WorkerUserState;
-                var currentDataGridViewItem = MainDataGridView.CurrentRow;
-
-                // Write the log and the status label
-                StatusLog(userState?.Message ?? "");
-                StatusMessage(userState?.Message ?? "");
-
-                var isInSync = ((userState != null) && (userState.CurrentItem != null) && (MainDataGridView.Rows.Count > 0) && (MainDataGridView.Rows.Count == userState.Items.Count));
-
-                // Update the item list in GUI, if empty
-                if (!isInSync && (userState.Items.Count > 0))
-                    await FillDataGrid(userState.Items).ConfigureAwait(false);
-
-                // Finish the item row, e.g. set the item status and found lyrics
-                if (isInSync)
-                    FinishDataGridRow(userState);
-            }
-            catch (Exception ex)
-            {
-                if (ProcessWorker.WorkerSupportsCancellation)
-                    ProcessWorker.CancelAsync();
-
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the RunWorkerCompleted event of the ProcessWorker control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RunWorkerCompletedEventArgs"/> instance containing the event data.</param>
-        private void ProcessWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            try
-            {
-                if (_isDesignTime) return;
-
-                var msg = string.Empty;
-
-                if (e.Cancelled == true)
-                {
-                    //msg = "Process canceled.";
-                    //StatusLog(msg);
-                    //StatusMessage(msg);
-                }
-                else if (e.Error != null)
-                {
-                    _statusWarning = $"{e.Error.Message}";
-                    StatusMessage("Warning");
-
-                    if (e.Error is LyricsQuotaExceededException)
-                        ErrorHandling.ShowErrorHandler(this, e.Error.Message);
-                    else
-                        ErrorReport(MethodBase.GetCurrentMethod(), e.Error, "handling background worker event in LyricsFinder");
-                }
-                else
-                {
-                    //msg = "Process completed.";
-                    //StatusLog(msg);
-                    //StatusMessage(msg);
-                }
-
-                SearchAllStartStopButton.Stop();
-                SearchAllStartStopButton.Checked = false;
-            }
-            catch (Exception ex)
-            {
-                if (ProcessWorker.WorkerSupportsCancellation)
-                    ProcessWorker.CancelAsync();
-
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                // Let's ignore this!
+                // ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -805,29 +721,34 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void StartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void SearchAllStartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
         {
+            string msg;
+
             try
             {
                 if (_isDesignTime) return;
 
-                if (!ToolsSearchAllStartStopButton.IsRunning)
-                {
-                    if (IsDataChanged && (DialogResult.No == MessageBox.Show("Data is changed and will be lost if you proceed\nDo you want to proceed.?", "Proceed?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)))
-                        return;
+                if (IsDataChanged && (DialogResult.No == MessageBox.Show("Data is changed and will be lost if you proceed\r\n"
+                    + "Do you want to proceed.?", "Proceed?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)))
+                    return;
 
-                    ToolsSearchAllStartStopButton.Start();
-                }
+                ToolsSearchAllStartStopButton.Start();
 
-                _progressPercentage = 0;
+                // UseWaitCursor = true;
 
-                // Start the bacground worker
-                if (!ProcessWorker.IsBusy)
-                    ProcessWorker.RunWorkerAsync();
+                // Start the automatic search process job
+                _cancellationTokenSource = new CancellationTokenSource();
+                await SearchAllProcessAsync(_cancellationTokenSource.Token);
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
+                await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync(msg, ex);
+            }
+            finally
+            {
+                // UseWaitCursor = false;
             }
         }
 
@@ -837,21 +758,19 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void StartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private async void SearchAllStartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
 
-                if (ToolsSearchAllStartStopButton.IsRunning)
-                    ToolsSearchAllStartStopButton.Stop();
+                ToolsSearchAllStartStopButton.Stop();
 
-                if (ProcessWorker.WorkerSupportsCancellation)
-                    ProcessWorker.CancelAsync();
+                _cancellationTokenSource.Cancel();
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -861,20 +780,17 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private async void ToolsPlayStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void ToolsPlayStartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
 
-                var dvg = MainDataGridView;
-
-                if (dvg.SelectedRows.Count > 0)
-                    await PlayOrPause().ConfigureAwait(false);
+                await PlayOrPauseAsync();
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -884,17 +800,17 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private async void ToolsPlayStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private async void ToolsPlayStartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
 
-                await PlayStop().ConfigureAwait(false);
+                await PlayStopAsync();
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -904,18 +820,17 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void ToolsSearchAllStartStopButton_Starting(object sender, StartStopButtonEventArgs e)
+        private async void ToolsSearchAllStartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
 
-                if (!SearchAllStartStopButton.IsRunning)
-                    SearchAllStartStopButton.Start();
+                SearchAllStartStopButton.Start();
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -925,18 +840,17 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        private void ToolsSearchAllStartStopButton_Stopping(object sender, StartStopButtonEventArgs e)
+        private async void ToolsSearchAllStartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
         {
             try
             {
                 if (_isDesignTime) return;
 
-                if (SearchAllStartStopButton.IsRunning)
-                    SearchAllStartStopButton.Stop();
+                SearchAllStartStopButton.Stop();
             }
             catch (Exception ex)
             {
-                ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
         }
 
@@ -946,37 +860,39 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void UpdateCheckTimer_Tick(object sender, EventArgs e)
+        private async void UpdateCheckTimer_TickAsync(object sender, EventArgs e)
         {
             try
             {
                 UpdateCheckTimer.Stop();
 
                 // Is it about time for a check?
-                var updInterval = Properties.Settings.Default.UpdateCheckInterval;
+                var updInterval = LyricsFinderData.MainData.UpdateCheckIntervalDays;
                 var daysSinceLast = (DateTime.Now - _lastUpdateCheck).TotalDays;
 
                 if ((updInterval == 0)
                     || ((updInterval > 0) && (daysSinceLast >= updInterval)))
                 {
                     var version = Assembly.GetExecutingAssembly().GetName().Version;
-                    var isUpdated = Model.Helpers.Utility.UpdateCheckWithRetries(version);
+                    var isUpdated = await Model.Helpers.Utility.UpdateCheckWithRetriesAsync(version, this.Size);
 
                     if (!isUpdated)
-                        Model.Helpers.Utility.UpdateCheckWithRetries(version, true);
+                        await Model.Helpers.Utility.UpdateCheckWithRetriesAsync(version, this.Size, true);
 
                     _lastUpdateCheck = DateTime.Now;
-                    Properties.Settings.Default.LastUpdateCheck = _lastUpdateCheck.ToString(CultureInfo.InvariantCulture);
+                    LyricsFinderData.MainData.LastUpdateCheck = _lastUpdateCheck;
                 }
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again
             }
 #pragma warning disable CS0168 // Variable is declared but never used
+#pragma warning disable IDE0059 // Value assigned to symbol is never used
             catch (Exception ex)
+#pragma warning restore IDE0059 // Value assigned to symbol is never used
 #pragma warning restore CS0168 // Variable is declared but never used
             {
                 // We ignore this exception for now
-                // ErrorReport(MethodBase.GetCurrentMethod(), ex);
+                // ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
 
                 UpdateCheckTimer.Interval *= 10;
                 UpdateCheckTimer.Start();

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using log4net;
+using MediaCenter.LyricsFinder.Model.LyricServices;
 
 
 namespace MediaCenter.LyricsFinder.Model.Helpers
@@ -19,18 +19,33 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     internal static class ErrorHandling
     {
 
+        private static Size _maxWindowSize = new Size(0, 0);
+
+
+        /// <summary>
+        /// Initializes the specified maximum window size.
+        /// </summary>
+        /// <param name="maxWindowSize">Maximum size of the window.</param>
+        public static void Init(Size maxWindowSize)
+        {
+            _maxWindowSize = maxWindowSize;
+        }
+
+
         /// <summary>
         /// Error handler.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="progressPercentage">The progress percentage.</param>
-        /// <remarks>This routine does not write anything in the log, it is displaying a message on the screen only.</remarks>
-        public static void ShowErrorHandler(string message, int progressPercentage = 0)
+        /// <remarks>
+        /// This routine does not write anything in the log, it is displaying a message on the screen only.
+        /// </remarks>
+        public static async Task ShowErrorHandlerAsync(string message, int progressPercentage = 0)
         {
             message = message.AppendProgressPercentage(progressPercentage);
 
             // MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            ErrorForm.Show(message);
+            await ErrorForm.ShowAsync(message, _maxWindowSize);
         }
 
         /// <summary>
@@ -39,13 +54,76 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="owner">The owner.</param>
         /// <param name="message">The message.</param>
         /// <param name="progressPercentage">The progress percentage.</param>
-        /// <remarks>This routine does not write anything in the log, it is displaying a message on the screen only.</remarks>
-        public static void ShowErrorHandler(IWin32Window owner, string message, int progressPercentage = 0)
+        /// <remarks>
+        /// This routine does not write anything in the log, it is displaying a message on the screen only.
+        /// </remarks>
+        public static async Task ShowErrorHandlerAsync(IWin32Window owner, string message, int progressPercentage = 0)
         {
             message = message.AppendProgressPercentage(progressPercentage);
 
             // MessageBox.Show(owner, message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            ErrorForm.Show(owner, message);
+            await ErrorForm.ShowAsync(owner, message, _maxWindowSize);
+        }
+
+
+        /// <summary>
+        /// Error handler with detailed inner exception messages.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="exception">The primary exeption.</param>
+        /// <param name="progressPercentage">The progress percentage.</param>
+        /// <param name="innerExceptionLevel">The inner exception level, i.e. the number of inner exception messages to list under the primary exception message. "0": show all inner exceptions.</param>
+        public static async Task ShowAndLogDetailedErrorHandlerAsync(string message, Exception exception, int progressPercentage = 0, int innerExceptionLevel = 0)
+        {
+            const string indent = "    ";
+            var sb = new StringBuilder(message.AppendProgressPercentage(progressPercentage));
+
+            await ErrorLogAsync(sb.ToString(), exception);
+
+            sb.AppendLine();
+            sb.AppendLine($"{indent}{exception.GetType().Name}: {exception.Message.Trim(' ', '"')}");
+            sb.AppendLine();
+            sb.AppendLine($"The failure occurred in class object {exception.Source}");
+            sb.AppendLine();
+            sb.AppendLine($"Inner exceptions: ({((innerExceptionLevel == 0) ? "all" : $"only {innerExceptionLevel}")})");
+
+            var cnt = 0;
+            var innerEx = exception.InnerException;
+
+            while ((innerEx != null)
+                && ((innerExceptionLevel < 1) || (cnt < innerExceptionLevel)))
+            {
+                var msg = innerEx.Message.Trim(' ', '"');
+
+                cnt++;
+
+                sb.Append($"{indent}{innerEx.GetType().Name}: ");
+
+                if (innerEx is LyricServiceCommunicationException ex1)
+                {
+                    sb.Append($"A lyric service request failed during lyrics search ");
+                    sb.Append($"for Artist \"{ex1.McItem.Artist}\",  Album \"{ex1.McItem.Album}\" and Song \"{ex1.McItem.Name}\", ");
+                    sb.Append($"request: \"{ex1.RequestUri.AbsoluteUri}\", ");
+                    sb.Append($"error: {msg}");
+                }
+                else if (innerEx is GeneralLyricServiceException ex2)
+                {
+                    sb.Append($"The lyric service failed during lyrics search ");
+                    sb.Append($"for Artist \"{ex2.McItem.Artist}\",  Album \"{ex2.McItem.Album}\" and Song \"{ex2.McItem.Name}\", ");
+                    sb.Append($"error: {msg}");
+                }
+                else
+                    sb.Append($"{indent}{msg}");
+
+                sb.AppendLine();
+                innerEx = innerEx.InnerException;
+            }
+
+            sb.AppendLine();
+            sb.AppendLine($"Full exception details:");
+            sb.AppendLine($"{exception.ToString()}");
+
+            await ShowErrorHandlerAsync(sb.ToString());
         }
 
 
@@ -53,31 +131,39 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// Error handler.
         /// </summary>
         /// <param name="message">The message.</param>
-        /// <param name="exception">The exeption.</param>
+        /// <param name="exception">The primary exeption.</param>
         /// <param name="progressPercentage">The progress percentage.</param>
-        public static void ShowAndLogErrorHandler(string message, Exception exception, int progressPercentage = 0)
+        /// <param name="innerExceptionLevel">The inner exception level, i.e. the number of inner exception messages to list under the primary exception message. "0": show all inner exceptions.</param>
+        public static async Task ShowAndLogErrorHandlerAsync(string message, Exception exception, int progressPercentage = 0, int innerExceptionLevel = 0)
         {
             const string indent = "    ";
+            var sb = new StringBuilder(message.AppendProgressPercentage(progressPercentage));
 
-            message = message.AppendProgressPercentage(progressPercentage);
+            await ErrorLogAsync(sb.ToString(), exception);
 
-            ErrorLog(message, exception);
+            sb.AppendLine();
+            sb.AppendLine($"{indent}{exception.Message.Trim(' ', '"')}");
+            sb.AppendLine();
+            sb.AppendLine($"The failure occurred in class object {exception.Source}");
+            sb.AppendLine();
+            sb.AppendLine($"Inner exception messages: ({((innerExceptionLevel == 0) ? "all" : $"only {innerExceptionLevel}")})");
 
-            message += $" \r\n"
-                + $"{indent}{exception.Message} \r\n\r\n"
-                + $"The failure occurred in class object {exception.Source} \r\n"
-                + $"when calling Method {exception.TargetSite}.\r\n";
+            var cnt = 0;
+            var ex = exception.InnerException;
 
-            if (exception.InnerException != null)
-                message += " \r\n"
-                    + $"Inner exception: \r\n"
-                    + $"{indent}{exception.InnerException} \r\n";
+            while ((ex != null)
+                && ((innerExceptionLevel < 1) || (cnt < innerExceptionLevel)))
+            {
+                cnt++;
+                sb.AppendLine($"{indent}{ex.Message.Trim(' ', '"')}");
+                ex = ex.InnerException;
+            }
 
-            message += " \r\n"
-                + $"Stack trace: \r\n"
-                + $"{exception.StackTrace}";
+            sb.AppendLine();
+            sb.AppendLine($"Stack trace:");
+            sb.AppendLine($"{exception.StackTrace}");
 
-            ShowErrorHandler(message);
+            await ShowErrorHandlerAsync(sb.ToString());
         }
 
 
@@ -87,9 +173,9 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="message">The message.</param>
         /// <param name="exception">The exception.</param>
         /// <param name="progressPercentage">The progress percentage.</param>
-        internal static void ErrorLog(string message, Exception exception, int progressPercentage = 0)
+        internal static async Task ErrorLogAsync(string message, Exception exception, int progressPercentage = 0)
         {
-            Logging.Log(progressPercentage, message, exception);
+            await Logging.LogAsync(progressPercentage, message, exception);
         }
 
 
@@ -110,58 +196,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                 ret += $" Progress: {progressPercentage}%";
 
             return ret;
-        }
-
-    }
-
-
-
-    /// <summary>
-    /// Exception is thrown when the lyrics quota is exceeded.
-    /// </summary>
-    /// <seealso cref="System.Exception" />
-    [Serializable]
-    public class LyricsQuotaExceededException : Exception
-    {
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LyricsQuotaExceededException"/> class.
-        /// </summary>
-        public LyricsQuotaExceededException()
-            : base()
-        {
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LyricsQuotaExceededException"/> class.
-        /// </summary>
-        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected LyricsQuotaExceededException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LyricsQuotaExceededException"/> class.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public LyricsQuotaExceededException(string message)
-            : base(message)
-        {
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LyricsQuotaExceededException"/> class.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
-        public LyricsQuotaExceededException(string message, Exception innerException)
-            : base(message, innerException)
-        {
         }
 
     }

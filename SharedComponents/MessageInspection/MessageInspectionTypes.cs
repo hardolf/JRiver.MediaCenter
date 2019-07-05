@@ -240,14 +240,18 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
-        ///     Implements a modification or extension of the client across an endpoint.
+        /// Implements a modification or extension of the client across an endpoint.
         /// </summary>
         /// <param name="endpoint">The endpoint that is to be customized.</param>
         /// <param name="clientRuntime">The client runtime to be customized.</param>
-        public void ApplyClientBehavior(
-            ServiceEndpoint endpoint,
-            ClientRuntime clientRuntime)
+        /// <exception cref="ArgumentNullException">endpoint
+        /// or
+        /// clientRuntime</exception>
+        public void ApplyClientBehavior(ServiceEndpoint endpoint, ClientRuntime clientRuntime)
         {
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+            if (clientRuntime == null) throw new ArgumentNullException(nameof(clientRuntime));
+
             // Do not create the message inspectors if any of these criteria is fulfilled
             if (!_fileRetentionTimeSpan.HasValue
                 || (_fileRetentionTimeSpan.Value.TotalSeconds < 1)
@@ -255,8 +259,8 @@ namespace MediaCenter.SharedComponents
                 || _responseMessageFile.IsNullOrEmptyTrimmed())
                 return;
 
-            clientRuntime.MessageInspectors.Add(new MessageInspector(
-                _enabled, _requestCountBetweenCleanups, _fileRetentionTimeSpan, _requestMessageFile, _responseMessageFile, _requestConsoleOutputFormat, _responseConsoleOutputFormat));
+            clientRuntime.MessageInspectors.Add(new MessageInspector(_enabled, _requestCountBetweenCleanups, _fileRetentionTimeSpan, 
+                _requestMessageFile, _responseMessageFile, _requestConsoleOutputFormat, _responseConsoleOutputFormat));
         }
 
 
@@ -335,15 +339,18 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
-        ///     Enables inspection or modification of a message after a reply message is received but prior to passing it back to
-        ///     the client application.
+        /// Enables inspection or modification of a message after a reply message is received but prior to passing it back to
+        /// the client application.
         /// </summary>
         /// <param name="reply">The message to be transformed into types and handed back to the client application.</param>
         /// <param name="correlationState">Correlation state data.</param>
+        /// <exception cref="ArgumentNullException">reply</exception>
         public void AfterReceiveReply(
             ref Message reply,
             object correlationState)
         {
+            if (reply == null) throw new ArgumentNullException(nameof(reply));
+
             // Implement this method to inspect/modify messages after a message
             // is received but prior to passing it back to the client
 
@@ -363,18 +370,21 @@ namespace MediaCenter.SharedComponents
 #pragma warning disable CS1734 // XML comment has a paramref tag, but there is no parameter by that name
 #pragma warning disable CS1574 // XML comment has cref attribute that could not be resolved
         /// <summary>
-        ///     Enables inspection or modification of a message before a request message is sent to a service.
+        /// Enables inspection or modification of a message before a request message is sent to a service.
         /// </summary>
         /// <param name="request">The message to be sent to the service.</param>
         /// <param name="channel">The WCF client object channel.</param>
         /// <returns>
-        ///     The object that is returned as the <paramref name="correlationState" />argument of the
-        ///     <see cref="IClientMessageInspector.AfterReceiveReply(System.ServiceModel.Channels.Message, object)" />
-        ///     method. This is null if no correlation state is used.The best practice is to make this a
-        ///     <see cref="System.Guid" /> to ensure that no two <paramref name="correlationState" /> objects are the same.
+        /// The object that is returned as the <paramref name="correlationState" />argument of the
+        /// <see cref="IClientMessageInspector.AfterReceiveReply(System.ServiceModel.Channels.Message, object)" />
+        /// method. This is null if no correlation state is used.The best practice is to make this a
+        /// <see cref="System.Guid" /> to ensure that no two <paramref name="correlationState" /> objects are the same.
         /// </returns>
+        /// <exception cref="ArgumentNullException">request
+        /// or
+        /// channel</exception>
         /// <remarks>
-        ///     <para>The method writes the SOAP request to a file prior to the send.</para>
+        /// The method writes the SOAP request to a file prior to the send.
         /// </remarks>
 #pragma warning restore CS1734 // XML comment has a paramref tag, but there is no parameter by that name
 #pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
@@ -382,6 +392,9 @@ namespace MediaCenter.SharedComponents
             ref Message request,
             IClientChannel channel)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (channel == null) throw new ArgumentNullException(nameof(channel));
+
             // Implement this method to inspect/modify messages before they 
             // are sent to the service
 

@@ -41,6 +41,7 @@ Inno Setup Compiler 6.0.2 (only needed for changes of the setup program, e.g. if
 Current lyrics services
 -----------------------
 Apiseeds Lyrics API          : https://apiseeds.com (Account required, no other restrictions)
+AZLyrics                     : https://www.azlyrics.com (No restrictions, but best suited to manual searches, otherwise risk of temporary IP address banning)
 Chart Lyrics                 : http://www.chartlyrics.com (No restrictions)
 Musixmatch                   : https://www.musixmatch.com (Account required, max. 2.000 free requests per day for 30% of the lyrics text, paid plans for full lyrics)
 STANDS4 Network Lyrics.com   : https://www.lyrics.com (Account required, max. 100 free requests per day)
@@ -61,26 +62,30 @@ MessageInspection            : Utility module for SOAP message inspections.
 Utility                      : General utility module.
 
 
-Installation
-------------
-Unpack and run the installation program:
-
-- End user                   : ...\MediaCenter\LyricsFinder\Installation\Release\Setup.zip
-- Developer                  : ...\MediaCenter\LyricsFinder\Installation\Output\Setup.exe
+Release and installation, development
+-------------------------------------
+- Clone the repository (https://github.com/hardolf/JRiver.MediaCenter/) to your own work folder
+- Continue in your own work folder:
+- Rebuild the LyricsFinder solution using : ...\LyricsFinder\Installation\BuildRelease.cmd (will run elevated)
+- End user installation program           : ...\LyricsFinder\Installation\Release\Setup.zip
+- Developer installation on own PC        : ...\LyricsFinder\Installation\Output\Setup.exe (will run elevated)
 
 
 Installation notes
 ------------------
 The Setup.exe automatically finds any installed JRiver Media Center versions and the user can select which one to install the plug-in to.
 Only one version of JRiver Media Center can be "plugged-in" on the same machine, as the plug-in is registered via COM.
-The standalone program connects to the JRiver Media Center version matching the URL in the standalone program's configuration.
+The standalone program connects to the JRiver Media Center version matching the URL in the standalone program's configuration (GUI Tools menu > Options).
 
 
 Relevant links
 --------------
-JRiver                       : https://www.jriver.com/
-Forum                        : https://yabb.jriver.com/interact/
-Wiki                         : https://wiki.jriver.com/
-DevZone                      : https://wiki.jriver.com/index.php/DevZone
-Plug-ins and accessories     : https://accessories.jriver.com/mediacenter/accessories.php
-Inno Setup Compiler          : http://www.jrsoftware.org/
+LyricsFinder Wiki               : https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder
+LyricsFinder bug reports        : https://github.com/hardolf/JRiver.MediaCenter/projects/3
+LyricsFinder development issues : https://github.com/hardolf/JRiver.MediaCenter/projects/2
+JRiver                          : https://www.jriver.com/
+Forum                           : https://yabb.jriver.com/interact/
+Wiki                            : https://wiki.jriver.com/
+DevZone                         : https://wiki.jriver.com/index.php/DevZone
+Plug-ins and accessories        : https://accessories.jriver.com/mediacenter/accessories.php
+Inno Setup Compiler             : http://www.jrsoftware.org/

@@ -23,6 +23,7 @@ namespace MediaCenter.LyricsFinder
     {
 
         private Assembly _assembly = null;
+        private Size _maxWindowSize;
 
         private string _extraDescription = "\r\nThe LyricsFinder looks for lyrics in public lyric web services.\r\n"
             + "\r\nLookup is done for all - or just one at a time - of the current songs in the \"Playing Now\" list in the JRiver Media Center.\r\n"
@@ -31,15 +32,20 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AboutBox"/> class.
+        /// Initializes a new instance of the <see cref="AboutBox" /> class.
         /// </summary>
-        public AboutBox(Assembly entryAssembly)
+        /// <param name="lyricsFinderCore">The lyrics finder core.</param>
+        /// <exception cref="ArgumentNullException">entryAssembly</exception>
+        public AboutBox(LyricsFinderCore lyricsFinderCore)
         {
+            if (lyricsFinderCore == null) throw new ArgumentNullException(nameof(lyricsFinderCore));
+
             InitializeComponent();
 
             AllowTransparency = false;
 
-            _assembly = entryAssembly ?? throw new ArgumentNullException(nameof(entryAssembly));
+            _assembly = lyricsFinderCore.EntryAssembly;
+            _maxWindowSize = lyricsFinderCore.Size;
         }
 
 
@@ -58,7 +64,7 @@ namespace MediaCenter.LyricsFinder
                 if (attributes.Length == 0)
                     return "";
 
-                return ((AssemblyCompanyAttribute)attributes[0]).Company;
+                return ((AssemblyCompanyAttribute)attributes.FirstOrDefault())?.Company;
             }
         }
 
@@ -78,7 +84,7 @@ namespace MediaCenter.LyricsFinder
                 if (attributes.Length == 0)
                     return "";
 
-                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+                return ((AssemblyCopyrightAttribute)attributes.FirstOrDefault())?.Copyright;
             }
         }
 
@@ -115,7 +121,7 @@ namespace MediaCenter.LyricsFinder
                 if (attributes.Length == 0)
                     return "";
 
-                return ((AssemblyDescriptionAttribute)attributes[0]).Description;
+                return ((AssemblyDescriptionAttribute)attributes.FirstOrDefault())?.Description;
             }
         }
 
@@ -135,7 +141,7 @@ namespace MediaCenter.LyricsFinder
                 if (attributes.Length == 0)
                     return "";
 
-                return ((AssemblyProductAttribute)attributes[0]).Product;
+                return ((AssemblyProductAttribute)attributes.FirstOrDefault())?.Product;
             }
         }
 
@@ -154,7 +160,7 @@ namespace MediaCenter.LyricsFinder
 
                 if (attributes.Length > 0)
                 {
-                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
+                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes.FirstOrDefault();
 
                     if (!titleAttribute.Title.IsNullOrEmptyTrimmed())
                         return titleAttribute.Title;
@@ -187,7 +193,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void AboutBox_Load(object sender, EventArgs e)
+        private async void AboutBox_LoadAsync(object sender, EventArgs e)
         {
             try
             {
@@ -201,7 +207,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -211,7 +217,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void CloseButton_Click(object sender, EventArgs e)
+        private async void CloseButton_ClickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -219,7 +225,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -229,7 +235,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="LinkLabelLinkClickedEventArgs"/> instance containing the event data.</param>
-        private void LinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private async void LinkLabel_LinkClickedAsync(object sender, LinkLabelLinkClickedEventArgs e)
         {
             try
             {
@@ -245,7 +251,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -255,15 +261,15 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void UpdateCheckButton_Click(object sender, EventArgs e)
+        private async void UpdateCheckButton_ClickAsync(object sender, EventArgs e)
         {
             try
             {
-                Model.Helpers.Utility.UpdateCheckWithRetries(_assembly.GetName().Version, true);
+                await Model.Helpers.Utility.UpdateCheckWithRetriesAsync(_assembly.GetName().Version, _maxWindowSize, true);
             }
             catch (Exception ex)
             {
-                ErrorHandling.ShowAndLogErrorHandler($"Error in {MethodBase.GetCurrentMethod().Name} event.", ex);
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 

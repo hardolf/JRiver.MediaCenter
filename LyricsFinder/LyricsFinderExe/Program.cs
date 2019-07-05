@@ -7,9 +7,10 @@ Standalone program creation date:
 2018.04.12
 
 Version Number:
-1.0.0
+1.2.0
 
 Modified: 2019.05.25 by Hardolf.
+Modified: 2019.07.01 by Hardolf.
 */
 
 using System;
@@ -33,7 +34,11 @@ namespace MediaCenter.LyricsFinder
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+
+            using (var mainForm = new MainForm())
+            {
+                Application.Run(mainForm);
+            }
         }
 
     }
