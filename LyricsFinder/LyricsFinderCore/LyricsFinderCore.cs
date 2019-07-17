@@ -210,7 +210,7 @@ namespace MediaCenter.LyricsFinder
                 else if (e.Control && (e.KeyCode == Keys.S))
                 {
                     e.Handled = true;
-                    Save();
+                    await SaveAllAsync();
                 }
                 else if (e.KeyCode == Keys.Space)
                 {
@@ -440,11 +440,6 @@ namespace MediaCenter.LyricsFinder
             {
                 var rows = MainGridView.Rows;
 
-                if ((e.ColumnIndex == (int)GridColumnEnum.Cover) || (e.ColumnIndex == (int)GridColumnEnum.PlayImage))
-                {
-                    MainGridView.Sort(Index, (MainGridView.SortOrder == SortOrder.Ascending) ? ListSortDirection.Descending : ListSortDirection.Ascending);
-                }
-
                 for (int i = 0; i < rows.Count; i++)
                 {
                     var row = rows[i];
@@ -629,7 +624,7 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(FileSaveMenuItem):
-                            Save();
+                            await SaveAllAsync();
                             break;
 
                         case nameof(HelpAboutMenuItem):
@@ -637,9 +632,16 @@ namespace MediaCenter.LyricsFinder
                                 about.ShowDialog();
                             break;
 
+                        case nameof(HelpBugReportsMenuItem):
+                            System.Diagnostics.Process.Start("https://github.com/hardolf/JRiver.MediaCenter/projects/3");
+                            break;
+
                         case nameof(HelpContentsMenuItem):
-                            var url = "https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder-User-Manual";
-                            System.Diagnostics.Process.Start(url);
+                            System.Diagnostics.Process.Start("https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder-User-Manual");
+                            break;
+
+                        case nameof(HelpDevelopmentIssuesMenuItem):
+                            System.Diagnostics.Process.Start("https://github.com/hardolf/JRiver.MediaCenter/projects/2");
                             break;
 
                         case nameof(HelpLookForUpdatesMenuItem):

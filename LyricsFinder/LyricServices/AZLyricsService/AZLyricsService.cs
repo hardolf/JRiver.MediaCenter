@@ -36,6 +36,41 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>
+        ///   <see cref="AZLyricsService" /> object.
+        /// </returns>
+        public override AbstractLyricService Clone()
+        {
+            var ret = new AZLyricsService
+            {
+                Comment = Comment,
+                Credit = Credit.Clone(),
+                HitCountToday = 0,
+                HitCountTotal = 0,
+                IsActive = IsActive,
+                IsImplemented = IsImplemented,
+                LyricResult = LyricResultEnum.NotProcessedYet,
+                // LyricResultMessage = LyricResultMessage,
+                LyricsFinderData = LyricsFinderData,
+                // PrivateSettings = PrivateSettings,
+                RequestCountToday = 0,
+                RequestCountTotal = 0,
+                // Settings = Settings,
+
+            };
+
+            // The hit and request counters are added back to the source service after a search.
+            // This is done in the LyricSearch.SearchAsync method.
+
+            ret.CreateDisplayProperties();
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Extracts the result text and sets the FoundLyricsText.
         /// </summary>
         /// <param name="uri">The URI.</param>

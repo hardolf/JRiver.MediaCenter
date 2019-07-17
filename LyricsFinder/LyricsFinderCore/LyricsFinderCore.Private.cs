@@ -344,7 +344,7 @@ namespace MediaCenter.LyricsFinder
                 _emptyPlayPauseImage.MakeTransparent();
 
                 // Create the row and make it's height equal to the width of the bitmap img
-                row.CreateCells(dgv, idx++, value.Key, _emptyPlayPauseImage, coverImage, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
+                row.CreateCells(dgv, _emptyPlayPauseImage, idx, ++idx, value.Key, coverImage, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
                 row.Height = dgv.Columns[(int)GridColumnEnum.Cover].Width;
 
                 dgv.Rows.Add(row);
@@ -907,30 +907,47 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Saves the <c>LyricsFinderData</c> and the playlist items to the Media Center.
         /// </summary>
-        private void Save()
+        private async Task SaveAllAsync()
         {
             if (!IsDataChanged) return;
 
-            LyricsFinderData.Save();
+            await StatusMessageAsync("Saving changed data...");
 
-            var lyricsResultTest = $"{LyricResultEnum.Found.ResultText()}|{LyricResultEnum.ManuallyEdited.ResultText()}".ToUpperInvariant();
-
-            // Iterate the displayed rows and save each row, if it is found or manually edited
-            for (int i = 0; i < MainGridView.Rows.Count; i++)
+            try
             {
-                var row = MainGridView.Rows[i] as DataGridViewRow;
+                LyricsFinderData.Save();
 
-                var keyTxt = row.Cells[(int)GridColumnEnum.Key].Value?.ToString();
-                var lyrics = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString();
-                var status = row.Cells[(int)GridColumnEnum.Status].Value?.ToString();
+                // We only save items if they are found or manually edited
+                var lyricsResultTest = $"{LyricResultEnum.Found.ResultText()}|{LyricResultEnum.ManuallyEdited.ResultText()}".ToUpperInvariant();
 
-                if ((!lyrics.IsNullOrEmptyTrimmed()) && lyricsResultTest.Contains(status.ToUpperInvariant()))
+                // Iterate the displayed rows and save each row, if it is found or manually edited
+                for (int i = 0; i < MainGridView.Rows.Count; i++)
                 {
-                    if (!int.TryParse(keyTxt, out var key) || lyrics.IsNullOrEmptyTrimmed() || status.IsNullOrEmptyTrimmed())
-                        throw new Exception($"Error parsing row {i} cell(s): keyTxt=\"{keyTxt}\", lyrics=\"{lyrics}\", status=\"{status}\".");
+                    var row = MainGridView.Rows[i] as DataGridViewRow;
 
-                    var rsp = McRestService.SetInfo(key, "Lyrics", lyrics);
+                    var keyTxt = row.Cells[(int)GridColumnEnum.Key].Value?.ToString();
+                    var lyrics = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString();
+                    var status = row.Cells[(int)GridColumnEnum.Status].Value?.ToString();
+
+                    if ((!lyrics.IsNullOrEmptyTrimmed()) && lyricsResultTest.Contains(status.ToUpperInvariant()))
+                    {
+                        if (!int.TryParse(keyTxt, out var key) || status.IsNullOrEmptyTrimmed())
+                            throw new Exception($"Error parsing row {i} cell(s): keyTxt=\"{keyTxt}\", lyrics=\"{lyrics}\", status=\"{status}\".");
+
+                        var rsp = await McRestService.SetInfo(key, "Lyrics", lyrics);
+
+                        if (!rsp.IsOk)
+                            throw new Exception($"Saving item to Media Center failed for index {i} with key {key}.");
+                    }
                 }
+
+                IsDataChanged = false;
+                await StatusMessageAsync(string.Empty);
+            }
+            catch (Exception ex)
+            {
+                await StatusMessageAsync($"Saving data failed: {ex.Message}");
+                throw;
             }
         }
 

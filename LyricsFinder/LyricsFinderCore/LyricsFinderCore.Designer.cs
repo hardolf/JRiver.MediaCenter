@@ -54,9 +54,10 @@ namespace MediaCenter.LyricsFinder
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             this.MainContainer = new System.Windows.Forms.ToolStripContainer();
             this.BottomMenu = new System.Windows.Forms.MenuStrip();
-            this.SearchAllStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.TestTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.OverwriteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainStatusStrip = new System.Windows.Forms.StatusStrip();
@@ -73,8 +74,6 @@ namespace MediaCenter.LyricsFinder
             this.FileSepMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.FileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToolsSearchAllStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
-            this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.ToolSepMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolsLyricServicesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsOptionsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,6 +84,8 @@ namespace MediaCenter.LyricsFinder
             this.DataChangedTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpContentsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.HelpBugReportsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.HelpDevelopmentIssuesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpSepMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.HelpLookForUpdatesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpSepMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
@@ -98,9 +99,13 @@ namespace MediaCenter.LyricsFinder
             this.ContextPlayStopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.McStatusTimer = new System.Windows.Forms.Timer(this.components);
             this.UpdateCheckTimer = new System.Windows.Forms.Timer(this.components);
-            this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Key = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SearchAllStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
+            this.ToolsSearchAllStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
+            this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.PlayImage = new System.Windows.Forms.DataGridViewImageColumn();
+            this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Sequence = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Key = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Cover = new System.Windows.Forms.DataGridViewImageColumn();
             this.Artist = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Album = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -160,24 +165,6 @@ namespace MediaCenter.LyricsFinder
             this.BottomMenu.TabIndex = 1;
             this.BottomMenu.Text = "menuStrip1";
             // 
-            // SearchAllStartStopButton
-            // 
-            this.SearchAllStartStopButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.SearchAllStartStopButton.CheckOnClick = true;
-            this.SearchAllStartStopButton.Clicked = false;
-            this.SearchAllStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("SearchAllStartStopButton.Image")));
-            this.SearchAllStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("SearchAllStartStopButton.ImageStart")));
-            this.SearchAllStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("SearchAllStartStopButton.ImageStop")));
-            this.SearchAllStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SearchAllStartStopButton.IsRunning = false;
-            this.SearchAllStartStopButton.Margin = new System.Windows.Forms.Padding(2, 1, 4, 2);
-            this.SearchAllStartStopButton.Name = "SearchAllStartStopButton";
-            this.SearchAllStartStopButton.Size = new System.Drawing.Size(103, 20);
-            this.SearchAllStartStopButton.Text = "&Start search all";
-            this.SearchAllStartStopButton.TextStart = "&Start search all";
-            this.SearchAllStartStopButton.TextStop = "&Stop search all";
-            this.SearchAllStartStopButton.ToolTipText = "Start / stop finding all the lyrics for the current playlist";
-            // 
             // TestTextBox
             // 
             this.TestTextBox.Name = "TestTextBox";
@@ -236,9 +223,10 @@ namespace MediaCenter.LyricsFinder
             this.MainGridView.AllowUserToResizeRows = false;
             this.MainGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.MainGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Index,
-            this.Key,
             this.PlayImage,
+            this.Index,
+            this.Sequence,
+            this.Key,
             this.Cover,
             this.Artist,
             this.Album,
@@ -363,36 +351,6 @@ namespace MediaCenter.LyricsFinder
             this.ToolsMenuItem.Size = new System.Drawing.Size(47, 20);
             this.ToolsMenuItem.Text = "&Tools";
             // 
-            // ToolsSearchAllStartStopButton
-            // 
-            this.ToolsSearchAllStartStopButton.Clicked = false;
-            this.ToolsSearchAllStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsSearchAllStartStopButton.Image")));
-            this.ToolsSearchAllStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsSearchAllStartStopButton.ImageStart")));
-            this.ToolsSearchAllStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsSearchAllStartStopButton.ImageStop")));
-            this.ToolsSearchAllStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolsSearchAllStartStopButton.IsRunning = false;
-            this.ToolsSearchAllStartStopButton.Name = "ToolsSearchAllStartStopButton";
-            this.ToolsSearchAllStartStopButton.Size = new System.Drawing.Size(103, 20);
-            this.ToolsSearchAllStartStopButton.Text = "&Stop search all";
-            this.ToolsSearchAllStartStopButton.TextStart = "&Start search all";
-            this.ToolsSearchAllStartStopButton.TextStop = "&Stop search all";
-            this.ToolsSearchAllStartStopButton.ToolTipText = "Start / stop finding all the lyrics for the current playlist";
-            // 
-            // ToolsPlayStartStopButton
-            // 
-            this.ToolsPlayStartStopButton.Clicked = false;
-            this.ToolsPlayStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsPlayStartStopButton.Image")));
-            this.ToolsPlayStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStart")));
-            this.ToolsPlayStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStop")));
-            this.ToolsPlayStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolsPlayStartStopButton.IsRunning = false;
-            this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
-            this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(76, 20);
-            this.ToolsPlayStartStopButton.Text = "Stop &play";
-            this.ToolsPlayStartStopButton.TextStart = "Start &play";
-            this.ToolsPlayStartStopButton.TextStop = "Stop &play";
-            this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item in the current playlist";
-            // 
             // ToolSepMenuItem1
             // 
             this.ToolSepMenuItem1.Name = "ToolSepMenuItem1";
@@ -466,6 +424,8 @@ namespace MediaCenter.LyricsFinder
             // 
             this.HelpMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.HelpContentsMenuItem,
+            this.HelpBugReportsMenuItem,
+            this.HelpDevelopmentIssuesMenuItem,
             this.HelpSepMenuItem1,
             this.HelpLookForUpdatesMenuItem,
             this.HelpSepMenuItem2,
@@ -481,6 +441,20 @@ namespace MediaCenter.LyricsFinder
             this.HelpContentsMenuItem.Size = new System.Drawing.Size(219, 22);
             this.HelpContentsMenuItem.Text = "&Help contents...";
             this.HelpContentsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // HelpBugReportsMenuItem
+            // 
+            this.HelpBugReportsMenuItem.Name = "HelpBugReportsMenuItem";
+            this.HelpBugReportsMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.HelpBugReportsMenuItem.Text = "Bug reports";
+            this.HelpBugReportsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // HelpDevelopmentIssuesMenuItem
+            // 
+            this.HelpDevelopmentIssuesMenuItem.Name = "HelpDevelopmentIssuesMenuItem";
+            this.HelpDevelopmentIssuesMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.HelpDevelopmentIssuesMenuItem.Text = "Development issues";
+            this.HelpDevelopmentIssuesMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // HelpSepMenuItem1
             // 
@@ -574,24 +548,53 @@ namespace MediaCenter.LyricsFinder
             this.UpdateCheckTimer.Interval = 5000;
             this.UpdateCheckTimer.Tick += new System.EventHandler(this.UpdateCheckTimer_TickAsync);
             // 
-            // Index
+            // SearchAllStartStopButton
             // 
-            this.Index.HeaderText = "Index";
-            this.Index.Name = "Index";
-            this.Index.ReadOnly = true;
-            this.Index.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Index.Visible = false;
+            this.SearchAllStartStopButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.SearchAllStartStopButton.CheckOnClick = true;
+            this.SearchAllStartStopButton.Clicked = false;
+            this.SearchAllStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("SearchAllStartStopButton.Image")));
+            this.SearchAllStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("SearchAllStartStopButton.ImageStart")));
+            this.SearchAllStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("SearchAllStartStopButton.ImageStop")));
+            this.SearchAllStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SearchAllStartStopButton.IsRunning = false;
+            this.SearchAllStartStopButton.Margin = new System.Windows.Forms.Padding(2, 1, 4, 2);
+            this.SearchAllStartStopButton.Name = "SearchAllStartStopButton";
+            this.SearchAllStartStopButton.Size = new System.Drawing.Size(103, 20);
+            this.SearchAllStartStopButton.Text = "&Start search all";
+            this.SearchAllStartStopButton.TextStart = "&Start search all";
+            this.SearchAllStartStopButton.TextStop = "&Stop search all";
+            this.SearchAllStartStopButton.ToolTipText = "Start / stop finding all the lyrics for the current playlist";
             // 
-            // Key
+            // ToolsSearchAllStartStopButton
             // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight;
-            this.Key.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Key.HeaderText = "Key";
-            this.Key.Name = "Key";
-            this.Key.ReadOnly = true;
-            this.Key.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Key.Visible = false;
-            this.Key.Width = 5;
+            this.ToolsSearchAllStartStopButton.Clicked = false;
+            this.ToolsSearchAllStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsSearchAllStartStopButton.Image")));
+            this.ToolsSearchAllStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsSearchAllStartStopButton.ImageStart")));
+            this.ToolsSearchAllStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsSearchAllStartStopButton.ImageStop")));
+            this.ToolsSearchAllStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolsSearchAllStartStopButton.IsRunning = false;
+            this.ToolsSearchAllStartStopButton.Name = "ToolsSearchAllStartStopButton";
+            this.ToolsSearchAllStartStopButton.Size = new System.Drawing.Size(103, 20);
+            this.ToolsSearchAllStartStopButton.Text = "&Stop search all";
+            this.ToolsSearchAllStartStopButton.TextStart = "&Start search all";
+            this.ToolsSearchAllStartStopButton.TextStop = "&Stop search all";
+            this.ToolsSearchAllStartStopButton.ToolTipText = "Start / stop finding all the lyrics for the current playlist";
+            // 
+            // ToolsPlayStartStopButton
+            // 
+            this.ToolsPlayStartStopButton.Clicked = false;
+            this.ToolsPlayStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsPlayStartStopButton.Image")));
+            this.ToolsPlayStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStart")));
+            this.ToolsPlayStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStop")));
+            this.ToolsPlayStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolsPlayStartStopButton.IsRunning = false;
+            this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
+            this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(76, 20);
+            this.ToolsPlayStartStopButton.Text = "Stop &play";
+            this.ToolsPlayStartStopButton.TextStart = "Start &play";
+            this.ToolsPlayStartStopButton.TextStop = "Stop &play";
+            this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item in the current playlist";
             // 
             // PlayImage
             // 
@@ -601,6 +604,37 @@ namespace MediaCenter.LyricsFinder
             this.PlayImage.ReadOnly = true;
             this.PlayImage.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.PlayImage.Width = 18;
+            // 
+            // Index
+            // 
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight;
+            this.Index.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Index.HeaderText = "Index";
+            this.Index.Name = "Index";
+            this.Index.ReadOnly = true;
+            this.Index.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Index.Visible = false;
+            this.Index.Width = 40;
+            // 
+            // Sequence
+            // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight;
+            this.Sequence.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Sequence.HeaderText = "Seq";
+            this.Sequence.Name = "Sequence";
+            this.Sequence.ReadOnly = true;
+            this.Sequence.Width = 40;
+            // 
+            // Key
+            // 
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight;
+            this.Key.DefaultCellStyle = dataGridViewCellStyle3;
+            this.Key.HeaderText = "Key";
+            this.Key.Name = "Key";
+            this.Key.ReadOnly = true;
+            this.Key.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Key.Visible = false;
+            this.Key.Width = 5;
             // 
             // Cover
             // 
@@ -612,10 +646,10 @@ namespace MediaCenter.LyricsFinder
             // 
             // Artist
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(1);
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Artist.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle4.Padding = new System.Windows.Forms.Padding(1);
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Artist.DefaultCellStyle = dataGridViewCellStyle4;
             this.Artist.HeaderText = "Artist";
             this.Artist.Name = "Artist";
             this.Artist.ReadOnly = true;
@@ -623,10 +657,10 @@ namespace MediaCenter.LyricsFinder
             // 
             // Album
             // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle3.Padding = new System.Windows.Forms.Padding(1);
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Album.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle5.Padding = new System.Windows.Forms.Padding(1);
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Album.DefaultCellStyle = dataGridViewCellStyle5;
             this.Album.HeaderText = "Album";
             this.Album.Name = "Album";
             this.Album.ReadOnly = true;
@@ -634,10 +668,10 @@ namespace MediaCenter.LyricsFinder
             // 
             // Title
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle4.Padding = new System.Windows.Forms.Padding(1);
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Title.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle6.Padding = new System.Windows.Forms.Padding(1);
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Title.DefaultCellStyle = dataGridViewCellStyle6;
             this.Title.HeaderText = "Title";
             this.Title.Name = "Title";
             this.Title.ReadOnly = true;
@@ -646,25 +680,24 @@ namespace MediaCenter.LyricsFinder
             // Lyrics
             // 
             this.Lyrics.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle5.Padding = new System.Windows.Forms.Padding(1);
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Lyrics.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle7.Padding = new System.Windows.Forms.Padding(1);
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Lyrics.DefaultCellStyle = dataGridViewCellStyle7;
             this.Lyrics.HeaderText = "Lyrics";
             this.Lyrics.Name = "Lyrics";
             this.Lyrics.ReadOnly = true;
             // 
             // Status
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
-            dataGridViewCellStyle6.Padding = new System.Windows.Forms.Padding(1);
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Status.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle8.Padding = new System.Windows.Forms.Padding(1);
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Status.DefaultCellStyle = dataGridViewCellStyle8;
             this.Status.HeaderText = "Status";
             this.Status.Name = "Status";
             this.Status.ReadOnly = true;
             this.Status.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Status.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Status.Width = 150;
             // 
             // LyricsFinderCore
@@ -744,9 +777,12 @@ namespace MediaCenter.LyricsFinder
         private System.Windows.Forms.ToolStripSeparator FileSepMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem FileSelectPlaylistMenuItem;
         private System.Windows.Forms.ToolStripMenuItem dummyItemToolStripMenuItem;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Index;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Key;
+        private System.Windows.Forms.ToolStripMenuItem HelpBugReportsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem HelpDevelopmentIssuesMenuItem;
         private System.Windows.Forms.DataGridViewImageColumn PlayImage;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Index;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Sequence;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Key;
         private System.Windows.Forms.DataGridViewImageColumn Cover;
         private System.Windows.Forms.DataGridViewTextBoxColumn Artist;
         private System.Windows.Forms.DataGridViewTextBoxColumn Album;

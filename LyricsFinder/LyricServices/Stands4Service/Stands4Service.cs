@@ -78,6 +78,61 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>
+        ///   <see cref="Stands4Service" /> object.
+        /// </returns>
+        public override AbstractLyricService Clone()
+        {
+            var ret = new Stands4Service
+            {
+                Comment = Comment,
+                Credit = Credit.Clone(),
+                HitCountToday = 0,
+                HitCountTotal = 0,
+                IsActive = IsActive,
+                IsImplemented = IsImplemented,
+                LyricResult = LyricResultEnum.NotProcessedYet,
+                // LyricResultMessage = LyricResultMessage,
+                LyricsFinderData = LyricsFinderData,
+                // PrivateSettings = PrivateSettings,
+                RequestCountToday = 0,
+                RequestCountTotal = 0,
+                // Settings = Settings,
+
+                DailyQuota = DailyQuota,
+                QuotaResetTime = QuotaResetTime,
+                Token = Token,
+                UserId = UserId
+            };
+
+            // The hit and request counters are added back to the source service after a search.
+            // This is done in the LyricSearch.SearchAsync method.
+
+            ret.CreateDisplayProperties();
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Refreshes the display properties.
+        /// </summary>
+        public override void CreateDisplayProperties()
+        {
+            base.CreateDisplayProperties();
+
+            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
+            DisplayProperties.Add(nameof(UserId), new DisplayProperty("User ID", UserId, null, nameof(UserId), true));
+            DisplayProperties.Add(nameof(DailyQuota), new DisplayProperty("Daily quota", DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture), "Daily number of requests", nameof(DailyQuota), true));
+            DisplayProperties.Add("QuotaResetTimeZone", new DisplayProperty("Service time zone", QuotaResetTime.ServiceTimeZone.StandardName));
+            DisplayProperties.Add("QuotaResetTimeService", new DisplayProperty("Next quota reset local time, service", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture)));
+            DisplayProperties.Add("QuotaResetTimeClient", new DisplayProperty("Next quota reset local time, this machine", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture)));
+        }
+
+
+        /// <summary>
         /// Extracts all the lyrics from all the results.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -257,9 +312,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 // Do the request
                 txt = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
-                if (Exceptions.Count > 0)
-                    return this;
-
                 // Deserialize the returned JSON
                 var results = txt.XmlDeserializeFromString<StandsResultListType>();
 
@@ -289,22 +341,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
 
             return this;
-        }
-
-
-        /// <summary>
-        /// Refreshes the display properties.
-        /// </summary>
-        public override void CreateDisplayProperties()
-        {
-            base.CreateDisplayProperties();
-
-            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
-            DisplayProperties.Add(nameof(UserId), new DisplayProperty("User ID", UserId, null, nameof(UserId), true));
-            DisplayProperties.Add(nameof(DailyQuota), new DisplayProperty("Daily quota", DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture), "Daily number of requests", nameof(DailyQuota), true));
-            DisplayProperties.Add("QuotaResetTimeZone", new DisplayProperty("Service time zone", QuotaResetTime.ServiceTimeZone.StandardName));
-            DisplayProperties.Add("QuotaResetTimeService", new DisplayProperty("Next quota reset local time, service", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture)));
-            DisplayProperties.Add("QuotaResetTimeClient", new DisplayProperty("Next quota reset local time, this machine", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture)));
         }
 
 

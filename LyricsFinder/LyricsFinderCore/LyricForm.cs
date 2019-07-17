@@ -445,10 +445,10 @@ namespace MediaCenter.LyricsFinder
             _foundLyricList.Clear();
 
             _cancellationTokenSource = new CancellationTokenSource();
-            await LyricSearch.SearchAsync(LyricsFinderData, _McItem, _cancellationTokenSource.Token, true).ConfigureAwait(true);
+            var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _McItem, _cancellationTokenSource.Token, true).ConfigureAwait(true);
 
             // Process the results
-            foreach (var service in LyricsFinderData.ActiveLyricServices)
+            foreach (var service in resultServices)
             {
                 if (service.LyricResult != LyricResultEnum.Found) continue;
 

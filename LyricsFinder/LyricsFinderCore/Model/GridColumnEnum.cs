@@ -14,9 +14,10 @@ namespace MediaCenter.LyricsFinder.Model
     internal enum GridColumnEnum : int
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        Index,
-        Key,
         PlayImage,
+        Index,
+        Sequence,
+        Key,
         Cover,
         Artist,
         Album,

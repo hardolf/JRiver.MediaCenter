@@ -76,19 +76,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public static bool IsObsoleteConfigurationsUsed { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the exceptions.
+        /// Gets a list of the found lyric texts.
         /// </summary>
         /// <value>
-        /// The exceptions.
-        /// </value>
-        [XmlIgnore]
-        public List<Exception> Exceptions { get; private set; }
-
-        /// <summary>
-        /// Gets or sets a list of the found lyric texts.
-        /// </summary>
-        /// <value>
-        /// The list of found lyric texts.
+        /// The public list of found lyric texts.
         /// </value>
         [XmlIgnore]
         public ReadOnlyCollection<FoundLyricType> FoundLyricList { get; }
@@ -210,30 +201,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             Comment = string.Empty;
             Credit = new CreditType();
             DisplayProperties = new Dictionary<string, DisplayProperty>();
-            Exceptions = new List<Exception>();
             InternalFoundLyricList = new FoundLyricListType<FoundLyricType>();
             FoundLyricList = new ReadOnlyCollection<FoundLyricType>(InternalFoundLyricList);
             IsActive = false;
             IsImplemented = false;
             LyricResult = LyricResultEnum.NotProcessedYet;
-        }
-
-
-        /// <summary>
-        /// Adds the exception.
-        /// </summary>
-        /// <param name="exception">The exception.</param>
-        /// <param name="request">Optional request.</param>
-        public void AddException(Exception exception, string request = null)
-        {
-            if (exception == null) throw new ArgumentNullException(nameof(exception));
-
-            var msg = $"\"{Credit.ServiceName}\" call failed: \"{exception.Message}\"";
-
-            if (!request.IsNullOrEmptyTrimmed())
-                msg += $" Request: \"{request}\".";
-
-            Exceptions.Add(new Exception(msg, exception));
         }
 
 
@@ -264,6 +236,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             LyricResult = LyricResultEnum.Found;
 
             return ret;
+        }
+
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns><see cref="AbstractLyricService"/> descendant object.</returns>
+        public virtual AbstractLyricService Clone()
+        {
+            return null;
         }
 
 
@@ -450,13 +432,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            cancellationToken.ThrowIfCancellationRequested();
-            await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
-
-            Exceptions.Clear();
             InternalFoundLyricList.Clear();
             LyricResult = LyricResultEnum.NotFound;
 
+            cancellationToken.ThrowIfCancellationRequested();
+            await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
 
             // Skip if we are over the quota limit
             if (IsQuotaExceeded())

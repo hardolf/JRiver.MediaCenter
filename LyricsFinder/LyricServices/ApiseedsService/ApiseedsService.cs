@@ -48,6 +48,53 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>
+        ///   <see cref="ApiseedsService" /> object.
+        /// </returns>
+        public override AbstractLyricService Clone()
+        {
+            var ret = new ApiseedsService
+            {
+                Comment = Comment,
+                Credit = Credit.Clone(),
+                HitCountToday = 0,
+                HitCountTotal = 0,
+                IsActive = IsActive,
+                IsImplemented = IsImplemented,
+                LyricResult = LyricResultEnum.NotProcessedYet,
+                // LyricResultMessage = LyricResultMessage,
+                LyricsFinderData = LyricsFinderData,
+                // PrivateSettings = PrivateSettings,
+                RequestCountToday = 0,
+                RequestCountTotal = 0,
+                // Settings = Settings,
+
+                Token = Token
+            };
+
+            // The hit and request counters are added back to the source service after a search.
+            // This is done in the LyricSearch.SearchAsync method.
+
+            ret.CreateDisplayProperties();
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Refreshes the display properties.
+        /// </summary>
+        public override void CreateDisplayProperties()
+        {
+            base.CreateDisplayProperties();
+
+            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
+        }
+
+
+        /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -79,9 +126,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 // First we search for the track
                 json = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
-                if (Exceptions.Count > 0)
-                    return this;
-
                 // Deserialize the returned JSON
                 var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
                 var lyricText = (string)searchDyn.result.track.text;
@@ -104,17 +148,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
 
             return this;
-        }
-
-
-        /// <summary>
-        /// Refreshes the display properties.
-        /// </summary>
-        public override void CreateDisplayProperties()
-        {
-            base.CreateDisplayProperties();
-
-            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
         }
 
 

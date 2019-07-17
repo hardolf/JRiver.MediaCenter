@@ -156,6 +156,33 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns><see cref="CreditType"/> object.</returns>
+        public CreditType Clone()
+        {
+            var ret = new CreditType
+            {
+                Company = Company,
+                Copyright = Copyright,
+                CreditDate = CreditDate,
+                CreditTextFormat = CreditTextFormat,
+                CreditUrl = CreditUrl,
+                // CreditUrlText = CreditUrlText,
+                DateFormat = DateFormat,
+                DisplayProperties = new Dictionary<string, DisplayProperty>(),
+                ServiceName = ServiceName,
+                ServiceUrl = ServiceUrl,
+                // ServiceUrlText = ServiceUrlText
+            };
+
+            ret.CreateDisplayProperties();
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Creates the display properties.
         /// </summary>
         public virtual void CreateDisplayProperties()

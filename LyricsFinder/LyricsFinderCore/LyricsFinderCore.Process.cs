@@ -376,16 +376,17 @@ namespace MediaCenter.LyricsFinder
                         row.Cells[(int)GridColumnEnum.Status].Value = $"{LyricResultEnum.Processing.ResultText()}...";
 
                         // Try to get the first search hit
-                        await LyricSearch.SearchAsync(LyricsFinderData, _currentLyricsFinderPlaylist.Items[key], cancellationToken, false);
+                        var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _currentLyricsFinderPlaylist.Items[key], cancellationToken, false);
 
                         // Process the results
                         // The first lyric found by any service is used for each item
-                        foreach (var service in LyricsFinderData.ActiveLyricServices)
+                        foreach (var service in resultServices)
                         {
 
                             if (service.LyricResult != LyricResultEnum.Found) continue;
                             if (!service.FoundLyricList.IsNullOrEmpty())
                             {
+                                await Logging.LogAsync(0, $"Row index {i} Lyric count: {service.FoundLyricList.Count}", true);
                                 found = true;
                                 foundItemIndices.Add(i);
                                 row.Cells[(int)GridColumnEnum.Lyrics].Value = service.FoundLyricList.First().ToString();
