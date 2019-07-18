@@ -543,7 +543,7 @@ namespace MediaCenter.LyricsFinder
                 foreach (var service in LyricsFinderData.LyricServices)
                 {
                     service.LyricsFinderData = LyricsFinderData;
-                    service.RefreshServiceSettings();
+                    await service.RefreshServiceSettingsAsync();
                 }
 
                 LyricsFinderData.Save();
@@ -899,7 +899,10 @@ namespace MediaCenter.LyricsFinder
             // Set the items' status
             for (int i = 0; i < rows.Count; i++)
             {
-                rows[i].Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.NotProcessedYet.ResultText();
+                var statusCell = rows[i].Cells[(int)GridColumnEnum.Status];
+
+                if (!$"{LyricResultEnum.Found.ResultText()}|{LyricResultEnum.SkippedOldLyrics.ResultText()}".Contains(statusCell.Value.ToString()))
+                    statusCell.Value = LyricResultEnum.NotProcessedYet.ResultText();
             }
         }
 

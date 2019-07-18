@@ -89,17 +89,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 Comment = Comment,
                 Credit = Credit.Clone(),
-                HitCountToday = 0,
-                HitCountTotal = 0,
                 IsActive = IsActive,
                 IsImplemented = IsImplemented,
                 LyricResult = LyricResultEnum.NotProcessedYet,
-                // LyricResultMessage = LyricResultMessage,
                 LyricsFinderData = LyricsFinderData,
-                // PrivateSettings = PrivateSettings,
-                RequestCountToday = 0,
-                RequestCountTotal = 0,
-                // Settings = Settings,
 
                 DailyQuota = DailyQuota,
                 QuotaResetTime = QuotaResetTime,
@@ -255,9 +248,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns>
         ///   <c>true</c> if this service's quota is exceeded; otherwise, <c>false</c>.
         /// </returns>
-        public override bool IsQuotaExceeded()
+        public override async Task<bool> IsQuotaExceededAsync()
         {
-            var ret = base.IsQuotaExceeded();
+            var ret = await base.IsQuotaExceededAsync().ConfigureAwait(false);
 
             // UTC date / time calculations for the quota
             var nowDate = DateTime.UtcNow.Date;
@@ -267,12 +260,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (quotaDiffDays > 0)
             {
                 QuotaResetTime.AddDays(quotaDiffDays);
-                RequestCountToday = 0;
-                HitCountToday = 0;
+                ResetTodayCounters();
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                Logging.LogAsync(0, $"A new quota-day has begun for lyric service \"{Credit.ServiceName}\", request counters are reset.");
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                await Logging.LogAsync(0, $"A new quota-day has begun for lyric service \"{Credit.ServiceName}\", request counters are reset.").ConfigureAwait(false);
             }
 
             ret = (DailyQuota > 0) && (RequestCountToday > DailyQuota);
@@ -347,9 +337,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Refreshes the service settings from the service configuration file.
         /// </summary>
-        public override void RefreshServiceSettings()
+        public override async Task RefreshServiceSettingsAsync()
         {
-            base.RefreshServiceSettings();
+            await base.RefreshServiceSettingsAsync().ConfigureAwait(false);
 
             if (Token.IsNullOrEmptyTrimmed()
                 || UserId.IsNullOrEmptyTrimmed())

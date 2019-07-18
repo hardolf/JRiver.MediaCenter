@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.SharedComponents;
 
 namespace MediaCenter.LyricsFinder.Model
 {
@@ -58,7 +59,7 @@ namespace MediaCenter.LyricsFinder.Model
             if (isGetAll)
                 _ = await Task.WhenAll(tasks);
             else
-                _ = await Task.WhenAny(tasks);
+                _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricResultEnum.Found);
 
             // Add the clone service counters back to the original services
             for (int i = 0; i < services.Count; i++)
@@ -66,18 +67,8 @@ namespace MediaCenter.LyricsFinder.Model
                 var service = services[i];
                 var serviceClone = ret[i];
 
-                lock (service)
-                {
-                    service.HitCountToday += serviceClone.HitCountToday;
-                    service.HitCountTotal += serviceClone.HitCountTotal;
-                    service.RequestCountToday += serviceClone.RequestCountToday;
-                    service.RequestCountTotal += serviceClone.RequestCountTotal;
-
-                    serviceClone.HitCountToday = service.HitCountToday;
-                    serviceClone.HitCountTotal = service.HitCountTotal;
-                    serviceClone.RequestCountToday = service.RequestCountToday;
-                    serviceClone.RequestCountTotal = service.RequestCountTotal;
-                }
+                service.IncrementHitCounters(serviceClone.HitCountTotal);
+                service.IncrementRequestCounters(serviceClone.RequestCountTotal);
             }
 
             // Save the service counters

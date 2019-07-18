@@ -21,8 +21,8 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
     public class McMplItem
     {
 
-        [XmlElement()]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        [XmlElement()]
         public int Key { get; set; }
 
         [XmlElement()]

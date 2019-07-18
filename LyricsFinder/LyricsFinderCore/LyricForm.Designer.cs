@@ -225,6 +225,7 @@
             this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.LyricTextBox.Size = new System.Drawing.Size(378, 411);
             this.LyricTextBox.TabIndex = 5;
+            this.LyricTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricTextBox_KeyDownAsync);
             // 
             // LyricForm
             // 

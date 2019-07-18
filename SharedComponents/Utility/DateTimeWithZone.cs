@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -120,9 +121,7 @@ namespace MediaCenter.SharedComponents
                 }
             }
 
-#pragma warning disable CA1305 // Specify IFormatProvider
-            var dt = DateTime.Parse(s);
-#pragma warning restore CA1305 // Specify IFormatProvider
+            var dt = DateTime.Parse(s, CultureInfo.InvariantCulture);
             var zoneId = TimeZoneInfo.FindSystemTimeZoneById(zone);
             var ret = new ServiceDateTimeWithZone(dt, zoneId);
 

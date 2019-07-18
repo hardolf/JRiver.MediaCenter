@@ -47,17 +47,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 Comment = Comment,
                 Credit = Credit.Clone(),
-                HitCountToday = 0,
-                HitCountTotal = 0,
                 IsActive = IsActive,
                 IsImplemented = IsImplemented,
                 LyricResult = LyricResultEnum.NotProcessedYet,
-                // LyricResultMessage = LyricResultMessage,
                 LyricsFinderData = LyricsFinderData,
-                // PrivateSettings = PrivateSettings,
-                RequestCountToday = 0,
-                RequestCountTotal = 0,
-                // Settings = Settings,
 
             };
 
@@ -100,6 +93,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 msg = "SearchLyric";
 
                 var rsp1 = client.SearchLyric(item.Artist, item.Name);
+
+                IncrementRequestCounters(); // We need to do this here because the request is done with SOAP and not through HttpGetStringAsync
 
                 if ((rsp1 != null) && (rsp1.Length > 0))
                 {

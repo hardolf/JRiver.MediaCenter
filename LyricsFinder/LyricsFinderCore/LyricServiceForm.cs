@@ -207,11 +207,11 @@ namespace MediaCenter.LyricsFinder.Model
 
             for (int i = 0; i < _lyricsFinderData.LyricServices.Count; i++)
             {
-                var srv = _lyricsFinderData.LyricServices[i];
+                var service = _lyricsFinderData.LyricServices[i];
 
-                if (srv.Credit.ServiceName.Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
+                if (service.Credit.ServiceName.Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    ret = srv;
+                    ret = service;
                     selectedIndex = i;
                     break;
                 }

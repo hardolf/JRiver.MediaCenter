@@ -230,8 +230,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var diff = (afterCount - beforeCount);
 
             // This construct ensures that we don't count duplicates
-            HitCountToday += diff;
-            HitCountTotal += diff;
+            IncrementHitCounters(diff);
 
             LyricResult = LyricResultEnum.Found;
 
@@ -352,9 +351,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>We use a central routine here, so that the request counters may be properly updated.</remarks>
         protected virtual async Task<string> HttpGetStringAsync(Uri requestUri)
         {
-            // One more request...
-            RequestCountToday++;
-            RequestCountTotal++;
+            IncrementRequestCounters();
 
             var ret = await Helpers.Utility.HttpGetStringAsync(requestUri).ConfigureAwait(false);
 
@@ -402,15 +399,46 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Increments the hit counters.
+        /// </summary>
+        /// <param name="count">The count.</param>
+        public void IncrementHitCounters(int count = 1)
+        {
+            lock (this)
+            {
+                HitCountToday += count;
+                HitCountTotal += count;
+
+                CreateDisplayProperties();
+            }
+        }
+
+
+        /// <summary>
+        /// Increments the request counters.
+        /// </summary>
+        /// <param name="count">The count.</param>
+        public void IncrementRequestCounters(int count = 1)
+        {
+            lock (this)
+            {
+                RequestCountToday += count;
+                RequestCountTotal += count;
+
+                CreateDisplayProperties();
+            }
+        }
+
+
+        /// <summary>
         /// Gets value indicating whether this service's quota is exceeded.
         /// </summary>
         /// <returns>
         ///   <c>true</c> if this service's quota is exceeded; otherwise, <c>false</c>.
         /// </returns>
-        public virtual bool IsQuotaExceeded()
-        {
-            return false;
-        }
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public virtual async Task<bool> IsQuotaExceededAsync() => false;
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
 
         /// <summary>
@@ -426,9 +454,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="LyricsQuotaExceededException">Lyric service \"{Credit.ServiceName}\" is exceeding its quota and is now disabled in LyricsFinder, "
         /// + "no more requests will be sent to this service until corrected.</exception>
         /// <exception cref="System.ArgumentNullException">item</exception>
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public virtual async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -439,7 +465,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
 
             // Skip if we are over the quota limit
-            if (IsQuotaExceeded())
+            if (await IsQuotaExceededAsync())
             {
                 IsActive = false;
 
@@ -454,7 +480,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Refreshes the service settings from the service configuration file.
         /// </summary>
-        public virtual void RefreshServiceSettings()
+        public virtual async Task RefreshServiceSettingsAsync()
         {
             var assy = Assembly.GetAssembly(GetType());
             var config = ConfigurationManager.OpenExeConfiguration(assy.Location);
@@ -491,7 +517,25 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             Credit.CreditDate = DateTime.Now;
 
+            if (await IsQuotaExceededAsync())
+                IsActive = false;
+
             CreateDisplayProperties();
+        }
+
+
+        /// <summary>
+        /// Resets the today counters.
+        /// </summary>
+        public void ResetTodayCounters()
+        {
+            lock (this)
+            {
+                HitCountToday = 0;
+                RequestCountToday = 0;
+
+                CreateDisplayProperties();
+            }
         }
 
 

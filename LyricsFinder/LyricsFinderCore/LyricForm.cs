@@ -188,9 +188,10 @@ namespace MediaCenter.LyricsFinder
                 AlbumTextBox.ReadOnly = false;
                 TrackTextBox.ReadOnly = false;
                 LyricTextBox.ReadOnly = false;
+                LyricTextBox.Text = _initLyric;
+                LyricTextBox.Select();
                 LyricFormTrackBar.Enabled = false;
                 LyricFormTrackBar.Visible = false;
-                LyricTextBox.Text = _initLyric;
                 SearchButton.Enabled = true;
                 SearchButton.Visible = true;
 
@@ -276,19 +277,20 @@ namespace MediaCenter.LyricsFinder
                         case DialogResult.No:
                             e.Cancel = false;
                             Lyric = _initLyric;
-                            _callback(this);
                             break;
 
                         case DialogResult.Yes:
                             e.Cancel = false;
                             Lyric = _finalLyric;
-                            _callback(this);
                             break;
 
                         default:
                             break;
                     }
                 }
+
+                if (_isSearch)
+                    _callback(this); 
 
                 LyricsFinderData.MainData.LyricFormSize = Size;
                 LyricsFinderData.Save();
@@ -401,6 +403,30 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the KeyDown event of the LyricTextBox control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private async void LyricTextBox_KeyDownAsync(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                e.Handled = false;
+
+                if (e.Control && (e.KeyCode == Keys.A))
+                {
+                    LyricTextBox.SelectAll();
+                    e.Handled = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
         /// Gets the service count.
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
@@ -491,6 +517,7 @@ namespace MediaCenter.LyricsFinder
                     }
 
                     _searchForm = null;
+                    LyricTextBox.Select();
                 }
             }
             catch (Exception ex)

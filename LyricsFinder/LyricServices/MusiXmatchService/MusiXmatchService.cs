@@ -59,17 +59,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 Comment = Comment,
                 Credit = Credit.Clone(),
-                HitCountToday = 0,
-                HitCountTotal = 0,
                 IsActive = IsActive,
                 IsImplemented = IsImplemented,
                 LyricResult = LyricResultEnum.NotProcessedYet,
-                // LyricResultMessage = LyricResultMessage,
                 LyricsFinderData = LyricsFinderData,
-                // PrivateSettings = PrivateSettings,
-                RequestCountToday = 0,
-                RequestCountTotal = 0,
-                // Settings = Settings,
 
                 Token = Token
             };
@@ -202,9 +195,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Refreshes the service settings from the service configuration file.
         /// </summary>
-        public override void RefreshServiceSettings()
+        public override async Task RefreshServiceSettingsAsync()
         {
-            base.RefreshServiceSettings();
+            await base.RefreshServiceSettingsAsync().ConfigureAwait(false);
 
             if (Token.IsNullOrEmptyTrimmed())
                 Token = PrivateSettings.Token;

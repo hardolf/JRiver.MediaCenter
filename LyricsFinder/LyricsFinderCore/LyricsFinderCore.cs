@@ -731,10 +731,6 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                if (IsDataChanged && (DialogResult.No == MessageBox.Show("Data is changed and will be lost if you proceed\r\n"
-                    + "Do you want to proceed.?", "Proceed?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)))
-                    return;
-
                 ToolsSearchAllStartStopButton.Start();
 
                 // UseWaitCursor = true;
@@ -808,7 +804,10 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                await PlayStopAsync();
+                if (_selectedKey == _playingKey)
+                    await PlayStopAsync(); 
+                else
+                    await PlayOrPauseAsync();
             }
             catch (Exception ex)
             {
@@ -887,11 +886,7 @@ namespace MediaCenter.LyricsFinder
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again
             }
-#pragma warning disable CS0168 // Variable is declared but never used
-#pragma warning disable IDE0059 // Value assigned to symbol is never used
-            catch (Exception ex)
-#pragma warning restore IDE0059 // Value assigned to symbol is never used
-#pragma warning restore CS0168 // Variable is declared but never used
+            catch //  (Exception ex)
             {
                 // We ignore this exception for now
                 // ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);

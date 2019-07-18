@@ -78,3 +78,4 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0019:Use pattern matching", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.Model.Helpers.Utility.UpdateCheckAsync(System.Version,System.Drawing.Size,System.Boolean)~System.Threading.Tasks.Task{System.Boolean}")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Value assigned to symbol is never used", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.LyricsFinderCore.LoadPlaylistAsync(System.String)~System.Threading.Tasks.Task{MediaCenter.LyricsFinder.Model.McRestService.McMplResponse}")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.Model.Helpers.Logging.LogAsync(System.Int32,System.String,System.Boolean)~System.Threading.Tasks.Task")]
+

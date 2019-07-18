@@ -269,6 +269,7 @@ namespace MediaCenter.LyricsFinder
             var isCanceled = false;
             var isOk = false;
             var foundItemIndices = new List<int>();
+            var searchItemIndices = new List<int>();
             var queue = new Queue<int>(Enumerable.Range(0, _currentLyricsFinderPlaylist.Items.Count));
             var workers = new List<Task>();
 
@@ -283,7 +284,7 @@ namespace MediaCenter.LyricsFinder
                 // Add the set of workers
                 for (var i = 0; i < LyricsFinderData.MainData.MaxQueueLength; i++)
                 {
-                    workers.Add(SearchAllProcessWorkerAsync(i, queue, foundItemIndices, cancellationToken));
+                    workers.Add(SearchAllProcessWorkerAsync(i, queue, searchItemIndices, foundItemIndices, cancellationToken));
                 }
 
                 // Run the search on the set of workers
@@ -313,7 +314,9 @@ namespace MediaCenter.LyricsFinder
                     : "failed";
 
                 _progressPercentage = Convert.ToInt32(100 * processedCount / _currentLyricsFinderPlaylist.Items.Count);
-                await StatusMessageAsync($"Finding lyrics for the current playlist {result} with {foundItemIndices.Count} lyrics found and {processedCount} items processed.", true, true);
+                await StatusMessageAsync($"Finding lyrics for the current playlist {result} with {searchItemIndices.Count} items searched, "
+                    + $"{foundItemIndices.Count} lyrics found and {processedCount} items processed."
+                    , true, true);
             }
         }
 
@@ -323,6 +326,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="workerNumber">The worker number.</param>
         /// <param name="queue">The queue.</param>
+        /// <param name="searchItemIndices">The search item indices.</param>
         /// <param name="foundItemIndices">The found item indices.</param>
         /// <param name="cancellationToken">The cancellation token source.</param>
         /// <returns></returns>
@@ -339,9 +343,10 @@ namespace MediaCenter.LyricsFinder
         /// cancellationTokenSource</exception>
         /// <exception cref="System.Exception"></exception>
         /// <exception cref="LyricServiceCommunicationException"></exception>
-        private async Task SearchAllProcessWorkerAsync(int workerNumber, Queue<int> queue, List<int> foundItemIndices, CancellationToken cancellationToken)
+        private async Task SearchAllProcessWorkerAsync(int workerNumber, Queue<int> queue, List<int> searchItemIndices, List<int> foundItemIndices, CancellationToken cancellationToken)
         {
             if (queue == null) throw new ArgumentNullException(nameof(queue));
+            if (searchItemIndices == null) throw new ArgumentNullException(nameof(searchItemIndices));
             if (foundItemIndices == null) throw new ArgumentNullException(nameof(foundItemIndices));
             if (cancellationToken == null) throw new ArgumentNullException(nameof(cancellationToken));
 
@@ -366,17 +371,25 @@ namespace MediaCenter.LyricsFinder
                     if (!int.TryParse(row.Cells[(int)GridColumnEnum.Key].Value?.ToString(), out var key))
                         throw new Exception($"{row.Cells[(int)GridColumnEnum.Key].Value} could not be parsed as an integer.");
 
+#if DEBUG
                     var artist = row.Cells[(int)GridColumnEnum.Artist].Value?.ToString() ?? string.Empty;
                     var album = row.Cells[(int)GridColumnEnum.Album].Value?.ToString() ?? string.Empty;
                     var title = row.Cells[(int)GridColumnEnum.Title].Value?.ToString() ?? string.Empty;
+#endif
                     var oldLyric = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString() ?? string.Empty;
+                    var statusCell = row.Cells[(int)GridColumnEnum.Status];
 
-                    if (OverwriteMenuItem.Checked || oldLyric.IsNullOrEmptyTrimmed() || oldLyric.Contains(_noLyricsSearchList))
+                    // Do we need to search this item?
+                    if (!$"{LyricResultEnum.Found.ResultText()}|{LyricResultEnum.SkippedOldLyrics.ResultText()}|{LyricResultEnum.Processing}".Contains(statusCell.Value.ToString())
+                        && (OverwriteMenuItem.Checked || oldLyric.IsNullOrEmptyTrimmed() || oldLyric.Contains(_noLyricsSearchList)))
                     {
-                        row.Cells[(int)GridColumnEnum.Status].Value = $"{LyricResultEnum.Processing.ResultText()}...";
+                        statusCell.Value = $"{LyricResultEnum.Processing.ResultText()}...";
 
                         // Try to get the first search hit
                         var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _currentLyricsFinderPlaylist.Items[key], cancellationToken, false);
+
+                        lock (searchItemIndices)
+                            searchItemIndices.Add(i);
 
                         // Process the results
                         // The first lyric found by any service is used for each item
@@ -386,10 +399,12 @@ namespace MediaCenter.LyricsFinder
                             if (service.LyricResult != LyricResultEnum.Found) continue;
                             if (!service.FoundLyricList.IsNullOrEmpty())
                             {
-                                await Logging.LogAsync(0, $"Row index {i} Lyric count: {service.FoundLyricList.Count}", true);
                                 found = true;
-                                foundItemIndices.Add(i);
-                                row.Cells[(int)GridColumnEnum.Lyrics].Value = service.FoundLyricList.First().ToString();
+
+                                lock (foundItemIndices)
+                                    foundItemIndices.Add(i);
+
+                                statusCell.Value = service.FoundLyricList.First().ToString();
                                 IsDataChanged = true;
                                 break;
                             }
@@ -400,7 +415,9 @@ namespace MediaCenter.LyricsFinder
                             : _currentLyricsFinderPlaylist.Items.Count;
 
                         _progressPercentage = Convert.ToInt32(100 * processedCount / _currentLyricsFinderPlaylist.Items.Count);
-                        await StatusMessageAsync($"Processed {processedCount} items and found {foundItemIndices.Count} lyrics for the current playlist with {_currentLyricsFinderPlaylist.Items.Count} items...", true, true);
+                        await StatusMessageAsync($"Processed {processedCount} items, searched {searchItemIndices.Count} items and "
+                            + $"found {foundItemIndices.Count} lyrics for the current playlist with {_currentLyricsFinderPlaylist.Items.Count} items..."
+                            , true, true);
 
                         row.Cells[(int)GridColumnEnum.Status].Value = (found)
                             ? LyricResultEnum.Found.ResultText()

@@ -47,17 +47,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 Comment = Comment,
                 Credit = Credit.Clone(),
-                HitCountToday = 0,
-                HitCountTotal = 0,
                 IsActive = IsActive,
                 IsImplemented = IsImplemented,
                 LyricResult = LyricResultEnum.NotProcessedYet,
-                // LyricResultMessage = LyricResultMessage,
                 LyricsFinderData = LyricsFinderData,
-                // PrivateSettings = PrivateSettings,
-                RequestCountToday = 0,
-                RequestCountTotal = 0,
-                // Settings = Settings,
 
             };
 
