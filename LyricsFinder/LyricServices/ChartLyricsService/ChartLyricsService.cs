@@ -103,8 +103,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         if (rspLyricResult == null) continue;
                         if (rspLyricResult.LyricId == 0) continue;
 
-                        cancellationToken.ThrowIfCancellationRequested();
-
                         msg = "GetLyric";
                         var rsp2 = client.GetLyric(rspLyricResult.LyricId, rspLyricResult.LyricChecksum);
 

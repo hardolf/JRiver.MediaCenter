@@ -221,11 +221,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </returns>
         public virtual FoundLyricType AddFoundLyric(string lyricText, Uri lyricUrl, Uri trackingUrl = null, string copyright = null)
         {
+            if (lyricText.IsNullOrEmptyTrimmed()) return null;
+
             if (!copyright.IsNullOrEmptyTrimmed())
                 Credit.Copyright = copyright;
 
             var beforeCount = InternalFoundLyricList.Count;
-            var ret = InternalFoundLyricList.Add(this, lyricText, Credit.ToString(), lyricUrl, trackingUrl);
+            var ret = InternalFoundLyricList.Add(this, lyricText.Trim(), Credit.ToString(), lyricUrl, trackingUrl);
             var afterCount = InternalFoundLyricList.Count;
             var diff = (afterCount - beforeCount);
 
@@ -374,8 +376,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
-            cancellationToken.ThrowIfCancellationRequested();
-
             var ret = string.Empty;
 
             /**************************************************
@@ -460,9 +460,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             InternalFoundLyricList.Clear();
             LyricResult = LyricResultEnum.NotFound;
-
-            cancellationToken.ThrowIfCancellationRequested();
-            await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
 
             // Skip if we are over the quota limit
             if (await IsQuotaExceededAsync())

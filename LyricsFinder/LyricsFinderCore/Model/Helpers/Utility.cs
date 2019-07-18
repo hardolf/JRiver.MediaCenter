@@ -256,30 +256,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
 
         /// <summary>
-        /// Lyrics result text.
-        /// </summary>
-        /// <returns>Transformed text.</returns>
-        public static string ResultText(this LyricResultEnum lyricsResult)
-        {
-            var ret = new StringBuilder(lyricsResult.ToString());
-
-            // Convert CamelCase to normal sentence, e.g. "Camel case"
-            for (int i = 0; i < ret.Length; i++)
-            {
-                var tst = ret[i].ToString(CultureInfo.InvariantCulture).ToUpperInvariant()[0];
-
-                if ((i > 0) && (ret[i] == tst))
-                {
-                    ret[i] = ret[i].ToString(CultureInfo.InvariantCulture).ToLowerInvariant()[0];
-                    ret.Insert(i, ' ');
-                }
-            }
-
-            return ret.ToString();
-        }
-
-
-        /// <summary>
         /// Sets the property value on the target object.
         /// </summary>
         /// <param name="displayPropertyDictionary">The display property dictionary.</param>

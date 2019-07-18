@@ -282,6 +282,7 @@ namespace MediaCenter.LyricsFinder
                         case DialogResult.Yes:
                             e.Cancel = false;
                             Lyric = _finalLyric;
+                            _callback(this);
                             break;
 
                         default:
@@ -346,18 +347,15 @@ namespace MediaCenter.LyricsFinder
                     // LyricFormTimer.Start();
                     await SearchAsync();
                 }
+
+                if (_cancellationTokenSource.IsCancellationRequested)
+                    LyricFormStatusLabel.Text = "Search canceled.";
             }
             catch (LyricsQuotaExceededException ex)
             {
                 msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
                 await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync(msg, ex);
                 LyricFormStatusLabel.Text = "Service quota exceeded.";
-            }
-            catch (OperationCanceledException ex)
-            {
-                msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
-                await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync(msg, ex);
-                LyricFormStatusLabel.Text = "Search canceled.";
             }
             catch (Exception ex)
             {

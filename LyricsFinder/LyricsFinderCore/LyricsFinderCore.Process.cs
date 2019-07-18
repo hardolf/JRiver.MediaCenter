@@ -279,7 +279,6 @@ namespace MediaCenter.LyricsFinder
                 EnableOrDisableToolStripItems(false, FileMenuItem);
                 await StatusMessageAsync($"Finding lyrics for the current playlist with {_currentLyricsFinderPlaylist.Items.Count} items...", true, true);
                 ResetItemStates();
-                cancellationToken.ThrowIfCancellationRequested();
 
                 // Add the set of workers
                 for (var i = 0; i < LyricsFinderData.MainData.MaxQueueLength; i++)
@@ -290,12 +289,13 @@ namespace MediaCenter.LyricsFinder
                 // Run the search on the set of workers
                 await Task.WhenAll(workers);
 
+                isCanceled = cancellationToken.IsCancellationRequested;
                 isOk = true;
             }
-            catch (OperationCanceledException)
+            catch // (Exception ex)
             {
-                isCanceled = true;
-                isOk = true;
+                isOk = false;
+                throw;
             }
             finally
             {
@@ -353,6 +353,8 @@ namespace MediaCenter.LyricsFinder
             var i = 0;
             var row = MainGridView.Rows[0];
             var msg = $"Process worker {workerNumber} failed. ";
+            var lyricCell = row.Cells[(int)GridColumnEnum.Lyrics];
+            var statusCell = row.Cells[(int)GridColumnEnum.Status];
 
             try
             {
@@ -362,7 +364,6 @@ namespace MediaCenter.LyricsFinder
 
                     var found = false;
 
-                    cancellationToken.ThrowIfCancellationRequested();
                     await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
 
                     row = MainGridView.Rows[i];
@@ -370,17 +371,27 @@ namespace MediaCenter.LyricsFinder
 
                     if (!int.TryParse(row.Cells[(int)GridColumnEnum.Key].Value?.ToString(), out var key))
                         throw new Exception($"{row.Cells[(int)GridColumnEnum.Key].Value} could not be parsed as an integer.");
-
 #if DEBUG
                     var artist = row.Cells[(int)GridColumnEnum.Artist].Value?.ToString() ?? string.Empty;
                     var album = row.Cells[(int)GridColumnEnum.Album].Value?.ToString() ?? string.Empty;
                     var title = row.Cells[(int)GridColumnEnum.Title].Value?.ToString() ?? string.Empty;
 #endif
-                    var oldLyric = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString() ?? string.Empty;
-                    var statusCell = row.Cells[(int)GridColumnEnum.Status];
+                    lyricCell = row.Cells[(int)GridColumnEnum.Lyrics];
+                    statusCell = row.Cells[(int)GridColumnEnum.Status];
+
+                    var oldLyric = lyricCell.Value?.ToString() ?? string.Empty;
+                    var oldStatus = statusCell.Value.ToString().ToLyricResultEnum();
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        if (oldStatus == LyricResultEnum.Processing)
+                            statusCell.Value = LyricResultEnum.Canceled.ResultText();
+
+                        break;
+                    }
 
                     // Do we need to search this item?
-                    if (!$"{LyricResultEnum.Found.ResultText()}|{LyricResultEnum.SkippedOldLyrics.ResultText()}|{LyricResultEnum.Processing}".Contains(statusCell.Value.ToString())
+                    if (((oldStatus & (LyricResultEnum.NotProcessedYet | LyricResultEnum.NotFound | LyricResultEnum.Error | LyricResultEnum.Canceled)) != 0) // If oldStatus is one of those enum values
                         && (OverwriteMenuItem.Checked || oldLyric.IsNullOrEmptyTrimmed() || oldLyric.Contains(_noLyricsSearchList)))
                     {
                         statusCell.Value = $"{LyricResultEnum.Processing.ResultText()}...";
@@ -404,7 +415,9 @@ namespace MediaCenter.LyricsFinder
                                 lock (foundItemIndices)
                                     foundItemIndices.Add(i);
 
-                                statusCell.Value = service.FoundLyricList.First().ToString();
+                                var newLyric = service.FoundLyricList.First().ToString();
+
+                                lyricCell.Value = newLyric;
                                 IsDataChanged = true;
                                 break;
                             }
@@ -419,23 +432,18 @@ namespace MediaCenter.LyricsFinder
                             + $"found {foundItemIndices.Count} lyrics for the current playlist with {_currentLyricsFinderPlaylist.Items.Count} items..."
                             , true, true);
 
-                        row.Cells[(int)GridColumnEnum.Status].Value = (found)
+                        statusCell.Value = (found)
                             ? LyricResultEnum.Found.ResultText()
                             : LyricResultEnum.NotFound.ResultText();
                     }
                     else if (!OverwriteMenuItem.Checked
                         && !oldLyric.IsNullOrEmptyTrimmed())
-                        row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.SkippedOldLyrics.ResultText();
+                        statusCell.Value = LyricResultEnum.SkippedOldLyrics.ResultText();
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.Canceled.ResultText();
-                throw;
             }
             catch (Exception ex)
             {
-                row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.Error.ResultText();
+                statusCell.Value = LyricResultEnum.Error.ResultText();
                 throw new Exception(msg, ex);
             }
         }

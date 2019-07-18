@@ -900,8 +900,9 @@ namespace MediaCenter.LyricsFinder
             for (int i = 0; i < rows.Count; i++)
             {
                 var statusCell = rows[i].Cells[(int)GridColumnEnum.Status];
+                var status = statusCell.Value.ToString().ToLyricResultEnum();
 
-                if (!$"{LyricResultEnum.Found.ResultText()}|{LyricResultEnum.SkippedOldLyrics.ResultText()}".Contains(statusCell.Value.ToString()))
+                if ((status & (LyricResultEnum.NotProcessedYet | LyricResultEnum.NotFound | LyricResultEnum.Error | LyricResultEnum.Canceled)) != 0) // If status is one of those enum values
                     statusCell.Value = LyricResultEnum.NotProcessedYet.ResultText();
             }
         }
@@ -920,9 +921,6 @@ namespace MediaCenter.LyricsFinder
             {
                 LyricsFinderData.Save();
 
-                // We only save items if they are found or manually edited
-                var lyricsResultTest = $"{LyricResultEnum.Found.ResultText()}|{LyricResultEnum.ManuallyEdited.ResultText()}".ToUpperInvariant();
-
                 // Iterate the displayed rows and save each row, if it is found or manually edited
                 for (int i = 0; i < MainGridView.Rows.Count; i++)
                 {
@@ -930,13 +928,15 @@ namespace MediaCenter.LyricsFinder
 
                     var keyTxt = row.Cells[(int)GridColumnEnum.Key].Value?.ToString();
                     var lyrics = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString();
-                    var status = row.Cells[(int)GridColumnEnum.Status].Value?.ToString();
+                    var statusTxt = row.Cells[(int)GridColumnEnum.Status].Value?.ToString();
 
-                    if ((!lyrics.IsNullOrEmptyTrimmed()) && lyricsResultTest.Contains(status.ToUpperInvariant()))
+                    if (!int.TryParse(keyTxt, out var key) || statusTxt.IsNullOrEmptyTrimmed())
+                        throw new Exception($"Error parsing row {i} cell(s): keyTxt=\"{keyTxt}\", lyrics=\"{lyrics}\", status=\"{statusTxt}\".");
+
+                    // We only save items if they are found or manually edited
+                    if (((statusTxt.ToLyricResultEnum() & (LyricResultEnum.Found | LyricResultEnum.ManuallyEdited)) != 0) // If status is one of those enum values
+                        && (!lyrics.IsNullOrEmptyTrimmed()))
                     {
-                        if (!int.TryParse(keyTxt, out var key) || status.IsNullOrEmptyTrimmed())
-                            throw new Exception($"Error parsing row {i} cell(s): keyTxt=\"{keyTxt}\", lyrics=\"{lyrics}\", status=\"{status}\".");
-
                         var rsp = await McRestService.SetInfo(key, "Lyrics", lyrics);
 
                         if (!rsp.IsOk)
@@ -1113,17 +1113,17 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Shows the lyrics callback.
         /// </summary>
-        /// <param name="lyricsForm">The lyrics form.</param>
-        private async void ShowLyricsCallbackAsync(LyricForm lyricsForm)
+        /// <param name="lyricForm">The lyrics form.</param>
+        private async void ShowLyricsCallbackAsync(LyricForm lyricForm)
         {
             try
             {
-                if (lyricsForm.Result == DialogResult.Yes)
+                if (lyricForm.Result == DialogResult.Yes)
                 {
                     // Display the created/changed lyrics in the list
-                    lyricsForm.LyricCell.Value = lyricsForm.Lyric;
+                    lyricForm.LyricCell.Value = lyricForm.Lyric;
 
-                    var row = lyricsForm.LyricCell.OwningRow;
+                    var row = lyricForm.LyricCell.OwningRow;
 
                     row.Selected = true;
                     row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.ManuallyEdited.ResultText();

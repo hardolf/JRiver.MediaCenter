@@ -39,8 +39,6 @@ namespace MediaCenter.LyricsFinder.Model
             if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
             if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
-            cancellationToken.ThrowIfCancellationRequested();
-
             // Set up the tasks for the search
             var tasks = new List<Task<AbstractLyricService>>();
             var services = new List<AbstractLyricService>();
@@ -56,10 +54,13 @@ namespace MediaCenter.LyricsFinder.Model
                 tasks.Add(task);
             }
 
-            if (isGetAll)
-                _ = await Task.WhenAll(tasks);
-            else
-                _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricResultEnum.Found);
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                if (isGetAll)
+                    _ = await Task.WhenAll(tasks);
+                else
+                    _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricResultEnum.Found);
+            }
 
             // Add the clone service counters back to the original services
             for (int i = 0; i < services.Count; i++)

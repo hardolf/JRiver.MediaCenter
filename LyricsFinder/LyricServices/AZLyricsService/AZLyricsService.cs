@@ -237,7 +237,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             catch (HttpRequestException ex)
             {
                 // Get the first exception
-                var exx = (Exception) ex;
+                var exx = (Exception)ex;
 
                 while (exx.InnerException != null)
                     exx = exx.InnerException;
