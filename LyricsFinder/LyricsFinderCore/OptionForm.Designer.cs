@@ -72,7 +72,7 @@
             this.OptionPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.OptionPanel.Location = new System.Drawing.Point(0, 0);
             this.OptionPanel.Name = "OptionPanel";
-            this.OptionPanel.Size = new System.Drawing.Size(451, 364);
+            this.OptionPanel.Size = new System.Drawing.Size(451, 377);
             this.OptionPanel.TabIndex = 0;
             // 
             // OptionLayoutPanel
@@ -121,9 +121,8 @@
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.OptionLayoutPanel.Size = new System.Drawing.Size(451, 364);
+            this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.OptionLayoutPanel.Size = new System.Drawing.Size(451, 377);
             this.OptionLayoutPanel.TabIndex = 0;
             // 
             // NoLyricsSearchFilterLabel
@@ -305,7 +304,8 @@
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(373, 339);
+            this.CloseButton.Location = new System.Drawing.Point(369, 347);
+            this.CloseButton.Margin = new System.Windows.Forms.Padding(7, 3, 7, 7);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
             this.CloseButton.TabIndex = 23;
@@ -432,7 +432,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.CancelButton = this.CloseButton;
-            this.ClientSize = new System.Drawing.Size(451, 364);
+            this.ClientSize = new System.Drawing.Size(451, 377);
             this.Controls.Add(this.OptionPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;

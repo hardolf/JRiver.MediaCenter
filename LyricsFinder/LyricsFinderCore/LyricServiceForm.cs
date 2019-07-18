@@ -130,6 +130,7 @@ namespace MediaCenter.LyricsFinder.Model
 
             var tlp = LyricServiceDetailsTableLayoutPanel;
 
+            tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             tlp.RowCount++;
 
             var rowIdx = tlp.RowCount - 1;
@@ -574,7 +575,7 @@ namespace MediaCenter.LyricsFinder.Model
             // Clear the detail rows except the first
             tlp.Controls.Clear();
             tlp.RowStyles.Clear();
-            tlp.RowCount = 1;
+            tlp.RowCount = 0;
 
             if (isChecked == null)
                 isChecked = service.IsActive;
@@ -584,15 +585,18 @@ namespace MediaCenter.LyricsFinder.Model
                 FillRow(dp.Key, dp.Value.Caption, dp.Value.Value?.ToString() ?? string.Empty, dp.Value.IsEditAllowed, dp.Value.ToolTips);
             }
 
+            tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             tlp.RowCount++;
 
             var btnClose = new Button
             {
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
+                Margin = new Padding(3, 15, 3, 3),
                 Name = "CloseButton",
                 TabStop = false,
-                Text = "&Close (Esc)"
+                Text = "&Close (Esc)",
             };
+
             btnClose.Click += CloseButton_ClickAsync;
             LyricServiceFormToolTip.SetToolTip(btnClose, "Close the window (Esc)");
 

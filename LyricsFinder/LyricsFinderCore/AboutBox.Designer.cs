@@ -88,7 +88,7 @@
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
             this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.AboutBoxLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.AboutBoxLayoutPanel.Size = new System.Drawing.Size(474, 316);
             this.AboutBoxLayoutPanel.TabIndex = 0;
             // 
@@ -97,9 +97,10 @@
             this.LogoPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LogoPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("LogoPictureBox.Image")));
             this.LogoPictureBox.Location = new System.Drawing.Point(3, 3);
+            this.LogoPictureBox.Margin = new System.Windows.Forms.Padding(3, 3, 3, 7);
             this.LogoPictureBox.Name = "LogoPictureBox";
             this.AboutBoxLayoutPanel.SetRowSpan(this.LogoPictureBox, 8);
-            this.LogoPictureBox.Size = new System.Drawing.Size(155, 310);
+            this.LogoPictureBox.Size = new System.Drawing.Size(155, 306);
             this.LogoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.LogoPictureBox.TabIndex = 12;
             this.LogoPictureBox.TabStop = false;
@@ -113,7 +114,7 @@
             this.ProductNameLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.ProductNameLabel.Name = "ProductNameLabel";
             this.ProductNameLabel.Size = new System.Drawing.Size(304, 17);
-            this.ProductNameLabel.TabIndex = 0;
+            this.ProductNameLabel.TabIndex = 1;
             this.ProductNameLabel.Text = "Product Name";
             // 
             // VersionLabel
@@ -124,7 +125,7 @@
             this.VersionLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.VersionLabel.Name = "VersionLabel";
             this.VersionLabel.Size = new System.Drawing.Size(147, 17);
-            this.VersionLabel.TabIndex = 1;
+            this.VersionLabel.TabIndex = 2;
             this.VersionLabel.Text = "Version";
             // 
             // CopyrightLabel
@@ -136,7 +137,7 @@
             this.CopyrightLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.CopyrightLabel.Name = "CopyrightLabel";
             this.CopyrightLabel.Size = new System.Drawing.Size(304, 17);
-            this.CopyrightLabel.TabIndex = 5;
+            this.CopyrightLabel.TabIndex = 6;
             this.CopyrightLabel.Text = "Copyright";
             // 
             // CompanyNameLabel
@@ -148,7 +149,7 @@
             this.CompanyNameLabel.MaximumSize = new System.Drawing.Size(0, 17);
             this.CompanyNameLabel.Name = "CompanyNameLabel";
             this.CompanyNameLabel.Size = new System.Drawing.Size(304, 5);
-            this.CompanyNameLabel.TabIndex = 6;
+            this.CompanyNameLabel.TabIndex = 7;
             this.CompanyNameLabel.Text = "Company Name";
             this.CompanyNameLabel.Visible = false;
             // 
@@ -156,13 +157,13 @@
             // 
             this.AboutBoxLayoutPanel.SetColumnSpan(this.DescriptionTextBox, 2);
             this.DescriptionTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DescriptionTextBox.Location = new System.Drawing.Point(167, 130);
-            this.DescriptionTextBox.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
+            this.DescriptionTextBox.Location = new System.Drawing.Point(169, 130);
+            this.DescriptionTextBox.Margin = new System.Windows.Forms.Padding(8, 0, 7, 0);
             this.DescriptionTextBox.Multiline = true;
             this.DescriptionTextBox.Name = "DescriptionTextBox";
             this.DescriptionTextBox.ReadOnly = true;
-            this.DescriptionTextBox.Size = new System.Drawing.Size(304, 156);
-            this.DescriptionTextBox.TabIndex = 23;
+            this.DescriptionTextBox.Size = new System.Drawing.Size(298, 146);
+            this.DescriptionTextBox.TabIndex = 8;
             this.DescriptionTextBox.TabStop = false;
             this.DescriptionTextBox.Text = "Description";
             // 
@@ -170,10 +171,11 @@
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(396, 290);
+            this.CloseButton.Location = new System.Drawing.Point(392, 286);
+            this.CloseButton.Margin = new System.Windows.Forms.Padding(7, 3, 7, 7);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
-            this.CloseButton.TabIndex = 8;
+            this.CloseButton.TabIndex = 0;
             this.CloseButton.Text = "&Close (Esc)";
             this.CloseButton.Click += new System.EventHandler(this.CloseButton_ClickAsync);
             // 
@@ -186,7 +188,7 @@
             this.ReleaseNotesLinkLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.ReleaseNotesLinkLabel.Name = "ReleaseNotesLinkLabel";
             this.ReleaseNotesLinkLabel.Size = new System.Drawing.Size(148, 25);
-            this.ReleaseNotesLinkLabel.TabIndex = 2;
+            this.ReleaseNotesLinkLabel.TabIndex = 3;
             this.ReleaseNotesLinkLabel.TabStop = true;
             this.ReleaseNotesLinkLabel.Text = "Release notes";
             this.ReleaseNotesLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkLabel_LinkClickedAsync);
@@ -199,7 +201,7 @@
             this.BuildDateLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.BuildDateLabel.Name = "BuildDateLabel";
             this.BuildDateLabel.Size = new System.Drawing.Size(147, 25);
-            this.BuildDateLabel.TabIndex = 3;
+            this.BuildDateLabel.TabIndex = 4;
             this.BuildDateLabel.Text = "Build Date";
             // 
             // ProjectLinkLabel
@@ -212,7 +214,7 @@
             this.ProjectLinkLabel.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.ProjectLinkLabel.Name = "ProjectLinkLabel";
             this.ProjectLinkLabel.Size = new System.Drawing.Size(304, 25);
-            this.ProjectLinkLabel.TabIndex = 4;
+            this.ProjectLinkLabel.TabIndex = 5;
             this.ProjectLinkLabel.TabStop = true;
             this.ProjectLinkLabel.Text = "LyricsFinder project source on GitHub";
             this.AboutToolTip.SetToolTip(this.ProjectLinkLabel, "https://github.com/hardolf/JRiver.MediaCenter");
@@ -221,10 +223,11 @@
             // UpdateCheckButton
             // 
             this.UpdateCheckButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.UpdateCheckButton.Location = new System.Drawing.Point(164, 290);
+            this.UpdateCheckButton.Location = new System.Drawing.Point(168, 286);
+            this.UpdateCheckButton.Margin = new System.Windows.Forms.Padding(7, 3, 7, 7);
             this.UpdateCheckButton.Name = "UpdateCheckButton";
             this.UpdateCheckButton.Size = new System.Drawing.Size(124, 23);
-            this.UpdateCheckButton.TabIndex = 7;
+            this.UpdateCheckButton.TabIndex = 9;
             this.UpdateCheckButton.Text = "Check for Updates...";
             this.UpdateCheckButton.UseVisualStyleBackColor = true;
             this.UpdateCheckButton.Click += new System.EventHandler(this.UpdateCheckButton_ClickAsync);

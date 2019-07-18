@@ -65,7 +65,7 @@
             this.LyricFormTrackBar.Location = new System.Drawing.Point(3, 491);
             this.LyricFormTrackBar.Maximum = 0;
             this.LyricFormTrackBar.Name = "LyricFormTrackBar";
-            this.LyricFormTrackBar.Size = new System.Drawing.Size(283, 45);
+            this.LyricFormTrackBar.Size = new System.Drawing.Size(289, 45);
             this.LyricFormTrackBar.TabIndex = 6;
             this.LyricFormToolTip.SetToolTip(this.LyricFormTrackBar, "Switch between all the lyrics search results (Arrows)");
             this.LyricFormTrackBar.Visible = false;
@@ -74,7 +74,7 @@
             // SearchButton
             // 
             this.SearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchButton.Location = new System.Drawing.Point(211, 501);
+            this.SearchButton.Location = new System.Drawing.Point(200, 501);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(75, 23);
             this.SearchButton.TabIndex = 7;
@@ -88,7 +88,7 @@
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(300, 501);
+            this.CloseButton.Location = new System.Drawing.Point(298, 501);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(74, 23);
             this.CloseButton.TabIndex = 8;
