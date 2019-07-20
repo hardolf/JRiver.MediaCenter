@@ -126,7 +126,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             // If found, add the found lyric to the list
             if (!ret.IsNullOrEmptyTrimmed())
-                AddFoundLyric(ret, lyricUrl, lyricTrackingUrl, copyright);
+                await AddFoundLyric(ret, lyricUrl, lyricTrackingUrl, copyright).ConfigureAwait(false);
 
             return ret;
         }

@@ -357,7 +357,7 @@ namespace MediaCenter.SharedComponents
         /// <param name="condition">The condition.</param>
         /// <returns>The first task that finishes with a result that fulfills the condition.</returns>
         /// <remarks>
-        /// Source: Sir Rufo's answer in https://stackoverflow.com/questions/38289158/how-to-implement-task-whenany-with-a-predicate.
+        /// Inspired by Sir Rufo's answer in https://stackoverflow.com/questions/38289158/how-to-implement-task-whenany-with-a-predicate.
         /// </remarks>
         public static async Task<T> WhenAny<T>(this IEnumerable<Task<T>> tasks, Predicate<Task<T>> condition)
         {

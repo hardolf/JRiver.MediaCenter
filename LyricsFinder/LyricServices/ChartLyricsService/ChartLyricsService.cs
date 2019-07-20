@@ -92,9 +92,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 client = CreateServiceClient<apiv1Soap>("apiv1Soap");
                 msg = "SearchLyric";
 
+                await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches).ConfigureAwait(false); // We need to do this here because the request is done with SOAP and not through HttpGetStringAsync
+
                 var rsp1 = client.SearchLyric(item.Artist, item.Name);
 
-                IncrementRequestCounters(); // We need to do this here because the request is done with SOAP and not through HttpGetStringAsync
+                await IncrementRequestCountersAsync().ConfigureAwait(false); // We need to do this here because the request is done with SOAP and not through HttpGetStringAsync
 
                 if ((rsp1 != null) && (rsp1.Length > 0))
                 {
@@ -103,10 +105,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         if (rspLyricResult == null) continue;
                         if (rspLyricResult.LyricId == 0) continue;
 
+                        await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches).ConfigureAwait(false); // We need to do this here because the request is done with SOAP and not through HttpGetStringAsync
+
                         msg = "GetLyric";
                         var rsp2 = client.GetLyric(rspLyricResult.LyricId, rspLyricResult.LyricChecksum);
 
-                        AddFoundLyric(rsp2.Lyric, new Uri(rsp2.LyricUrl));
+                        await AddFoundLyric(rsp2.Lyric, new Uri(rsp2.LyricUrl)).ConfigureAwait(false);
                     }
                 }
             }

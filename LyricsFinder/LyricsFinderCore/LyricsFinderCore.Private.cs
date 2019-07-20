@@ -66,6 +66,11 @@ namespace MediaCenter.LyricsFinder
         private static Bitmap _emptyCoverImage = new Bitmap(400, 400);
         private static Bitmap _emptyPlayPauseImage = new Bitmap(16, 16);
 
+        // Instantiate a Singleton of the Semaphore with a value of 1. 
+        // This means that only 1 thread can be granted access at a time. 
+        // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+        private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+
 
         /**********************************/
         /***** Private misc. routines *****/
@@ -189,63 +194,6 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Enables or disables ALL the menu items under the parent menu.
-        /// </summary>
-        /// <param name="parentMenu">The parent menu.</param>
-        /// <param name="isEnable">If set to <c>true</c>, the menus are enabled; else they are disabled.</param>
-        /// <remarks>
-        /// <para>The process is recursive, i.e. if a menu is enabled, all its sub-menus are enabled too - and vice versa</para>
-        /// </remarks>
-        private void EnableOrDisableMenuItems(ToolStripMenuItem parentMenu, bool isEnable)
-        {
-            parentMenu.Enabled = isEnable;
-
-            foreach (var item in parentMenu.DropDownItems)
-            {
-                if (item is ToolStripMenuItem menu)
-                {
-                    menu.Enabled = isEnable;
-
-                    if (menu.DropDownItems.Count > 0)
-                        EnableOrDisableMenuItems(menu, isEnable);
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Enables or disables the menu items named in the menuNames.
-        /// </summary>
-        /// <param name="isEnable">If set to <c>true</c>, the menus are enabled; else they are disabled.</param>
-        /// <param name="menuItems">Menu items to be enabled or disabled.</param>
-        /// <remarks>
-        /// <para>If empty menu item list, all sub-menus are enabled or disabled.</para>
-        /// <para>The process is recursive, i.e. if a menu is enabled, all its sub-menus are enabled too - and vice versa</para>
-        /// </remarks>
-        private void EnableOrDisableMenuItems(bool isEnable, params ToolStripMenuItem[] menuItems)
-        {
-            if (menuItems.IsNullOrEmpty())
-            {
-                // Set ALL the menus to isEnable value
-                foreach (var item in TopMenu.Items)
-                {
-                    if (item is ToolStripMenuItem menu)
-                        EnableOrDisableMenuItems(menu, isEnable);
-                }
-            }
-            else
-            {
-                // Now set the specified menus to isEnable value
-                foreach (var item in menuItems)
-                {
-                    if (item is ToolStripMenuItem menu)
-                        EnableOrDisableMenuItems(menu, isEnable);
-                }
-            }
-        }
-
-
-        /// <summary>
         /// Enables or disables the tool strip items named in the toolStripItems.
         /// </summary>
         /// <param name="isEnable">if set to <c>true</c>, the tool strip items are enabled; else they are disabled.</param>
@@ -261,28 +209,55 @@ namespace MediaCenter.LyricsFinder
                 foreach (var item in TopMenu.Items)
                 {
                     if (item is ToolStripMenuItem menu)
-                        EnableOrDisableMenuItems(isEnable, menu);
+                        EnableOrDisableToolStripMenuItems(menu, isEnable);
                     else if (item is ToolStripButton button)
                         button.Enabled = isEnable;
                 }
                 foreach (var item in BottomMenu.Items)
                 {
                     if (item is ToolStripMenuItem menu)
-                        EnableOrDisableMenuItems(isEnable, menu);
+                        EnableOrDisableToolStripMenuItems(menu, isEnable);
                     else if (item is ToolStripButton button)
                         button.Enabled = isEnable;
                 }
             }
             else
             {
-                // Now set the specified items to isEnable value
+                // Set only the specified items to isEnable value
                 foreach (var item in toolStripItems)
                 {
                     if (item is ToolStripMenuItem menu)
-                        EnableOrDisableMenuItems(isEnable, menu);
+                        EnableOrDisableToolStripMenuItems(menu, isEnable);
                     else if (item is ToolStripButton button)
                         button.Enabled = isEnable;
                 }
+            }
+        }
+
+
+        /// <summary>
+        /// Enables or disables ALL the menu items under the parent menu.
+        /// </summary>
+        /// <param name="parentMenu">The parent menu.</param>
+        /// <param name="isEnable">If set to <c>true</c>, the menus are enabled; else they are disabled.</param>
+        /// <remarks>
+        /// <para>The process is recursive, i.e. if a menu is enabled, all its sub-menus are enabled too - and vice versa</para>
+        /// </remarks>
+        private void EnableOrDisableToolStripMenuItems(ToolStripMenuItem parentMenu, bool isEnable)
+        {
+            parentMenu.Enabled = isEnable;
+
+            foreach (var item in parentMenu.DropDownItems)
+            {
+                if (item is ToolStripMenuItem menu)
+                {
+                    menu.Enabled = isEnable;
+
+                    if (menu.DropDownItems.Count > 0)
+                        EnableOrDisableToolStripMenuItems(menu, isEnable);
+                }
+                else if (item is ToolStripItem subItem)
+                    EnableOrDisableToolStripItems(isEnable, subItem);
             }
         }
 
@@ -525,7 +500,7 @@ namespace MediaCenter.LyricsFinder
                     if (result == DialogResult.Yes)
                     {
                         LyricsFinderData.IsSaveOk = true;
-                        LyricsFinderData.Save();
+                        LyricsFinderData.SaveAsync();
                     }
                     else
                         LyricsFinderData.IsSaveOk = false;
@@ -546,7 +521,7 @@ namespace MediaCenter.LyricsFinder
                     await service.RefreshServiceSettingsAsync();
                 }
 
-                LyricsFinderData.Save();
+                LyricsFinderData.SaveAsync();
             }
             catch (Exception ex)
             {
@@ -715,18 +690,23 @@ namespace MediaCenter.LyricsFinder
             }
 
             await StatusMessageAsync($"Collecting the \"{name}\" playlist...");
-            _playingIndex = -1;
-            McStatusTimer.Stop();
 
-            // Get the playlist
-            if (id > 0)
-                ret = await McRestService.GetPlaylistFilesAsync(id, name);
-            else
-                ret = await McRestService.GetPlayNowListAsync();
+            try
+            {
+                McStatusTimer.Stop();
 
-            await StatusMessageAsync($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.");
+                // Get the playlist
+                if (id > 0)
+                    ret = await McRestService.GetPlaylistFilesAsync(id, name);
+                else
+                    ret = await McRestService.GetPlayNowListAsync();
 
-            McStatusTimer.Start();
+                await StatusMessageAsync($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.");
+            }
+            finally
+            {
+                McStatusTimer.Start();
+            }
 
             return ret;
         }
@@ -868,10 +848,7 @@ namespace MediaCenter.LyricsFinder
 
                 // Play the selected item
                 if (rsp.IsOk)
-                {
-                    _playingKey = selectedKey;
                     await McRestService.PlayByIndexAsync(selectedIndex);
-                }
             }
 
             await SetPlayingImagesAndMenusAsync();
@@ -892,7 +869,7 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Resets the items status.
         /// </summary>
-        private void ResetItemStates()
+        private void PrepareItemStatesBeforeSearch()
         {
             var rows = MainGridView.Rows;
 
@@ -902,7 +879,7 @@ namespace MediaCenter.LyricsFinder
                 var statusCell = rows[i].Cells[(int)GridColumnEnum.Status];
                 var status = statusCell.Value.ToString().ToLyricResultEnum();
 
-                if ((status & (LyricResultEnum.NotProcessedYet | LyricResultEnum.NotFound | LyricResultEnum.Error | LyricResultEnum.Canceled)) != 0) // If status is one of those enum values
+                if ((status & (LyricResultEnum.NotFound | LyricResultEnum.Error | LyricResultEnum.Canceled | LyricResultEnum.SkippedOldLyrics)) != 0) // If status is one of those enum values
                     statusCell.Value = LyricResultEnum.NotProcessedYet.ResultText();
             }
         }
@@ -919,7 +896,7 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                LyricsFinderData.Save();
+                LyricsFinderData.SaveAsync();
 
                 // Iterate the displayed rows and save each row, if it is found or manually edited
                 for (int i = 0; i < MainGridView.Rows.Count; i++)
@@ -949,8 +926,10 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                await StatusMessageAsync($"Saving data failed: {ex.Message}");
-                throw;
+                var msg = $"Saving data failed: {ex.Message}";
+
+                await StatusMessageAsync(msg);
+                throw new Exception(msg, ex);
             }
         }
 
@@ -974,6 +953,7 @@ namespace MediaCenter.LyricsFinder
             var mcInfo = await McRestService.InfoAsync();
 
             _playingIndex = -1;
+            _playingKey = -1;
 
             if (mcInfo == null)
                 return;
@@ -1146,7 +1126,7 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                LyricsFinderData.Save();
+                LyricsFinderData.SaveAsync();
             }
             catch (Exception ex)
             {

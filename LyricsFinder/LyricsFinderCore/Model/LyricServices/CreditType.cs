@@ -150,6 +150,7 @@ namespace MediaCenter.LyricsFinder.Model
             sb.AppendLine("{Copyright}");
             sb.AppendLine("--------------------------------------------------");
 
+            CreditDate = DateTime.Now;
             CreditTextFormat = sb.ToString();
             DateFormat = "yyyy.MM.dd";
         }
@@ -165,7 +166,7 @@ namespace MediaCenter.LyricsFinder.Model
             {
                 Company = Company,
                 Copyright = Copyright,
-                CreditDate = CreditDate,
+                CreditDate = DateTime.Now,
                 CreditTextFormat = CreditTextFormat,
                 CreditUrl = CreditUrl,
                 // CreditUrlText = CreditUrlText,
@@ -207,6 +208,8 @@ namespace MediaCenter.LyricsFinder.Model
         public override string ToString()
         {
             var ret = new StringBuilder(CreditTextFormat);
+
+            CreditDate = DateTime.Now;
 
             ret.Replace("{Company}", Company);
             ret.Replace("{Date}", CreditDate.ToString(DateFormat, CultureInfo.InvariantCulture));

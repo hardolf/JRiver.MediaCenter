@@ -236,7 +236,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             // If found, add the found lyric to the list
             if (!ret.IsNullOrEmptyTrimmed())
-                AddFoundLyric(ret, new Uri(uri.AbsoluteUri));
+                await AddFoundLyric(ret, new Uri(uri.AbsoluteUri)).ConfigureAwait(false);
 
             return ret;
         }
@@ -260,7 +260,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (quotaDiffDays > 0)
             {
                 QuotaResetTime.AddDays(quotaDiffDays);
-                ResetTodayCounters();
+                await ResetTodayCountersAsync().ConfigureAwait(false);
 
                 await Logging.LogAsync(0, $"A new quota-day has begun for lyric service \"{Credit.ServiceName}\", request counters are reset.").ConfigureAwait(false);
             }

@@ -180,6 +180,8 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
+                if (_isDesignTime) return;
+
                 await LoadPlaylistMenusAsync();
             }
             catch (Exception ex)
@@ -235,6 +237,8 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
+                if (_isDesignTime) return;
+
                 ErrorHandling.Init(this.Size);
             }
             catch (Exception ex)
@@ -316,6 +320,8 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
+                if (_isDesignTime) return;
+
                 if (e.ColumnIndex != (int)GridColumnEnum.Lyrics)
                     ToolsPlayStartStopButton.PerformClick();
             }
@@ -434,10 +440,11 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="DataGridViewCellMouseEventArgs"/> instance containing the event data.</param>
         private async void MainGridView_ColumnHeaderMouseClickAsync(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (LyricsFinderData?.MainData == null) return;
-
             try
             {
+                if (_isDesignTime) return;
+                if (LyricsFinderData?.MainData == null) return;
+
                 var rows = MainGridView.Rows;
 
                 for (int i = 0; i < rows.Count; i++)
@@ -468,11 +475,11 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MainGridView_MouseLeaveAsync(object sender, EventArgs e)
         {
-            if (_isDesignTime) return;
-            if (LyricsFinderData?.MainData == null) return;
-
             try
             {
+                if (_isDesignTime) return;
+                if (LyricsFinderData?.MainData == null) return;
+
                 var pt = Cursor.Position;
                 var rect = MainGridView.RectangleToScreen(MainGridView.ClientRectangle);
 
@@ -502,6 +509,8 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
+                if (_isDesignTime) return;
+
                 // Set the Artist, Album and Track columns' width to a 5th of the total width
                 // The Lyrics column is set to "Fill", so it will adjust itself
                 MainGridView.Columns[(int)GridColumnEnum.Artist].Width = (int)(MainGridView.Width / (1.5 * fraction));
@@ -524,6 +533,7 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
+                if (_isDesignTime) return;
                 if ((MainGridView.SelectedRows == null) || (MainGridView.SelectedRows.Count == 0)) return;
 
                 var row = MainGridView.SelectedRows[0];
@@ -549,6 +559,8 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 McStatusTimer.Stop();
+
+                if (_isDesignTime) return;
 
                 await SetPlayingImagesAndMenusAsync();
 
@@ -585,7 +597,6 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 if (_isDesignTime) return;
-                // MessageBox.Show($"Click!\n{sender}", "Click", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 if (!(sender is ToolStripMenuItem menuItem))
                     throw new Exception($"Unknown sender: \"{sender}\".");
@@ -598,15 +609,6 @@ namespace MediaCenter.LyricsFinder
                     // Ignore any "Select playlist "branch" menu and only accept the "leaf"
                     if (menuItem.DropDownItems.Count > 0)
                         return;
-
-                    if (IsDataChanged)
-                    {
-                        var result = MessageBox.Show("Data is changed and will be lost if you continue.\nDo you want to continue anyway?"
-                            , "Data changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-
-                        if (result == DialogResult.No)
-                            return;
-                    }
 
                     // Get the MC playlist and let LyricsFinder know about it
                     await ReloadPlaylistAsync(false, itemName);
@@ -804,10 +806,12 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                if (_selectedKey == _playingKey)
-                    await PlayStopAsync(); 
-                else
-                    await PlayOrPauseAsync();
+                var isRestart = (_playingKey != _selectedKey);
+
+                await PlayStopAsync();
+
+                if (isRestart)
+                    ToolsPlayStartStopButton.PerformClick();
             }
             catch (Exception ex)
             {
@@ -866,6 +870,8 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 UpdateCheckTimer.Stop();
+
+                if (_isDesignTime) return;
 
                 // Is it about time for a check?
                 var updInterval = LyricsFinderData.MainData.UpdateCheckIntervalDays;

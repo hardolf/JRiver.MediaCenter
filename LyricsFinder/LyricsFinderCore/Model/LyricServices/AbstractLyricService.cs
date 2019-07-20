@@ -30,6 +30,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     public abstract class AbstractLyricService
     {
 
+        // Instantiate a Singleton of the Semaphore with a value of 1. 
+        // This means that only 1 thread can be granted access at a time. 
+        // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+        private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+
+
         /// <summary>
         /// Gets or sets the lyric service comment.
         /// </summary>
@@ -47,6 +53,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </value>
         [XmlElement("Credit")]
         public virtual CreditType Credit { get; set; }
+
+        /// <summary>
+        /// Gets or sets the delay milli seconds between searches.
+        /// </summary>
+        /// <value>
+        /// The delay milli seconds between searches.
+        /// </value>
+        [XmlIgnore]
+        public virtual int DelayMilliSecondsBetweenSearches { get; set; }
 
         /// <summary>
         /// Gets or sets the display properties.
@@ -219,7 +234,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <returns>
         ///   <see cref="FoundLyricType" /> object.
         /// </returns>
-        public virtual FoundLyricType AddFoundLyric(string lyricText, Uri lyricUrl, Uri trackingUrl = null, string copyright = null)
+        public virtual async Task<FoundLyricType> AddFoundLyric(string lyricText, Uri lyricUrl, Uri trackingUrl = null, string copyright = null)
         {
             if (lyricText.IsNullOrEmptyTrimmed()) return null;
 
@@ -232,7 +247,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var diff = (afterCount - beforeCount);
 
             // This construct ensures that we don't count duplicates
-            IncrementHitCounters(diff);
+            await IncrementHitCountersAsync(diff);
 
             LyricResult = LyricResultEnum.Found;
 
@@ -346,22 +361,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Get string asynchronous from HTTP request to the lyric service.
-        /// </summary>
-        /// <param name="requestUri">The request URI.</param>
-        /// <returns>Response text from lyric service.</returns>
-        /// <remarks>We use a central routine here, so that the request counters may be properly updated.</remarks>
-        protected virtual async Task<string> HttpGetStringAsync(Uri requestUri)
-        {
-            IncrementRequestCounters();
-
-            var ret = await Helpers.Utility.HttpGetStringAsync(requestUri).ConfigureAwait(false);
-
-            return ret;
-        }
-
-
-        /// <summary>
         /// Extracts the result text from a Uri and adds the found lyric text to the list.
         /// </summary>
         /// <param name="uri">The URI.</param>
@@ -399,17 +398,42 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Get string asynchronous from HTTP request to the lyric service.
+        /// </summary>
+        /// <param name="requestUri">The request URI.</param>
+        /// <returns>Response text from lyric service.</returns>
+        /// <remarks>We use a central routine here, so that the request counters may be properly updated.</remarks>
+        protected virtual async Task<string> HttpGetStringAsync(Uri requestUri)
+        {
+            await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
+
+            var ret = await Helpers.Utility.HttpGetStringAsync(requestUri).ConfigureAwait(false);
+
+            await IncrementRequestCountersAsync();
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Increments the hit counters.
         /// </summary>
         /// <param name="count">The count.</param>
-        public void IncrementHitCounters(int count = 1)
+        public async Task IncrementHitCountersAsync(int count = 1)
         {
-            lock (this)
+            // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+            await _semaphoreSlim.WaitAsync();
+
+            try
             {
                 HitCountToday += count;
                 HitCountTotal += count;
 
                 CreateDisplayProperties();
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
             }
         }
 
@@ -418,14 +442,22 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Increments the request counters.
         /// </summary>
         /// <param name="count">The count.</param>
-        public void IncrementRequestCounters(int count = 1)
+        public async Task IncrementRequestCountersAsync(int count = 1)
         {
-            lock (this)
+            // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+            await _semaphoreSlim.WaitAsync();
+
+            try
             {
                 RequestCountToday += count;
                 RequestCountTotal += count;
 
                 CreateDisplayProperties();
+
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
             }
         }
 
@@ -513,6 +545,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
 
             Credit.CreditDate = DateTime.Now;
+            DelayMilliSecondsBetweenSearches = LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches;
 
             if (await IsQuotaExceededAsync())
                 IsActive = false;
@@ -524,14 +557,21 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Resets the today counters.
         /// </summary>
-        public void ResetTodayCounters()
+        public async Task ResetTodayCountersAsync()
         {
-            lock (this)
+            // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+            await _semaphoreSlim.WaitAsync();
+
+            try
             {
                 HitCountToday = 0;
                 RequestCountToday = 0;
 
                 CreateDisplayProperties();
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
             }
         }
 

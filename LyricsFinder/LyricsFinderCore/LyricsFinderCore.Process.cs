@@ -100,7 +100,6 @@ namespace MediaCenter.LyricsFinder
             }
             else
             {
-                // We probably never get here either
                 var msg = (alive == null) ? "not alive" : "alive";
 
                 if (alive != null)
@@ -123,7 +122,7 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                EnableOrDisableMenuItems(false, FileMenuItem, HelpMenuItem, ToolsMenuItem);
+                EnableOrDisableToolStripItems(false, FileMenuItem, HelpMenuItem, ToolsMenuItem);
                 await StatusMessageAsync("LyricsFinder initializes...", true, false); // Do NOT log here, before the InitLogging!
 
                 // Init the log. This must be done as the very first thing, before trying to write to the log.
@@ -197,14 +196,14 @@ namespace MediaCenter.LyricsFinder
                 _progressPercentage = 0;
                 _noLyricsSearchList.AddRange(LyricsFinderData.MainData.NoLyricsSearchFilter.Split(',', ';'));
 
-                EnableOrDisableMenuItems(true);
+                EnableOrDisableToolStripItems(true);
                 await ReloadPlaylistAsync(true);
 
                 CleanupObsoleteConfigurationFiles();
             }
             catch (Exception ex)
             {
-                EnableOrDisableMenuItems(true);
+                EnableOrDisableToolStripItems(true);
                 await StatusMessageAsync($"Error {msg} during initialization.", true, true);
                 await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
             }
@@ -223,10 +222,23 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                EnableOrDisableToolStripItems(false, FileReloadMenuItem, FileSaveMenuItem, FileSelectPlaylistMenuItem, SearchAllStartStopButton);
+                EnableOrDisableToolStripItems(false, FileMenuItem, ToolsPlayStartStopButton, ToolsSearchAllStartStopButton, SearchAllStartStopButton);
 
                 if (IsDataChanged)
-                    throw new Exception("The item data is changed, you should save it before loading playlist.");
+                {
+                    var result = MessageBox.Show("Data is changed and the changes will be lost if you continue.\r\n"
+                        + "Do you want to continue anyway?"
+                        , "Data changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+                    if (result == DialogResult.No)
+                    {
+                        EnableOrDisableToolStripItems(true);
+                        return;
+                    }
+
+                    if (result == DialogResult.Yes)
+                        IsDataChanged = false;
+                }
 
                 if (!_isConnectedToMc || isReconnect)
                     await ConnectAsync();
@@ -234,20 +246,20 @@ namespace MediaCenter.LyricsFinder
                 if (menuItemName.IsNullOrEmptyTrimmed())
                 {
                     _currentMcPlaylist = await LoadPlaylistAsync();
-                    _currentLyricsFinderPlaylist = _currentMcPlaylist.Clone(); // Don't just make a reference to _currentMcPlaylist
+                    _currentLyricsFinderPlaylist = _currentMcPlaylist.Clone(); // Don't just make a reference to _currentMcPlaylist, use a copy
                 }
                 else
                     _currentLyricsFinderPlaylist = await LoadPlaylistAsync(menuItemName);
 
                 await FillDataGridAsync();
 
-                ResetItemStates();
+                PrepareItemStatesBeforeSearch();
                 EnableOrDisableToolStripItems(true);
             }
             catch (Exception ex)
             {
                 EnableOrDisableToolStripItems(true);
-                EnableOrDisableToolStripItems(false, FileSaveMenuItem);
+                EnableOrDisableToolStripItems(false, FileSelectPlaylistMenuItem, FileSaveMenuItem, ToolsPlayStartStopButton, ToolsSearchAllStartStopButton, SearchAllStartStopButton);
 
                 await StatusMessageAsync($"Error {msg}.", true, true);
                 await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);
@@ -278,7 +290,7 @@ namespace MediaCenter.LyricsFinder
                 _progressPercentage = 0;
                 EnableOrDisableToolStripItems(false, FileMenuItem);
                 await StatusMessageAsync($"Finding lyrics for the current playlist with {_currentLyricsFinderPlaylist.Items.Count} items...", true, true);
-                ResetItemStates();
+                PrepareItemStatesBeforeSearch();
 
                 // Add the set of workers
                 for (var i = 0; i < LyricsFinderData.MainData.MaxQueueLength; i++)
@@ -292,10 +304,10 @@ namespace MediaCenter.LyricsFinder
                 isCanceled = cancellationToken.IsCancellationRequested;
                 isOk = true;
             }
-            catch // (Exception ex)
+            catch (Exception ex)
             {
                 isOk = false;
-                throw;
+                throw new Exception("Automatic search all failed.", ex);
             }
             finally
             {
@@ -364,8 +376,6 @@ namespace MediaCenter.LyricsFinder
 
                     var found = false;
 
-                    await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
-
                     row = MainGridView.Rows[i];
                     msg = $"Process worker {workerNumber} failed at item {i}. ";
 
@@ -391,7 +401,7 @@ namespace MediaCenter.LyricsFinder
                     }
 
                     // Do we need to search this item?
-                    if (((oldStatus & (LyricResultEnum.NotProcessedYet | LyricResultEnum.NotFound | LyricResultEnum.Error | LyricResultEnum.Canceled)) != 0) // If oldStatus is one of those enum values
+                    if (((oldStatus & (LyricResultEnum.NotProcessedYet)) != 0) // If oldStatus is one of those enum values
                         && (OverwriteMenuItem.Checked || oldLyric.IsNullOrEmptyTrimmed() || oldLyric.Contains(_noLyricsSearchList)))
                     {
                         statusCell.Value = $"{LyricResultEnum.Processing.ResultText()}...";
@@ -399,8 +409,17 @@ namespace MediaCenter.LyricsFinder
                         // Try to get the first search hit
                         var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _currentLyricsFinderPlaylist.Items[key], cancellationToken, false);
 
-                        lock (searchItemIndices)
+                        // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+                        await _semaphoreSlim.WaitAsync();
+
+                        try
+                        {
                             searchItemIndices.Add(i);
+                        }
+                        finally
+                        {
+                            _semaphoreSlim.Release();
+                        }
 
                         // Process the results
                         // The first lyric found by any service is used for each item
@@ -412,8 +431,17 @@ namespace MediaCenter.LyricsFinder
                             {
                                 found = true;
 
-                                lock (foundItemIndices)
+                                // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+                                await _semaphoreSlim.WaitAsync();
+
+                                try
+                                {
                                     foundItemIndices.Add(i);
+                                }
+                                finally
+                                {
+                                    _semaphoreSlim.Release();
+                                }
 
                                 var newLyric = service.FoundLyricList.First().ToString();
 

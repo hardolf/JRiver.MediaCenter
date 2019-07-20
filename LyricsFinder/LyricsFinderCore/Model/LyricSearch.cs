@@ -36,44 +36,57 @@ namespace MediaCenter.LyricsFinder.Model
         /// </remarks>
         public static async Task<List<AbstractLyricService>> SearchAsync(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
-            if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
-
-            // Set up the tasks for the search
-            var tasks = new List<Task<AbstractLyricService>>();
-            var services = new List<AbstractLyricService>();
             var ret = new List<AbstractLyricService>(); // List of service clones
+            var services = new List<AbstractLyricService>(); // List of services in LyricsFinderData
 
-            foreach (var service in lyricsFinderData.ActiveLyricServices)
+            try
             {
-                var serviceClone = service.Clone();
-                var task = serviceClone.ProcessAsync(mcItem, cancellationToken, isGetAll);
+                if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
+                if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
-                services.Add(service);
-                ret.Add(serviceClone);
-                tasks.Add(task);
+                // Set up the tasks for the search
+                var tasks = new List<Task<AbstractLyricService>>();
+
+                foreach (var service in lyricsFinderData.ActiveLyricServices)
+                {
+                    var serviceClone = service.Clone();
+                    var task = serviceClone.ProcessAsync(mcItem, cancellationToken, isGetAll);
+
+                    services.Add(service);
+                    ret.Add(serviceClone);
+                    tasks.Add(task);
+                }
+
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    if (isGetAll)
+                        _ = await Task.WhenAll(tasks);
+                    else
+                        _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricResultEnum.Found);
+                }
             }
-
-            if (!cancellationToken.IsCancellationRequested)
+            finally
             {
-                if (isGetAll)
-                    _ = await Task.WhenAll(tasks);
-                else
-                    _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricResultEnum.Found);
+                try
+                {
+                    // Add the clone service counters and IsActive flag back to the original services
+                    for (int i = 0; i < services.Count; i++)
+                    {
+                        var service = services[i];
+                        var serviceClone = ret[i];
+
+                        await service.IncrementHitCountersAsync(serviceClone.HitCountTotal);
+                        await service.IncrementRequestCountersAsync(serviceClone.RequestCountTotal);
+                        service.IsActive = serviceClone.IsActive;
+                    }
+
+                }
+                finally
+                {
+                    // Save the service counters etc.
+                    lyricsFinderData.SaveAsync();
+                }
             }
-
-            // Add the clone service counters back to the original services
-            for (int i = 0; i < services.Count; i++)
-            {
-                var service = services[i];
-                var serviceClone = ret[i];
-
-                service.IncrementHitCounters(serviceClone.HitCountTotal);
-                service.IncrementRequestCounters(serviceClone.RequestCountTotal);
-            }
-
-            // Save the service counters
-            lyricsFinderData.Save();
 
             return ret;
         }

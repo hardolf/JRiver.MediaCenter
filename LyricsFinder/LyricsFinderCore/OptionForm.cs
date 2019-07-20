@@ -121,7 +121,7 @@ namespace MediaCenter.LyricsFinder
                             _lyricsFinderData.MainData.NoLyricsSearchFilter = NoLyricsSearchFilterTextBox.Text;
                             _lyricsFinderData.MainData.UpdateCheckIntervalDays = (int)UpdateCheckIntervalDaysUpDown.Value;
 
-                            _lyricsFinderData.Save();
+                            _lyricsFinderData.SaveAsync();
                         }
                         catch (Exception ex)
                         {

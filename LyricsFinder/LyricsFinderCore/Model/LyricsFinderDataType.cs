@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -25,6 +26,11 @@ namespace MediaCenter.LyricsFinder.Model
     {
 
         private Version _dataVersion;
+
+        // Instantiate a Singleton of the Semaphore with a value of 1. 
+        // This means that only 1 thread can be granted access at a time. 
+        // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+        private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
 
         /// <summary>
@@ -299,12 +305,22 @@ namespace MediaCenter.LyricsFinder.Model
         /// <summary>
         /// Saves this instance.
         /// </summary>
-        public virtual void Save()
+        public virtual async void SaveAsync()
         {
-            if (IsChanged && IsSaveOk)
+            // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+            await _semaphoreSlim.WaitAsync();
+
+            try
             {
-                InitialXml = Serialize.XmlSerializeToString(this, XmlKnownTypes.ToArray());
-                Serialize.XmlSerializeToFile(this, DataFilePath, XmlKnownTypes.ToArray());
+                if (IsChanged && IsSaveOk)
+                {
+                    InitialXml = Serialize.XmlSerializeToString(this, XmlKnownTypes.ToArray());
+                    Serialize.XmlSerializeToFile(this, DataFilePath, XmlKnownTypes.ToArray());
+                }
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
             }
         }
 

@@ -125,7 +125,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 var copyright = searchDyn.result.copyright;
                 var copyrightText = SharedComponents.Utility.JoinTrimmedStrings(".\r\n", (string)copyright.notice, (string)copyright.artist, (string)copyright.text) + ".";
 
-                AddFoundLyric(lyricText, null, null, copyrightText);
+                await AddFoundLyric(lyricText, null, null, copyrightText).ConfigureAwait(false);
             }
             catch (HttpRequestException ex)
             {

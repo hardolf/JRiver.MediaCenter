@@ -294,7 +294,7 @@ namespace MediaCenter.LyricsFinder
                     _callback(this); 
 
                 LyricsFinderData.MainData.LyricFormSize = Size;
-                LyricsFinderData.Save();
+                LyricsFinderData.SaveAsync();
             }
             catch (Exception ex)
             {
@@ -489,8 +489,6 @@ namespace MediaCenter.LyricsFinder
             LyricFormTrackBar_ScrollAsync(this, new EventArgs());
 
             LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
-
-            LyricsFinderData.Save();
         }
 
 
