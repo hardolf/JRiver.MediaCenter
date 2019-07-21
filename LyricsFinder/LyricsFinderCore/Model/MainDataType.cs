@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -17,6 +18,7 @@ namespace MediaCenter.LyricsFinder.Model
     /// <summary>
     /// Main LyricsFinder data such as update info and connection data for the JRiver Media Center.
     /// </summary>
+    [ComVisible(false)]
     [Serializable]
     public class MainDataType
     {

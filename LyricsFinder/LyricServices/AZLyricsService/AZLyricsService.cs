@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 using HtmlAgilityPack;
 
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 
@@ -22,7 +22,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// </summary>
     /// <seealso cref="AbstractLyricService" />
     [Serializable]
-    public class AZLyricsService : AbstractLyricService
+    public class AZLyricsService : AbstractLyricService, ILyricService
     {
 
         /// <summary>
@@ -36,23 +36,25 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AZLyricsService" /> class as a copy of the specified source.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        public AZLyricsService(AZLyricsService source)
+            : base(source)
+        {
+            IsImplemented = true;
+        }
+
+
+        /// <summary>
         /// Clones this instance.
         /// </summary>
         /// <returns>
         ///   <see cref="AZLyricsService" /> object.
         /// </returns>
-        public override AbstractLyricService Clone()
+        public override ILyricService Clone()
         {
-            var ret = new AZLyricsService
-            {
-                Comment = Comment,
-                Credit = Credit.Clone(),
-                IsActive = IsActive,
-                IsImplemented = IsImplemented,
-                LyricResult = LyricResultEnum.NotProcessedYet,
-                LyricsFinderData = LyricsFinderData,
-
-            };
+            var ret = new AZLyricsService(this);
 
             // The hit and request counters are added back to the source service after a search.
             // This is done in the LyricSearch.SearchAsync method.

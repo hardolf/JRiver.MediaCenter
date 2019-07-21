@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.Helpers;
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 
@@ -26,7 +26,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// </summary>
     /// <seealso cref="AbstractLyricService" />
     [Serializable]
-    public class Stands4Service : AbstractLyricService
+    public class Stands4Service : AbstractLyricService, ILyricService
     {
 
         /// <summary>
@@ -78,22 +78,27 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Stands4Service" /> class as a copy of the specified source.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        public Stands4Service(Stands4Service source)
+            : base(source)
+        {
+            IsImplemented = true;
+            QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Now.Date, TimeZoneInfo.Local); // Default is midnight in the client time zone
+        }
+
+
+        /// <summary>
         /// Clones this instance.
         /// </summary>
         /// <returns>
         ///   <see cref="Stands4Service" /> object.
         /// </returns>
-        public override AbstractLyricService Clone()
+        public override ILyricService Clone()
         {
-            var ret = new Stands4Service
+            var ret = new Stands4Service(this)
             {
-                Comment = Comment,
-                Credit = Credit.Clone(),
-                IsActive = IsActive,
-                IsImplemented = IsImplemented,
-                LyricResult = LyricResultEnum.NotProcessedYet,
-                LyricsFinderData = LyricsFinderData,
-
                 DailyQuota = DailyQuota,
                 QuotaResetTime = QuotaResetTime,
                 Token = Token,
@@ -318,6 +323,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
             catch (LyricsQuotaExceededException ex)
             {
+                IsActive = false;
+
                 throw new LyricsQuotaExceededException($"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day "
                     + $"and is now disabled in LyricsFinder. No more requests will be sent to this service until corrected.", ex);
             }

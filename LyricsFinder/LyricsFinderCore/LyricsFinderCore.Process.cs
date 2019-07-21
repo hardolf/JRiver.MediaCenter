@@ -12,7 +12,7 @@ using System.Windows.Forms;
 using MediaCenter.LyricsFinder.Model;
 using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.LyricServices;
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 
@@ -401,7 +401,7 @@ namespace MediaCenter.LyricsFinder
                     }
 
                     // Do we need to search this item?
-                    if (((oldStatus & (LyricResultEnum.NotProcessedYet)) != 0) // If oldStatus is one of those enum values
+                    if ((oldStatus == LyricResultEnum.NotProcessedYet)
                         && (OverwriteMenuItem.Checked || oldLyric.IsNullOrEmptyTrimmed() || oldLyric.Contains(_noLyricsSearchList)))
                     {
                         statusCell.Value = $"{LyricResultEnum.Processing.ResultText()}...";

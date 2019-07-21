@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace MediaCenter.LyricsFinder.Model
     /// <summary>
     /// Contains the LyricsFinder data to be saved and loaded.
     /// </summary>
+    [ComVisible(false)]
     [Serializable]
     [XmlRoot(ElementName = "LyricsFinderData")] // Namespace = "https://github.com/hardolf/JRiver.MediaCenter"
     public class LyricsFinderDataType
@@ -211,7 +213,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <returns>
         ///   <see cref="AbstractLyricService" /> descendant object.
         /// </returns>
-        public static AbstractLyricService GetLyricService<T>() where T : AbstractLyricService
+        public static AbstractLyricService GetLyricService<T>() where T : AbstractLyricService, ILyricService
         {
             LyricsFinderCoreConfigurationSectionHandler.Init(Assembly.GetExecutingAssembly());
 

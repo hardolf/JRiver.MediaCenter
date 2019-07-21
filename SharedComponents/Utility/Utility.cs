@@ -5,6 +5,8 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -19,6 +21,12 @@ namespace MediaCenter.SharedComponents
     /// </summary>
     public static class Utility
     {
+
+        // We don't dispose of these objects
+        private static HttpClientHandler _httpClientHandler = new HttpClientHandler();
+        private static HttpClient _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
+        private static readonly HttpClient _httpClientAnonymous = new HttpClient();
+
 
         /// <summary>
         /// Make the TextBox fit its contents.
@@ -126,6 +134,97 @@ namespace MediaCenter.SharedComponents
             var localTime = TimeZoneInfo.ConvertTimeFromUtc(linkTimeUtc, tz);
 
             return localTime;
+        }
+
+
+        /// <summary>
+        /// Sends the request to the MC server and reads the response.
+        /// </summary>
+        /// <param name="requestUrl">The request URL.</param>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <returns>
+        /// Complete REST service Web request image.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">requestUrl</exception>
+        /// <exception cref="HttpRequestException">\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".</exception>
+        public static async Task<Bitmap> HttpGetImageAsync(Uri requestUrl, string userName = "", string password = "")
+        {
+            if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
+
+            Bitmap ret = null;
+            Stream st;
+
+            try
+            {
+                if (userName.IsNullOrEmptyTrimmed())
+                    st = await _httpClientAnonymous.GetStreamAsync(requestUrl).ConfigureAwait(false);
+                else
+                {
+                    _httpClientWithCredentials.Dispose();
+                    _httpClientHandler = new HttpClientHandler
+                    {
+                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                        Credentials = new NetworkCredential(userName, password)
+                    };
+                    _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
+
+                    st = await _httpClientWithCredentials.GetStreamAsync(requestUrl).ConfigureAwait(false);
+                }
+
+                using (st)
+                {
+                    ret = new Bitmap(st);
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new HttpRequestException($"\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".", ex);
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Sends the request to the MC server and reads the response.
+        /// </summary>
+        /// <param name="requestUrl">The request URL.</param>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <returns>
+        /// Complete REST service Web request string.
+        /// </returns>
+        public static async Task<string> HttpGetStringAsync(Uri requestUrl, string userName = "", string password = "")
+        {
+            if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
+
+            string ret;
+
+            try
+            {
+                if (userName.IsNullOrEmptyTrimmed())
+                    ret = await _httpClientAnonymous.GetStringAsync(requestUrl).ConfigureAwait(false);
+                else
+                {
+                    _httpClientWithCredentials.Dispose();
+                    _httpClientHandler = new HttpClientHandler
+                    {
+                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                        Credentials = new NetworkCredential(userName, password)
+                    };
+                    _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
+
+                    ret = await _httpClientWithCredentials.GetStringAsync(requestUrl).ConfigureAwait(false);
+                }
+
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new HttpRequestException($"\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".", ex);
+            }
+
+            return ret;
         }
 
 

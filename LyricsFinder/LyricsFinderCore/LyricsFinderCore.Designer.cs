@@ -31,6 +31,20 @@ namespace MediaCenter.LyricsFinder
                 try { if (_cancellationTokenSource != null) _cancellationTokenSource.Dispose(); } catch { /* Ignore */ }
                 try { if (_emptyCoverImage != null) _emptyCoverImage.Dispose(); } catch { /* Ignore */ }
                 try { if (_emptyPlayPauseImage != null) _emptyPlayPauseImage.Dispose(); } catch { /* Ignore */ }
+
+                try
+                {
+                    if (_itemBitmaps != null)
+                    {
+                        for (int i = _itemBitmaps.Count - 1; i >= 0; i--)
+                        {
+                            _itemBitmaps[i].Dispose();
+                        }
+
+                        _itemBitmaps.Clear();
+                    }
+                } catch { /* Ignore */ }
+
                 try { if (components != null) components.Dispose(); } catch { /* Ignore */ }
             }
 

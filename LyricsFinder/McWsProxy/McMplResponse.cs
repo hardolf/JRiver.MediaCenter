@@ -9,17 +9,15 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
-using MediaCenter.LyricsFinder.Model.Helpers;
 
-
-namespace MediaCenter.LyricsFinder.Model.McRestService
+namespace MediaCenter.McWs
 {
 
     /// <summary>
     /// JRiver MediaCenter REST Web service base response type for the MPL commands.
     /// </summary>
     [Serializable, XmlType("MPL")]
-    internal class McMplResponse
+    public class McMplResponse
     {
 
         /// <summary>

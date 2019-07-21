@@ -1,7 +1,8 @@
-﻿using MediaCenter.LyricsFinder.Model.McRestService;
+﻿using MediaCenter.McWs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// Exception is thrown when the lyrics quota is exceeded.
     /// </summary>
     /// <seealso cref="System.Exception" />
+    [ComVisible(false)]
     [Serializable]
     public class LyricsQuotaExceededException : Exception
     {
@@ -65,6 +67,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// General lyric service exception.
     /// </summary>
     /// <seealso cref="System.Exception" />
+    [ComVisible(false)]
     [Serializable]
     public class GeneralLyricServiceException : Exception
     {
@@ -175,6 +178,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// Lyric service communication exception.
     /// </summary>
     /// <seealso cref="System.Exception" />
+    [ComVisible(false)]
     [Serializable]
     public class LyricServiceCommunicationException : GeneralLyricServiceException
     {

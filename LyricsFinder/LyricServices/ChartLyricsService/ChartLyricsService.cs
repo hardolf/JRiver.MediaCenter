@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.LyricServices.ChartLyricsReference;
 using MediaCenter.LyricsFinder.Model.Helpers;
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 using System.Net.Http;
 using System.Threading;
@@ -22,7 +22,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// Chart Lyrics service type.
     /// </summary>
     [Serializable]
-    public class ChartLyricsService : AbstractLyricService
+    public class ChartLyricsService : AbstractLyricService, ILyricService
     {
 
         /// <summary>
@@ -36,23 +36,25 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ChartLyricsService" /> class as a copy of the specified source.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        public ChartLyricsService(ChartLyricsService source)
+            : base(source)
+        {
+            IsImplemented = true;
+        }
+
+
+        /// <summary>
         /// Clones this instance.
         /// </summary>
         /// <returns>
         ///   <see cref="ChartLyricsService" /> object.
         /// </returns>
-        public override AbstractLyricService Clone()
+        public override ILyricService Clone()
         {
-            var ret = new ChartLyricsService
-            {
-                Comment = Comment,
-                Credit = Credit.Clone(),
-                IsActive = IsActive,
-                IsImplemented = IsImplemented,
-                LyricResult = LyricResultEnum.NotProcessedYet,
-                LyricsFinderData = LyricsFinderData,
-
-            };
+            var ret = new ChartLyricsService(this);
 
             // The hit and request counters are added back to the source service after a search.
             // This is done in the LyricSearch.SearchAsync method.

@@ -13,7 +13,7 @@ using System.Windows.Forms;
 using MediaCenter.LyricsFinder.Model;
 using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.LyricServices;
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 
@@ -291,7 +291,7 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 if (_isSearch)
-                    _callback(this); 
+                    _callback(this);
 
                 LyricsFinderData.MainData.LyricFormSize = Size;
                 LyricsFinderData.SaveAsync();
@@ -448,6 +448,9 @@ namespace MediaCenter.LyricsFinder
             {
                 // Create a pseudo MC playlist item for the search
                 var row = LyricCell.OwningRow;
+
+                if (_searchForm != null)
+                    _searchForm.Close();
 
                 _searchForm = new LyricForm(LyricCell, Location, Size, SearchLyricCallbackAsync, LyricsFinderData, true, ArtistTextBox.Text, AlbumTextBox.Text, TrackTextBox.Text);
                 _searchForm.Show(this);

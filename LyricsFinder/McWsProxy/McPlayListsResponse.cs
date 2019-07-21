@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace MediaCenter.LyricsFinder.Model.McRestService
+namespace MediaCenter.McWs
 {
 
     /// <summary>
     /// Playlist list.
     /// </summary>
     [Serializable, XmlType("Response")]
-    internal class McPlayListsResponse
+    public class McPlayListsResponse
     {
 
         /// <summary>

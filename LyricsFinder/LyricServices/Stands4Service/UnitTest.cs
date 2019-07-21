@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 
 namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 {

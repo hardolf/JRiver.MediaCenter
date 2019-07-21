@@ -8,17 +8,15 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
-using MediaCenter.LyricsFinder.Model.Helpers;
 
-
-namespace MediaCenter.LyricsFinder.Model.McRestService
+namespace MediaCenter.McWs
 {
 
     /// <summary>
     /// JRiver MediaCenter Web Service base response type.
     /// </summary>
     [Serializable, XmlType("Response")]
-    internal class McResponse
+    public class McResponse
     {
 
         /// <summary>

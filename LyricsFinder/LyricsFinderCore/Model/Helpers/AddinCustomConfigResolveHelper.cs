@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +22,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     /// Courtesy https://stackoverflow.com/users/27457/aj and https://stackoverflow.com/users/1600964/rileywhite
     /// </para>
     /// </remarks>
+    [ComVisible(false)]
     public sealed class AddinCustomConfigResolveHelper : IDisposable
     {
 

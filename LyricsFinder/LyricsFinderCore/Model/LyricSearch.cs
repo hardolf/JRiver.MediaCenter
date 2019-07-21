@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 using MediaCenter.LyricsFinder.Model.LyricServices;
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 namespace MediaCenter.LyricsFinder.Model
@@ -15,6 +16,7 @@ namespace MediaCenter.LyricsFinder.Model
     /// <summary>
     /// Lyric search type.
     /// </summary>
+    [ComVisible(false)]
     public static class LyricSearch
     {
 
@@ -49,7 +51,7 @@ namespace MediaCenter.LyricsFinder.Model
 
                 foreach (var service in lyricsFinderData.ActiveLyricServices)
                 {
-                    var serviceClone = service.Clone();
+                    var serviceClone = service.Clone() as AbstractLyricService ?? throw new Exception($"Error cloning service {service.Credit.ServiceName}.");
                     var task = serviceClone.ProcessAsync(mcItem, cancellationToken, isGetAll);
 
                     services.Add(service);
@@ -75,8 +77,8 @@ namespace MediaCenter.LyricsFinder.Model
                         var service = services[i];
                         var serviceClone = ret[i];
 
-                        await service.IncrementHitCountersAsync(serviceClone.HitCountTotal);
-                        await service.IncrementRequestCountersAsync(serviceClone.RequestCountTotal);
+                        await service.IncrementHitCountersAsync(serviceClone.HitCountTotal - service.HitCountTotal);
+                        await service.IncrementRequestCountersAsync(serviceClone.RequestCountTotal - service.RequestCountTotal);
                         service.IsActive = serviceClone.IsActive;
                     }
 

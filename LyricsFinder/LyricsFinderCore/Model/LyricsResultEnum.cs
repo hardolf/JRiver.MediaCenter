@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ namespace MediaCenter.LyricsFinder.Model
     /// <summary>
     /// Enumeration of the lyric services results.
     /// </summary>
+    [ComVisible(false)]
     [Flags]
     public enum LyricResultEnum
     {
@@ -32,6 +34,7 @@ namespace MediaCenter.LyricsFinder.Model
     /// <summary>
     /// Extension methods for the <see cref="LyricResultEnum"/>.
     /// </summary>
+    [ComVisible(false)]
     public static class LyricResultEnumExtensions
     {
 

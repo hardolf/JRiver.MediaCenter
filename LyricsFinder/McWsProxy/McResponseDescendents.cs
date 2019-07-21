@@ -7,19 +7,18 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
-using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.SharedComponents;
 
 
-namespace MediaCenter.LyricsFinder.Model.McRestService
+namespace MediaCenter.McWs
 {
 
     /// <summary>
     /// JRiver MediaCenter REST Web service response type for the Alive command.
     /// </summary>
-    /// <seealso cref="MediaCenter.LyricsFinder.Model.McRestService.McResponse" />
+    /// <seealso cref="MediaCenter.McWs.McResponse" />
     [Serializable]
-    internal class McAliveResponse : McResponse
+    public class McAliveResponse : McResponse
     {
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -67,7 +66,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
     /// JRiver MediaCenter REST Web service response type for the Authentication command.
     /// </summary>
     [Serializable]
-    internal class McAuthenticationResponse : McResponse
+    public class McAuthenticationResponse : McResponse
     {
 
         /// <summary>
@@ -132,9 +131,9 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
     /// <summary>
     /// JRiver MediaCenter REST Web service response type for the Info command.
     /// </summary>
-    /// <seealso cref="MediaCenter.LyricsFinder.Model.McRestService.McResponse" />
+    /// <seealso cref="MediaCenter.McWs.McResponse" />
     [Serializable]
-    internal class McInfoResponse : McResponse
+    public class McInfoResponse : McResponse
     {
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -236,7 +235,7 @@ namespace MediaCenter.LyricsFinder.Model.McRestService
     /// JRiver MediaCenter REST Web service response type for the SetInfo command.
     /// </summary>
     [Serializable]
-    internal class McSetInfoResponse : McResponse
+    public class McSetInfoResponse : McResponse
     {
 
         /// <summary>

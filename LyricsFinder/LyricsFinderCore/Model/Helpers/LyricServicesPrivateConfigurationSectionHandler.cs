@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,6 +20,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     /// Private configuration section handler for all LyricServices.
     /// </summary>
     /// <seealso cref="System.Configuration.ConfigurationSection" />
+    [ComVisible(false)]
     [Serializable]
     public class LyricServicesPrivateConfigurationSectionHandler
     {

@@ -28,7 +28,7 @@ using MediaCenter;
 using MediaCenter.LyricsFinder.Model;
 using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.LyricServices;
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 
@@ -202,24 +202,41 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                e.Handled = false;
+                e.Handled = true;
 
-                if (e.KeyCode == Keys.Enter)
+                var dgv = MainGridView;
+                var selectedRowIndex = (dgv.SelectedRows.Count > 0) ? dgv.SelectedRows[0].Index : -1;
+
+                if (e.KeyCode == Keys.Down)
                 {
-                    e.Handled = true;
+                    if (selectedRowIndex < dgv.RowCount - 1)
+                    {
+                        dgv.ClearSelection();
+                        dgv.Rows[selectedRowIndex + 1].Selected = true;
+                    }
+                }
+                else if (e.KeyCode == Keys.Enter)
+                {
                     ToolsPlayStartStopButton.PerformClick();
                 }
                 else if (e.Control && (e.KeyCode == Keys.S))
                 {
-                    e.Handled = true;
                     await SaveAllAsync();
                 }
                 else if (e.KeyCode == Keys.Space)
                 {
-                    e.Handled = true;
-
                     await PlayOrPauseAsync();
                 }
+                else if (e.KeyCode == Keys.Up)
+                {
+                    if (selectedRowIndex > 0)
+                    {
+                        dgv.ClearSelection();
+                        dgv.Rows[selectedRowIndex - 1].Selected = true;
+                    }
+                }
+                else
+                    e.Handled = false;
             }
             catch (Exception ex)
             {

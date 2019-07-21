@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.Helpers;
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 
@@ -26,8 +26,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// <summary>
     /// Abstract lyric service type.
     /// </summary>
+    [ComVisible(false)]
     [Serializable]
-    public abstract class AbstractLyricService
+    public abstract class AbstractLyricService : ILyricService
     {
 
         // Instantiate a Singleton of the Semaphore with a value of 1. 
@@ -225,6 +226,31 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AbstractLyricService" /> class as a copy of the specified source.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <exception cref="System.ArgumentNullException">source</exception>
+        public AbstractLyricService(AbstractLyricService source)
+            : this()
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+
+            Comment = source.Comment;
+            Credit = source.Credit.Clone();
+            DelayMilliSecondsBetweenSearches = source.DelayMilliSecondsBetweenSearches;
+            IsActive = source.IsActive;
+            IsImplemented = source.IsImplemented;
+            LyricsFinderData = source.LyricsFinderData;
+            LyricResult = LyricResultEnum.NotProcessedYet;
+
+            HitCountToday = source.HitCountToday;
+            HitCountTotal = source.HitCountTotal;
+            RequestCountToday = source.RequestCountToday;
+            RequestCountTotal = source.RequestCountTotal;
+        }
+
+
+        /// <summary>
         /// Adds the found lyric.
         /// </summary>
         /// <param name="lyricText">The lyric text.</param>
@@ -259,7 +285,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Clones this instance.
         /// </summary>
         /// <returns><see cref="AbstractLyricService"/> descendant object.</returns>
-        public virtual AbstractLyricService Clone()
+        public virtual ILyricService Clone()
         {
             return null;
         }
@@ -405,9 +431,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <remarks>We use a central routine here, so that the request counters may be properly updated.</remarks>
         protected virtual async Task<string> HttpGetStringAsync(Uri requestUri)
         {
+            if (IsActive && await IsQuotaExceededAsync())
+                QuotaError();
+
             await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
 
-            var ret = await Helpers.Utility.HttpGetStringAsync(requestUri).ConfigureAwait(false);
+            var ret = await SharedComponents.Utility.HttpGetStringAsync(requestUri).ConfigureAwait(false);
 
             await IncrementRequestCountersAsync();
 
@@ -494,15 +523,24 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             LyricResult = LyricResultEnum.NotFound;
 
             // Skip if we are over the quota limit
-            if (await IsQuotaExceededAsync())
-            {
-                IsActive = false;
-
-                throw new LyricsQuotaExceededException($"Lyric service \"{Credit.ServiceName}\" is exceeding its quota and is now disabled in LyricsFinder, "
-                    + "no more requests will be sent to this service until corrected.");
-            }
+            if (IsActive && await IsQuotaExceededAsync())
+                QuotaError();
 
             return this;
+        }
+
+
+        /// <summary>
+        /// Sets the IsActive property to <c>false</c> and throws a quota error.
+        /// </summary>
+        /// <exception cref="LyricsQuotaExceededException">Lyric service ... is exceeding its quota ...</exception>
+        protected void QuotaError()
+        {
+            IsActive = false;
+
+            throw new LyricsQuotaExceededException($"Lyric service \"{Credit.ServiceName}\" "
+                + "is exceeding its quota and is now disabled in LyricsFinder, "
+                + "no more requests will be sent to this service until corrected.");
         }
 
 
@@ -547,10 +585,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             Credit.CreditDate = DateTime.Now;
             DelayMilliSecondsBetweenSearches = LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches;
 
-            if (await IsQuotaExceededAsync())
-                IsActive = false;
-
             CreateDisplayProperties();
+
+            if (IsActive && await IsQuotaExceededAsync())
+                QuotaError();
         }
 
 

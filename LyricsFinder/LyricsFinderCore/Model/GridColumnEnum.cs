@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +12,7 @@ namespace MediaCenter.LyricsFinder.Model
     /// <summary>
     /// Enumeration of the grid column names.
     /// </summary>
+    [ComVisible(false)]
     internal enum GridColumnEnum : int
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member

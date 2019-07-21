@@ -92,9 +92,9 @@
     <Compile Include="Model\Helpers\LyricsFinderCorePrivateConfigurationSectionHandler.cs" />
     <Compile Include="Model\LyricSearch.cs" />
     <Compile Include="Model\LyricServices\DisplayProperty.cs" />
+    <Compile Include="Model\LyricServices\ILyricService.cs" />
     <Compile Include="Model\LyricServices\LyricServiceExceptions.cs" />
     <Compile Include="Model\MainDataType.cs" />
-    <Compile Include="Model\McRestService\McPlayListsResponse.cs" />
     <Compile Include="OptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -143,13 +143,6 @@
     <Compile Include="Model\LyricsResultEnum.cs" />
     <Compile Include="Model\GridColumnEnum.cs" />
     <Compile Include="Model\LyricServices\FoundLyricType.cs" />
-    <Compile Include="Model\McRestService\McCommandEnum.cs" />
-    <Compile Include="Model\McRestService\McGetImageResponse.cs" />
-    <Compile Include="Model\McRestService\McMplItem.cs" />
-    <Compile Include="Model\McRestService\McMplResponse.cs" />
-    <Compile Include="Model\McRestService\McResponse.cs" />
-    <Compile Include="Model\McRestService\McRestService.cs" />
-    <Compile Include="Model\McRestService\McResponseDescendents.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -239,6 +232,10 @@
     <ProjectReference Include="..\..\SharedComponents\Utility\Utility.csproj">
       <Project>{ef9766a5-0c6d-425f-be2d-3cd51a6720d2}</Project>
       <Name>Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\McWsProxy\McWsProxy.csproj">
+      <Project>{9aef0631-402e-40cc-b077-cf7b325c9f62}</Project>
+      <Name>McWsProxy</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

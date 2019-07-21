@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -19,6 +20,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     /// <summary>
     /// Logging routines.
     /// </summary>
+    [ComVisible(false)]
     public static class Logging
     {
 

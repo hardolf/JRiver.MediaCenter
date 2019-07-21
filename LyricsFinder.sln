@@ -75,6 +75,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installation", "LyricsFinde
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AZLyricsService", "LyricsFinder\LyricServices\AZLyricsService\AZLyricsService.csproj", "{2561A23A-EE2E-4861-9607-787AFDE5BB2C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "McWsProxy", "LyricsFinder\McWsProxy\McWsProxy.csproj", "{9AEF0631-402E-40CC-B077-CF7B325C9F62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,10 @@ Global
 		{2561A23A-EE2E-4861-9607-787AFDE5BB2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2561A23A-EE2E-4861-9607-787AFDE5BB2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2561A23A-EE2E-4861-9607-787AFDE5BB2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AEF0631-402E-40CC-B077-CF7B325C9F62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AEF0631-402E-40CC-B077-CF7B325C9F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AEF0631-402E-40CC-B077-CF7B325C9F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AEF0631-402E-40CC-B077-CF7B325C9F62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -147,6 +153,7 @@ Global
 		{5722AFB2-CFC2-4832-B6CF-5C89719184EC} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
 		{EB847339-4E66-4CF9-97E4-4F63B01DDED4} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
 		{2561A23A-EE2E-4861-9607-787AFDE5BB2C} = {93B38887-18C2-4895-A8FD-D33B95D538D7}
+		{9AEF0631-402E-40CC-B077-CF7B325C9F62} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C6AD8E8-9745-4BBC-928D-B3CC9DDD774A}

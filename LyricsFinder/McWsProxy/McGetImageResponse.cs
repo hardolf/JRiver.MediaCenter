@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 
-namespace MediaCenter.LyricsFinder.Model.McRestService
+namespace MediaCenter.McWs
 {
 
     /// <summary>
     /// JRiver MediaCenter REST Web service response type for the GetImage command.
     /// </summary>
     [Serializable]
-    internal class McGetImageResponse
+    public class McGetImageResponse
     {
 
         /// <summary>

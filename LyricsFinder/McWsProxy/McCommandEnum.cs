@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace MediaCenter.LyricsFinder.Model.McRestService
+namespace MediaCenter.McWs
 {
 
     /// <summary>
     /// Enumeration of the JRiver MediaCenter commands used in the LyricsFinder.
     /// </summary>
-    internal enum McCommandEnum
+    public enum McCommandEnum
     {
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member

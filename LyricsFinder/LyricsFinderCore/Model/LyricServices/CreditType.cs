@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -17,6 +18,7 @@ namespace MediaCenter.LyricsFinder.Model
     /// <summary>
     /// Lyrics credit type.
     /// </summary>
+    [ComVisible(false)]
     [Serializable]
     public class CreditType
     {
@@ -160,7 +162,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// Clones this instance.
         /// </summary>
         /// <returns><see cref="CreditType"/> object.</returns>
-        public CreditType Clone()
+        public virtual CreditType Clone()
         {
             var ret = new CreditType
             {

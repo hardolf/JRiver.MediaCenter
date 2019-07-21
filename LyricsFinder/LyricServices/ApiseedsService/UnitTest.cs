@@ -7,7 +7,7 @@ using System.Xml;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 namespace MediaCenter.LyricsFinder.Model.LyricServices.Test

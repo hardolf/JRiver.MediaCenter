@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
-using MediaCenter.LyricsFinder.Model.Helpers;
+//using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.SharedComponents;
 
 
-namespace MediaCenter.LyricsFinder.Model.McRestService
+namespace MediaCenter.McWs
 {
 
     /// <summary>

@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 using Newtonsoft.Json;
@@ -24,7 +24,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// </summary>
     /// <seealso cref="AbstractLyricService" />
     [Serializable]
-    public class ApiseedsService : AbstractLyricService
+    public class ApiseedsService : AbstractLyricService, ILyricService
     {
 
         /// <summary>
@@ -48,22 +48,26 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ApiseedsService" /> class as a copy of the specified source.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        public ApiseedsService(ApiseedsService source)
+            : base(source)
+        {
+            IsImplemented = true;
+        }
+
+
+        /// <summary>
         /// Clones this instance.
         /// </summary>
         /// <returns>
         ///   <see cref="ApiseedsService" /> object.
         /// </returns>
-        public override AbstractLyricService Clone()
+        public override ILyricService Clone()
         {
-            var ret = new ApiseedsService
+            var ret = new ApiseedsService(this)
             {
-                Comment = Comment,
-                Credit = Credit.Clone(),
-                IsActive = IsActive,
-                IsImplemented = IsImplemented,
-                LyricResult = LyricResultEnum.NotProcessedYet,
-                LyricsFinderData = LyricsFinderData,
-
                 Token = Token
             };
 

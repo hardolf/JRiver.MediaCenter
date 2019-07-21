@@ -91,6 +91,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// <summary>
     /// Lyrics search result type.
     /// </summary>
+    [ComVisible(false)]
     public class FoundLyricType
     {
 

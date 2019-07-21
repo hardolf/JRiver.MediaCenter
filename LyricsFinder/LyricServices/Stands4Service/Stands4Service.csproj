@@ -78,6 +78,10 @@
       <Project>{d91da58c-6415-43ef-b177-7ba28ace7e01}</Project>
       <Name>LyricsFinderCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\McWsProxy\McWsProxy.csproj">
+      <Project>{9aef0631-402e-40cc-b077-cf7b325c9f62}</Project>
+      <Name>McWsProxy</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

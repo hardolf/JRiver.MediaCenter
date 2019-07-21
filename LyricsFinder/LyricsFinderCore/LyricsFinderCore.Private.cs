@@ -19,7 +19,7 @@ using log4net.Util;
 using MediaCenter.LyricsFinder.Model;
 using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.LyricServices;
-using MediaCenter.LyricsFinder.Model.McRestService;
+using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 
@@ -65,6 +65,7 @@ namespace MediaCenter.LyricsFinder
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private static Bitmap _emptyCoverImage = new Bitmap(400, 400);
         private static Bitmap _emptyPlayPauseImage = new Bitmap(16, 16);
+        private static List<Bitmap> _itemBitmaps = new List<Bitmap>(); // For disposing purpose
 
         // Instantiate a Singleton of the Semaphore with a value of 1. 
         // This means that only 1 thread can be granted access at a time. 
@@ -330,9 +331,12 @@ namespace MediaCenter.LyricsFinder
             // Scroll if necessary
             if ((_playingIndex >= 0) && (dgv.Rows.Count >= _playingIndex + 1))
             {
-                dgv.Rows[_playingIndex].Selected = true;
+                var playingRow = dgv.Rows[_playingIndex];
+
+                _playingKey = (int)playingRow.Cells[(int)GridColumnEnum.Key].Value;
+                dgv.ClearSelection();
                 dgv.FirstDisplayedScrollingRowIndex = (_playingIndex > 2) ? _playingIndex - 3 : 0;
-                _playingKey = (int)dgv.Rows[_playingIndex].Cells[(int)GridColumnEnum.Key].Value;
+                playingRow.Selected = true;
             }
 
             if (ToolsPlayStartStopButton.GetStartingEventSubscribers().Length == 0)
@@ -384,9 +388,13 @@ namespace MediaCenter.LyricsFinder
                     // Get the item's bitmap
                     using (var fs = new FileStream(ifn, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
+#pragma warning disable CA2000 // Dispose objects before losing scope
                         var image = new Bitmap(fs);
 
+                        _itemBitmaps.Add(image);
+
                         ret = image;
+#pragma warning restore CA2000 // Dispose objects before losing scope
                     }
                 }
             }
