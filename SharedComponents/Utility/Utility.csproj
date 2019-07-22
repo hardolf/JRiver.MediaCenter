@@ -61,6 +61,7 @@
     <Compile Include="DateTimeWithZone.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Serialize.cs" />
+    <Compile Include="UndoRedo.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

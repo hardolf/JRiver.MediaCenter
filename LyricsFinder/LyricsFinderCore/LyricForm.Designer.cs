@@ -38,12 +38,13 @@
         {
             this.components = new System.ComponentModel.Container();
             this.LyricFormToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.LyricFormTrackBar = new System.Windows.Forms.TrackBar();
-            this.SearchButton = new System.Windows.Forms.Button();
-            this.CloseButton = new System.Windows.Forms.Button();
             this.ArtistTextBox = new System.Windows.Forms.TextBox();
             this.AlbumTextBox = new System.Windows.Forms.TextBox();
             this.TrackTextBox = new System.Windows.Forms.TextBox();
+            this.LyricFormTrackBar = new System.Windows.Forms.TrackBar();
+            this.SearchButton = new System.Windows.Forms.Button();
+            this.CloseButton = new System.Windows.Forms.Button();
+            this.LyricFormToolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this.LyricFormPanel = new System.Windows.Forms.Panel();
             this.LyricParmsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ArtistLabel = new System.Windows.Forms.Label();
@@ -53,49 +54,35 @@
             this.LyricFormStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.LyricFormFoundStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.LyricTextBox = new System.Windows.Forms.TextBox();
+            this.LyricFormMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.EditMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditUndoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.EditSelectAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditCutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditCopyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditPasteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.EditProperCaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditTitleCaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditLowerCaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditUpperCaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditSentenceCaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.EditSpellCheckMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.HelpHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).BeginInit();
+            this.LyricFormToolStripContainer.ContentPanel.SuspendLayout();
+            this.LyricFormToolStripContainer.TopToolStripPanel.SuspendLayout();
+            this.LyricFormToolStripContainer.SuspendLayout();
             this.LyricFormPanel.SuspendLayout();
             this.LyricParmsPanel.SuspendLayout();
             this.LyricFormStatusStrip.SuspendLayout();
+            this.LyricFormMenuStrip.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // LyricFormTrackBar
-            // 
-            this.LyricFormTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.LyricFormTrackBar.Location = new System.Drawing.Point(3, 491);
-            this.LyricFormTrackBar.Maximum = 0;
-            this.LyricFormTrackBar.Name = "LyricFormTrackBar";
-            this.LyricFormTrackBar.Size = new System.Drawing.Size(289, 45);
-            this.LyricFormTrackBar.TabIndex = 6;
-            this.LyricFormToolTip.SetToolTip(this.LyricFormTrackBar, "Switch between all the lyrics search results (Arrows)");
-            this.LyricFormTrackBar.Visible = false;
-            this.LyricFormTrackBar.Scroll += new System.EventHandler(this.LyricFormTrackBar_ScrollAsync);
-            // 
-            // SearchButton
-            // 
-            this.SearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchButton.Location = new System.Drawing.Point(200, 501);
-            this.SearchButton.Name = "SearchButton";
-            this.SearchButton.Size = new System.Drawing.Size(75, 23);
-            this.SearchButton.TabIndex = 7;
-            this.SearchButton.Text = "&Search...";
-            this.LyricFormToolTip.SetToolTip(this.SearchButton, "Search for more lyrics");
-            this.SearchButton.UseVisualStyleBackColor = true;
-            this.SearchButton.Visible = false;
-            this.SearchButton.Click += new System.EventHandler(this.SearchButton_ClickAsync);
-            // 
-            // CloseButton
-            // 
-            this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(298, 501);
-            this.CloseButton.Name = "CloseButton";
-            this.CloseButton.Size = new System.Drawing.Size(74, 23);
-            this.CloseButton.TabIndex = 8;
-            this.CloseButton.Text = "&Close (Esc)";
-            this.LyricFormToolTip.SetToolTip(this.CloseButton, "Close the window (Esc)");
-            this.CloseButton.UseVisualStyleBackColor = true;
-            this.CloseButton.Click += new System.EventHandler(this.CloseButton_ClickAsync);
             // 
             // ArtistTextBox
             // 
@@ -130,6 +117,62 @@
             this.TrackTextBox.TabIndex = 1;
             this.LyricFormToolTip.SetToolTip(this.TrackTextBox, "Track title, change to refine search");
             // 
+            // LyricFormTrackBar
+            // 
+            this.LyricFormTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.LyricFormTrackBar.Location = new System.Drawing.Point(3, 467);
+            this.LyricFormTrackBar.Maximum = 0;
+            this.LyricFormTrackBar.Name = "LyricFormTrackBar";
+            this.LyricFormTrackBar.Size = new System.Drawing.Size(289, 45);
+            this.LyricFormTrackBar.TabIndex = 6;
+            this.LyricFormToolTip.SetToolTip(this.LyricFormTrackBar, "Switch between all the lyrics search results (Arrows)");
+            this.LyricFormTrackBar.Visible = false;
+            this.LyricFormTrackBar.Scroll += new System.EventHandler(this.LyricFormTrackBar_ScrollAsync);
+            // 
+            // SearchButton
+            // 
+            this.SearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchButton.Location = new System.Drawing.Point(200, 477);
+            this.SearchButton.Name = "SearchButton";
+            this.SearchButton.Size = new System.Drawing.Size(75, 23);
+            this.SearchButton.TabIndex = 7;
+            this.SearchButton.Text = "&Search...";
+            this.LyricFormToolTip.SetToolTip(this.SearchButton, "Search for more lyrics");
+            this.SearchButton.UseVisualStyleBackColor = true;
+            this.SearchButton.Visible = false;
+            this.SearchButton.Click += new System.EventHandler(this.SearchButton_ClickAsync);
+            // 
+            // CloseButton
+            // 
+            this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.CloseButton.Location = new System.Drawing.Point(298, 477);
+            this.CloseButton.Name = "CloseButton";
+            this.CloseButton.Size = new System.Drawing.Size(74, 23);
+            this.CloseButton.TabIndex = 8;
+            this.CloseButton.Text = "&Close (Esc)";
+            this.LyricFormToolTip.SetToolTip(this.CloseButton, "Close the window (Esc)");
+            this.CloseButton.UseVisualStyleBackColor = true;
+            this.CloseButton.Click += new System.EventHandler(this.CloseButton_ClickAsync);
+            // 
+            // LyricFormToolStripContainer
+            // 
+            // 
+            // LyricFormToolStripContainer.ContentPanel
+            // 
+            this.LyricFormToolStripContainer.ContentPanel.Controls.Add(this.LyricFormPanel);
+            this.LyricFormToolStripContainer.ContentPanel.Size = new System.Drawing.Size(384, 537);
+            this.LyricFormToolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LyricFormToolStripContainer.Location = new System.Drawing.Point(0, 0);
+            this.LyricFormToolStripContainer.Name = "LyricFormToolStripContainer";
+            this.LyricFormToolStripContainer.Size = new System.Drawing.Size(384, 561);
+            this.LyricFormToolStripContainer.TabIndex = 0;
+            this.LyricFormToolStripContainer.Text = "toolStripContainer1";
+            // 
+            // LyricFormToolStripContainer.TopToolStripPanel
+            // 
+            this.LyricFormToolStripContainer.TopToolStripPanel.Controls.Add(this.LyricFormMenuStrip);
+            // 
             // LyricFormPanel
             // 
             this.LyricFormPanel.Controls.Add(this.LyricParmsPanel);
@@ -141,8 +184,8 @@
             this.LyricFormPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricFormPanel.Location = new System.Drawing.Point(0, 0);
             this.LyricFormPanel.Name = "LyricFormPanel";
-            this.LyricFormPanel.Size = new System.Drawing.Size(384, 561);
-            this.LyricFormPanel.TabIndex = 0;
+            this.LyricFormPanel.Size = new System.Drawing.Size(384, 537);
+            this.LyricFormPanel.TabIndex = 1;
             // 
             // LyricParmsPanel
             // 
@@ -198,7 +241,7 @@
             this.LyricFormStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.LyricFormStatusLabel,
             this.LyricFormFoundStatusLabel});
-            this.LyricFormStatusStrip.Location = new System.Drawing.Point(0, 539);
+            this.LyricFormStatusStrip.Location = new System.Drawing.Point(0, 515);
             this.LyricFormStatusStrip.Name = "LyricFormStatusStrip";
             this.LyricFormStatusStrip.Size = new System.Drawing.Size(384, 22);
             this.LyricFormStatusStrip.TabIndex = 9;
@@ -223,19 +266,192 @@
             this.LyricTextBox.Multiline = true;
             this.LyricTextBox.Name = "LyricTextBox";
             this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.LyricTextBox.Size = new System.Drawing.Size(378, 411);
+            this.LyricTextBox.Size = new System.Drawing.Size(378, 387);
             this.LyricTextBox.TabIndex = 5;
+            this.LyricTextBox.TextChanged += new System.EventHandler(this.LyricTextBox_TextChangedAsync);
             this.LyricTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricTextBox_KeyDownAsync);
+            this.LyricTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.LyricTextBox_KeyPressAsync);
+            // 
+            // LyricFormMenuStrip
+            // 
+            this.LyricFormMenuStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.LyricFormMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.EditMenuItem,
+            this.ToolsMenuItem,
+            this.HelpMenuItem});
+            this.LyricFormMenuStrip.Location = new System.Drawing.Point(0, 0);
+            this.LyricFormMenuStrip.Name = "LyricFormMenuStrip";
+            this.LyricFormMenuStrip.Size = new System.Drawing.Size(384, 24);
+            this.LyricFormMenuStrip.TabIndex = 0;
+            this.LyricFormMenuStrip.Text = "menuStrip1";
+            // 
+            // EditMenuItem
+            // 
+            this.EditMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.EditUndoMenuItem,
+            this.EditSeparator0,
+            this.EditSelectAllMenuItem,
+            this.EditCutMenuItem,
+            this.EditCopyMenuItem,
+            this.EditPasteMenuItem,
+            this.EditSeparator1,
+            this.EditProperCaseMenuItem,
+            this.EditTitleCaseMenuItem,
+            this.EditLowerCaseMenuItem,
+            this.EditUpperCaseMenuItem,
+            this.EditSentenceCaseMenuItem,
+            this.EditSeparator2,
+            this.EditSpellCheckMenuItem});
+            this.EditMenuItem.Name = "EditMenuItem";
+            this.EditMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.EditMenuItem.Text = "&Edit";
+            this.EditMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditUndoMenuItem
+            // 
+            this.EditUndoMenuItem.Name = "EditUndoMenuItem";
+            this.EditUndoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.EditUndoMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditUndoMenuItem.Text = "&Undo";
+            this.EditUndoMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditSeparator0
+            // 
+            this.EditSeparator0.Name = "EditSeparator0";
+            this.EditSeparator0.Size = new System.Drawing.Size(231, 6);
+            // 
+            // EditSelectAllMenuItem
+            // 
+            this.EditSelectAllMenuItem.Name = "EditSelectAllMenuItem";
+            this.EditSelectAllMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.EditSelectAllMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditSelectAllMenuItem.Text = "Select &all";
+            this.EditSelectAllMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditCutMenuItem
+            // 
+            this.EditCutMenuItem.Name = "EditCutMenuItem";
+            this.EditCutMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.EditCutMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditCutMenuItem.Text = "Cut";
+            this.EditCutMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditCopyMenuItem
+            // 
+            this.EditCopyMenuItem.Name = "EditCopyMenuItem";
+            this.EditCopyMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.EditCopyMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditCopyMenuItem.Text = "Copy";
+            this.EditCopyMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditPasteMenuItem
+            // 
+            this.EditPasteMenuItem.Name = "EditPasteMenuItem";
+            this.EditPasteMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this.EditPasteMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditPasteMenuItem.Text = "Paste";
+            this.EditPasteMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditSeparator1
+            // 
+            this.EditSeparator1.Name = "EditSeparator1";
+            this.EditSeparator1.Size = new System.Drawing.Size(231, 6);
+            // 
+            // EditProperCaseMenuItem
+            // 
+            this.EditProperCaseMenuItem.Name = "EditProperCaseMenuItem";
+            this.EditProperCaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.P)));
+            this.EditProperCaseMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditProperCaseMenuItem.Text = "&Proper case selection";
+            this.EditProperCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditTitleCaseMenuItem
+            // 
+            this.EditTitleCaseMenuItem.Name = "EditTitleCaseMenuItem";
+            this.EditTitleCaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.T)));
+            this.EditTitleCaseMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditTitleCaseMenuItem.Text = "&Title case selection";
+            this.EditTitleCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditLowerCaseMenuItem
+            // 
+            this.EditLowerCaseMenuItem.Name = "EditLowerCaseMenuItem";
+            this.EditLowerCaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
+            this.EditLowerCaseMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditLowerCaseMenuItem.Text = "&Lower case selection";
+            this.EditLowerCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditUpperCaseMenuItem
+            // 
+            this.EditUpperCaseMenuItem.Name = "EditUpperCaseMenuItem";
+            this.EditUpperCaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.U)));
+            this.EditUpperCaseMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditUpperCaseMenuItem.Text = "&Upper case selection";
+            this.EditUpperCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditSentenceCaseMenuItem
+            // 
+            this.EditSentenceCaseMenuItem.Name = "EditSentenceCaseMenuItem";
+            this.EditSentenceCaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.EditSentenceCaseMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditSentenceCaseMenuItem.Text = "Sentence case selection";
+            this.EditSentenceCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditSeparator2
+            // 
+            this.EditSeparator2.Name = "EditSeparator2";
+            this.EditSeparator2.Size = new System.Drawing.Size(231, 6);
+            // 
+            // EditSpellCheckMenuItem
+            // 
+            this.EditSpellCheckMenuItem.Name = "EditSpellCheckMenuItem";
+            this.EditSpellCheckMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
+            this.EditSpellCheckMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditSpellCheckMenuItem.Text = "&Spell check selection";
+            this.EditSpellCheckMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // ToolsMenuItem
+            // 
+            this.ToolsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolsSearchMenuItem});
+            this.ToolsMenuItem.Name = "ToolsMenuItem";
+            this.ToolsMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.ToolsMenuItem.Text = "&Tools";
+            this.ToolsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // ToolsSearchMenuItem
+            // 
+            this.ToolsSearchMenuItem.Name = "ToolsSearchMenuItem";
+            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.ToolsSearchMenuItem.Text = "&Search";
+            this.ToolsSearchMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // HelpMenuItem
+            // 
+            this.HelpMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.HelpHelpMenuItem});
+            this.HelpMenuItem.Name = "HelpMenuItem";
+            this.HelpMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.HelpMenuItem.Text = "&Help";
+            this.HelpMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // HelpHelpMenuItem
+            // 
+            this.HelpHelpMenuItem.Name = "HelpHelpMenuItem";
+            this.HelpHelpMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.HelpHelpMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.HelpHelpMenuItem.Text = "&Help";
+            this.HelpHelpMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // LyricForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.CloseButton;
             this.ClientSize = new System.Drawing.Size(384, 561);
-            this.Controls.Add(this.LyricFormPanel);
+            this.Controls.Add(this.LyricFormToolStripContainer);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.KeyPreview = true;
+            this.MainMenuStrip = this.LyricFormMenuStrip;
             this.MaximumSize = new System.Drawing.Size(800, 1000);
             this.MinimumSize = new System.Drawing.Size(250, 200);
             this.Name = "LyricForm";
@@ -246,12 +462,19 @@
             this.Load += new System.EventHandler(this.LyricForm_LoadAsync);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricForm_KeyDownAsync);
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).EndInit();
+            this.LyricFormToolStripContainer.ContentPanel.ResumeLayout(false);
+            this.LyricFormToolStripContainer.TopToolStripPanel.ResumeLayout(false);
+            this.LyricFormToolStripContainer.TopToolStripPanel.PerformLayout();
+            this.LyricFormToolStripContainer.ResumeLayout(false);
+            this.LyricFormToolStripContainer.PerformLayout();
             this.LyricFormPanel.ResumeLayout(false);
             this.LyricFormPanel.PerformLayout();
             this.LyricParmsPanel.ResumeLayout(false);
             this.LyricParmsPanel.PerformLayout();
             this.LyricFormStatusStrip.ResumeLayout(false);
             this.LyricFormStatusStrip.PerformLayout();
+            this.LyricFormMenuStrip.ResumeLayout(false);
+            this.LyricFormMenuStrip.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -259,13 +482,8 @@
         #endregion
 
         private System.Windows.Forms.ToolTip LyricFormToolTip;
+        private System.Windows.Forms.ToolStripContainer LyricFormToolStripContainer;
         private System.Windows.Forms.Panel LyricFormPanel;
-        private System.Windows.Forms.StatusStrip LyricFormStatusStrip;
-        private System.Windows.Forms.ToolStripStatusLabel LyricFormStatusLabel;
-        private System.Windows.Forms.TrackBar LyricFormTrackBar;
-        private System.Windows.Forms.Button SearchButton;
-        private System.Windows.Forms.TextBox LyricTextBox;
-        private System.Windows.Forms.Button CloseButton;
         private System.Windows.Forms.TableLayoutPanel LyricParmsPanel;
         private System.Windows.Forms.Label ArtistLabel;
         private System.Windows.Forms.Label AlbumLabel;
@@ -273,6 +491,32 @@
         private System.Windows.Forms.TextBox ArtistTextBox;
         private System.Windows.Forms.TextBox AlbumTextBox;
         private System.Windows.Forms.TextBox TrackTextBox;
+        private System.Windows.Forms.TrackBar LyricFormTrackBar;
+        private System.Windows.Forms.Button SearchButton;
+        private System.Windows.Forms.TextBox LyricTextBox;
+        private System.Windows.Forms.Button CloseButton;
+        private System.Windows.Forms.StatusStrip LyricFormStatusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel LyricFormStatusLabel;
         private System.Windows.Forms.ToolStripStatusLabel LyricFormFoundStatusLabel;
+        private System.Windows.Forms.MenuStrip LyricFormMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem EditMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem HelpMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem HelpHelpMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolsSearchMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditUndoMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditSelectAllMenuItem;
+        private System.Windows.Forms.ToolStripSeparator EditSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem EditProperCaseMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditTitleCaseMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditLowerCaseMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditUpperCaseMenuItem;
+        private System.Windows.Forms.ToolStripSeparator EditSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem EditSpellCheckMenuItem;
+        private System.Windows.Forms.ToolStripSeparator EditSeparator0;
+        private System.Windows.Forms.ToolStripMenuItem EditCutMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditCopyMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditPasteMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditSentenceCaseMenuItem;
     }
 }

@@ -48,6 +48,93 @@ namespace MediaCenter.SharedComponents
         }
 
 
+        /// <summary>
+        /// Capitalizes the word using proper case.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns>
+        /// Capitalized word string.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">word</exception>
+        /// <exception cref="ArgumentException">The {nameof(word)} may not contain spaces: {word}.</exception>
+        /// <remarks>For definition, <see href="https://www.computerhope.com/jargon/p/proper-case.htm"/>.</remarks>
+        public static string CapitalizeWord(this string word)
+        {
+            if (word == null) throw new ArgumentNullException(nameof(word));
+
+            var ci = CultureInfo.CurrentCulture;
+            var ret = word.Trim();
+
+            if (ret.Contains(' ')) throw new ArgumentException($"The {nameof(word)} may not contain spaces: {word}.");
+
+            if (ret.Length > 0)
+                ret = char.ToUpper(ret[0], ci) + ret.Substring(1);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Capitalizes the word using title case.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns>
+        /// Capitalized word string.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">word</exception>
+        /// <exception cref="ArgumentException">The {nameof(word)} may not contain spaces: {word}.</exception>
+        /// <remarks>For definition, <see href="https://www.computerhope.com/jargon/t/title-case.htm"/>.</remarks>
+        public static string CapitalizeWordTitle(this string word)
+        {
+            if (word == null) throw new ArgumentNullException(nameof(word));
+
+            var ci = CultureInfo.CurrentCulture;
+            var ret = word.Trim();
+
+            if (ret.Contains(' ')) throw new ArgumentException($"The {nameof(word)} may not contain spaces: {word}.");
+            if (ret.Length > 3)
+                ret = ret.CapitalizeWord();
+            else
+                ret = ret.ToLower(ci);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Determines whether the input string contains one or more of the strings in the specified compare list.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="compareList">The compare list.</param>
+        /// <returns>
+        ///   <c>true</c> if the input string contains one or more of the strings in the specified compare list; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">input</exception>
+        public static bool Contains(this string input, IEnumerable<string> compareList)
+        {
+            if (input.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(input));
+
+            input = input.ToUpperInvariant();
+
+            var ret = compareList.Any(s => input.Contains(s.ToUpperInvariant()));
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// DLLs the configuration file.
+        /// </summary>
+        /// <returns></returns>
+        public static string DllConfigurationFile()
+        {
+            var assy = Assembly.GetExecutingAssembly();
+            var ret = $"{assy.Location}.config";
+
+            return ret;
+        }
+
+
         public static string GetActualAsyncMethodName([CallerMemberName]string name = null) => name;
 
 
@@ -148,7 +235,7 @@ namespace MediaCenter.SharedComponents
         /// </returns>
         /// <exception cref="ArgumentNullException">requestUrl</exception>
         /// <exception cref="HttpRequestException">\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".</exception>
-        public static async Task<Bitmap> HttpGetImageAsync(Uri requestUrl, string userName = "", string password = "")
+        public static async Task<Bitmap> HttpGetImageAsync(this Uri requestUrl, string userName = "", string password = "")
         {
             if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
 
@@ -195,7 +282,7 @@ namespace MediaCenter.SharedComponents
         /// <returns>
         /// Complete REST service Web request string.
         /// </returns>
-        public static async Task<string> HttpGetStringAsync(Uri requestUrl, string userName = "", string password = "")
+        public static async Task<string> HttpGetStringAsync(this Uri requestUrl, string userName = "", string password = "")
         {
             if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
 
@@ -270,40 +357,6 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
-        /// Determines whether the input string contains one or more of the strings in the specified compare list.
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="compareList">The compare list.</param>
-        /// <returns>
-        ///   <c>true</c> if the input string contains one or more of the strings in the specified compare list; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">input</exception>
-        public static bool Contains(this string input, IEnumerable<string> compareList)
-        {
-            if (input.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(input));
-
-            input = input.ToUpperInvariant();
-
-            var ret = compareList.Any(s => input.Contains(s.ToUpperInvariant()));
-
-            return ret;
-        }
-
-
-        /// <summary>
-        /// DLLs the configuration file.
-        /// </summary>
-        /// <returns></returns>
-        public static string DllConfigurationFile()
-        {
-            var assy = Assembly.GetExecutingAssembly();
-            var ret = $"{assy.Location}.config";
-
-            return ret;
-        }
-
-
-        /// <summary>
         /// Determines whether the array is null or empty.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -356,7 +409,7 @@ namespace MediaCenter.SharedComponents
             if (input == null) throw new ArgumentNullException(nameof(input));
             if (input.IsNullOrEmptyTrimmed()) return input;
 
-                var ret = new StringBuilder(input);
+            var ret = new StringBuilder(input);
 
             for (int i = 0; i < ret.Length; i++)
             {
@@ -384,6 +437,114 @@ namespace MediaCenter.SharedComponents
                 if (integers[i] < ret)
                     ret = integers[i];
             }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Converts input string to a string without double spaces and with no more than 2 consecutive line endings.
+        /// </summary>
+        /// <param name="input">The input string.</param>
+        /// <returns>Normalized input string.</returns>
+        public static string ToNormalizedString(this string input)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+
+            var ret = new StringBuilder(input.Trim());
+
+            ret.Replace("  ", " ");
+            ret.Replace("\r\n\r\n\r\n", "\r\n\r\n");
+            ret.Replace("\n\n\n", "\r\n\r\n");
+            ret.Replace("\n\n", "\r\n\r\n");
+
+            return ret.ToString();
+        }
+
+
+        /// <summary>
+        /// Converts input string to proper case.
+        /// </summary>
+        /// <param name="input">The input string.</param>
+        /// <returns>Proper case version of the input string.</returns>
+        public static string ToProperCase(this string input)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+
+            var ci = CultureInfo.CurrentCulture;
+            var ti = ci.TextInfo;
+            var ret = input;
+
+            ret = ti.ToTitleCase(ret); // Microsoft's version of Title Case is really a Proper Case
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Converts input string to sentence case.
+        /// </summary>
+        /// <param name="input">The input string.</param>
+        /// <returns>Sentence case version of the input string.</returns>
+        public static string ToSentenceCase(this string input)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+
+            var ci = CultureInfo.CurrentCulture;
+            var isNextUpper = true; // Start with upper case
+            var ret = new StringBuilder(input.ToNormalizedString());
+
+            for (var i = 0; i < ret.Length; i++)
+            {
+                if ((new[] { '\r', '\n', '.' }).Contains(ret[i]))
+                    isNextUpper = true;
+                else
+                {
+                    if (ret[i] != ' ')
+                    {
+                        ret[i] = isNextUpper ? char.ToUpper(ret[i], ci) : char.ToLower(ret[i], ci);
+                        isNextUpper = false; 
+                    }
+                }
+            }
+
+            return ret.ToString();
+        }
+
+
+        /// <summary>
+        /// Converts input string to title case.
+        /// </summary>
+        /// <param name="input">The input string.</param>
+        /// <returns>Title case version of the input string.</returns>
+        public static string ToTitleCase(this string input)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+
+            var ci = CultureInfo.CurrentCulture;
+            var ret = input.ToNormalizedString();
+            var lines = ret.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+            // Transform the lines
+            for (var i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].IsNullOrEmptyTrimmed()) continue;
+
+                var words = lines[i].Trim().Split(' ');
+
+                // Transform the words of the line
+                for (var j = 0; j < words.Length; j++)
+                {
+                    words[j] = words[j].CapitalizeWordTitle();
+                }
+
+                // Assemble the line, with the first letter in upper case
+                lines[i] = string.Join(" ", words);
+                lines[i] = char.ToUpper(lines[i][0], ci) + lines[i].Substring(1);
+            }
+
+            // Assemble the complete text
+            ret = string.Join(Environment.NewLine, lines);
 
             return ret;
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -27,51 +28,25 @@ namespace MediaCenter.LyricsFinder
     internal partial class LyricForm : Form
     {
 
-        /// <summary>
-        /// The callback function.
-        /// </summary>
+        /***********************************/
+        /***** Private assembly-wide   *****/
+        /***** constants and variables *****/
+        /***********************************/
+
         private Action<LyricForm> _callback;
-
-        /// <summary>
-        /// The cancellation token source.
-        /// </summary>
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-
-        /// <summary>
-        /// The initial lyric from as of the form load.
-        /// </summary>
         private string _initLyric = string.Empty;
-
-        /// <summary>
-        /// Set to <c>true</c> if the form is a search form; otherwase set <c>false</c>.
-        /// </summary>
         private bool _isSearch = false;
-
-        /// <summary>
-        /// The final lyric as of the form closing.
-        /// </summary>
         private string _finalLyric = string.Empty;
-
-        /// <summary>
-        /// The search form.
-        /// </summary>
         private LyricForm _searchForm = null;
-
-        /// <summary>
-        /// The found lyric list with credits.
-        /// </summary>
         private List<FoundLyricType> _foundLyricList = new List<FoundLyricType>();
-
-        /// <summary>
-        /// The Media Center item from the caller.
-        /// </summary>
         private McMplItem _McItem = null;
-
-        /// <summary>
-        /// The hit count for each of the services.
-        /// </summary>
         private Dictionary<string, int> _serviceCounts = new Dictionary<string, int>();
 
+
+        /**********************/
+        /***** Properties *****/
+        /**********************/
 
         /// <summary>
         /// Gets the lyric cell.
@@ -106,6 +81,10 @@ namespace MediaCenter.LyricsFinder
         /// </value>
         public DialogResult Result { get; private set; }
 
+
+        /************************/
+        /***** Constructors *****/
+        /************************/
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LyricForm"/> class.
@@ -214,6 +193,10 @@ namespace MediaCenter.LyricsFinder
             Text = lyricCell.OwningRow.Cells[(int)GridColumnEnum.Title].Value as string;
         }
 
+
+        /*********************/
+        /***** Delegates *****/
+        /*********************/
 
         /// <summary>
         /// Handles the Click event of the CloseButton control.
@@ -425,15 +408,159 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Gets the service count.
+        /// Handles the KeyPress event of the LyricTextBox control.
         /// </summary>
-        /// <param name="serviceName">Name of the service.</param>
-        /// <returns>Hit count of the specified service.</returns>
-        private string GetServiceCountText(string serviceName)
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyPressEventArgs"/> instance containing the event data.</param>
+        private async void LyricTextBox_KeyPressAsync(object sender, KeyPressEventArgs e)
         {
-            var count = _serviceCounts.First(s => s.Key == serviceName).Value;
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
 
-            return (count > 1) ? $"({count})" : string.Empty;
+
+        /// <summary>
+        /// Handles the TextChanged event of the LyricTextBox control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void LyricTextBox_TextChangedAsync(object sender, EventArgs e)
+        {
+            try
+            {
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Click event of the MenuItem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MenuItem_ClickAsync(object sender, EventArgs e)
+        {
+            var ci = CultureInfo.CurrentCulture;
+            var itemName = "Undefined item";
+
+            try
+            {
+                if (!(sender is ToolStripMenuItem menuItem))
+                    throw new Exception($"Unknown sender: \"{sender}\".");
+                else
+                    itemName = menuItem.Name;
+
+                switch (itemName)
+                {
+                    case nameof(EditMenuItem):
+                    case nameof(HelpMenuItem):
+                    case nameof(ToolsMenuItem):
+                        break;
+
+                    case nameof(EditSelectAllMenuItem):
+                        LyricTextBox.SelectAll();
+                        break;
+
+                    case nameof(EditCopyMenuItem):
+                        if (DoTextOperationQuestion())
+                        {
+                            LyricTextBox.ClearUndo();
+                            LyricTextBox.Copy();
+                        }
+                        break;
+
+                    case nameof(EditCutMenuItem):
+                        if (DoTextOperationQuestion())
+                        {
+                            LyricTextBox.ClearUndo();
+                            LyricTextBox.Cut();
+                        }
+                        break;
+
+                    case nameof(EditLowerCaseMenuItem):
+                        if (DoTextOperationQuestion(true))
+                            LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToLower(ci);
+                        break;
+
+                    case nameof(EditPasteMenuItem):
+                        // Determine if there is any text in the Clipboard to paste into the text box.
+                        if (Clipboard.GetDataObject().GetDataPresent(DataFormats.Text) == true)
+                        {
+                            // Determine if any text is selected in the text box.
+                            if (LyricTextBox.SelectionLength > 0)
+                            {
+                                // Ask user if they want to paste over currently selected text.
+                                if (DialogResult.No == MessageBox.Show("Do you want to paste over current selection?"
+                                    , "Cut Example", MessageBoxButtons.YesNo))
+                                    // Move selection to the point after the current selection and paste.
+                                    LyricTextBox.SelectionStart += LyricTextBox.SelectionLength;
+                            }
+                            // Paste current text in Clipboard into text box.
+                            LyricTextBox.Paste();
+                        }
+                        break;
+
+                    case nameof(EditProperCaseMenuItem):
+                        if (DoTextOperationQuestion(true))
+                            LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToProperCase();
+                        break;
+
+                    case nameof(EditSentenceCaseMenuItem):
+                        if (DoTextOperationQuestion(true))
+                            LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToSentenceCase();
+                        break;
+
+                    case nameof(EditSpellCheckMenuItem):
+                        if (DoTextOperationQuestion(true))
+                            SpellCheck();
+                        break;
+
+                    case nameof(EditTitleCaseMenuItem):
+                        if (DoTextOperationQuestion(true))
+                            LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToTitleCase();
+                        break;
+
+                    case nameof(EditUpperCaseMenuItem):
+                        if (DoTextOperationQuestion(true))
+                            LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToUpper(ci);
+                        break;
+
+                    case nameof(EditUndoMenuItem):
+                        if (LyricTextBox.CanUndo == true)
+                        {
+                            if (LyricTextBox.CanUndo)
+                            {
+                                LyricTextBox.Undo();
+                                LyricTextBox.ClearUndo(); // Clear the undo buffer to prevent last action from being redone 
+                            }
+                        }
+                        break;
+
+                    case nameof(HelpHelpMenuItem):
+                        System.Diagnostics.Process.Start("https://github.com/hardolf/JRiver.MediaCenter/wiki/Lyrics-Window");
+                        break;
+
+                    case nameof(ToolsSearchMenuItem):
+                        SearchButton.PerformClick();
+                        break;
+
+                    default:
+                        throw new Exception($"Unknown menu item: \"{itemName}\".");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
         }
 
 
@@ -459,6 +586,93 @@ namespace MediaCenter.LyricsFinder
             {
                 await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
+        }
+
+
+        /// <summary>
+        /// Lyric search callback routine.
+        /// </summary>
+        /// <param name="lyricForm">The lyric form.</param>
+        /// <exception cref="Exception">Unknown DialogResult: \"{lyricForm.Result}\".</exception>
+        private async void SearchLyricCallbackAsync(LyricForm lyricForm)
+        {
+            try
+            {
+                if (!_isSearch && (_searchForm != null))
+                {
+                    switch (lyricForm.Result)
+                    {
+                        case DialogResult.Cancel:
+                        case DialogResult.No:
+                            break;
+
+                        case DialogResult.Yes:
+                            LyricTextBox.Text = _searchForm.Lyric;
+                            break;
+
+                        default:
+                            throw new Exception($"Unknown DialogResult: \"{lyricForm.Result}\".");
+                    }
+
+                    _searchForm = null;
+                    LyricTextBox.Select();
+                }
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /**********************************/
+        /***** Private misc. routines *****/
+        /**********************************/
+
+        /// <summary>
+        /// Gets the service count.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <returns>Hit count of the specified service.</returns>
+        private string GetServiceCountText(string serviceName)
+        {
+            var count = _serviceCounts.First(s => s.Key == serviceName).Value;
+
+            return (count > 1) ? $"({count})" : string.Empty;
+        }
+
+
+        /// <summary>
+        /// If the text box selection is empty, asks the user if the operation should be done on all text.
+        /// </summary>
+        /// <param name="isAllTextAsked">if set to <c>true</c> and the selected text is empty, all-text question should be asked; else it is not asked.</param>
+        /// <returns>
+        ///   <c>true</c>, if the operation should be done; else <c>false</c>.
+        /// </returns>
+        private bool DoTextOperationQuestion(bool isAllTextAsked = false)
+        {
+            var ret = (LyricTextBox.SelectedText.Length > 0);
+
+            if (!ret && isAllTextAsked)
+            {
+                ret = (DialogResult.Yes == MessageBox.Show(this, "No text is selected.\r\n"
+                    + "Do you want to do this on all text?"
+                    , "No text is selected", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2));
+
+                if (ret)
+                    LyricTextBox.SelectAll();
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Spell check the selection.
+        /// </summary>
+        private void SpellCheck()
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -492,37 +706,6 @@ namespace MediaCenter.LyricsFinder
             LyricFormTrackBar_ScrollAsync(this, new EventArgs());
 
             LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
-        }
-
-
-        private async void SearchLyricCallbackAsync(LyricForm lyricForm)
-        {
-            try
-            {
-                if (!_isSearch && (_searchForm != null))
-                {
-                    switch (lyricForm.Result)
-                    {
-                        case DialogResult.Cancel:
-                        case DialogResult.No:
-                            break;
-
-                        case DialogResult.Yes:
-                            LyricTextBox.Text = _searchForm.Lyric;
-                            break;
-
-                        default:
-                            throw new Exception($"Unknown DialogResult: \"{lyricForm.Result}\".");
-                    }
-
-                    _searchForm = null;
-                    LyricTextBox.Select();
-                }
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
         }
 
     }
