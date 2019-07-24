@@ -168,23 +168,6 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
-        /// Creates from configuration.
-        /// </summary>
-        /// <returns></returns>
-        public static LyricsFinderDataType CreateFromConfiguration()
-        {
-            var ret = new LyricsFinderDataType();
-            var assy = Assembly.GetExecutingAssembly();
-            var appVersion = assy.GetName().Version;
-
-            ret.MainData = MainDataType.CreateFromConfiguration();
-            ret.DataVersion = appVersion;
-
-            return ret;
-        }
-
-
-        /// <summary>
         /// Gets the lyric service by name.
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
@@ -276,7 +259,6 @@ namespace MediaCenter.LyricsFinder.Model
             var ret = Serialize.XmlDeserializeFromFile<LyricsFinderDataType>(xmlFilePath, OnUnknownElement, dict, XmlKnownTypes.ToArray());
 
             ret.DataFilePath = xmlFilePath;
-            ret.Upgrade();
             ret.InitialXml = Serialize.XmlSerializeToString(ret, XmlKnownTypes.ToArray());
 
             return ret;
@@ -323,27 +305,6 @@ namespace MediaCenter.LyricsFinder.Model
             finally
             {
                 _semaphoreSlim.Release();
-            }
-        }
-
-
-        /// <summary>
-        /// Checks the loaded lyrics finder XML data and upgrades it, if necessary.
-        /// </summary>
-        private void Upgrade()
-        {
-            var assy = Assembly.GetExecutingAssembly();
-            var appVersion = assy.GetName().Version;
-
-            // Is update necessary?
-            if ((DataVersion == null) || (DataVersion < new Version(1, 2)))
-            {
-                DataVersion = appVersion;
-
-                if (MainData == null)
-                    MainData = MainDataType.CreateFromConfiguration();
-
-                MainData.LyricFormSize = LyricsFinderCorePrivateConfigurationSectionHandler.LyricFormSize;
             }
         }
 

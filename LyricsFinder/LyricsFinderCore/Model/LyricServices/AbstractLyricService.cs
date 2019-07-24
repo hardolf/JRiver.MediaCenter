@@ -83,13 +83,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         private FoundLyricListType<FoundLyricType> InternalFoundLyricList { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the obsolete configurations have been used.
+        /// Gets or sets a value indicating whether the configuration file have been used.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if the obsolete configurations have been used; otherwise, <c>false</c>.
+        ///   <c>true</c> if the configuration file have been used; otherwise, <c>false</c>.
         /// </value>
         [XmlIgnore]
-        public static bool IsObsoleteConfigurationsUsed { get; set; } = false;
+        public static bool IsConfigurationFileUsed { get; set; } = false;
 
         /// <summary>
         /// Gets a list of the found lyric texts.
@@ -144,15 +144,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </value>
         [XmlIgnore]
         protected virtual KeyValueConfigurationCollection Settings { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the private settings.
-        /// </summary>
-        /// <value>
-        /// The private settings.
-        /// </value>
-        [XmlIgnore]
-        public virtual LyricServicesPrivateConfigurationSectionHandler PrivateSettings { get; set; }
 
         /// <summary>
         /// Gets the result text.
@@ -555,7 +546,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (!IsImplemented)
                 IsActive = false;
 
-            IsObsoleteConfigurationsUsed = ((Credit == null)
+            IsConfigurationFileUsed = (Comment.IsNullOrEmptyTrimmed()
+                || (Credit == null)
                 || ((Credit.CreditUrl == null) || Credit.CreditUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
                 || ((Credit.ServiceUrl == null) || Credit.ServiceUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
                 || Credit.Company.IsNullOrEmptyTrimmed()
@@ -563,10 +555,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 || Credit.DateFormat.IsNullOrEmptyTrimmed()
                 || Credit.ServiceName.IsNullOrEmptyTrimmed());
 
-            if (IsObsoleteConfigurationsUsed)
+            if (IsConfigurationFileUsed)
             {
                 Settings = config.AppSettings.Settings;
-                PrivateSettings = LyricServicesPrivateConfigurationSectionHandler.CreateLyricServicesPrivateConfigurationSectionHandler(assy, Path.GetDirectoryName(LyricsFinderData.DataFilePath));
 
                 Comment = ServiceSettingsValue(Settings, "Comment");
 

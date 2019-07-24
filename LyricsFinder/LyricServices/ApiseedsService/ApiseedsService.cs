@@ -155,9 +155,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             await base.RefreshServiceSettingsAsync().ConfigureAwait(false);
 
-            if (Token.IsNullOrEmptyTrimmed())
-                Token = PrivateSettings.Token;
-
             CreateDisplayProperties();
         }
 

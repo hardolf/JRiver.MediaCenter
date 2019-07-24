@@ -137,10 +137,6 @@ namespace MediaCenter.LyricsFinder
                 await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 await InitLocalDataAsync();
 
-                msg = "initializing the private configuration handler";
-                await Logging.LogAsync(_progressPercentage, msg + "...", true);
-                LyricsFinderCorePrivateConfigurationSectionHandler.Init(Assembly.GetExecutingAssembly(), DataDirectory);
-
                 msg = "checking if private configuration is needed";
                 await Logging.LogAsync(_progressPercentage, msg + "...", true);
                 if ((LyricsFinderData.MainData == null)
@@ -198,8 +194,6 @@ namespace MediaCenter.LyricsFinder
 
                 EnableOrDisableToolStripItems(true);
                 await ReloadPlaylistAsync(true);
-
-                CleanupObsoleteConfigurationFiles();
             }
             catch (Exception ex)
             {
@@ -255,6 +249,8 @@ namespace MediaCenter.LyricsFinder
 
                 PrepareItemStatesBeforeSearch();
                 EnableOrDisableToolStripItems(true);
+
+                _ = IsDataChanged; // Force disabling the save menu item
             }
             catch (Exception ex)
             {

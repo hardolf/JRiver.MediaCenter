@@ -127,139 +127,31 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Gets or sets a value indicating whether any obsolete configurations have been used.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if any obsolete configurations have been used; otherwise, <c>false</c>.
-        /// </value>
-        public void CleanupObsoleteConfigurationFiles()
-        {
-            var isUsed = (AbstractLyricService.IsObsoleteConfigurationsUsed
-                || LyricServicesPrivateConfigurationSectionHandler.IsUsed
-                || LyricsFinderCoreConfigurationSectionHandler.IsUsed
-                || LyricsFinderCorePrivateConfigurationSectionHandler.IsUsed);
-
-            if (!isUsed)
-            {
-                var isCleanupDone = true;
-                var assy = Assembly.GetExecutingAssembly();
-                var sb = new StringBuilder();
-                var files = new List<FileInfo>();
-                var path = Model.Helpers.Utility.GetPrivateSettingsFilePath(assy, DataDirectory);
-
-                files.Add(new FileInfo(path));
-
-                foreach (var service in LyricsFinderData.LyricServices)
-                {
-                    assy = Assembly.GetAssembly(service.GetType());
-                    path = Model.Helpers.Utility.GetPrivateSettingsFilePath(assy, DataDirectory);
-
-                    if (!path.IsNullOrEmptyTrimmed())
-                    {
-                        var file = new FileInfo(path);
-
-                        files.Add(file);
-
-                        if (file.Exists)
-                            isCleanupDone = false;
-                    }
-                }
-
-                if (isCleanupDone) return;
-
-                sb.Append("Your private local configuration files are now obsolete and are no longer used, ");
-                sb.AppendLine("as the information is now copied to the central \"LyricsFinder.xml\" file.");
-                sb.AppendLine("These files are no longer needed:");
-                sb.AppendLine();
-
-                foreach (var file in files)
-                {
-                    sb.AppendLine(file.FullName);
-                }
-
-                sb.AppendLine();
-                sb.AppendLine("Is it OK to delete them now?");
-
-                var result = MessageBox.Show(this, sb.ToString(), "Clean up obsolete files?"
-                    , MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-
-                if (result == DialogResult.Yes)
-                {
-                    foreach (var file in files)
-                    {
-                        file.Delete();
-                    }
-                }
-            }
-        }
-
-
-        /// <summary>
         /// Enables or disables the tool strip items named in the toolStripItems.
         /// </summary>
-        /// <param name="isEnable">if set to <c>true</c>, the tool strip items are enabled; else they are disabled.</param>
+        /// <param name="isEnabled">if set to <c>true</c>, the tool strip items are enabled; else they are disabled.</param>
         /// <param name="toolStripItems">The tool strip items.</param>
         /// <remarks>
         /// <para>If empty tool strip item list, all tool strip items are enabled or disabled.</para>
         /// </remarks>
-        private void EnableOrDisableToolStripItems(bool isEnable, params ToolStripItem[] toolStripItems)
+        private void EnableOrDisableToolStripItems(bool isEnabled, params ToolStripItem[] toolStripItems)
         {
             if (toolStripItems.IsNullOrEmpty())
             {
                 // Set ALL the items to isEnable value
                 foreach (var item in TopMenu.Items)
                 {
-                    if (item is ToolStripMenuItem menu)
-                        EnableOrDisableToolStripMenuItems(menu, isEnable);
-                    else if (item is ToolStripButton button)
-                        button.Enabled = isEnable;
+                    if (item is ToolStripItem itm)
+                        SharedComponents.Utility.EnableOrDisableToolStripItems(isEnabled, itm);
                 }
                 foreach (var item in BottomMenu.Items)
                 {
-                    if (item is ToolStripMenuItem menu)
-                        EnableOrDisableToolStripMenuItems(menu, isEnable);
-                    else if (item is ToolStripButton button)
-                        button.Enabled = isEnable;
+                    if (item is ToolStripItem itm)
+                        SharedComponents.Utility.EnableOrDisableToolStripItems(isEnabled, itm);
                 }
             }
             else
-            {
-                // Set only the specified items to isEnable value
-                foreach (var item in toolStripItems)
-                {
-                    if (item is ToolStripMenuItem menu)
-                        EnableOrDisableToolStripMenuItems(menu, isEnable);
-                    else if (item is ToolStripButton button)
-                        button.Enabled = isEnable;
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Enables or disables ALL the menu items under the parent menu.
-        /// </summary>
-        /// <param name="parentMenu">The parent menu.</param>
-        /// <param name="isEnable">If set to <c>true</c>, the menus are enabled; else they are disabled.</param>
-        /// <remarks>
-        /// <para>The process is recursive, i.e. if a menu is enabled, all its sub-menus are enabled too - and vice versa</para>
-        /// </remarks>
-        private void EnableOrDisableToolStripMenuItems(ToolStripMenuItem parentMenu, bool isEnable)
-        {
-            parentMenu.Enabled = isEnable;
-
-            foreach (var item in parentMenu.DropDownItems)
-            {
-                if (item is ToolStripMenuItem menu)
-                {
-                    menu.Enabled = isEnable;
-
-                    if (menu.DropDownItems.Count > 0)
-                        EnableOrDisableToolStripMenuItems(menu, isEnable);
-                }
-                else if (item is ToolStripItem subItem)
-                    EnableOrDisableToolStripItems(isEnable, subItem);
-            }
+                SharedComponents.Utility.EnableOrDisableToolStripItems(isEnabled, toolStripItems);
         }
 
 

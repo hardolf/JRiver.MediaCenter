@@ -24,9 +24,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
     {
 
         private const string _localAppDataFilePropertyName = "localAppDataFile";
-        private const string _mcNoLyricsSearchListPropertyName = "mcNoLyricsSearchList";
-        private const string _MaxMcWsConnectAttemptsPropertyName = "MaxMcWsConnectAttempts";
-        private const string _mouseMoveOpenLyricsFormPropertyName = "mouseMoveOpenLyricsForm";
 
         private static Configuration _configuration;
         private static AppSettingsSection _configurationSection;
@@ -40,52 +37,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// The Media Center MCWS service password.
         /// </returns>
         public static string LocalAppDataFile => Instance?.Settings[_localAppDataFilePropertyName]?.Value ?? string.Empty;
-
-        /// <summary>
-        /// Gets the Media Center MCWS service URL.
-        /// </summary>
-        /// <value>
-        /// The Media Center MCWS service URL.
-        /// </value>
-        public static string McNoLyricsSearchList => Instance?.Settings[_mcNoLyricsSearchListPropertyName]?.Value ?? string.Empty;
-
-        /// <summary>
-        /// Gets a value indicating whether [mouse move open lyrics form].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [mouse move open lyrics form]; otherwise, <c>false</c>.
-        /// </value>
-        public static bool MouseMoveOpenLyricsForm
-        {
-            get
-            {
-                var valueString = Instance?.Settings[_mouseMoveOpenLyricsFormPropertyName]?.Value ?? string.Empty;
-
-                if (!bool.TryParse(valueString, out var ret))
-                    ret = false;
-
-                return ret;
-            }
-        }
-
-        /// <summary>
-        /// Gets the mc ws connect attempts.
-        /// </summary>
-        /// <value>
-        /// The mc ws connect attempts.
-        /// </value>
-        public static int MaxMcWsConnectAttempts
-        {
-            get
-            {
-                var valueString = Instance?.Settings[_MaxMcWsConnectAttemptsPropertyName]?.Value ?? string.Empty;
-
-                if (!int.TryParse(valueString, out var ret))
-                    ret = 5;
-
-                return ret;
-            }
-        }
 
         /// <summary>
         /// Gets the instance.

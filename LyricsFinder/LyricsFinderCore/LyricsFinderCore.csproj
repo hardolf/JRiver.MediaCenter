@@ -89,7 +89,6 @@
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\Helpers\LyricsFinderCoreConfigurationSectionHandler.cs" />
-    <Compile Include="Model\Helpers\LyricsFinderCorePrivateConfigurationSectionHandler.cs" />
     <Compile Include="Model\LyricSearch.cs" />
     <Compile Include="Model\LyricServices\DisplayProperty.cs" />
     <Compile Include="Model\LyricServices\ILyricService.cs" />
@@ -129,7 +128,6 @@
     <Compile Include="Model\Helpers\AddinCustomConfigResolveHelper.cs" />
     <Compile Include="Model\Helpers\ErrorHandling.cs" />
     <Compile Include="Model\Helpers\Logging.cs" />
-    <Compile Include="Model\Helpers\LyricServicesPrivateConfigurationSectionHandler.cs" />
     <Compile Include="Model\LyricsFinderDataType.cs" />
     <Compile Include="LyricServiceForm.cs">
       <SubType>Form</SubType>

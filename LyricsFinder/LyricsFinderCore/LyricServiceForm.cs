@@ -126,8 +126,6 @@ namespace MediaCenter.LyricsFinder.Model
         /// <param name="toolTip">The tooltip.</param>
         private void FillRow(string propertyName, string caption, string value, bool isEditAllowed = false, string toolTip = "")
         {
-            if (value.IsNullOrEmptyTrimmed()) return;
-
             var tlp = LyricServiceDetailsTableLayoutPanel;
 
             tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));

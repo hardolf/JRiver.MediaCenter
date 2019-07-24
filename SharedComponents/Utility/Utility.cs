@@ -135,6 +135,57 @@ namespace MediaCenter.SharedComponents
         }
 
 
+        /// <summary>
+        /// Enables or disables the tool strip items named in the toolStripItems.
+        /// </summary>
+        /// <param name="isEnabled">if set to <c>true</c>, the tool strip items are enabled; else they are disabled.</param>
+        /// <param name="toolStripItems">The tool strip items.</param>
+        /// <remarks>
+        /// <para>If empty tool strip item list, all tool strip items are enabled or disabled.</para>
+        /// </remarks>
+        public static void EnableOrDisableToolStripItems(bool isEnabled, params ToolStripItem[] toolStripItems)
+        {
+            if (toolStripItems.IsNullOrEmpty()) throw new ArgumentNullException(nameof(toolStripItems));
+
+            foreach (var item in toolStripItems)
+            {
+                if (item is ToolStripMenuItem menu)
+                    EnableOrDisableToolStripMenuItems(menu, isEnabled);
+                else if (item is ToolStripItem itm)
+                    itm.Enabled = isEnabled;
+            }
+        }
+
+
+        /// <summary>
+        /// Enables or disables ALL the menu items under the parent menu.
+        /// </summary>
+        /// <param name="parentMenu">The parent menu.</param>
+        /// <param name="isEnabled">If set to <c>true</c>, the menus are enabled; else they are disabled.</param>
+        /// <remarks>
+        /// <para>The process is recursive, i.e. if a menu is enabled, all its sub-menus are enabled too - and vice versa</para>
+        /// </remarks>
+        public static void EnableOrDisableToolStripMenuItems(ToolStripMenuItem parentMenu, bool isEnabled)
+        {
+            if (parentMenu == null) throw new ArgumentNullException(nameof(parentMenu));
+
+            parentMenu.Enabled = isEnabled;
+
+            foreach (var item in parentMenu.DropDownItems)
+            {
+                if (item is ToolStripMenuItem menu)
+                {
+                    menu.Enabled = isEnabled;
+
+                    if (menu.DropDownItems.Count > 0)
+                        EnableOrDisableToolStripMenuItems(menu, isEnabled);
+                }
+                else if (item is ToolStripItem subItem)
+                    EnableOrDisableToolStripItems(isEnabled, subItem);
+            }
+        }
+
+
         public static string GetActualAsyncMethodName([CallerMemberName]string name = null) => name;
 
 
@@ -503,7 +554,7 @@ namespace MediaCenter.SharedComponents
                     if (ret[i] != ' ')
                     {
                         ret[i] = isNextUpper ? char.ToUpper(ret[i], ci) : char.ToLower(ret[i], ci);
-                        isNextUpper = false; 
+                        isNextUpper = false;
                     }
                 }
             }

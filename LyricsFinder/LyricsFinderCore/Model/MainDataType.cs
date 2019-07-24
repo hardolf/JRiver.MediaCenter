@@ -147,40 +147,12 @@ namespace MediaCenter.LyricsFinder.Model
             // Set defaults
             MaxQueueLength = 10;
             MaxMcWsConnectAttempts = 10;
+            McAccessKey = string.Empty;
+            McWsPassword = string.Empty;
             McWsUrl = "http://localhost:52199/MCWS/v1";
+            McWsUsername = string.Empty;
+            NoLyricsSearchFilter = string.Empty;
             UpdateCheckIntervalDays = 0; // Default: 0, i.e. at each Media Center start
-        }
-
-
-        /// <summary>
-        /// Creates a <see cref="MainDataType" /> object from configuration file.
-        /// </summary>
-        /// <returns>
-        ///   <see cref="MainDataType" /> object.
-        /// </returns>
-        public static MainDataType CreateFromConfiguration()
-        {
-            var assy = Assembly.GetExecutingAssembly();
-            var dataFile = Path.GetFullPath(Environment.ExpandEnvironmentVariables(LyricsFinderCoreConfigurationSectionHandler.LocalAppDataFile));
-            var dataDirectory = Path.GetDirectoryName(dataFile);
-
-            LyricsFinderCorePrivateConfigurationSectionHandler.Init(assy, dataDirectory);
-
-            var ret = new MainDataType()
-            {
-                LastUpdateCheck = LyricsFinderCorePrivateConfigurationSectionHandler.LastUpdateCheck,
-                MaxQueueLength = LyricsFinderCorePrivateConfigurationSectionHandler.MaxQueueLength,
-                McAccessKey = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceAccessKey,
-                MaxMcWsConnectAttempts = LyricsFinderCoreConfigurationSectionHandler.MaxMcWsConnectAttempts,
-                McWsPassword = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServicePassword,
-                McWsUrl = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUrl,
-                McWsUsername = LyricsFinderCorePrivateConfigurationSectionHandler.McWebServiceUserName,
-                MouseMoveOpenLyricsForm = LyricsFinderCoreConfigurationSectionHandler.MouseMoveOpenLyricsForm,
-                NoLyricsSearchFilter = LyricsFinderCoreConfigurationSectionHandler.McNoLyricsSearchList,
-                UpdateCheckIntervalDays = LyricsFinderCorePrivateConfigurationSectionHandler.UpdateCheckIntervalDays
-            };
-
-            return ret;
         }
 
     }

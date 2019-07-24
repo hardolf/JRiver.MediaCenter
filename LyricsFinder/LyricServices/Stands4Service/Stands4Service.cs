@@ -348,15 +348,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             await base.RefreshServiceSettingsAsync().ConfigureAwait(false);
 
-            if (Token.IsNullOrEmptyTrimmed()
-                || UserId.IsNullOrEmptyTrimmed())
+            if (IsConfigurationFileUsed)
             {
                 var quotaResetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue(Settings, "QuotaResetTimeZone"));
 
-                DailyQuota = PrivateSettings.DailyQuota;
                 QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Parse(ServiceSettingsValue(Settings, "QuotaResetTime"), CultureInfo.InvariantCulture), quotaResetTimeZone);
-                Token = PrivateSettings.Token;
-                UserId = PrivateSettings.UserId; 
             }
 
             CreateDisplayProperties();

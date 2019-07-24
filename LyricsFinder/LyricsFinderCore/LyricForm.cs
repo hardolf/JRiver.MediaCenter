@@ -383,6 +383,19 @@ namespace MediaCenter.LyricsFinder
         }
 
 
+        private async void LyricTextBox_EnterAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, true);
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
         /// <summary>
         /// Handles the KeyDown event of the LyricTextBox control.
         /// </summary>
@@ -416,6 +429,25 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
+                //LyricTextBox.sp
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the LeaveAsync event of the LyricTextBox control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void LyricTextBox_LeaveAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, false);
             }
             catch (Exception ex)
             {
@@ -483,6 +515,11 @@ namespace MediaCenter.LyricsFinder
                             LyricTextBox.ClearUndo();
                             LyricTextBox.Cut();
                         }
+                        break;
+
+                    case nameof(EditDeleteMenuItem):
+                        if (EditMenuItem.Enabled)
+                            DeleteText();
                         break;
 
                     case nameof(EditLowerCaseMenuItem):
@@ -630,15 +667,24 @@ namespace MediaCenter.LyricsFinder
         /**********************************/
 
         /// <summary>
-        /// Gets the service count.
+        /// Deletes the text.
         /// </summary>
-        /// <param name="serviceName">Name of the service.</param>
-        /// <returns>Hit count of the specified service.</returns>
-        private string GetServiceCountText(string serviceName)
+        private void DeleteText()
         {
-            var count = _serviceCounts.First(s => s.Key == serviceName).Value;
+            var idx = LyricTextBox.SelectionStart;
 
-            return (count > 1) ? $"({count})" : string.Empty;
+            if (idx > LyricTextBox.Text.Length - 1) return;
+
+            if (DoTextOperationQuestion())
+                LyricTextBox.Text = LyricTextBox.Text.Remove(idx, LyricTextBox.SelectionLength);
+            else
+                LyricTextBox.Text = LyricTextBox.Text.Remove(idx, 1);
+
+            LyricTextBox.DeselectAll();
+            LyricTextBox.SelectionStart = (idx > LyricTextBox.Text.Length - 1)
+                ? LyricTextBox.Text.Length
+                : idx;
+            LyricTextBox.ScrollToCaret();
         }
 
 
@@ -664,6 +710,19 @@ namespace MediaCenter.LyricsFinder
             }
 
             return ret;
+        }
+
+
+        /// <summary>
+        /// Gets the service count.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <returns>Hit count of the specified service.</returns>
+        private string GetServiceCountText(string serviceName)
+        {
+            var count = _serviceCounts.First(s => s.Key == serviceName).Value;
+
+            return (count > 1) ? $"({count})" : string.Empty;
         }
 
 
