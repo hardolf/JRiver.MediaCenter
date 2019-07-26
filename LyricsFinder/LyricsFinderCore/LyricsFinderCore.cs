@@ -581,6 +581,31 @@ namespace MediaCenter.LyricsFinder
 
                 await SetPlayingImagesAndMenusAsync();
 
+                // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+                await _semaphoreSlim.WaitAsync();
+
+                try
+                {
+                    var last = LyricsFinderData.MainData.LastMcStatusCheck;
+                    var now = DateTime.Now;
+
+                    // If this a new day (local time), we reset the services' daily counters
+                    if (now.Date > last.Date)
+                    {
+                        foreach (var service in LyricsFinderData.LyricServices)
+                        {
+                            service.HitCountToday = 0;
+                            service.RequestCountToday = 0;
+                        }
+                    }
+
+                    LyricsFinderData.MainData.LastMcStatusCheck = now;
+                }
+                finally
+                {
+                    _semaphoreSlim.Release();
+                }
+
                 McStatusTimer.Interval = _mcStatusIntervalNormal;
                 McStatusTimer.Start();
             }

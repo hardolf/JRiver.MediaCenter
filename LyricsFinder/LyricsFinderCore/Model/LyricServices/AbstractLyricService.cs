@@ -164,6 +164,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         }
 
         /// <summary>
+        /// Gets or sets the last request.
+        /// </summary>
+        /// <value>
+        /// The last request.
+        /// </value>
+        [XmlElement]
+        public virtual DateTime LastRequest { get; set; }
+
+        /// <summary>
         /// Gets or sets the request count today.
         /// </summary>
         /// <value>
@@ -291,16 +300,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             Credit.CreateDisplayProperties();
 
-            foreach (var dp in Credit.DisplayProperties)
-            {
-                DisplayProperties.Add(dp.Key, dp.Value);
-            }
-
-            DisplayProperties.Add(nameof(Comment), new DisplayProperty("Comment", Comment));
-            DisplayProperties.Add(nameof(RequestCountToday), new DisplayProperty("Requests, today", RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
-            DisplayProperties.Add(nameof(HitCountToday), new DisplayProperty("Hits, today", HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
-            DisplayProperties.Add(nameof(RequestCountTotal), new DisplayProperty("Requests, total", RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
-            DisplayProperties.Add(nameof(HitCountTotal), new DisplayProperty("Hits, total", HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture)));
+            DisplayProperties.Add(nameof(Comment), Comment, "Service comment", isEditAllowed: true);
+            DisplayProperties.Add(nameof(RequestCountToday), RequestCountToday, "Requests, today", RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            DisplayProperties.Add(nameof(HitCountToday), HitCountToday, "Hits, today", HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            DisplayProperties.Add(nameof(RequestCountTotal), RequestCountTotal, "Requests, total", RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            DisplayProperties.Add(nameof(HitCountTotal), HitCountTotal, "Hits, total", HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
         }
 
 
@@ -469,6 +473,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             try
             {
+                LastRequest = DateTime.Now;
                 RequestCountToday += count;
                 RequestCountTotal += count;
 
@@ -546,14 +551,14 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (!IsImplemented)
                 IsActive = false;
 
-            IsConfigurationFileUsed = (Comment.IsNullOrEmptyTrimmed()
-                || (Credit == null)
-                || ((Credit.CreditUrl == null) || Credit.CreditUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
-                || ((Credit.ServiceUrl == null) || Credit.ServiceUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
-                || Credit.Company.IsNullOrEmptyTrimmed()
-                || Credit.CreditTextFormat.IsNullOrEmptyTrimmed()
-                || Credit.DateFormat.IsNullOrEmptyTrimmed()
-                || Credit.ServiceName.IsNullOrEmptyTrimmed());
+            IsConfigurationFileUsed = (Credit == null)
+                || (Comment.IsNullOrEmptyTrimmed()
+                    && ((Credit.CreditUrl == null) || Credit.CreditUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
+                    && ((Credit.ServiceUrl == null) || Credit.ServiceUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
+                    && Credit.Company.IsNullOrEmptyTrimmed()
+                    && Credit.CreditTextFormat.IsNullOrEmptyTrimmed()
+                    && Credit.DateFormat.IsNullOrEmptyTrimmed()
+                    && Credit.ServiceName.IsNullOrEmptyTrimmed());
 
             if (IsConfigurationFileUsed)
             {

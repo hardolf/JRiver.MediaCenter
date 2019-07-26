@@ -85,6 +85,27 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DisplayProperty" /> class.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="caption">The caption.</param>
+        /// <param name="toolTips">The tool tips.</param>
+        /// <param name="isEditAllowed">if set to <c>true</c> [is edit allowed].</param>
+        /// <exception cref="ArgumentNullException">property</exception>
+        public DisplayProperty(string propertyName, object value, string caption = null, string toolTips = null, bool isEditAllowed = false)
+        {
+            if (propertyName is null) throw new ArgumentNullException(nameof(propertyName));
+
+            PropertyName = propertyName;
+            Caption = caption ?? PropertyName;
+            Value = value?.ToString().LfToCrLf() ?? string.Empty;
+            ToolTips = toolTips;
+            IsEditAllowed = isEditAllowed;
+        }
+
+
+        /// <summary>
         /// Gets the property value from the target object.
         /// </summary>
         /// <param name="obj">The object.</param>
@@ -141,7 +162,14 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 if (prop.Name.Equals(PropertyName, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    prop.SetValue(obj, Value);
+                    if (prop.PropertyType == typeof(Uri))
+                        prop.SetValue(obj, new UriBuilder(Value.ToString()).Uri);
+                    else if ((prop.PropertyType == typeof(int))
+                        && (int.TryParse(Value.ToString(), out var intVar)))
+                        prop.SetValue(obj, intVar);
+                    else
+                        prop.SetValue(obj, Value);
+
                     isOk = true;
                     break;
                 }
@@ -149,6 +177,38 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             if (!ignorePropertyNameError && !isOk)
                 throw new Exception($"The object has no \"{PropertyName}\" property.");
+        }
+
+    }
+
+
+
+    /// <summary>
+    /// Display properties extensions.
+    /// </summary>
+    public static class DisplayPropertiesExtensions
+    {
+
+        /// <summary>
+        /// Adds the specified property to the display properties dictionary.
+        /// </summary>
+        /// <param name="displayProperties">The display properties dictionary.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="caption">The caption.</param>
+        /// <param name="toolTips">The tool tips.</param>
+        /// <param name="isEditAllowed">if set to <c>true</c> [is edit allowed].</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">displayProperties</exception>
+        public static DisplayProperty Add(this Dictionary<string, DisplayProperty> displayProperties, string propertyName, object value, string caption = null, string toolTips = null, bool isEditAllowed = false)
+        {
+            if (displayProperties is null) throw new ArgumentNullException(nameof(displayProperties));
+
+            var ret = new DisplayProperty(propertyName, value, caption, toolTips, isEditAllowed);
+
+            displayProperties.Add(ret.PropertyName, ret);
+
+            return ret;
         }
 
     }

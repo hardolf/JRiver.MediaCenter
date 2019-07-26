@@ -36,6 +36,15 @@ namespace MediaCenter.LyricsFinder.Model
         public int DelayMilliSecondsBetweenSearches { get; set; }
 
         /// <summary>
+        /// Gets or sets the last Media Center status check.
+        /// </summary>
+        /// <value>
+        /// The last Media Center status check.
+        /// </value>
+        [XmlElement]
+        public DateTime LastMcStatusCheck { get; set; }
+
+        /// <summary>
         /// Gets or sets the last update check date/time.
         /// </summary>
         /// <value>

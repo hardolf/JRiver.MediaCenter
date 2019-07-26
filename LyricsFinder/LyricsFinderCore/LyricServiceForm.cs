@@ -147,25 +147,26 @@ namespace MediaCenter.LyricsFinder.Model
 
             txtValue.AutoSize = true;
             txtValue.BorderStyle = (isEditAllowed) ? BorderStyle.FixedSingle : BorderStyle.None;
-            txtValue.MinimumSize = new Size(50, 20);
+            txtValue.MinimumSize = new Size(200, 20);
             txtValue.Multiline = true;
             txtValue.Name = $"ValueTextbox{rowIdx}";
             txtValue.ReadOnly = !isEditAllowed;
             txtValue.ScrollBars = ScrollBars.None;
             txtValue.TabIndex = rowIdx;
-            txtValue.TabStop = false;
+            txtValue.TabStop = true;
             txtValue.WordWrap = true;
-            txtValue.Text = value;
+            txtValue.Text = (value.IsNullOrEmptyTrimmed()) ? " " : value; // Set to space if empty value, so that the text box resize will work
 
             toolTip = (toolTip ?? string.Empty).Trim().TrimEnd('.');
 
             if (!toolTip.IsNullOrEmptyTrimmed())
                 LyricServiceFormToolTip.SetToolTip(txtValue, toolTip);
 
-            if (isEditAllowed)
-                LyricServiceFormToolTip.SetToolTip(txtValue, $"{toolTip}. You can edit the value".TrimStart('.', ' '));
+            //if (isEditAllowed)
+            //    LyricServiceFormToolTip.SetToolTip(txtValue, $"{toolTip}. You can edit the value".TrimStart('.', ' '));
 
             txtValue.AutoSizeTextBox();
+            txtValue.Text = value; // Do this after the text box resize to remove the space from above
 
             tlp.Controls.Add(lblPropertyName, 0, rowIdx);
             tlp.Controls.Add(lblCaption, 1, rowIdx);
@@ -352,7 +353,7 @@ namespace MediaCenter.LyricsFinder.Model
                             .IsActive = isChecked;
                     }
 
-                    _callback(this); 
+                    _callback(this);
                 }
             }
             catch (Exception ex)
@@ -371,6 +372,12 @@ namespace MediaCenter.LyricsFinder.Model
         {
             try
             {
+                if (ActiveControl is TextBox)
+                {
+                    e.Handled = false;
+                    return;
+                }
+
                 e.Handled = true;
 
                 var dgv = LyricServiceListDataGridView;
@@ -388,21 +395,21 @@ namespace MediaCenter.LyricsFinder.Model
                     if (IsValidateCancel()) return;
                     dgv.Rows[row.Index + 1].Selected = true;
                 }
-                else if ((!(ActiveControl is TextBox) && (e.KeyCode == Keys.End)) || (e.KeyCode == Keys.PageDown))
+                else if ((e.KeyCode == Keys.End) || (e.KeyCode == Keys.PageDown))
                 {
                     if (row.Index >= dgv.RowCount - 1)
                         return;
                     else
                         dgv.Rows[dgv.RowCount - 1].Selected = true;
                 }
-                else if ((!(ActiveControl is TextBox) && (e.KeyCode == Keys.Home)) || (e.KeyCode == Keys.PageUp))
+                else if ((e.KeyCode == Keys.Home) || (e.KeyCode == Keys.PageUp))
                 {
                     if (row.Index <= 0)
                         return;
                     else
                         dgv.Rows[0].Selected = true;
                 }
-                else if (!(ActiveControl is TextBox) && (e.KeyCode == Keys.Space))
+                else if (e.KeyCode == Keys.Space)
                 {
                     if (row.Index < 0)
                         return;
@@ -412,6 +419,19 @@ namespace MediaCenter.LyricsFinder.Model
 
                         row.Cells[0].Value = isChecked;
                         ShowDetails(isChecked);
+                    }
+                }
+                else if (e.KeyCode == Keys.Tab)
+                {
+                    var tlp = LyricServiceDetailsTableLayoutPanel;
+
+                    foreach (var ctl in tlp.Controls)
+                    {
+                        if (ctl is TextBox txt)
+                        {
+                            txt.Select();
+                            break;
+                        }
                     }
                 }
                 else if (e.KeyCode == Keys.Up)
@@ -514,34 +534,22 @@ namespace MediaCenter.LyricsFinder.Model
                 {
                     if (txt.ReadOnly) continue;
 
-                    var lbl = tlp.Controls[i - 2]; // There is always a hidden label before caption label and the text box
+                    var lbl = tlp.Controls[i - 2]; // There is always a hidden label before the caption label and the value text box
 
                     if (service.DisplayProperties.TryGetValue(lbl.Text, out var dp))
                     {
                         if (!dp.IsEditAllowed) continue;
 
-                        if (dp.PropertyName.Equals("dailyQuota", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            if (!int.TryParse(txt.Text, out var dailyQuota))
-                                throw new Exception($"Cannot convert \"{txt.Text}\" to int.");
+                        dp.Value = txt.Text;
+                        dp.SetPropertyValue(service, true);
+                    }
 
-                            dp.Value = dailyQuota;
-                            //service.PrivateSettings.Save(dailyQuota: dailyQuota);
-                        }
-                        else if (dp.PropertyName.Equals("token", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            dp.Value = txt.Text;
-                            //service.PrivateSettings.Save(token: txt.Text);
-                        }
-                        else if (dp.PropertyName.Equals("userId", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            dp.Value = txt.Text;
-                            //service.PrivateSettings.Save(userId: txt.Text);
-                        }
-                        else
-                            throw new Exception($"Cannot save unknown editable property: \"{dp.PropertyName}\".");
+                    if (service.Credit.DisplayProperties.TryGetValue(lbl.Text, out var dpc))
+                    {
+                        if (!dpc.IsEditAllowed) continue;
 
-                        dp.SetPropertyValue(service);
+                        dpc.Value = txt.Text;
+                        dpc.SetPropertyValue(service.Credit, true);
                     }
                 }
             }
@@ -578,6 +586,11 @@ namespace MediaCenter.LyricsFinder.Model
             if (isChecked == null)
                 isChecked = service.IsActive;
 
+            foreach (var dp in service.Credit.DisplayProperties)
+            {
+                FillRow(dp.Key, dp.Value.Caption, dp.Value.Value?.ToString() ?? string.Empty, dp.Value.IsEditAllowed, dp.Value.ToolTips);
+            }
+
             foreach (var dp in service.DisplayProperties)
             {
                 FillRow(dp.Key, dp.Value.Caption, dp.Value.Value?.ToString() ?? string.Empty, dp.Value.IsEditAllowed, dp.Value.ToolTips);
@@ -591,7 +604,7 @@ namespace MediaCenter.LyricsFinder.Model
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
                 Margin = new Padding(3, 15, 3, 3),
                 Name = "CloseButton",
-                TabStop = false,
+                TabStop = true,
                 Text = "&Close (Esc)",
             };
 

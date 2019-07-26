@@ -192,12 +192,12 @@ namespace MediaCenter.LyricsFinder.Model
         {
             DisplayProperties.Clear();
 
-            DisplayProperties.Add(nameof(ServiceName), new DisplayProperty("Name", ServiceName, null, nameof(ServiceName)));
-            DisplayProperties.Add(nameof(Company), new DisplayProperty("Company", Company));
-            DisplayProperties.Add(nameof(CreditUrl), new DisplayProperty("Company Website", CreditUrl?.ToString() ?? string.Empty));
-            DisplayProperties.Add(nameof(Copyright), new DisplayProperty("Copyright text", Copyright));
-            DisplayProperties.Add(nameof(CreditTextFormat), new DisplayProperty("Credit text format", CreditTextFormat));
-            DisplayProperties.Add(nameof(ServiceUrl), new DisplayProperty("Service URL", ServiceUrl?.ToString() ?? string.Empty));
+            DisplayProperties.Add(nameof(ServiceName), ServiceName, "Name", isEditAllowed: true);
+            DisplayProperties.Add(nameof(Company), Company, isEditAllowed: true);
+            DisplayProperties.Add(nameof(CreditUrl), CreditUrl, "Company Website", isEditAllowed: true);
+            DisplayProperties.Add(nameof(Copyright), Copyright, "Copyright text", isEditAllowed: true);
+            DisplayProperties.Add(nameof(CreditTextFormat), CreditTextFormat, "Credit text format", isEditAllowed: true);
+            DisplayProperties.Add(nameof(ServiceUrl), ServiceUrl, "Service URL", isEditAllowed: true);
         }
 
 
