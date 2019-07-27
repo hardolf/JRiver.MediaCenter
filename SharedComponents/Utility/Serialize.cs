@@ -210,6 +210,32 @@ namespace MediaCenter.SharedComponents
             return ret.ToString().LfToCrLf();
         }
 
+
+        /// <summary>
+        /// Serializes to string.
+        /// </summary>
+        /// <param name="objectInstance">The object instance.</param>
+        /// <param name="ns">The ns.</param>
+        /// <param name="knownTypes">The known types.</param>
+        /// <returns>
+        /// XML string.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">objectInstance</exception>
+        public static string XmlSerializeToString(this object objectInstance, XmlSerializerNamespaces ns, params Type[] knownTypes)
+        {
+            if (objectInstance == null) throw new ArgumentNullException(nameof(objectInstance));
+
+            var ret = new StringBuilder();
+            var serializer = new XmlSerializer(objectInstance.GetType(), knownTypes);
+
+            using (var writer = new StringWriter(ret))
+            {
+                serializer.Serialize(writer, objectInstance, ns);
+            }
+
+            return ret.ToString().LfToCrLf();
+        }
+
     }
 
 }

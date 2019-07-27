@@ -276,6 +276,53 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Gets the program info text.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <returns>
+        /// Program info text.
+        /// </returns>
+        public static string GetProgramInfo(Assembly assembly = null)
+        {
+            var assy = assembly ?? Assembly.GetCallingAssembly();
+            //var company = string.Empty;
+            var copyright = string.Empty;
+            var description = string.Empty;
+            var title = string.Empty;
+            var v = assy?.GetName()?.Version ?? new Version();
+            var version = v.ToString();
+            var ret = new StringBuilder();
+
+            foreach (var attr in Attribute.GetCustomAttributes(assy))
+            {
+                // Check for the AssemblyTitle attribute.
+                if (attr is AssemblyTitleAttribute)
+                    title = ((AssemblyTitleAttribute)attr).Title;
+
+                // Check for the AssemblyDescription attribute.
+                else if (attr is AssemblyDescriptionAttribute)
+                    description = ((AssemblyDescriptionAttribute)attr).Description;
+
+                // Check for the AssemblyCompany attribute.
+                //else if (attr is AssemblyCompanyAttribute)
+                //    company = ((AssemblyCompanyAttribute)attr).Company;
+
+                // Check for the AssemblyCompany attribute.
+                else if (attr is AssemblyCopyrightAttribute)
+                    copyright = ((AssemblyCopyrightAttribute)attr).Copyright;
+            }
+
+            ret.AppendFormat(CultureInfo.InvariantCulture, "{0} version {1}", title, version);
+            ret.AppendLine();
+            ret.AppendLine(description);
+            ret.Append(copyright);
+
+            return ret.ToString();
+        }
+
+
+
+        /// <summary>
         /// Sends the request to the MC server and reads the response.
         /// </summary>
         /// <param name="requestUrl">The request URL.</param>
