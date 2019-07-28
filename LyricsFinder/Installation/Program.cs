@@ -8,7 +8,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Installation
+using MediaCenter.SharedComponents;
+
+namespace MediaCenter.LyricsFinder
 {
 
     class Program
@@ -26,38 +28,42 @@ namespace Installation
             var versionText = string.Join(".", version.Major, version.Minor, version.Build);
 
             // Make the MJP files
-            var currentDir = Path.GetDirectoryName(Path.GetFullPath(assy.Location));
-            var subDir = currentDir.Substring(Path.GetDirectoryName(Path.GetDirectoryName(currentDir)).Length + 1);
-            var instDir = Path.GetFullPath(Path.Combine(currentDir, $@"..\..\..\Installation"));
-            var tmpDir = Path.Combine(currentDir, $@"..\..\..\..\SharedComponents", "MjpCreator", subDir);
-            var exeDir = Path.GetFullPath(tmpDir);
-            var exeFile = "MjpCreator.exe";
-            var exePath = Path.GetFullPath(Path.Combine(exeDir, exeFile));
-            var args = new StringBuilder();
-
-            args.Append("-n \""+ "LyricsFinder" + "\" ");
-            args.Append("-v \""+ $"{versionText}" + "\" ");
-            args.Append("-url \"" + $"https://github.com/hardolf/JRiver.MediaCenter/releases/download/v{versionText}/Setup{versionText}.zip" + "\" ");
-            args.Append("-dd \"" + $@"{instDir}\Output" + "\" ");
-            args.Append("-sd \"" + $@"{instDir}\Build\Plugin;{instDir}\Build\Standalone;{instDir}\Build\LyricServices" + "\" ");
-            args.Append("-com \"" + "LyricsFinderPlugin.dll;LyricsFinderCore.dll" + "\" ");
-
-            if (File.Exists(exePath))
-            {
-                var psi = new ProcessStartInfo
-                {
-                    Arguments = args.ToString(),
-                    FileName = exePath,
-                    UseShellExecute = true,
-                    WorkingDirectory = Path.GetDirectoryName(exeDir),
-                };
-
-                Process.Start(psi);
-            }
+            MakeMcpFiles(assy, versionText);
 
             // Pack the release files
             PackageSetupFile(new[] { Path.GetFullPath(@"..\..\..\Documentation\Build"), Path.GetFullPath(@"..\..\Output") }
                 , Path.GetFullPath(@"..\..\Release"), "Setup", versionText);
+        }
+
+
+        /// <summary>
+        /// Makes the MCP files.
+        /// </summary>
+        /// <param name="assembly">The assy.</param>
+        /// <param name="versionText">The version text.</param>
+        /// <exception cref="System.Exception">MjpCreator failed creating MJP files.</exception>
+        private static void MakeMcpFiles(Assembly assembly, string versionText)
+        {
+            var currentDir = Path.GetDirectoryName(Path.GetFullPath(assembly.Location));
+            var instDir = Path.GetFullPath(Path.Combine(currentDir, $@"..\..\..\Installation"));
+            var args = new List<string>
+            {
+                "-n",
+                "LyricsFinder",
+                "-v",
+                $"{versionText}",
+                "-url",
+                $"https://github.com/hardolf/JRiver.MediaCenter/releases/download/v{versionText}/Setup{versionText}.zip",
+                "-dd",
+                $@"{instDir}\Release",
+                "-sd",
+                $@"{instDir}\Build\Plugin;{instDir}\Build\Standalone;{instDir}\Build\LyricServices",
+                "-com",
+                "LyricsFinderPlugin.dll;LyricsFinderCore.dll"
+            };
+
+            if (0 != MjpCreator.MjpCreatorExecute(args.ToArray()))
+                throw new Exception("MjpCreator failed creating MJP files.");
         }
 
 

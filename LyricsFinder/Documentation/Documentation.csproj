@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5722AFB2-CFC2-4832-B6CF-5C89719184EC}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Documentation</RootNamespace>
+    <RootNamespace>MediaCenter.LyricsFinder</RootNamespace>
     <AssemblyName>Documentation</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

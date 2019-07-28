@@ -9,4 +9,5 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.MjpCreator.Serialize(System.String)~System.String")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.MjpCreator.Serialize(System.String,System.Int16)~System.String")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.MjpCreator.Serialize(System.Int16)~System.String")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.MjpCreator.MjpCreatorExecute(System.String[])~System.Int32")]
 

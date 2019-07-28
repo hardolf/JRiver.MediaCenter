@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EB847339-4E66-4CF9-97E4-4F63B01DDED4}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Installation</RootNamespace>
+    <RootNamespace>MediaCenter.LyricsFinder</RootNamespace>
     <AssemblyName>Installation</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -67,6 +67,12 @@
     <Folder Include="Build\Standalone\" />
     <Folder Include="Output\" />
     <Folder Include="Release\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SharedComponents\MjpCreator\MjpCreator.csproj">
+      <Project>{952dab91-37dc-407d-b9b5-a9824989d622}</Project>
+      <Name>MjpCreator</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
