@@ -21,7 +21,7 @@ namespace MediaCenter.SharedComponents
         /// <value>
         /// The action.
         /// </value>
-        [XmlElement(IsNullable = false)]
+        [XmlElement(IsNullable = false, Order = 1)]
         public string Action { get; set; }
 
         /// <summary>
@@ -30,8 +30,8 @@ namespace MediaCenter.SharedComponents
         /// <value>
         ///   <c>true</c> if this instance has actions; otherwise, <c>false</c>.
         /// </value>
-        [XmlElement(IsNullable = false)]
-        public int HasActions  { get; set; }
+        [XmlElement(IsNullable = false, Order = 4)]
+        public int HasActions { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets the name.
@@ -39,7 +39,7 @@ namespace MediaCenter.SharedComponents
         /// <value>
         /// The name.
         /// </value>
-        [XmlElement(IsNullable = false)]
+        [XmlElement(IsNullable = false, Order = 0)]
         public string Name { get; set; }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace MediaCenter.SharedComponents
         /// <value>
         /// The URL.
         /// </value>
-        [XmlElement("URL", IsNullable = false)]
+        [XmlElement("URL", IsNullable = false, Order = 2)]
         public string Url { get; set; }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace MediaCenter.SharedComponents
         /// <value>
         /// The version.
         /// </value>
-        [XmlElement(IsNullable = false)]
+        [XmlElement(IsNullable = false, Order = 3)]
         public string Version { get; set; }
 
 

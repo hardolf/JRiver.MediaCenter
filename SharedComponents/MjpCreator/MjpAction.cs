@@ -21,7 +21,7 @@ namespace MediaCenter.SharedComponents
         /// <value>
         /// The command.
         /// </value>
-        [XmlElement(IsNullable = false)]
+        [XmlElement(IsNullable = false, Order = 0)]
         public string Command { get; set; }
 
 

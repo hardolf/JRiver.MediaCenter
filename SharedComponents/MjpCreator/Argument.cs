@@ -35,9 +35,33 @@ namespace MediaCenter.SharedComponents
                         },
                     new ArgumentType()
                         {
-                            Name = "DestinationFilePath",
-                            NameAbbriv = "dp",
-                            Help = "Full path to the destination file.",
+                            Name = "Name",
+                            NameAbbriv = "n",
+                            Help = "Product name.",
+                            Optional = false,
+                            ValueRequired = true,
+                        },
+                    new ArgumentType()
+                        {
+                            Name = "Version",
+                            NameAbbriv = "v",
+                            Help = "Product version, numbers only (e.g. 1.2.2).",
+                            Optional = false,
+                            ValueRequired = true,
+                        },
+                    new ArgumentType()
+                        {
+                            Name = "URL",
+                            NameAbbriv = "url",
+                            Help = "URL to the source package file.",
+                            Optional = false,
+                            ValueRequired = true,
+                        },
+                    new ArgumentType()
+                        {
+                            Name = "DestinationFileDirectory",
+                            NameAbbriv = "dd",
+                            Help = "Full path to the MJP file destination directory.",
                             Optional = false,
                             ValueRequired = true,
                         },
@@ -116,11 +140,11 @@ namespace MediaCenter.SharedComponents
         /// <value>
         ///     The operation.
         /// </value>
-        public string DestinationFilePath
+        public string DestinationFileDirectory
         {
             get
             {
-                var ret = ArgList.GetValueOf("DestinationFilePath");
+                var ret = ArgList.GetValueOf("DestinationFileDirectory");
 
                 return ret;
             }
@@ -172,6 +196,23 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
+        public string Name
+        {
+            get
+            {
+                var ret = ArgList.GetValueOf("Name");
+
+                return ret;
+            }
+        }
+
+
+        /// <summary>
         /// Gets the source file directories.
         /// </summary>
         /// <value>
@@ -183,6 +224,40 @@ namespace MediaCenter.SharedComponents
             {
                 var tmp = ArgList.GetValueOf("SourceFileDirectories");
                 var ret = tmp.Split(',', ';').Select(x => x.Trim()).ToList();
+
+                return ret;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the URL.
+        /// </summary>
+        /// <value>
+        /// The URL.
+        /// </value>
+        public string Url
+        {
+            get
+            {
+                var ret = ArgList.GetValueOf("URL");
+
+                return ret;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the version.
+        /// </summary>
+        /// <value>
+        /// The version.
+        /// </value>
+        public string Version
+        {
+            get
+            {
+                var ret = ArgList.GetValueOf("Version");
 
                 return ret;
             }

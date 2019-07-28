@@ -34,7 +34,7 @@ namespace MediaCenter.SharedComponents.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("hh\\:mm\\:ss\'.\'fff")]
+        [global::System.Configuration.DefaultSettingValueAttribute("hh\\:mm\\:ss\'.\'ffffff")]
         public string TimeSpanFormat {
             get {
                 return ((string)(this["TimeSpanFormat"]));
@@ -43,7 +43,7 @@ namespace MediaCenter.SharedComponents.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("###,###,##0.000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("###,###,##0.000000")]
         public string TimeSpanSecondsFormat {
             get {
                 return ((string)(this["TimeSpanSecondsFormat"]));

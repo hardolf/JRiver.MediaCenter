@@ -21,7 +21,7 @@ namespace MediaCenter.SharedComponents
         /// <value>
         /// The file.
         /// </value>
-        [XmlElement(IsNullable = false)]
+        [XmlElement(IsNullable = false, Order = 0)]
         public string File { get; set; }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace MediaCenter.SharedComponents
         /// <value>
         /// The actions.
         /// </value>
-        [XmlElement("Action", IsNullable = false)]
+        [XmlElement("Action", IsNullable = false, Order = 1)]
         public List<MjpAction> Actions { get; set; }
 
 

@@ -43,52 +43,17 @@ namespace MediaCenter.SharedComponents
                     Console.WriteLine(_argument.GetSyntax());
                 else
                 {
-                    var mjpCreator = new MjpCreator();
-                    var packageFile = mjpCreator.PackageFile;
-                    var package = packageFile.Package;
-                    var url = "https://github.com/hardolf/JRiver.MediaCenter/releases/download/v1.2.2/Setup1.2.2.zip";
-                    var tmp = "/download/v";
-                    var idx1 = url.IndexOf(tmp) + tmp.Length;
-                    var idx2 = url.IndexOf("/", idx1);
-                    var versionText = url.Substring(idx1, idx2 - idx1);
+                    var destDir = Path.GetFullPath(_argument.DestinationFileDirectory);
+                    var destFile = _argument.Name + "." + _argument.Version;
+                    var destExt = ".mjp";
+                    var destPathLeft = Path.Combine(destDir, destFile);
+                    var destPathIni = $"{destPathLeft}.plugin1{destExt}";
+                    var destPathXml = $"{destPathLeft}.plugin2{destExt}";
 
-                    package.Action = "UNZIPDIR";
-                    package.HasActions = 1;
-                    package.Name = "LyricsFinder plug-in installation package";
-                    package.Url = url;
-                    package.Version = versionText;
+                    var mjpCreator = MjpCreator.CreateMjpCreator(_argument.Name, _argument.Version, _argument.Url, _argument.SourceFileDirectories, _argument.ComRegisterFiles);
 
-                    var comFiles = _argument.ComRegisterFiles;
-                    var sourceDirs = _argument.SourceFileDirectories;
-                    var sourceFiles = new List<string>();
-
-                    foreach (var sourceDir in sourceDirs)
-                    {
-                        sourceFiles.AddRange(Directory.GetFiles(sourceDir));
-                    }
-
-                    foreach (var sourceFile in sourceFiles)
-                    {
-                        var fileName = Path.GetFileName(sourceFile);
-                        var fileEntry = new MjpFileEntry(fileName);
-
-                        fileEntry.Actions.Add(new MjpAction("COPY_PLUGINDIR"));
-
-                        if (comFiles.Contains(fileName))
-                            fileEntry.Actions.Add(new MjpAction("REGISTER"));
-
-                        mjpCreator.PackageFile.FileEntries.Add(fileEntry); 
-                    }
-
-                    var destPath = Path.GetFullPath(_argument.DestinationFilePath);
-                    var destDir = Path.GetDirectoryName(destPath);
-                    var destFile = Path.GetFileNameWithoutExtension(destPath);
-                    var destExt = Path.GetExtension(destPath);
-                    var destPathLeft = Path.Combine(destDir, destFile + versionText);
-                    var destPathIni = destPathLeft + ".v1" + destExt;
-                    var destPathXml = destPathLeft + ".v2" + destExt;
-                    var iniText = mjpCreator.Serialize(destPathIni);
-                    var xmlText = mjpCreator.Serialize(destPathXml);
+                    var iniText = mjpCreator.Serialize(1);
+                    var xmlText = mjpCreator.Serialize(2);
 
                     Logging.LogInfo(iniText);
                     Logging.DivideLog();
@@ -128,7 +93,7 @@ namespace MediaCenter.SharedComponents
                 Logging.LogError(MethodBase.GetCurrentMethod(), ex, fatalErrorText);
             }
 
-            if (Debugger.IsAttached)
+            if (Debugger.IsAttached || !isOk)
             {
                 Console.WriteLine();
                 Console.Write("Press a key to close: ");

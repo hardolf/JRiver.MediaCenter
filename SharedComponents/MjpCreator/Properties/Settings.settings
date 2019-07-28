@@ -6,10 +6,10 @@
       <Value Profile="(Default)">yyyy.MM.dd HH:mm:ss</Value>
     </Setting>
     <Setting Name="TimeSpanFormat" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">hh\:mm\:ss'.'fff</Value>
+      <Value Profile="(Default)">hh\:mm\:ss'.'ffffff</Value>
     </Setting>
     <Setting Name="TimeSpanSecondsFormat" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">###,###,##0.000</Value>
+      <Value Profile="(Default)">###,###,##0.000000</Value>
     </Setting>
     <Setting Name="LogHeader1" Type="System.String" Scope="Application">
       <Value Profile="(Default)">====================================================================================================</Value>
