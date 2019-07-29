@@ -51,12 +51,19 @@ namespace MediaCenter.SharedComponents
         /// <param name="packageAction">The package action.</param>
         /// <param name="fileAction">The file action.</param>
         /// <returns>A <see cref="MjpCreator"/> object with thespecified properties.</returns>
-        public static MjpCreator CreateMjpCreator(string name, string version, string url, IEnumerable<string> sourceDirectories, IEnumerable<string> comRegisterFileNames, string packageAction = "UNZIPDIR", string fileAction = "COPY_PLUGINDIR")
+        public static MjpCreator CreateMjpCreator(string name, string version, string url, IEnumerable<string> sourceDirectories, IEnumerable<string> comRegisterFileNames, string packageAction = "UNZIPDIR|SAVE_DIR_STRUCT", string fileAction = "COPY_PLUGINDIR")
         {
+            if (name is null) throw new ArgumentNullException(nameof(name));
+            if (version is null) throw new ArgumentNullException(nameof(version));
+            if (url is null) throw new ArgumentNullException(nameof(url));
+            if (packageAction is null) throw new ArgumentNullException(nameof(packageAction));
+            if (fileAction is null) throw new ArgumentNullException(nameof(fileAction));
+
             var ret = new MjpCreator();
             var package = ret.PackageFile.Package;
             var comFiles = new List<string>();
             var sourceFiles = new List<string>();
+            var fileEntry = new MjpFileEntry("*.*");
 
             package.Action = packageAction;
             package.Name = name;
@@ -64,33 +71,55 @@ namespace MediaCenter.SharedComponents
             package.Version = version;
             package.HasActions = 0;
 
-            foreach (var sourceDir in sourceDirectories)
+            // COM files
+            if ((comRegisterFileNames != null) && (comRegisterFileNames.Count() > 0))
             {
-                foreach (var filePath in Directory.GetFiles(sourceDir))
+                foreach (var fileName in comRegisterFileNames)
                 {
-                    if (!sourceFiles.Contains(filePath))
-                        sourceFiles.Add(filePath);
+                    if (!comFiles.Contains(fileName))
+                        comFiles.Add(fileName);
                 }
             }
 
-            foreach (var fileName in comRegisterFileNames)
+            // File entries
+            if ((sourceDirectories == null) || (sourceDirectories.Count() == 0))
             {
-                if (!comFiles.Contains(fileName))
-                    comFiles.Add(fileName);
-            }
-
-            foreach (var sourceFile in sourceFiles)
-            {
-                var fileName = Path.GetFileName(sourceFile);
-                var fileEntry = new MjpFileEntry(fileName);
-
+                // All files (*.*) file entry
                 fileEntry.Actions.Add(new MjpAction(fileAction));
-
-                if (comFiles.Contains(fileName))
-                    fileEntry.Actions.Add(new MjpAction("REGISTER"));
-
                 ret.PackageFile.FileEntries.Add(fileEntry);
                 package.HasActions = 1;
+
+                // COM file entries
+                foreach (var fileName in comFiles)
+                {
+                    fileEntry = new MjpFileEntry(fileName);
+                    fileEntry.Actions.Add(new MjpAction("REGISTER"));
+                    ret.PackageFile.FileEntries.Add(fileEntry);
+                }
+            }
+            else
+            {
+                // Separate file entries
+                foreach (var sourceDir in sourceDirectories)
+                {
+                    foreach (var filePath in Directory.GetFiles(sourceDir))
+                    {
+                        var fileName = Path.GetFileName(filePath);
+
+                        if (!sourceFiles.Contains(fileName))
+                        {
+                            sourceFiles.Add(fileName);
+                            fileEntry = new MjpFileEntry(fileName);
+                            fileEntry.Actions.Add(new MjpAction(fileAction));
+
+                            if (comFiles.Contains(fileName))
+                                fileEntry.Actions.Add(new MjpAction("REGISTER"));
+
+                            ret.PackageFile.FileEntries.Add(fileEntry);
+                            package.HasActions = 1;
+                        }
+                    }
+                }
             }
 
             return ret;
@@ -177,19 +206,7 @@ namespace MediaCenter.SharedComponents
                 Logging.LogError(MethodBase.GetCurrentMethod(), ex, fatalErrorText);
             }
 
-            if (Debugger.IsAttached || !isOk)
-            {
-                Console.WriteLine();
-                Console.Write("Press a key to close: ");
-                Console.ReadKey();
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine("Closing...");
-            }
-
-            return (isOk)
-                ? 0
-                : 1;
+            return (isOk) ? 0 : 1;
         }
 
 

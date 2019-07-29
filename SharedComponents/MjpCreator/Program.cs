@@ -25,7 +25,19 @@ namespace MediaCenter.SharedComponents
         /// <returns>Execution errorlevel, 0: successfull, 1: failed.</returns>
         public static int Main(string[] args)
         {
-            return MjpCreator.MjpCreatorExecute(args);
+            var ret = MjpCreator.MjpCreatorExecute(args);
+
+            if (Debugger.IsAttached || (ret != 0))
+            {
+                Console.WriteLine();
+                Console.Write("Press a key to close: ");
+                Console.ReadKey();
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("Closing...");
+            }
+
+            return ret;
         }
 
     }

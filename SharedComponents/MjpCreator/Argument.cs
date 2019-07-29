@@ -70,7 +70,7 @@ namespace MediaCenter.SharedComponents
                             Name = "SourceFileDirectories",
                             NameAbbriv = "sd",
                             Help = "Comma or semicolon separated list of source file directories.",
-                            Optional = false,
+                            Optional = true,
                             ValueRequired = true,
                         },
                     new ArgumentType()
@@ -78,7 +78,7 @@ namespace MediaCenter.SharedComponents
                             Name = "ComRegisterFiles",
                             NameAbbriv = "com",
                             Help = "Comma or semicolon separated list of source files that must be registered in COM.",
-                            Optional = false,
+                            Optional = true,
                             ValueRequired = true,
                         },
                 };
@@ -127,7 +127,7 @@ namespace MediaCenter.SharedComponents
             get
             {
                 var tmp = ArgList.GetValueOf("ComRegisterFiles");
-                var ret = tmp.Split(',', ';').Select(x => x.Trim()).ToList();
+                var ret = tmp?.Split(',', ';').Select(x => x.Trim()).ToList() ?? new List<string>();
 
                 return ret;
             }
@@ -223,7 +223,7 @@ namespace MediaCenter.SharedComponents
             get
             {
                 var tmp = ArgList.GetValueOf("SourceFileDirectories");
-                var ret = tmp.Split(',', ';').Select(x => x.Trim()).ToList();
+                var ret = tmp?.Split(',', ';').Select(x => x.Trim()).ToList() ?? new List<string>();
 
                 return ret;
             }
