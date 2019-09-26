@@ -52,23 +52,19 @@ namespace MediaCenter.LyricsFinder
             var currentDir = Path.GetDirectoryName(Path.GetFullPath(assembly.Location));
             var instDir = Path.GetFullPath(Path.Combine(currentDir, $@"..\..\..\Installation"));
 
+            packageRootFolder = packageRootFolder?.Trim() ?? string.Empty;
+
             if ((!string.IsNullOrEmpty(packageRootFolder)) && (!packageRootFolder.EndsWith(@"\")))
                 packageRootFolder += @"\";
 
             var args = new List<string>
             {
-                "-n",
-                "LyricsFinder",
-                "-v",
-                $"{versionText}",
-                "-url",
-                $"https://github.com/hardolf/JRiver.MediaCenter/releases/download/v{versionText}/LyricsFinderFiles.{versionText}.zip",
-                "-dd",
-                $@"{instDir}\Release",
-                //"-sd",
-                //$@"{instDir}\Build\Plugin;{instDir}\Build\Standalone;{instDir}\Build\LyricServices",
-                "-com",
-                $@"{packageRootFolder}LyricsFinderPlugin.dll;{packageRootFolder}LyricsFinderCore.dll"
+                "-n", "LyricsFinder",
+                "-v", $"{versionText}",
+                "-url", $"https://github.com/hardolf/JRiver.MediaCenter/releases/download/v{versionText}/LyricsFinderFiles.{versionText}.zip",
+                "-dd", $@"{instDir}\Release",
+                //"-sd", $@"{instDir}\Build\Plugin;{instDir}\Build\Standalone;{instDir}\Build\LyricServices",
+                "-com", $@"{packageRootFolder}LyricsFinderPlugin.dll;{packageRootFolder}LyricsFinderCore.dll"
             };
 
             if (0 != MjpCreator.MjpCreatorExecute(args.ToArray()))

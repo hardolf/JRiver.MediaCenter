@@ -27,11 +27,13 @@ namespace MediaCenter.LyricsFinder.Model
         /// <param name="mcItem">The Media Center item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> [get all].</param>
-        /// <returns>Listof service clones.</returns>
+        /// <returns>
+        /// Listof service clones.
+        /// </returns>
         /// <exception cref="ArgumentNullException">lyricsFinderData
         /// or
         /// mcItem</exception>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception">Error cloning service {service.Credit.ServiceName}.</exception>
         /// <remarks>
         /// <para>We clone each active service before using the clone to the search.</para>
         /// <para>This is done in order to avoid duplicate lyrics during concurrent searches with the same service.</para>
@@ -64,7 +66,20 @@ namespace MediaCenter.LyricsFinder.Model
                     if (isGetAll)
                         _ = await Task.WhenAll(tasks);
                     else
-                        _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricResultEnum.Found);
+                    {
+                        if (lyricsFinderData.MainData.SerialServiceRequestsDuringAutomaticSearch)
+                        {
+                            foreach (var task in tasks)
+                            {
+                                _ = await task;
+
+                                if (task.Result.LyricResult == LyricResultEnum.Found)
+                                    break;
+                            }
+                        }
+                        else
+                            _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricResultEnum.Found);
+                    }
                 }
             }
             finally

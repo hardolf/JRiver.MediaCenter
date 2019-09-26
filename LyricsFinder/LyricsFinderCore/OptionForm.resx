@@ -126,4 +126,13 @@ If an existing lyric is found that matches one of the strings,
 it is overwritten, no matter how the state is of the 
 [Overwrite existing lyrics] button.</value>
   </data>
+  <data name="SerialServiceRequestsDuringAutomaticSearchCheckBox.ToolTip" xml:space="preserve">
+    <value>This is typically checked when service requests 
+during automatic search all should be kept at a 
+minimum due to service request quota limits.	
+The downside with serial requests is 
+longer automatic search times.
+When not checked, service requests are sent 
+in parallel with shorter search times as a result.</value>
+  </data>
 </root>

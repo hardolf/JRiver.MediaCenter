@@ -120,6 +120,7 @@ namespace MediaCenter.LyricsFinder
                             _lyricsFinderData.MainData.MouseMoveOpenLyricsForm = MouseMoveOpenLyricsFormCheckBox.Checked;
                             _lyricsFinderData.MainData.NoLyricsSearchFilter = NoLyricsSearchFilterTextBox.Text;
                             _lyricsFinderData.MainData.UpdateCheckIntervalDays = (int)UpdateCheckIntervalDaysUpDown.Value;
+                            _lyricsFinderData.MainData.SerialServiceRequestsDuringAutomaticSearch = SerialServiceRequestsDuringAutomaticSearchCheckBox.Checked;
 
                             _lyricsFinderData.SaveAsync();
                         }
@@ -165,6 +166,7 @@ namespace MediaCenter.LyricsFinder
                 MouseMoveOpenLyricsFormCheckBox.Checked = _lyricsFinderData.MainData.MouseMoveOpenLyricsForm;
                 NoLyricsSearchFilterTextBox.Text = _lyricsFinderData.MainData.NoLyricsSearchFilter;
                 UpdateCheckIntervalDaysUpDown.Value = _lyricsFinderData.MainData.UpdateCheckIntervalDays;
+                SerialServiceRequestsDuringAutomaticSearchCheckBox.Checked = _lyricsFinderData.MainData.SerialServiceRequestsDuringAutomaticSearch;
 
                 // Select the top TextBox and minimize the selected text
                 McAccessKeyTextBox.Select();

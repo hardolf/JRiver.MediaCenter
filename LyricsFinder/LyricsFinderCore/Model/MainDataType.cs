@@ -147,6 +147,19 @@ namespace MediaCenter.LyricsFinder.Model
         [XmlElement]
         public int UpdateCheckIntervalDays { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether service requests should be sent in sequence during automatic search.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if service requests should be sent in sequence during automatic search; otherwise, <c>false</c>, the requests are sent in parallel.
+        /// </value>
+        /// <remarks>
+        /// <para>This property is typically set to <c>true</c> when service requests should be kept at a minimum due to service request quota limits.</para>
+        /// <para>The downside with serial requests is longer automatic search times.</para>
+        /// </remarks>
+        [XmlElement]
+        public bool SerialServiceRequestsDuringAutomaticSearch { get; set; }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainDataType"/> class.
