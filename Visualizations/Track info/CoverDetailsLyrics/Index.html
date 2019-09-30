@@ -64,6 +64,9 @@
             </div>
             <div id="lyricTextDiv" class="rightDiv" title="Lyrics">
                 <font id="lyricText" class="text2">TRACKINFO_INSERT_LYRICS</font>
+				<script type="text/javascript">
+                    document.getElementById('lyricText').innerText = convertNationalCharsToHtml(TRACKINFO_INSERT_LYRICS);
+                </script>
             </div>
         </div>
     </div>

@@ -67,7 +67,7 @@ namespace MediaCenter.LyricsFinder
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(75, 23);
             this.ExitButton.TabIndex = 1;
-            this.ExitButton.Text = "&Exit";
+            this.ExitButton.Text = "Exit";
             this.MainToolTip.SetToolTip(this.ExitButton, "Exit the stand-alone LyricsFinder");
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
@@ -93,7 +93,7 @@ namespace MediaCenter.LyricsFinder
             this.RotButton.Name = "RotButton";
             this.RotButton.Size = new System.Drawing.Size(100, 24);
             this.RotButton.TabIndex = 3;
-            this.RotButton.Text = "&Examine the ROT";
+            this.RotButton.Text = "Examine the ROT";
             this.MainToolTip.SetToolTip(this.RotButton, resources.GetString("RotButton.ToolTip"));
             this.RotButton.UseVisualStyleBackColor = true;
             this.RotButton.Click += new System.EventHandler(this.RotButton_Click);

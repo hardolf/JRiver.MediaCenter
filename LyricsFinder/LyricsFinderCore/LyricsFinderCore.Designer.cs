@@ -472,13 +472,13 @@ namespace MediaCenter.LyricsFinder
             // ToolSepMenuItem1
             // 
             this.ToolSepMenuItem1.Name = "ToolSepMenuItem1";
-            this.ToolSepMenuItem1.Size = new System.Drawing.Size(204, 6);
+            this.ToolSepMenuItem1.Size = new System.Drawing.Size(185, 6);
             // 
             // ToolsLyricServicesMenuItem
             // 
             this.ToolsLyricServicesMenuItem.Name = "ToolsLyricServicesMenuItem";
             this.ToolsLyricServicesMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Y)));
-            this.ToolsLyricServicesMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.ToolsLyricServicesMenuItem.Size = new System.Drawing.Size(188, 22);
             this.ToolsLyricServicesMenuItem.Text = "L&yric services...";
             this.ToolsLyricServicesMenuItem.ToolTipText = "Select the services to be used when searching for lyrics. \r\nYou can also change t" +
     "he search service order.";
@@ -488,7 +488,7 @@ namespace MediaCenter.LyricsFinder
             // 
             this.ToolsOptionsMenuItem.Name = "ToolsOptionsMenuItem";
             this.ToolsOptionsMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
-            this.ToolsOptionsMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.ToolsOptionsMenuItem.Size = new System.Drawing.Size(188, 22);
             this.ToolsOptionsMenuItem.Text = "&Options...";
             this.ToolsOptionsMenuItem.ToolTipText = "Configure connection to Media Center Network Service";
             this.ToolsOptionsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -496,13 +496,12 @@ namespace MediaCenter.LyricsFinder
             // ToolSepMenuItem2
             // 
             this.ToolSepMenuItem2.Name = "ToolSepMenuItem2";
-            this.ToolSepMenuItem2.Size = new System.Drawing.Size(204, 6);
+            this.ToolSepMenuItem2.Size = new System.Drawing.Size(185, 6);
             // 
             // ToolsShowLogMenuItem
             // 
             this.ToolsShowLogMenuItem.Name = "ToolsShowLogMenuItem";
-            this.ToolsShowLogMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
-            this.ToolsShowLogMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.ToolsShowLogMenuItem.Size = new System.Drawing.Size(188, 22);
             this.ToolsShowLogMenuItem.Text = "Show &logs folder...";
             this.ToolsShowLogMenuItem.ToolTipText = "Open the folder where the logs are located";
             this.ToolsShowLogMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -510,13 +509,13 @@ namespace MediaCenter.LyricsFinder
             // ToolSepMenuItem3
             // 
             this.ToolSepMenuItem3.Name = "ToolSepMenuItem3";
-            this.ToolSepMenuItem3.Size = new System.Drawing.Size(204, 6);
+            this.ToolSepMenuItem3.Size = new System.Drawing.Size(185, 6);
             this.ToolSepMenuItem3.Visible = false;
             // 
             // ToolsTestMenuItem
             // 
             this.ToolsTestMenuItem.Name = "ToolsTestMenuItem";
-            this.ToolsTestMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.ToolsTestMenuItem.Size = new System.Drawing.Size(188, 22);
             this.ToolsTestMenuItem.Text = "Test";
             this.ToolsTestMenuItem.Visible = false;
             this.ToolsTestMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -634,26 +633,27 @@ namespace MediaCenter.LyricsFinder
             this.ContextPlayPauseMenuItem,
             this.ContextPlayStopMenuItem});
             this.MainContextMenu.Name = "ContextMenu";
-            this.MainContextMenu.Size = new System.Drawing.Size(170, 70);
+            this.MainContextMenu.Size = new System.Drawing.Size(206, 92);
             this.MainContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.MainContextMenu_OpeningAsync);
             this.MainContextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MainContextMenu_ItemClickedAsync);
             // 
             // ContextEditMenuItem
             // 
             this.ContextEditMenuItem.Name = "ContextEditMenuItem";
-            this.ContextEditMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.ContextEditMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
+            this.ContextEditMenuItem.Size = new System.Drawing.Size(205, 22);
             this.ContextEditMenuItem.Text = "Edit / search lyrics";
             // 
             // ContextPlayPauseMenuItem
             // 
             this.ContextPlayPauseMenuItem.Name = "ContextPlayPauseMenuItem";
-            this.ContextPlayPauseMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.ContextPlayPauseMenuItem.Size = new System.Drawing.Size(205, 22);
             this.ContextPlayPauseMenuItem.Text = "Play / pause";
             // 
             // ContextPlayStopMenuItem
             // 
             this.ContextPlayStopMenuItem.Name = "ContextPlayStopMenuItem";
-            this.ContextPlayStopMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.ContextPlayStopMenuItem.Size = new System.Drawing.Size(205, 22);
             this.ContextPlayStopMenuItem.Text = "Stop play";
             // 
             // McStatusTimer

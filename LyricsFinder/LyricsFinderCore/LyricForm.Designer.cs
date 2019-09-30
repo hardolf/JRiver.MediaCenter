@@ -315,20 +315,20 @@
             // 
             this.EditUndoMenuItem.Name = "EditUndoMenuItem";
             this.EditUndoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.EditUndoMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditUndoMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditUndoMenuItem.Text = "&Undo";
             this.EditUndoMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditSeparator0
             // 
             this.EditSeparator0.Name = "EditSeparator0";
-            this.EditSeparator0.Size = new System.Drawing.Size(231, 6);
+            this.EditSeparator0.Size = new System.Drawing.Size(199, 6);
             // 
             // EditSelectAllMenuItem
             // 
             this.EditSelectAllMenuItem.Name = "EditSelectAllMenuItem";
             this.EditSelectAllMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.EditSelectAllMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditSelectAllMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditSelectAllMenuItem.Text = "Select &all";
             this.EditSelectAllMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -336,7 +336,7 @@
             // 
             this.EditCutMenuItem.Name = "EditCutMenuItem";
             this.EditCutMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.EditCutMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditCutMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditCutMenuItem.Text = "Cut";
             this.EditCutMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -344,7 +344,7 @@
             // 
             this.EditCopyMenuItem.Name = "EditCopyMenuItem";
             this.EditCopyMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.EditCopyMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditCopyMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditCopyMenuItem.Text = "Copy";
             this.EditCopyMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -352,7 +352,7 @@
             // 
             this.EditPasteMenuItem.Name = "EditPasteMenuItem";
             this.EditPasteMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.EditPasteMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditPasteMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditPasteMenuItem.Text = "Paste";
             this.EditPasteMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -360,20 +360,19 @@
             // 
             this.EditDeleteMenuItem.Name = "EditDeleteMenuItem";
             this.EditDeleteMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.EditDeleteMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditDeleteMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditDeleteMenuItem.Text = "Delete";
             this.EditDeleteMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditSeparator1
             // 
             this.EditSeparator1.Name = "EditSeparator1";
-            this.EditSeparator1.Size = new System.Drawing.Size(231, 6);
+            this.EditSeparator1.Size = new System.Drawing.Size(199, 6);
             // 
             // EditProperCaseMenuItem
             // 
             this.EditProperCaseMenuItem.Name = "EditProperCaseMenuItem";
-            this.EditProperCaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.P)));
-            this.EditProperCaseMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditProperCaseMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditProperCaseMenuItem.Text = "&Proper case selection";
             this.EditProperCaseMenuItem.ToolTipText = "In every word the first letter is capitalized";
             this.EditProperCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -381,8 +380,7 @@
             // EditTitleCaseMenuItem
             // 
             this.EditTitleCaseMenuItem.Name = "EditTitleCaseMenuItem";
-            this.EditTitleCaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.T)));
-            this.EditTitleCaseMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditTitleCaseMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditTitleCaseMenuItem.Text = "&Title case selection";
             this.EditTitleCaseMenuItem.ToolTipText = "In every word the first letter is capitalized,\r\nexcept where word length is less " +
     "than 4";
@@ -391,8 +389,7 @@
             // EditLowerCaseMenuItem
             // 
             this.EditLowerCaseMenuItem.Name = "EditLowerCaseMenuItem";
-            this.EditLowerCaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.L)));
-            this.EditLowerCaseMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditLowerCaseMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditLowerCaseMenuItem.Text = "&Lower case selection";
             this.EditLowerCaseMenuItem.ToolTipText = "All text is in small letters";
             this.EditLowerCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -400,8 +397,7 @@
             // EditUpperCaseMenuItem
             // 
             this.EditUpperCaseMenuItem.Name = "EditUpperCaseMenuItem";
-            this.EditUpperCaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.U)));
-            this.EditUpperCaseMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditUpperCaseMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditUpperCaseMenuItem.Text = "&Upper case selection";
             this.EditUpperCaseMenuItem.ToolTipText = "All text is in capital letters";
             this.EditUpperCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -409,8 +405,7 @@
             // EditSentenceCaseMenuItem
             // 
             this.EditSentenceCaseMenuItem.Name = "EditSentenceCaseMenuItem";
-            this.EditSentenceCaseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.EditSentenceCaseMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditSentenceCaseMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditSentenceCaseMenuItem.Text = "Sentence case selection";
             this.EditSentenceCaseMenuItem.ToolTipText = "In the first word after a newline or period, \r\nthe first letter is capitalized";
             this.EditSentenceCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -418,14 +413,14 @@
             // EditSeparator2
             // 
             this.EditSeparator2.Name = "EditSeparator2";
-            this.EditSeparator2.Size = new System.Drawing.Size(231, 6);
+            this.EditSeparator2.Size = new System.Drawing.Size(199, 6);
             this.EditSeparator2.Visible = false;
             // 
             // EditSpellCheckMenuItem
             // 
             this.EditSpellCheckMenuItem.Name = "EditSpellCheckMenuItem";
             this.EditSpellCheckMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
-            this.EditSpellCheckMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.EditSpellCheckMenuItem.Size = new System.Drawing.Size(202, 22);
             this.EditSpellCheckMenuItem.Text = "&Spell check selection";
             this.EditSpellCheckMenuItem.Visible = false;
             this.EditSpellCheckMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -442,7 +437,8 @@
             // ToolsSearchMenuItem
             // 
             this.ToolsSearchMenuItem.Name = "ToolsSearchMenuItem";
-            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.ToolsSearchMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
+            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(145, 22);
             this.ToolsSearchMenuItem.Text = "&Search";
             this.ToolsSearchMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 

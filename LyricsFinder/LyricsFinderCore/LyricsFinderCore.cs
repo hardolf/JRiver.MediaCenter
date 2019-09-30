@@ -205,7 +205,14 @@ namespace MediaCenter.LyricsFinder
                 e.Handled = true;
 
                 var dgv = MainGridView;
+                var rows = MainGridView.SelectedRows;
+
+                if (rows.Count < 1)
+                    return;
+
                 var selectedRowIndex = (dgv.SelectedRows.Count > 0) ? dgv.SelectedRows[0].Index : -1;
+                var colIdx = (int)GridColumnEnum.Lyrics;
+                var rowIdx = rows[0].Index;
 
                 if (e.KeyCode == Keys.Down)
                 {
@@ -218,6 +225,10 @@ namespace MediaCenter.LyricsFinder
                 else if (e.KeyCode == Keys.Enter)
                 {
                     ToolsPlayStartStopButton.PerformClick();
+                }
+                else if (e.Alt && (e.KeyCode == Keys.L))
+                {
+                    _lyricsForm = ShowLyrics(colIdx, rowIdx);
                 }
                 else if (e.Control && (e.KeyCode == Keys.S))
                 {

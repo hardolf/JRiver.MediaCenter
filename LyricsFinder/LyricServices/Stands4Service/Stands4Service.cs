@@ -307,6 +307,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 // Do the request
                 txt = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
+                // Quota exceeded?
+                if (txt.ToUpperInvariant().Contains("<ERROR>DAILY USAGE EXCEEDED</ERROR>"))
+                    throw new LyricsQuotaExceededException();
+
                 // Deserialize the returned JSON
                 var results = txt.XmlDeserializeFromString<StandsResultListType>();
 

@@ -1,4 +1,13 @@
 ﻿
+function convertNationalCharsToHtml(ch) {
+    var ret = ch;
+
+    if (ch === 'å') { ret = '&aring;'; }
+
+    return ret;
+}
+
+
 function onBodyLoad() {
     // alert("onLoad");
 
