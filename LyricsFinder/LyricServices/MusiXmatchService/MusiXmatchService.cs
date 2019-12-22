@@ -81,13 +81,26 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Refreshes the display properties.
+        /// Creates the display properties.
         /// </summary>
         public override void CreateDisplayProperties()
         {
             base.CreateDisplayProperties();
 
-            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
+            DisplayProperties.Add(nameof(Token), Token, null, isEditAllowed: true);
+        }
+
+
+        /// <summary>
+        /// Validates the display properties.
+        /// </summary>
+        public override void ValidateDisplayProperties()
+        {
+            base.ValidateDisplayProperties();
+
+            var dps = new Dictionary<string, DisplayProperty>();
+
+            dps.Add(nameof(Token), Token, null);
         }
 
 

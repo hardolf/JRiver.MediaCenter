@@ -228,7 +228,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <returns>
         ///   <c>true</c> if the row change should be canceled; otherwise, <c>false</c>.
         /// </returns>
-        private bool IsValidateCancel()
+        private async Task<bool> IsValidateCancelAsync()
         {
             if (!_isListReady) return false;
 
@@ -251,9 +251,17 @@ namespace MediaCenter.LyricsFinder.Model
                     break;
 
                 case DialogResult.Yes:
-                    ret = false;
                     // Save the changes
-                    SaveSelectedService();
+                    try
+                    {
+                        SaveSelectedServiceAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        await ErrorHandling.ShowErrorHandlerAsync(ex.Message);
+                        _initialText = string.Empty; // Force a save request
+                        ret = true;
+                    }
                     break;
 
                 default:
@@ -336,25 +344,25 @@ namespace MediaCenter.LyricsFinder.Model
             try
             {
                 // Validate the service details
-                e.Cancel = IsValidateCancel();
+                e.Cancel = await IsValidateCancelAsync();
 
-                if (!e.Cancel)
+                if (e.Cancel)
+                    return;
+
+                // Store the visual rows with the data, i.e. the IsActive service property
+                foreach (DataGridViewRow row in LyricServiceListDataGridView.Rows)
                 {
-                    // Store the visual rows with the data, i.e. the IsActive service property
-                    foreach (DataGridViewRow row in LyricServiceListDataGridView.Rows)
-                    {
-                        var cellChk = row.Cells[0];
-                        var cellName = row.Cells[1];
-                        var isChecked = (cellChk.Value == null) || (bool)cellChk.Value;
-                        var serviceName = (cellName.Value == null) ? string.Empty : (string)cellName.Value;
+                    var cellChk = row.Cells[0];
+                    var cellName = row.Cells[1];
+                    var isChecked = (cellChk.Value == null) || (bool)cellChk.Value;
+                    var serviceName = (cellName.Value == null) ? string.Empty : (string)cellName.Value;
 
-                        _lyricsFinderData.LyricServices.First(service => service.Credit.ServiceName
-                            .Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
-                            .IsActive = isChecked;
-                    }
-
-                    _callback(this);
+                    _lyricsFinderData.LyricServices.First(service => service.Credit.ServiceName
+                        .Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
+                        .IsActive = isChecked;
                 }
+
+                _callback(this);
             }
             catch (Exception ex)
             {
@@ -392,7 +400,7 @@ namespace MediaCenter.LyricsFinder.Model
                 else if (e.KeyCode == Keys.Down)
                 {
                     if (row.Index >= dgv.RowCount - 1) return;
-                    if (IsValidateCancel()) return;
+                    if (await IsValidateCancelAsync()) return;
                     dgv.Rows[row.Index + 1].Selected = true;
                 }
                 else if ((e.KeyCode == Keys.End) || (e.KeyCode == Keys.PageDown))
@@ -437,7 +445,7 @@ namespace MediaCenter.LyricsFinder.Model
                 else if (e.KeyCode == Keys.Up)
                 {
                     if (row.Index <= 0) return;
-                    if (IsValidateCancel()) return;
+                    if (await IsValidateCancelAsync()) return;
                     dgv.Rows[row.Index - 1].Selected = true;
                 }
                 else
@@ -485,7 +493,7 @@ namespace MediaCenter.LyricsFinder.Model
         {
             try
             {
-                e.Cancel = IsValidateCancel();
+                e.Cancel = await IsValidateCancelAsync();
             }
             catch (Exception ex)
             {
@@ -519,7 +527,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <summary>
         /// Saves the selected service.
         /// </summary>
-        private void SaveSelectedService()
+        private void SaveSelectedServiceAsync()
         {
             var tlp = LyricServiceDetailsTableLayoutPanel;
             AbstractLyricService service = GetSelectedService(out _);
@@ -532,9 +540,9 @@ namespace MediaCenter.LyricsFinder.Model
 
                 if (ctl is TextBox txt)
                 {
-                    if (txt.ReadOnly) continue;
-
                     var lbl = tlp.Controls[i - 2]; // There is always a hidden label before the caption label and the value text box
+
+                    if (txt.ReadOnly) continue;
 
                     if (service.DisplayProperties.TryGetValue(lbl.Text, out var dp))
                     {
@@ -553,6 +561,8 @@ namespace MediaCenter.LyricsFinder.Model
                     }
                 }
             }
+
+            service.ValidateDisplayProperties();
         }
 
 

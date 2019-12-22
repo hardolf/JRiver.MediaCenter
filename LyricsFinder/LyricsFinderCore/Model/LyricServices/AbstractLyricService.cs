@@ -98,7 +98,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// The public list of found lyric texts.
         /// </value>
         [XmlIgnore]
-        public ReadOnlyCollection<FoundLyricType> FoundLyricList { get; }
+        public virtual ReadOnlyCollection<FoundLyricType> FoundLyricList { get; }
 
         /// <summary>
         /// Gets or sets the lyrics finder data.
@@ -107,7 +107,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// The lyrics finder data.
         /// </value>
         [XmlIgnore]
-        public LyricsFinderDataType LyricsFinderData { get; set; }
+        public virtual LyricsFinderDataType LyricsFinderData { get; set; }
 
         /// <summary>
         /// Gets or sets the lyric result. If set to <c>Found</c> increments the hit counters.
@@ -309,6 +309,23 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Validates the display properties.
+        /// </summary>
+        public virtual void ValidateDisplayProperties()
+        {
+            var dps = new Dictionary<string, DisplayProperty>();
+
+            Credit.ValidateDisplayProperties();
+
+            dps.Add(nameof(Comment), Comment, "Service comment");
+            dps.Add(nameof(RequestCountToday), RequestCountToday, "Requests, today", RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            dps.Add(nameof(HitCountToday), HitCountToday, "Hits, today", HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            dps.Add(nameof(RequestCountTotal), RequestCountTotal, "Requests, total", RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            dps.Add(nameof(HitCountTotal), HitCountTotal, "Hits, total", HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+        }
+
+
+        /// <summary>
         /// Creates the service client.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -443,7 +460,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Increments the hit counters.
         /// </summary>
         /// <param name="count">The count.</param>
-        public async Task IncrementHitCountersAsync(int count = 1)
+        public virtual async Task IncrementHitCountersAsync(int count = 1)
         {
             // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
             await _semaphoreSlim.WaitAsync();
@@ -466,7 +483,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Increments the request counters.
         /// </summary>
         /// <param name="count">The count.</param>
-        public async Task IncrementRequestCountersAsync(int count = 1)
+        public virtual async Task IncrementRequestCountersAsync(int count = 1)
         {
             // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
             await _semaphoreSlim.WaitAsync();
@@ -530,7 +547,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// Sets the IsActive property to <c>false</c> and throws a quota error.
         /// </summary>
         /// <exception cref="LyricsQuotaExceededException">Lyric service ... is exceeding its quota ...</exception>
-        protected void QuotaError()
+        protected virtual void QuotaError()
         {
             IsActive = false;
 
@@ -556,8 +573,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     && ((Credit.CreditUrl == null) || Credit.CreditUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
                     && ((Credit.ServiceUrl == null) || Credit.ServiceUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
                     && Credit.Company.IsNullOrEmptyTrimmed()
-                    && Credit.CreditTextFormat.IsNullOrEmptyTrimmed()
-                    && Credit.DateFormat.IsNullOrEmptyTrimmed()
                     && Credit.ServiceName.IsNullOrEmptyTrimmed());
 
             if (IsConfigurationFileUsed)
@@ -591,7 +606,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Resets the today counters.
         /// </summary>
-        public async Task ResetTodayCountersAsync()
+        public virtual async Task ResetTodayCountersAsync()
         {
             // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
             await _semaphoreSlim.WaitAsync();

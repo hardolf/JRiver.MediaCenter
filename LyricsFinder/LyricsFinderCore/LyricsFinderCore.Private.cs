@@ -37,7 +37,7 @@ namespace MediaCenter.LyricsFinder
         const string _menuNameDelim = "_";
 
         private bool _isConnectedToMc = false;
-        private bool _isDesignTime = false;
+        private readonly bool _isDesignTime = false;
         private bool _isGridDataChanged = false; // Do not change this in code, always change the <c>IsDataChanged</c> property instead.
         private bool _isOnHandleDestroyedDone = false;
         private readonly bool _isStandAlone = true;

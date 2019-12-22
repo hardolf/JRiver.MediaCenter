@@ -84,8 +84,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public Stands4Service(Stands4Service source)
             : base(source)
         {
-            IsImplemented = true;
-            QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Now.Date, TimeZoneInfo.Local); // Default is midnight in the client time zone
+            if (source is null) throw new ArgumentNullException(nameof(source));
+
+            DailyQuota = source.DailyQuota;
+            QuotaResetTime = source.QuotaResetTime;
+            Token = source.Token;
+            UserId = source.UserId;
         }
 
 
@@ -97,13 +101,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </returns>
         public override ILyricService Clone()
         {
-            var ret = new Stands4Service(this)
-            {
-                DailyQuota = DailyQuota,
-                QuotaResetTime = QuotaResetTime,
-                Token = Token,
-                UserId = UserId
-            };
+            var ret = new Stands4Service(this);
 
             // The hit and request counters are added back to the source service after a search.
             // This is done in the LyricSearch.SearchAsync method.
@@ -115,18 +113,40 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Refreshes the display properties.
+        /// Creates the display properties.
         /// </summary>
         public override void CreateDisplayProperties()
         {
             base.CreateDisplayProperties();
 
-            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
-            DisplayProperties.Add(nameof(UserId), new DisplayProperty("User ID", UserId, null, nameof(UserId), true));
-            DisplayProperties.Add(nameof(DailyQuota), new DisplayProperty("Daily quota", DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture), "Daily number of requests", nameof(DailyQuota), true));
-            DisplayProperties.Add("QuotaResetTimeZone", new DisplayProperty("Service time zone", QuotaResetTime.ServiceTimeZone.StandardName));
-            DisplayProperties.Add("QuotaResetTimeService", new DisplayProperty("Next quota reset local time, service", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture)));
-            DisplayProperties.Add("QuotaResetTimeClient", new DisplayProperty("Next quota reset local time, this machine", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture)));
+            DisplayProperties.Add(nameof(Token), Token, null, isEditAllowed: true);
+            DisplayProperties.Add(nameof(UserId), UserId, "User ID", isEditAllowed: true);
+            DisplayProperties.Add(nameof(DailyQuota), DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture), "Daily number of requests", isEditAllowed: true);
+
+            DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, "Service time zone", isEditAllowed: true);
+
+            DisplayProperties.Add("QuotaResetTimeService", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture), "Next quota reset local time, service");
+            DisplayProperties.Add("QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture), "Next quota reset local time, this machine");
+        }
+
+
+        /// <summary>
+        /// Validates the display properties.
+        /// </summary>
+        public override void ValidateDisplayProperties()
+        {
+            base.ValidateDisplayProperties();
+
+            var dps = new Dictionary<string, DisplayProperty>();
+
+            dps.Add(nameof(Token), Token, null);
+            dps.Add(nameof(UserId), UserId, "User ID");
+            dps.Add(nameof(DailyQuota), DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture), "Daily number of requests");
+
+            dps.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, "Service time zone");
+
+            dps.Add("QuotaResetTimeService", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture), "Next quota reset local time, service");
+            dps.Add("QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture), "Next quota reset local time, this machine");
         }
 
 

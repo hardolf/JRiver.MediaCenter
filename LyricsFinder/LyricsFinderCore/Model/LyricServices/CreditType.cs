@@ -202,6 +202,22 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
+        /// Validates the display properties.
+        /// </summary>
+        public virtual void ValidateDisplayProperties()
+        {
+            var dps = new Dictionary<string, DisplayProperty>();
+
+            dps.Add(nameof(ServiceName), ServiceName, "Name");
+            dps.Add(nameof(Company), Company);
+            dps.Add(nameof(CreditUrl), CreditUrl, "Company Website");
+            dps.Add(nameof(Copyright), Copyright, "Copyright text");
+            dps.Add(nameof(CreditTextFormat), CreditTextFormat, "Credit text format");
+            dps.Add(nameof(ServiceUrl), ServiceUrl, "Service URL");
+        }
+
+
+        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>

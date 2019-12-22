@@ -87,7 +87,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             base.CreateDisplayProperties();
 
-            DisplayProperties.Add(nameof(Token), new DisplayProperty("Token", Token, null, nameof(Token), true));
+            DisplayProperties.Add(nameof(Token), Token, null, isEditAllowed: true);
         }
 
 
