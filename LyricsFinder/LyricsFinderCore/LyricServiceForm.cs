@@ -254,7 +254,7 @@ namespace MediaCenter.LyricsFinder.Model
                     // Save the changes
                     try
                     {
-                        SaveSelectedServiceAsync();
+                        SaveSelectedService();
                     }
                     catch (Exception ex)
                     {
@@ -527,7 +527,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <summary>
         /// Saves the selected service.
         /// </summary>
-        private void SaveSelectedServiceAsync()
+        private void SaveSelectedService()
         {
             var tlp = LyricServiceDetailsTableLayoutPanel;
             AbstractLyricService service = GetSelectedService(out _);

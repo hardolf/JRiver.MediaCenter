@@ -85,16 +85,25 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <param name="caption">The caption.</param>
         /// <param name="toolTips">The tool tips.</param>
         /// <param name="isEditAllowed">if set to <c>true</c> [is edit allowed].</param>
+        /// <param name="defaultValue">The default value of the property. Used if the <c>value</c> assignment fails.</param>
         /// <exception cref="ArgumentNullException">property</exception>
-        public DisplayProperty(string propertyName, object value, string caption = null, string toolTips = null, bool isEditAllowed = false)
+        public DisplayProperty(string propertyName, object value, string caption = null, string toolTips = null, bool isEditAllowed = false, object defaultValue = null)
         {
             if (propertyName is null) throw new ArgumentNullException(nameof(propertyName));
 
             PropertyName = propertyName;
             Caption = caption ?? PropertyName;
-            Value = value?.ToString().LfToCrLf() ?? string.Empty;
             ToolTips = toolTips;
             IsEditAllowed = isEditAllowed;
+
+            try
+            {
+                Value = value?.ToString().LfToCrLf() ?? string.Empty;
+            }
+            catch
+            {
+                Value = defaultValue?.ToString().LfToCrLf() ?? string.Empty;
+            }
         }
 
 
@@ -201,6 +210,21 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         else if ((prop.PropertyType == typeof(int))
                             && (int.TryParse(Value.ToString(), out var intVar)))
                             prop.SetValue(obj, intVar);
+                        else if (prop.PropertyType == typeof(DateTime))
+                        {
+                            var s = Value.ToString().Replace("-", string.Empty).Replace("  ", " ");
+                            var i = s.LastIndexOf(':');
+                            var j = s.LastIndexOf('.');
+
+                            if (j < 0)
+                                j = s.LastIndexOf(',');
+
+                            if (j > i)
+                                s = s.Substring(j);
+
+                            if (DateTime.TryParse(s, out var dtVar))
+                                prop.SetValue(obj, dtVar);
+                        }
                         else
                             prop.SetValue(obj, Value);
 
@@ -213,7 +237,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     throw new Exception($"The object has no \"{PropertyName}\" property.");
             }
             else
-            { 
+            {
                 object altObj = null;
 
                 foreach (var prop in props)
@@ -242,6 +266,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         else if ((prop.PropertyType == typeof(int))
                             && (int.TryParse(Value.ToString(), out var intVar)))
                             prop.SetValue(altObj, intVar);
+                        else if (prop.PropertyType == typeof(DateTime))
+                        {
+                            var s = Value.ToString().Replace("-", string.Empty).Replace("  ", " ");
+
+                            if (DateTime.TryParse(s, out var dtVar))
+                                prop.SetValue(altObj, dtVar);
+                        }
                         else
                             prop.SetValue(altObj, Value);
 
@@ -277,14 +308,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <param name="caption">The caption.</param>
         /// <param name="toolTips">The tool tips.</param>
         /// <param name="isEditAllowed">if set to <c>true</c> [is edit allowed].</param>
-        /// <returns></returns>
+        /// <param name="defaultValue">The default value of the property. Used if the <c>value</c> assignment fails.</param>
+        /// <returns>The added <c>DisplayProperty</c> object.</returns>
         /// <exception cref="ArgumentNullException">displayProperties</exception>
         public static DisplayProperty Add(this Dictionary<string, DisplayProperty> displayProperties,
-            string propertyName, object value, string caption = null, string toolTips = null, bool isEditAllowed = false)
+            string propertyName, object value, string caption = null, string toolTips = null, bool isEditAllowed = false, object defaultValue = null)
         {
             if (displayProperties is null) throw new ArgumentNullException(nameof(displayProperties));
 
-            var ret = new DisplayProperty(propertyName, value, caption, toolTips, isEditAllowed);
+            var ret = new DisplayProperty(propertyName, value, caption, toolTips, isEditAllowed, defaultValue);
 
             displayProperties.Add(ret.PropertyName, ret);
 
@@ -303,14 +335,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <param name="caption">The caption.</param>
         /// <param name="toolTips">The tool tips.</param>
         /// <param name="isEditAllowed">if set to <c>true</c> [is edit allowed].</param>
-        /// <returns></returns>
+        /// <param name="defaultValue">The default value of the property. Used if the <c>value</c> assignment fails.</param>
+        /// <returns>The added <c>DisplayProperty</c> object.</returns>
         /// <exception cref="ArgumentNullException">displayProperties</exception>
         public static DisplayProperty Add(this Dictionary<string, DisplayProperty> displayProperties,
-            string propertyName, string alternativeObjectName, string alternativePropertyName, object value, string caption = null, string toolTips = null, bool isEditAllowed = false)
+            string propertyName, string alternativeObjectName, string alternativePropertyName, object value, string caption = null, string toolTips = null, bool isEditAllowed = false, object defaultValue = null)
         {
             if (displayProperties is null) throw new ArgumentNullException(nameof(displayProperties));
 
-            var ret = new DisplayProperty(propertyName, value, caption, toolTips, isEditAllowed)
+            var ret = new DisplayProperty(propertyName, value, caption, toolTips, isEditAllowed, defaultValue)
             {
                 AlternativeObjectName = alternativeObjectName,
                 AlternativePropertyName = alternativePropertyName

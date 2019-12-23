@@ -10,7 +10,7 @@ namespace MediaCenter.SharedComponents
     {
         public static readonly string DateFormat = "yyyy.MM.dd";
         public static readonly string IntegerFormat = "###,###,##0";
-        public static readonly string TimeFormat = "HH:mm.ss";
+        public static readonly string TimeFormat = "HH:mm:ss";
 
         public static readonly string DateTimeFormat = $"{DateFormat} - {TimeFormat}";
     }

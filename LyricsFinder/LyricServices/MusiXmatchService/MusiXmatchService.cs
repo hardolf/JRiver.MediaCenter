@@ -92,19 +92,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Validates the display properties.
-        /// </summary>
-        public override void ValidateDisplayProperties()
-        {
-            base.ValidateDisplayProperties();
-
-            var dps = new Dictionary<string, DisplayProperty>();
-
-            dps.Add(nameof(Token), Token, null);
-        }
-
-
-        /// <summary>
         /// Extracts the result text from a Uri and adds the found lyric text to the list.
         /// </summary>
         /// <param name="uri">The URI.</param>
@@ -217,6 +204,19 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             await base.RefreshServiceSettingsAsync().ConfigureAwait(false);
 
             CreateDisplayProperties();
+        }
+
+
+        /// <summary>
+        /// Validates the display properties.
+        /// </summary>
+        public override void ValidateDisplayProperties()
+        {
+            base.ValidateDisplayProperties();
+
+            var dps = new Dictionary<string, DisplayProperty>();
+
+            dps.Add(nameof(Token), Token);
         }
 
     }

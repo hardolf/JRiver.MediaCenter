@@ -309,23 +309,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Validates the display properties.
-        /// </summary>
-        public virtual void ValidateDisplayProperties()
-        {
-            var dps = new Dictionary<string, DisplayProperty>();
-
-            Credit.ValidateDisplayProperties();
-
-            dps.Add(nameof(Comment), Comment, "Service comment");
-            dps.Add(nameof(RequestCountToday), RequestCountToday, "Requests, today", RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            dps.Add(nameof(HitCountToday), HitCountToday, "Hits, today", HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            dps.Add(nameof(RequestCountTotal), RequestCountTotal, "Requests, total", RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            dps.Add(nameof(HitCountTotal), HitCountTotal, "Hits, total", HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-        }
-
-
-        /// <summary>
         /// Creates the service client.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -495,7 +478,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 RequestCountTotal += count;
 
                 CreateDisplayProperties();
-
             }
             finally
             {
@@ -655,6 +637,23 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
 
             return ret;
+        }
+
+
+        /// <summary>
+        /// Validates the display properties.
+        /// </summary>
+        public virtual void ValidateDisplayProperties()
+        {
+            var dps = new Dictionary<string, DisplayProperty>();
+
+            Credit.ValidateDisplayProperties();
+
+            dps.Add(nameof(Comment), Comment);
+            dps.Add(nameof(RequestCountToday), RequestCountToday, null, RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            dps.Add(nameof(HitCountToday), HitCountToday, null, HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            dps.Add(nameof(RequestCountTotal), RequestCountTotal, null, RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            dps.Add(nameof(HitCountTotal), HitCountTotal, null, HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
         }
 
     }

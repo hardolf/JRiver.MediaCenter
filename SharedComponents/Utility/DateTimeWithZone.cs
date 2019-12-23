@@ -135,12 +135,11 @@ namespace MediaCenter.SharedComponents
         /// <value>
         /// The local time for the service.
         /// </value>
+        [XmlIgnore]
         public DateTime ServiceLocalTime
         {
-            get
-            {
-                return TimeZoneInfo.ConvertTime(UniversalTime, ServiceTimeZone);
-            }
+            get { return TimeZoneInfo.ConvertTime(UniversalTime, ServiceTimeZone); }
+            set { UniversalTime = TimeZoneInfo.ConvertTime(value, ServiceTimeZone, TimeZoneInfo.Utc); }
         }
 
     }
