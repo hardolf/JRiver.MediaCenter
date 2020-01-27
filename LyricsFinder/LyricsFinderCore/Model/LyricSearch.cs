@@ -92,8 +92,8 @@ namespace MediaCenter.LyricsFinder.Model
                         var service = services[i];
                         var serviceClone = ret[i];
 
-                        await service.IncrementHitCountersAsync(serviceClone.HitCountTotal - service.HitCountTotal);
                         await service.IncrementRequestCountersAsync(serviceClone.RequestCountTotal - service.RequestCountTotal);
+                        await service.IncrementHitCountersAsync(serviceClone.HitCountTotal - service.HitCountTotal);
                         service.IsActive = serviceClone.IsActive;
                     }
 

@@ -267,8 +267,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (!copyright.IsNullOrEmptyTrimmed())
                 Credit.Copyright = copyright;
 
+            lyricText = WebUtility.HtmlDecode(lyricText).Trim();
+
             var beforeCount = InternalFoundLyricList.Count;
-            var ret = InternalFoundLyricList.Add(this, lyricText.Trim(), Credit.ToString(), lyricUrl, trackingUrl);
+            var ret = InternalFoundLyricList.Add(this, lyricText, Credit.ToString(), lyricUrl, trackingUrl);
             var afterCount = InternalFoundLyricList.Count;
             var diff = (afterCount - beforeCount);
 
@@ -429,11 +431,18 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (IsActive && await IsQuotaExceededAsync())
                 QuotaError();
 
+            var ret = string.Empty;
+
             await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
 
-            var ret = await SharedComponents.Utility.HttpGetStringAsync(requestUri).ConfigureAwait(false);
-
-            await IncrementRequestCountersAsync();
+            try
+            {
+                ret = await SharedComponents.Utility.HttpGetStringAsync(requestUri).ConfigureAwait(false);
+            }
+            finally
+            {
+                await IncrementRequestCountersAsync();
+            }
 
             return ret;
         }
@@ -540,7 +549,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Refreshes the service settings from the service configuration file.
+        /// Refreshes the service settings from the service configuration file, if needed.
         /// </summary>
         public virtual async Task RefreshServiceSettingsAsync()
         {
@@ -577,6 +586,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             Credit.CreditDate = DateTime.Now;
             DelayMilliSecondsBetweenSearches = LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches;
+
+            if (LastRequest.Date < DateTime.Now.Date)
+                await ResetTodayCountersAsync();
 
             CreateDisplayProperties();
 

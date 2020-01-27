@@ -30,9 +30,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricServiceForm));
             this.LyricServiceMainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.LyricServiceListPanel = new System.Windows.Forms.Panel();
@@ -74,9 +74,9 @@
             this.LyricServiceMainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.LyricServiceMainTableLayoutPanel.Name = "LyricServiceMainTableLayoutPanel";
             this.LyricServiceMainTableLayoutPanel.RowCount = 2;
-            this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 160F));
             this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.LyricServiceMainTableLayoutPanel.Size = new System.Drawing.Size(483, 170);
+            this.LyricServiceMainTableLayoutPanel.Size = new System.Drawing.Size(483, 180);
             this.LyricServiceMainTableLayoutPanel.TabIndex = 1;
             // 
             // LyricServiceListPanel
@@ -85,7 +85,7 @@
             this.LyricServiceListPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricServiceListPanel.Location = new System.Drawing.Point(3, 3);
             this.LyricServiceListPanel.Name = "LyricServiceListPanel";
-            this.LyricServiceListPanel.Size = new System.Drawing.Size(477, 144);
+            this.LyricServiceListPanel.Size = new System.Drawing.Size(477, 154);
             this.LyricServiceListPanel.TabIndex = 14;
             // 
             // LyricServiceListContainer
@@ -95,7 +95,7 @@
             // LyricServiceListContainer.ContentPanel
             // 
             this.LyricServiceListContainer.ContentPanel.Controls.Add(this.LyricServiceListDataGridView);
-            this.LyricServiceListContainer.ContentPanel.Size = new System.Drawing.Size(433, 124);
+            this.LyricServiceListContainer.ContentPanel.Size = new System.Drawing.Size(433, 134);
             this.LyricServiceListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricServiceListContainer.LeftToolStripPanelVisible = false;
             this.LyricServiceListContainer.Location = new System.Drawing.Point(0, 0);
@@ -105,7 +105,7 @@
             // LyricServiceListContainer.RightToolStripPanel
             // 
             this.LyricServiceListContainer.RightToolStripPanel.Controls.Add(this.LyricServiceListRightToolbar);
-            this.LyricServiceListContainer.Size = new System.Drawing.Size(477, 144);
+            this.LyricServiceListContainer.Size = new System.Drawing.Size(477, 154);
             this.LyricServiceListContainer.TabIndex = 5;
             this.LyricServiceListContainer.Text = "Lyrics services";
             this.LyricServiceListContainer.TopToolStripPanelVisible = false;
@@ -131,7 +131,7 @@
             this.LyricServiceListDataGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.LyricServiceListDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.LyricServiceListDataGridView.ShowEditingIcon = false;
-            this.LyricServiceListDataGridView.Size = new System.Drawing.Size(433, 124);
+            this.LyricServiceListDataGridView.Size = new System.Drawing.Size(433, 134);
             this.LyricServiceListDataGridView.TabIndex = 0;
             this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClickAsync);
             this.LyricServiceListDataGridView.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.LyricServiceListDataGridView_RowValidatingAsync);
@@ -148,8 +148,8 @@
             // Service
             // 
             this.Service.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.Service.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.Service.DefaultCellStyle = dataGridViewCellStyle4;
             this.Service.HeaderText = "Service name";
             this.Service.Name = "Service";
             this.Service.ReadOnly = true;
@@ -159,8 +159,8 @@
             // DailyCount
             // 
             this.DailyCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.DailyCount.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.DailyCount.DefaultCellStyle = dataGridViewCellStyle5;
             this.DailyCount.FillWeight = 80F;
             this.DailyCount.HeaderText = "Today";
             this.DailyCount.MinimumWidth = 60;
@@ -173,8 +173,8 @@
             // DailyMaximum
             // 
             this.DailyMaximum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.DailyMaximum.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.DailyMaximum.DefaultCellStyle = dataGridViewCellStyle6;
             this.DailyMaximum.HeaderText = "Maximum";
             this.DailyMaximum.MinimumWidth = 60;
             this.DailyMaximum.Name = "DailyMaximum";
@@ -234,7 +234,7 @@
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 153);
+            this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 163);
             this.LyricServiceDetailsTableLayoutPanel.Name = "LyricServiceDetailsTableLayoutPanel";
             this.LyricServiceDetailsTableLayoutPanel.Padding = new System.Windows.Forms.Padding(7);
             this.LyricServiceDetailsTableLayoutPanel.RowCount = 1;
@@ -290,7 +290,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(491, 211);
+            this.ClientSize = new System.Drawing.Size(491, 235);
             this.Controls.Add(this.LyricServiceMainTableLayoutPanel);
             this.KeyPreview = true;
             this.MaximizeBox = false;

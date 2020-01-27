@@ -3,8 +3,8 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
     <title>Hardolf track info for Media Center</title>
+    <meta http-equiv="Content-Type" content="text/html;">
     <link rel="stylesheet" href="Styles.css">
     <script src="JavaScript.js" type="text/javascript"></script>
 </head>
@@ -25,7 +25,7 @@
 
         <div class="contentDiv">
             <div class="leftDiv">
-                <img src="TRACKINFO_INSERT_IMAGE" id="cover" title="Artist: TRACKINFO_INSERT_ARTIST&#013;&#010;Album: TRACKINFO_INSERT_ALBUM"/>
+                <img src="TRACKINFO_INSERT_IMAGE" id="cover" title="Artist: TRACKINFO_INSERT_ARTIST&#013;&#010;Album: TRACKINFO_INSERT_ALBUM" />
                 <!--<img src="Sample200x198.bmp" id="cover" title="TRACKINFO_INSERT_ARTIST TRACKINFO_INSERT_ALBUM"/>-->
                 <!--<img src="Sample704x698.bmp" id="cover" title="TRACKINFO_INSERT_ARTIST TRACKINFO_INSERT_ALBUM"/>-->
             </div>
@@ -64,9 +64,6 @@
             </div>
             <div id="lyricTextDiv" class="rightDiv" title="Lyrics">
                 <font id="lyricText" class="text2">TRACKINFO_INSERT_LYRICS</font>
-				<script type="text/javascript">
-                    document.getElementById('lyricText').innerText = convertNationalCharsToHtml(TRACKINFO_INSERT_LYRICS);
-                </script>
             </div>
         </div>
     </div>

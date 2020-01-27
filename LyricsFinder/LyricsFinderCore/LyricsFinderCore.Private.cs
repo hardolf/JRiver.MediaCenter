@@ -414,7 +414,7 @@ namespace MediaCenter.LyricsFinder
                         LyricsFinderData.LyricServices.Add(service);
                 }
 
-                await Logging.LogAsync(_progressPercentage, "Refreshing lyric services from their old configurations...", true);
+                await Logging.LogAsync(_progressPercentage, "Refreshing lyric services from data file or from their old configurations...", true);
                 foreach (var service in LyricsFinderData.LyricServices)
                 {
                     service.LyricsFinderData = LyricsFinderData;
@@ -811,8 +811,7 @@ namespace MediaCenter.LyricsFinder
                         throw new Exception($"Error parsing row {i} cell(s): keyTxt=\"{keyTxt}\", lyrics=\"{lyrics}\", status=\"{statusTxt}\".");
 
                     // We only save items if they are found or manually edited
-                    if (((statusTxt.ToLyricResultEnum() & (LyricResultEnum.Found | LyricResultEnum.ManuallyEdited)) != 0) // If status is one of those enum values
-                        && (!lyrics.IsNullOrEmptyTrimmed()))
+                    if ((statusTxt.ToLyricResultEnum() & (LyricResultEnum.Found | LyricResultEnum.ManuallyEdited)) != 0) // If status is one of those enum values
                     {
                         var rsp = await McRestService.SetInfo(key, "Lyrics", lyrics);
 
