@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -117,6 +118,20 @@ namespace MediaCenter.LyricsFinder
             }
 
             Properties.Settings.Default.Save();
+        }
+
+
+        /// <summary>
+        /// Handles the Load event of the MainForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            var assy = Assembly.GetExecutingAssembly();
+            var ver = assy.GetName().Version;
+
+            Text = $"{Text} v{ver}";
         }
 
 

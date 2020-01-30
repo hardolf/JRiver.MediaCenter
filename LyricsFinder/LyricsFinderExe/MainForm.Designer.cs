@@ -36,9 +36,9 @@ namespace MediaCenter.LyricsFinder
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.TablePanel = new System.Windows.Forms.TableLayoutPanel();
             this.ExitButton = new System.Windows.Forms.Button();
-            this.LyricsFinderCore = new MediaCenter.LyricsFinder.LyricsFinderCore();
             this.RotButton = new System.Windows.Forms.Button();
             this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.LyricsFinderCore = new MediaCenter.LyricsFinder.LyricsFinderCore();
             this.TablePanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,19 +72,6 @@ namespace MediaCenter.LyricsFinder
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
-            // LyricsFinderCore
-            // 
-            this.TablePanel.SetColumnSpan(this.LyricsFinderCore, 2);
-            this.LyricsFinderCore.DataBindings.Add(new System.Windows.Forms.Binding("Location", global::MediaCenter.LyricsFinder.Properties.Settings.Default, "MainFormLocation", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.LyricsFinderCore.DataDirectory = null;
-            this.LyricsFinderCore.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LyricsFinderCore.IsDataChanged = false;
-            this.LyricsFinderCore.Location = global::MediaCenter.LyricsFinder.Properties.Settings.Default.MainFormLocation;
-            this.LyricsFinderCore.Name = "LyricsFinderCore";
-            this.LyricsFinderCore.Size = new System.Drawing.Size(978, 717);
-            this.LyricsFinderCore.TabIndex = 2;
-            this.MainToolTip.SetToolTip(this.LyricsFinderCore, "Start lyrics search for all playlist items");
-            // 
             // RotButton
             // 
             this.RotButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -105,6 +92,19 @@ namespace MediaCenter.LyricsFinder
             this.MainToolTip.InitialDelay = 200;
             this.MainToolTip.ReshowDelay = 40;
             // 
+            // LyricsFinderCore
+            // 
+            this.TablePanel.SetColumnSpan(this.LyricsFinderCore, 2);
+            this.LyricsFinderCore.DataBindings.Add(new System.Windows.Forms.Binding("Location", global::MediaCenter.LyricsFinder.Properties.Settings.Default, "MainFormLocation", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.LyricsFinderCore.DataDirectory = null;
+            this.LyricsFinderCore.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LyricsFinderCore.IsDataChanged = false;
+            this.LyricsFinderCore.Location = global::MediaCenter.LyricsFinder.Properties.Settings.Default.MainFormLocation;
+            this.LyricsFinderCore.Name = "LyricsFinderCore";
+            this.LyricsFinderCore.Size = new System.Drawing.Size(978, 717);
+            this.LyricsFinderCore.TabIndex = 2;
+            this.MainToolTip.SetToolTip(this.LyricsFinderCore, "Start lyrics search for all playlist items");
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -112,12 +112,14 @@ namespace MediaCenter.LyricsFinder
             this.CancelButton = this.ExitButton;
             this.ClientSize = new System.Drawing.Size(984, 761);
             this.Controls.Add(this.TablePanel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(750, 300);
             this.Name = "MainForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Lyrics finder";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_ShownAsync);
             this.TablePanel.ResumeLayout(false);
             this.ResumeLayout(false);
