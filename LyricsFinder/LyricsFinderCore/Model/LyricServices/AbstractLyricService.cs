@@ -509,7 +509,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
-        /// <param name="item">The item.</param>
+        /// <param name="mcItem">The item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
@@ -519,9 +519,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="LyricsQuotaExceededException">Lyric service \"{Credit.ServiceName}\" is exceeding its quota and is now disabled in LyricsFinder, "
         /// + "no more requests will be sent to this service until corrected.</exception>
         /// <exception cref="System.ArgumentNullException">item</exception>
-        public virtual async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
+        public virtual async Task<AbstractLyricService> ProcessAsync(McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
             InternalFoundLyricList.Clear();
             LyricResult = LyricResultEnum.NotFound;
@@ -531,6 +531,55 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 QuotaError();
 
             return this;
+        }
+
+
+        /// <summary>
+        /// Processes the specified MediaCenter item, wrapper for ProcessAsync.
+        /// </summary>
+        /// <param name="mcItem">The item.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <returns>
+        ///   <see cref="AbstractLyricService" /> descendant object.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">item</exception>
+        /// <exception cref="LyricsQuotaExceededException">Lyric service \"{Credit.ServiceName}\" is exceeding its quota and is now disabled in LyricsFinder, "
+        /// + "no more requests will be sent to this service until corrected.</exception>
+        /// <exception cref="System.ArgumentNullException">item</exception>
+        public virtual async Task<AbstractLyricService> ProcessAsyncWrapper(McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
+        {
+            if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
+
+            var ret = await ProcessAsync(mcItem, cancellationToken, isGetAll);
+
+            // If failed search, retry if parenthesized text is in search parameters
+            if (ret.LyricResult == LyricResultEnum.NotFound)
+            {
+                // Is parenthesized text present?
+                var artistIdx = mcItem.Artist.IndexOf('(');
+                var albumIdx = mcItem.Album.IndexOf('(');
+                var nameIdx = mcItem.Name.IndexOf('(');
+
+                if ((artistIdx > 0) || (albumIdx > 0) || (nameIdx > 0))
+                {
+                    // Retry with parenthesized text removed
+                    var mcItemClone = mcItem.Clone();
+
+                    if (artistIdx > 0)
+                        mcItemClone.Artist = mcItem.Artist.Substring(0, artistIdx).Trim();
+
+                    if (albumIdx > 0)
+                        mcItemClone.Album = mcItem.Album.Substring(0, albumIdx).Trim();
+
+                    if (nameIdx > 0)
+                        mcItemClone.Name = mcItem.Name.Substring(0, nameIdx).Trim();
+
+                    ret = await ProcessAsync(mcItemClone, cancellationToken, isGetAll);
+                }
+            }
+
+            return ret;
         }
 
 

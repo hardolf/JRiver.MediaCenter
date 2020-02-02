@@ -157,6 +157,79 @@ namespace MediaCenter.McWs
 
 
         /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>Deep copy of the current McMplItem object.</returns>
+        public McMplItem Clone()
+        {
+            var ret = McMplItem.Clone(this);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Clones the specified source.
+        /// </summary>
+        /// <param name="src">The source.</param>
+        /// <returns>Deep copy of the source McMplItem object.</returns>
+        /// <exception cref="ArgumentNullException">src</exception>
+        public static McMplItem Clone(McMplItem src)
+        {
+            if (src is null) throw new ArgumentNullException(nameof(src));
+
+            var ret = new McMplItem
+            {
+                Album = src.Album,
+                Artist = src.Artist,
+                BitDepth = src.BitDepth,
+                Bitrate = src.Bitrate,
+                Bookmark = src.Bookmark,
+                BPM = src.BPM,
+                Channels = src.Channels,
+                Compression = src.Compression,
+                Date = src.Date,
+                DateCreated = src.DateCreated,
+                DateFirstRated = src.DateFirstRated,
+                DateImported = src.DateImported,
+                DateModified = src.DateModified,
+                Duration = src.Duration,
+                DynamicRangeDr = src.DynamicRangeDr,
+                DynamicRangeR128 = src.DynamicRangeR128,
+                Filename = src.Filename,
+                FileSize = src.FileSize,
+                FileType = src.FileType,
+                Genre = src.Genre,
+                GetCoverArtInfo = src.GetCoverArtInfo,
+                // Image = src.Image,
+                ImageFile = src.ImageFile,
+                Key = src.Key,
+                LastPlayed = src.LastPlayed,
+                LastSkipped = src.LastSkipped,
+                Lyrics = src.Lyrics,
+                MediaType = src.MediaType,
+                Name = src.Name,
+                NumberPlays = src.NumberPlays,
+                PeakLevelR128 = src.PeakLevelR128,
+                PeakLevelSample = src.PeakLevelSample,
+                SampleRate = src.SampleRate,
+                SkipCount = src.SkipCount,
+                TotalTracks = src.TotalTracks,
+                TrackNumber = src.TrackNumber,
+                VolumeLevelR128 = src.VolumeLevelR128,
+                VolumeLevelReplayGain = src.VolumeLevelReplayGain
+            };
+
+            foreach (var field in src.Fields)
+            {
+                ret.Fields.Add(field.Key, field.Value);
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Creates the mc MPL item.
         /// </summary>
         /// <param name="root">The root.</param>

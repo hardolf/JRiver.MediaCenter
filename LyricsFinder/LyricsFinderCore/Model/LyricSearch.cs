@@ -54,7 +54,7 @@ namespace MediaCenter.LyricsFinder.Model
                 foreach (var service in lyricsFinderData.ActiveLyricServices)
                 {
                     var serviceClone = service.Clone() as AbstractLyricService ?? throw new Exception($"Error cloning service {service.Credit.ServiceName}.");
-                    var task = serviceClone.ProcessAsync(mcItem, cancellationToken, isGetAll);
+                    var task = serviceClone.ProcessAsyncWrapper(mcItem, cancellationToken, isGetAll);
 
                     services.Add(service);
                     ret.Add(serviceClone);

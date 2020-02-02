@@ -125,6 +125,20 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     }
                 }
             }
+            catch (FaultException ex)
+            {
+                if (ex.Message.Contains("No valid words left in contains list")) // Ignore error if empty contains list
+                {
+                    try
+                    {
+                        if (client != null)
+                            ((ICommunicationObject)client).Abort();
+                    }
+                    catch { /* I don't care */ }
+                }
+                else
+                    throw;
+            }
             catch (HttpRequestException ex)
             {
                 throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed on {msg}.", isGetAll, Credit, item, ub.Uri, ex);
