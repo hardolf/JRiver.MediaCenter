@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CA2213: 'LyricsFinderCore' contains field '_mcControlForm' that is of IDisposable type 'McControlForm', but it is never disposed. Change the Dispose method on 'LyricsFinderCore' to call Close or Dispose on this field.
+dotnet_diagnostic.CA2213.severity = warning

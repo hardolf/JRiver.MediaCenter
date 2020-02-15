@@ -37,7 +37,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
         bool IsImplemented { get; set; }
 
-        LyricResultEnum LyricResult { get; set; }
+        LyricsResultEnum LyricResult { get; set; }
 
         string LyricResultMessage { get; }
 

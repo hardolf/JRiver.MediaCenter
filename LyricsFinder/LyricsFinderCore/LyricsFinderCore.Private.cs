@@ -48,8 +48,8 @@ namespace MediaCenter.LyricsFinder
         private int _playingKey = -1;
         private int _selectedKey = -1;
         private static int _progressPercentage = -1;
-        private static int _mcStatusIntervalNormal = 500; // ½ second
-        private static int _mcStatusIntervalError = 5000; // 5 seconds
+        private static int _mcStatusIntervalNormal = 300; // milliseconds
+        private static int _mcStatusIntervalError = 5000; // milliseconds
 
         private readonly string _logHeader = "".PadRight(80, '-');
 
@@ -57,6 +57,7 @@ namespace MediaCenter.LyricsFinder
 
         private BitmapForm _bitmapForm = null;
         private LyricForm _lyricsForm = null;
+        private McControlForm _mcControlForm = null;
         private List<string> _noLyricsSearchList = new List<string>();
         private SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
         private McPlayListsResponse _currentUnsortedMcPlaylistsResponse = null;
@@ -204,7 +205,7 @@ namespace MediaCenter.LyricsFinder
 
             foreach (var item in _currentLyricsFinderPlaylist.Items)
             {
-                var initStatus = LyricResultEnum.NotProcessedYet.ResultText();
+                var initStatus = LyricsResultEnum.NotProcessedYet.ResultText();
                 var row = new DataGridViewRow();
                 var value = item.Value;
                 var coverImage = GetCoverImage(value);
@@ -522,7 +523,7 @@ namespace MediaCenter.LyricsFinder
 
                 // Create service instance(s)
                 await Logging.LogAsync(_progressPercentage,
-                    ((assyLyricsServiceTypes != null) && (assyLyricsServiceTypes.Count<Type>() > 0))
+                    ((assyLyricsServiceTypes != null) && (assyLyricsServiceTypes.Any()))
                     ? $"Creating service instance(s) from \"{file}\"..."
                     : $"No lyric services in \"{file}\"."
                     , true);
@@ -779,8 +780,8 @@ namespace MediaCenter.LyricsFinder
                 var statusCell = rows[i].Cells[(int)GridColumnEnum.Status];
                 var status = statusCell.Value.ToString().ToLyricResultEnum();
 
-                if ((status & (LyricResultEnum.NotFound | LyricResultEnum.Error | LyricResultEnum.Canceled | LyricResultEnum.SkippedOldLyrics)) != 0) // If status is one of those enum values
-                    statusCell.Value = LyricResultEnum.NotProcessedYet.ResultText();
+                if ((status & (LyricsResultEnum.NotFound | LyricsResultEnum.Error | LyricsResultEnum.Canceled | LyricsResultEnum.SkippedOldLyrics)) != 0) // If status is one of those enum values
+                    statusCell.Value = LyricsResultEnum.NotProcessedYet.ResultText();
             }
         }
 
@@ -811,7 +812,7 @@ namespace MediaCenter.LyricsFinder
                         throw new Exception($"Error parsing row {i} cell(s): keyTxt=\"{keyTxt}\", lyrics=\"{lyrics}\", status=\"{statusTxt}\".");
 
                     // We only save items if they are found or manually edited
-                    if ((statusTxt.ToLyricResultEnum() & (LyricResultEnum.Found | LyricResultEnum.ManuallyEdited)) != 0) // If status is one of those enum values
+                    if ((statusTxt.ToLyricResultEnum() & (LyricsResultEnum.Found | LyricsResultEnum.ManuallyEdited)) != 0) // If status is one of those enum values
                     {
                         var rsp = await McRestService.SetInfo(key, "Lyrics", lyrics);
 
@@ -884,6 +885,12 @@ namespace MediaCenter.LyricsFinder
                     else
                         imgCell.Value = _emptyPlayPauseImage;
 
+                    if (_mcControlForm != null)
+                    {
+                        await _mcControlForm.SetCurrentSecondsAsync(int.Parse(mcInfo.PositionMS, CultureInfo.InvariantCulture) / 1000);
+                        await _mcControlForm.SetMaxSecondsAsync(int.Parse(mcInfo.DurationMS, CultureInfo.InvariantCulture) / 1000);
+                    }
+
                     break;
                 }
             }
@@ -900,18 +907,24 @@ namespace MediaCenter.LyricsFinder
                 ContextPlayPauseMenuItem.Text = (_playingKey == selectedKey) ? "Pause play" : "Play";
                 ContextPlayStopMenuItem.Visible = true;
                 ToolsPlayStartStopButton.SetRunningState(true);
+
+                //await ShowMcControlForm(MainContainer.TopToolStripPanel, true);
             }
             else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
             {
                 ContextPlayPauseMenuItem.Text = (_playingKey == selectedKey) ? "Continue play" : "Play";
                 ContextPlayStopMenuItem.Visible = false;
                 ToolsPlayStartStopButton.SetRunningState(false);
+
+                //await ShowMcControlForm(MainContainer.TopToolStripPanel, false);
             }
             else
             {
                 ContextPlayPauseMenuItem.Text = "Play";
                 ContextPlayStopMenuItem.Visible = false;
                 ToolsPlayStartStopButton.SetRunningState(false);
+
+                //await ShowMcControlForm(MainContainer.TopToolStripPanel, false);
             }
 
             McStatusTimer.Start();
@@ -1005,7 +1018,7 @@ namespace MediaCenter.LyricsFinder
                     var row = lyricForm.LyricCell.OwningRow;
 
                     row.Selected = true;
-                    row.Cells[(int)GridColumnEnum.Status].Value = LyricResultEnum.ManuallyEdited.ResultText();
+                    row.Cells[(int)GridColumnEnum.Status].Value = LyricsResultEnum.ManuallyEdited.ResultText();
 
                     IsDataChanged = true;
                 }
@@ -1013,6 +1026,39 @@ namespace MediaCenter.LyricsFinder
             catch (Exception ex)
             {
                 await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Shows the mc control form.
+        /// </summary>
+        /// <param name="owner">The owner control.</param>
+        /// <param name="isVisible">if set to <c>true</c> the form is visible; else it is hidden.</param>
+        public void ShowMcControlForm(Control owner, bool isVisible)
+        {
+            const int margin = 10;
+
+            var refCtl = MainContainer.TopToolStripPanel;
+            var refScreenLocation = refCtl.PointToScreen(refCtl.Location);
+            var subMenuWidth = TopSubMenuTextBox.Width + TopSubMenuTextBox.Margin.Left + TopSubMenuTextBox.Margin.Right;
+            var leftPos = refScreenLocation.X + subMenuWidth + margin;
+            var topPos = refScreenLocation.Y;
+            var width = refCtl.Width - subMenuWidth - 150;
+
+            _mcControlForm?.Close();
+            _mcControlForm = null;
+
+            if (isVisible)
+            {
+                _mcControlForm = new McControlForm(this)
+                {
+                    Left = leftPos,
+                    Top = topPos,
+                    Width = width
+                };
+
+                _mcControlForm.Show(owner);
             }
         }
 

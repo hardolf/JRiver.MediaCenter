@@ -119,6 +119,7 @@
             this.Controls.Add(this.ErrorPanel);
             this.MinimumSize = new System.Drawing.Size(400, 250);
             this.Name = "ErrorForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Error";
             this.TransparencyKey = System.Drawing.Color.Teal;

@@ -230,6 +230,14 @@ namespace MediaCenter.LyricsFinder
                 {
                     _lyricsForm = ShowLyrics(colIdx, rowIdx);
                 }
+                else if (e.KeyCode == Keys.Left)
+                {
+                    await _mcControlForm.JumpAsync(true, e.Control);
+                }
+                else if (e.KeyCode == Keys.Right)
+                {
+                    await _mcControlForm.JumpAsync(false, e.Control);
+                }
                 else if (e.Control && (e.KeyCode == Keys.S))
                 {
                     await SaveAllAsync();
@@ -253,6 +261,18 @@ namespace MediaCenter.LyricsFinder
             {
                 await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
+        }
+
+
+        /// <summary>
+        /// Handles the Load event of the LyricsFinderCore control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void LyricsFinderCore_Load(object sender, EventArgs e)
+        {
+            ShowMcControlForm(MainContainer.TopToolStripPanel, true);
+            this.Focus();
         }
 
 

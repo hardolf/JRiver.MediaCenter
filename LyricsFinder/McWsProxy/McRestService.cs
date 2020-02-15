@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -160,6 +161,21 @@ namespace MediaCenter.McWs
 
                 case McCommandEnum.PlayPlaylist:
                     sb.Append($"/Playback/{command}?Token={McWsToken}&Playlist={key}");
+                    break;
+
+                case McCommandEnum.Position:
+                    if (key < -1)
+                        sb.Append($"/Playback/{command}?Token={McWsToken}");
+                    else
+                        sb.Append($"/Playback/{command}?Token={McWsToken}&Position={key}");
+
+                    if (!field.IsNullOrEmptyTrimmed())
+                    {
+                        var rel = int.Parse(field);
+
+                        if (rel != 0)
+                            sb.Append($"&Relative={rel}");
+                    }
                     break;
 
                 case McCommandEnum.SetInfo:
@@ -406,6 +422,16 @@ namespace MediaCenter.McWs
         public static async Task<McResponse> PlayStopAsync()
         {
             var requestUrl = CreateRequestUrl(McCommandEnum.Stop);
+            var rsp = await Utility.HttpGetStringAsync(requestUrl).ConfigureAwait(false);
+            var ret = new McResponse(rsp);
+
+            return ret;
+        }
+
+
+        public static async Task<McResponse> PositionAsync(int? position = null, int? relative = null)
+        {
+            var requestUrl = CreateRequestUrl(McCommandEnum.Position, position ?? int.MinValue, relative?.ToString(CultureInfo.InvariantCulture));
             var rsp = await Utility.HttpGetStringAsync(requestUrl).ConfigureAwait(false);
             var ret = new McResponse(rsp);
 

@@ -430,7 +430,7 @@
             this.ToolsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolsSearchMenuItem});
             this.ToolsMenuItem.Name = "ToolsMenuItem";
-            this.ToolsMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.ToolsMenuItem.Size = new System.Drawing.Size(46, 20);
             this.ToolsMenuItem.Text = "&Tools";
             this.ToolsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -471,6 +471,7 @@
             this.MaximumSize = new System.Drawing.Size(800, 1000);
             this.MinimumSize = new System.Drawing.Size(250, 200);
             this.Name = "LyricForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "LyricsForm";
             this.TransparencyKey = System.Drawing.Color.Teal;

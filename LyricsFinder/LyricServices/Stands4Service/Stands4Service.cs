@@ -351,7 +351,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     await ExtractAllLyricTextsAsync(item, results, cancellationToken, isGetAll, true).ConfigureAwait(false);
 
                     // If not found or if we want all possible results, we next try a more lax test without the album
-                    if (isGetAll || (LyricResult != LyricResultEnum.Found))
+                    if (isGetAll || (LyricResult != LyricsResultEnum.Found))
                         await ExtractAllLyricTextsAsync(item, results, cancellationToken, isGetAll, false).ConfigureAwait(false);
                 }
             }

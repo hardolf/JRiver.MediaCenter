@@ -390,17 +390,17 @@ namespace MediaCenter.LyricsFinder
 
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        if (oldStatus == LyricResultEnum.Processing)
-                            statusCell.Value = LyricResultEnum.Canceled.ResultText();
+                        if (oldStatus == LyricsResultEnum.Processing)
+                            statusCell.Value = LyricsResultEnum.Canceled.ResultText();
 
                         break;
                     }
 
                     // Do we need to search this item?
-                    if ((oldStatus == LyricResultEnum.NotProcessedYet)
+                    if ((oldStatus == LyricsResultEnum.NotProcessedYet)
                         && (OverwriteMenuItem.Checked || oldLyric.IsNullOrEmptyTrimmed() || oldLyric.Contains(_noLyricsSearchList)))
                     {
-                        statusCell.Value = $"{LyricResultEnum.Processing.ResultText()}...";
+                        statusCell.Value = $"{LyricsResultEnum.Processing.ResultText()}...";
 
                         // Try to get the first search hit
                         var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _currentLyricsFinderPlaylist.Items[key], cancellationToken, false);
@@ -422,7 +422,7 @@ namespace MediaCenter.LyricsFinder
                         foreach (var service in resultServices)
                         {
 
-                            if (service.LyricResult != LyricResultEnum.Found) continue;
+                            if (service.LyricResult != LyricsResultEnum.Found) continue;
                             if (!service.FoundLyricList.IsNullOrEmpty())
                             {
                                 found = true;
@@ -457,17 +457,17 @@ namespace MediaCenter.LyricsFinder
                             , true, true);
 
                         statusCell.Value = (found)
-                            ? LyricResultEnum.Found.ResultText()
-                            : LyricResultEnum.NotFound.ResultText();
+                            ? LyricsResultEnum.Found.ResultText()
+                            : LyricsResultEnum.NotFound.ResultText();
                     }
                     else if (!OverwriteMenuItem.Checked
                         && !oldLyric.IsNullOrEmptyTrimmed())
-                        statusCell.Value = LyricResultEnum.SkippedOldLyrics.ResultText();
+                        statusCell.Value = LyricsResultEnum.SkippedOldLyrics.ResultText();
                 }
             }
             catch (Exception ex)
             {
-                statusCell.Value = LyricResultEnum.Error.ResultText();
+                statusCell.Value = LyricsResultEnum.Error.ResultText();
                 throw new Exception(msg, ex);
             }
         }

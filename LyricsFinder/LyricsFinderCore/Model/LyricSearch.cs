@@ -73,12 +73,12 @@ namespace MediaCenter.LyricsFinder.Model
                             {
                                 _ = await task;
 
-                                if (task.Result.LyricResult == LyricResultEnum.Found)
+                                if (task.Result.LyricResult == LyricsResultEnum.Found)
                                     break;
                             }
                         }
                         else
-                            _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricResultEnum.Found);
+                            _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricsResultEnum.Found);
                     }
                 }
             }

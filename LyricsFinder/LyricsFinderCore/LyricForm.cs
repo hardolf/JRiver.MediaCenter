@@ -750,7 +750,7 @@ namespace MediaCenter.LyricsFinder
             // Process the results
             foreach (var service in resultServices)
             {
-                if (service.LyricResult != LyricResultEnum.Found) continue;
+                if (service.LyricResult != LyricsResultEnum.Found) continue;
 
                 _serviceCounts.Add(service.Credit.ServiceName, service.FoundLyricList.Count);
 

@@ -468,6 +468,7 @@
             this.MinimizeBox = false;
             this.Name = "OptionForm";
             this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Options";

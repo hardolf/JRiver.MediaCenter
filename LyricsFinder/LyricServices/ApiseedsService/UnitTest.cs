@@ -78,7 +78,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 
                 Assert.IsNotNull(resultService);
                 Assert.AreEqual(0, resultService.FoundLyricList.Count);
-                Assert.AreEqual(resultService.LyricResult, LyricResultEnum.NotFound);
+                Assert.AreEqual(resultService.LyricResult, LyricsResultEnum.NotFound);
             }
         }
 
@@ -92,7 +92,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
 
                 Assert.IsNotNull(resultService);
                 Assert.AreEqual(0, resultService.FoundLyricList.Count);
-                Assert.AreEqual(resultService.LyricResult, LyricResultEnum.NotFound);
+                Assert.AreEqual(resultService.LyricResult, LyricsResultEnum.NotFound);
             }
         }
 

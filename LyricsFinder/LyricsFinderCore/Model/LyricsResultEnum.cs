@@ -15,7 +15,7 @@ namespace MediaCenter.LyricsFinder.Model
     /// </summary>
     [ComVisible(false)]
     [Flags]
-    public enum LyricResultEnum
+    public enum LyricsResultEnum
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         NotProcessedYet = 0,
@@ -32,7 +32,7 @@ namespace MediaCenter.LyricsFinder.Model
 
 
     /// <summary>
-    /// Extension methods for the <see cref="LyricResultEnum"/>.
+    /// Extension methods for the <see cref="LyricsResultEnum"/>.
     /// </summary>
     [ComVisible(false)]
     public static class LyricResultEnumExtensions
@@ -42,7 +42,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// Lyrics result text.
         /// </summary>
         /// <returns>Transformed text.</returns>
-        public static string ResultText(this LyricResultEnum lyricsResult)
+        public static string ResultText(this LyricsResultEnum lyricsResult)
         {
             var ret = new StringBuilder(lyricsResult.ToString());
 
@@ -63,19 +63,19 @@ namespace MediaCenter.LyricsFinder.Model
 
 
         /// <summary>
-        /// Converts a string to a matching <see cref="LyricResultEnum"/> value.
+        /// Converts a string to a matching <see cref="LyricsResultEnum"/> value.
         /// </summary>
         /// <param name="resultText">The result text.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">resultText</exception>
         /// <exception cref="ArgumentException"></exception>
-        public static LyricResultEnum ToLyricResultEnum(this string resultText)
+        public static LyricsResultEnum ToLyricResultEnum(this string resultText)
         {
             if (resultText == null) throw new ArgumentNullException(nameof(resultText));
 
             resultText = resultText.Replace(" ", string.Empty);
 
-            foreach (var lr in (LyricResultEnum[])Enum.GetValues(typeof(LyricResultEnum)))
+            foreach (var lr in (LyricsResultEnum[])Enum.GetValues(typeof(LyricsResultEnum)))
             {
                 if (lr.ToString().Equals(resultText, StringComparison.InvariantCultureIgnoreCase))
                     return lr;

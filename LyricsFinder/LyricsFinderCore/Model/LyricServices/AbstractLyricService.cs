@@ -116,7 +116,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// The lyric result.
         /// </value>
         [XmlIgnore]
-        public virtual LyricResultEnum LyricResult { get; set; }
+        public virtual LyricsResultEnum LyricResult { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="AbstractLyricService"/> is active, i.e. should be part of the lyric search.
@@ -156,7 +156,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 var ret = new StringBuilder(LyricResult.ResultText());
 
-                if (LyricResult == LyricResultEnum.Found)
+                if (LyricResult == LyricsResultEnum.Found)
                     ret.Append($" by service \"{Credit.ServiceName}\"");
 
                 return ret.ToString();
@@ -221,7 +221,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             FoundLyricList = new ReadOnlyCollection<FoundLyricType>(InternalFoundLyricList);
             IsActive = false;
             IsImplemented = false;
-            LyricResult = LyricResultEnum.NotProcessedYet;
+            LyricResult = LyricsResultEnum.NotProcessedYet;
         }
 
 
@@ -241,7 +241,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             IsActive = source.IsActive;
             IsImplemented = source.IsImplemented;
             LyricsFinderData = source.LyricsFinderData;
-            LyricResult = LyricResultEnum.NotProcessedYet;
+            LyricResult = LyricsResultEnum.NotProcessedYet;
 
             HitCountToday = source.HitCountToday;
             HitCountTotal = source.HitCountTotal;
@@ -277,7 +277,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             // This construct ensures that we don't count duplicates
             await IncrementHitCountersAsync(diff);
 
-            LyricResult = LyricResultEnum.Found;
+            LyricResult = LyricsResultEnum.Found;
 
             return ret;
         }
@@ -524,7 +524,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
             InternalFoundLyricList.Clear();
-            LyricResult = LyricResultEnum.NotFound;
+            LyricResult = LyricsResultEnum.NotFound;
 
             // Skip if we are over the quota limit
             if (IsActive && await IsQuotaExceededAsync())
@@ -554,7 +554,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             var ret = await ProcessAsync(mcItem, cancellationToken, isGetAll);
 
             // If failed search, retry if parenthesized text is in search parameters
-            if (ret.LyricResult == LyricResultEnum.NotFound)
+            if (ret.LyricResult == LyricsResultEnum.NotFound)
             {
                 // Is parenthesized text present?
                 var artistIdx = mcItem.Artist.IndexOf('(');
