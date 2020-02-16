@@ -232,11 +232,13 @@ namespace MediaCenter.LyricsFinder
                 }
                 else if (e.KeyCode == Keys.Left)
                 {
-                    await _mcControlForm.JumpAsync(true, e.Control);
+                    if (_mcControlForm != null)
+                        await _mcControlForm.JumpAsync(true, e.Control);
                 }
                 else if (e.KeyCode == Keys.Right)
                 {
-                    await _mcControlForm.JumpAsync(false, e.Control);
+                    if (_mcControlForm != null)
+                        await _mcControlForm.JumpAsync(false, e.Control);
                 }
                 else if (e.Control && (e.KeyCode == Keys.S))
                 {
@@ -269,10 +271,17 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void LyricsFinderCore_Load(object sender, EventArgs e)
+        private async void LyricsFinderCore_LoadAsync(object sender, EventArgs e)
         {
-            ShowMcControlForm(MainContainer.TopToolStripPanel, true);
-            this.Focus();
+            try
+            {
+                ShowMcControlForm(this, true);
+                this.Focus();
+            }
+            catch (Exception ex)
+            {
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
         }
 
 
@@ -508,6 +517,24 @@ namespace MediaCenter.LyricsFinder
                         break;
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the MouseEnter event of the MainGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MainGridView_MouseEnterAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Focus();
             }
             catch (Exception ex)
             {
@@ -790,6 +817,46 @@ namespace MediaCenter.LyricsFinder
                 // Let's ignore this!
                 // ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
+        }
+
+
+        /// <summary>
+        /// Plays the item in the Playing Now list by the selected row index.
+        /// </summary>
+        public async Task PlayOrPauseAsync()
+        {
+            var rows = MainGridView.Rows;
+            var selectedRows = MainGridView.SelectedRows;
+
+            if (selectedRows.Count < 1)
+                return;
+
+            // Is the selected file in the Media Center's Playing Now list?
+            var rowIdx = selectedRows[0].Index;
+            var selectedIndexCell = rows[rowIdx].Cells[(int)GridColumnEnum.Index] as DataGridViewTextBoxCell;
+            var selectedKeyCell = rows[rowIdx].Cells[(int)GridColumnEnum.Key] as DataGridViewTextBoxCell;
+            var selectedIndex = (int)(selectedIndexCell?.Value ?? -1);
+            var selectedKey = (int)(selectedKeyCell?.Value ?? -1);
+            var isInPlayingNowList = _currentMcPlaylist.Items.ContainsKey(selectedKey);
+
+            if (isInPlayingNowList)
+            {
+                if (selectedIndex == _playingIndex)
+                    await McRestService.PlayPauseAsync();
+                else
+                    await McRestService.PlayByIndexAsync(selectedIndex);
+            }
+            else if ((_currentLyricsFinderPlaylist != null) && (_currentLyricsFinderPlaylist.Id > 0))
+            {
+                // Replace the MC Playing Now list with the current LyricsFinder playlist
+                var rsp = await McRestService.PlayPlaylistAsync(_currentLyricsFinderPlaylist.Id);
+
+                // Play the selected item
+                if (rsp.IsOk)
+                    await McRestService.PlayByIndexAsync(selectedIndex);
+            }
+
+            await SetPlayingImagesAndMenusAsync();
         }
 
 

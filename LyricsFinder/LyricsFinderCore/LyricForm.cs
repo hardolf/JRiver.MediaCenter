@@ -74,6 +74,14 @@ namespace MediaCenter.LyricsFinder
         private LyricsFinderDataType LyricsFinderData { get; set; }
 
         /// <summary>
+        /// Gets or sets the lyrics finder core.
+        /// </summary>
+        /// <value>
+        /// The lyrics finder core.
+        /// </value>
+        private LyricsFinderCore LyricsFinderCore { get; set; }
+
+        /// <summary>
         /// Gets the dialog result.
         /// </summary>
         /// <value>
@@ -105,18 +113,17 @@ namespace MediaCenter.LyricsFinder
         /// <param name="size">The size.</param>
         /// <param name="callback">The callback.</param>
         /// <param name="lyricsFinderData">The lyrics finder data.</param>
+        /// <param name="lyricsFinderCore">The lyrics finder core.</param>
         /// <param name="isSearch">if set to <c>true</c> [is search].</param>
         /// <param name="artist">The artist, only used for search.</param>
         /// <param name="album">The album, only used for search.</param>
         /// <param name="track">The track, only used for search.</param>
-        /// <exception cref="ArgumentNullException">
-        /// lyricCell
+        /// <exception cref="ArgumentNullException">lyricCell
         /// or
         /// callback
         /// or
-        /// lyricsFinderData
-        /// </exception>
-        internal LyricForm(DataGridViewTextBoxCell lyricCell, Point location, Size? size, Action<LyricForm> callback, LyricsFinderDataType lyricsFinderData, bool isSearch = false, string artist = null, string album = null, string track = null)
+        /// lyricsFinderData</exception>
+        internal LyricForm(DataGridViewTextBoxCell lyricCell, Point location, Size? size, Action<LyricForm> callback, LyricsFinderDataType lyricsFinderData, LyricsFinderCore lyricsFinderCore = null, bool isSearch = false, string artist = null, string album = null, string track = null)
             : this()
         {
 #pragma warning disable IDE0016 // Use 'throw' expression
@@ -132,6 +139,7 @@ namespace MediaCenter.LyricsFinder
             _finalLyric = _initLyric;
             _isSearch = isSearch;
             LyricsFinderData = lyricsFinderData;
+            LyricsFinderCore = lyricsFinderCore;
 
             if (size != null)
                 Size = size.Value;
@@ -265,7 +273,6 @@ namespace MediaCenter.LyricsFinder
                         case DialogResult.Yes:
                             e.Cancel = false;
                             Lyric = _finalLyric;
-                            _callback(this);
                             break;
 
                         default:
@@ -273,8 +280,7 @@ namespace MediaCenter.LyricsFinder
                     }
                 }
 
-                if (_isSearch)
-                    _callback(this);
+                _callback(this);
 
                 LyricsFinderData.MainData.LyricFormSize = Size;
                 LyricsFinderData.SaveAsync();
@@ -330,6 +336,11 @@ namespace MediaCenter.LyricsFinder
                     // LyricFormTimer.Start();
                     await SearchAsync();
                 }
+                else
+                {
+                    LyricsFinderCore.ShowMcControlForm(this, true);
+                    this.Focus();
+                }
 
                 if (_cancellationTokenSource.IsCancellationRequested)
                     LyricFormStatusLabel.Text = "Search canceled.";
@@ -349,6 +360,24 @@ namespace MediaCenter.LyricsFinder
             finally
             {
                 UseWaitCursor = false;
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the MouseEnterAsync event of some of the LyricForm controls.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void LyricForm_MouseEnterAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Focus();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 
@@ -412,6 +441,8 @@ namespace MediaCenter.LyricsFinder
                     LyricTextBox.SelectAll();
                     e.Handled = true;
                 }
+                else
+                    e.Handled = false;
             }
             catch (Exception ex)
             {
@@ -616,7 +647,7 @@ namespace MediaCenter.LyricsFinder
                 if (_searchForm != null)
                     _searchForm.Close();
 
-                _searchForm = new LyricForm(LyricCell, Location, Size, SearchLyricCallbackAsync, LyricsFinderData, true, ArtistTextBox.Text, AlbumTextBox.Text, TrackTextBox.Text);
+                _searchForm = new LyricForm(LyricCell, Location, Size, SearchLyricCallbackAsync, LyricsFinderData, LyricsFinderCore, true, ArtistTextBox.Text, AlbumTextBox.Text, TrackTextBox.Text);
                 _searchForm.Show(this);
             }
             catch (Exception ex)

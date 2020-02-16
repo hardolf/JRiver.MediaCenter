@@ -63,12 +63,28 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Gets or sets the image.
+        /// </summary>
+        /// <value>
+        /// The image.
+        /// </value>
+        private Image StopImage { get; set; }
+
+        /// <summary>
         /// Gets or sets the owner control.
         /// </summary>
         /// <value>
         /// The owner control.
         /// </value>
         private Control OwnerControl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the lyrics finder core.
+        /// </summary>
+        /// <value>
+        /// The lyrics finder core.
+        /// </value>
+        private LyricsFinderCore LyricsFinderCore { get; set; }
 
 
         /// <summary>
@@ -77,6 +93,8 @@ namespace MediaCenter.LyricsFinder
         private McControlForm()
         {
             InitializeComponent();
+
+            StopImage = ToolsPlayStartStopButton.Image;
         }
 
 
@@ -84,10 +102,12 @@ namespace MediaCenter.LyricsFinder
         /// Initializes a new instance of the <see cref="McControlForm" /> class.
         /// </summary>
         /// <param name="owner">The owner.</param>
-        public McControlForm(Control owner)
+        /// <param name="lyricsFinderCore">The lyrics finder core.</param>
+        public McControlForm(Control owner, LyricsFinderCore lyricsFinderCore)
             : this()
         {
             OwnerControl = owner;
+            LyricsFinderCore = lyricsFinderCore;
         }
 
 
@@ -124,40 +144,27 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Sets the current seconds.
+        /// Handles the Load event of the McControlForm control.
         /// </summary>
-        /// <param name="value">The value.</param>
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task SetCurrentSecondsAsync(int value)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void McControlForm_LoadAsync(object sender, EventArgs e)
         {
-            if (_isLocked) return;
+            try
+            {
+                await SetMaxSecondsAsync(0); // Set this before the current seconds
+                await SetCurrentSecondsAsync(0);
 
-            CurrentSeconds = value;
+                if (ToolsPlayStartStopButton.GetStartingEventSubscribers().Length == 0)
+                    ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_StartAsync;
 
-            var max = new TimeSpan(McCurrentPositionTrackBar.Maximum * 10000000);
-            var maxTxt = (max.TotalMinutes > 59) ? $"{max.TotalHours:###0}:{max.Minutes:00}:{max.Seconds:00}" : $"{max.TotalMinutes:#0}:{max.Seconds:00}";
-
-            var pos = new TimeSpan(value * 10000000);
-            var posTxt = (max.TotalMinutes > 59) ? $"{pos.TotalHours:###0}:{pos.Minutes:00}:{pos.Seconds:00}" : $"{pos.TotalMinutes:#0}:{pos.Seconds:00}";
-
-            TrackingLabel.Text = $"{posTxt} / {maxTxt}";
-            TrackingLabel.Left = Width / 2 - 10;
-            TrackingLabel.BringToFront();
-        }
-
-
-        /// <summary>
-        /// Sets the maximum seconds.
-        /// </summary>
-        /// <param name="value">The value.</param>
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task SetMaxSecondsAsync(int value)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        {
-            if (_isLocked) return;
-
-            MaxSeconds = value;
+                if (ToolsPlayStartStopButton.GetStoppingEventSubscribers().Length == 0)
+                    ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_StopAsync;
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
         }
 
 
@@ -225,6 +232,144 @@ namespace MediaCenter.LyricsFinder
             finally
             {
                 _semaphoreSlim.Release();
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the MouseEnter event of the McControlForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void McControlForm_MouseEnterAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Focus();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the MouseEnter event of the McControlLeftToolStrip control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void McControlLeftToolStrip_MouseEnterAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                if (McControlLeftToolStrip.CanFocus)
+                    McControlLeftToolStrip.Focus();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Pauses the playback.
+        /// </summary>
+        public void PauseStat()
+        {
+            ToolsPlayStartStopButton.SetRunningState(false);
+        }
+
+
+        /// <summary>
+        /// Start or resume playback.
+        /// </summary>
+        public void PlayStat()
+        {
+            ToolsPlayStartStopButton.SetRunningState(true);
+        }
+
+
+        /// <summary>
+        /// Sets the current seconds.
+        /// </summary>
+        /// <param name="value">The value.</param>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task SetCurrentSecondsAsync(int value)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            if (_isLocked) return;
+
+            CurrentSeconds = value;
+
+            var max = new TimeSpan(McCurrentPositionTrackBar.Maximum * 10000000);
+            var maxTxt = (max.TotalMinutes > 59) ? $"{max.TotalHours:###0}:{max.Minutes:00}:{max.Seconds:00}" : $"{max.TotalMinutes:#0}:{max.Seconds:00}";
+
+            var pos = new TimeSpan(value * 10000000);
+            var posTxt = (max.TotalMinutes > 59) ? $"{pos.TotalHours:###0}:{pos.Minutes:00}:{pos.Seconds:00}" : $"{pos.TotalMinutes:#0}:{pos.Seconds:00}";
+
+            TrackingLabel.Text = $"{posTxt} / {maxTxt}";
+            TrackingLabel.Left = Width / 2 - TrackingLabel.Width / 2;
+            TrackingLabel.BringToFront();
+        }
+
+
+        /// <summary>
+        /// Sets the maximum seconds.
+        /// </summary>
+        /// <param name="value">The value.</param>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task SetMaxSecondsAsync(int value)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            if (_isLocked) return;
+
+            MaxSeconds = value;
+        }
+
+
+        /// <summary>
+        /// Stops the playback.
+        /// </summary>
+        public void StopStat()
+        {
+            ToolsPlayStartStopButton.SetRunningState(false);
+        }
+
+
+        /// <summary>
+        /// Handles the Starting event of the ToolsPlayStartStopButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
+        private async void ToolsPlayStartStopButton_StartAsync(object sender, StartStopButtonEventArgs e)
+        {
+            try
+            {
+                await LyricsFinderCore.PlayOrPauseAsync();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Starting event of the ToolsPlayStartStopButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
+        private async void ToolsPlayStartStopButton_StopAsync(object sender, StartStopButtonEventArgs e)
+        {
+            try
+            {
+                await LyricsFinderCore.PlayOrPauseAsync();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
         }
 

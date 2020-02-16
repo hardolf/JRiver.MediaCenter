@@ -187,6 +187,7 @@
             this.LyricFormPanel.Name = "LyricFormPanel";
             this.LyricFormPanel.Size = new System.Drawing.Size(384, 537);
             this.LyricFormPanel.TabIndex = 1;
+            this.LyricFormPanel.MouseEnter += new System.EventHandler(this.LyricForm_MouseEnterAsync);
             // 
             // LyricParmsPanel
             // 
@@ -478,6 +479,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricForm_FormClosingAsync);
             this.Load += new System.EventHandler(this.LyricForm_LoadAsync);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricForm_KeyDownAsync);
+            this.MouseEnter += new System.EventHandler(this.LyricForm_MouseEnterAsync);
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).EndInit();
             this.LyricFormToolStripContainer.ContentPanel.ResumeLayout(false);
             this.LyricFormToolStripContainer.TopToolStripPanel.ResumeLayout(false);
