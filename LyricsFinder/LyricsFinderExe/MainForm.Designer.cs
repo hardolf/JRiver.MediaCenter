@@ -44,25 +44,28 @@ namespace MediaCenter.LyricsFinder
             // 
             // TablePanel
             // 
+            this.TablePanel.AutoSize = true;
+            this.TablePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.TablePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.TablePanel.ColumnCount = 2;
             this.TablePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.TablePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 89F));
             this.TablePanel.Controls.Add(this.ExitButton, 1, 1);
-            this.TablePanel.Controls.Add(this.LyricsFinderCore, 0, 0);
             this.TablePanel.Controls.Add(this.RotButton, 0, 1);
+            this.TablePanel.Controls.Add(this.LyricsFinderCore, 0, 0);
             this.TablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TablePanel.Location = new System.Drawing.Point(0, 0);
             this.TablePanel.Name = "TablePanel";
             this.TablePanel.RowCount = 2;
             this.TablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.TablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
-            this.TablePanel.Size = new System.Drawing.Size(984, 761);
+            this.TablePanel.Size = new System.Drawing.Size(987, 661);
             this.TablePanel.TabIndex = 0;
             // 
             // ExitButton
             // 
             this.ExitButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.ExitButton.Location = new System.Drawing.Point(900, 728);
+            this.ExitButton.Location = new System.Drawing.Point(903, 628);
             this.ExitButton.Margin = new System.Windows.Forms.Padding(5);
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(75, 23);
@@ -75,7 +78,7 @@ namespace MediaCenter.LyricsFinder
             // RotButton
             // 
             this.RotButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.RotButton.Location = new System.Drawing.Point(790, 728);
+            this.RotButton.Location = new System.Drawing.Point(793, 628);
             this.RotButton.Margin = new System.Windows.Forms.Padding(5);
             this.RotButton.Name = "RotButton";
             this.RotButton.Size = new System.Drawing.Size(100, 24);
@@ -94,23 +97,26 @@ namespace MediaCenter.LyricsFinder
             // 
             // LyricsFinderCore
             // 
+            this.LyricsFinderCore.AutoSize = true;
+            this.LyricsFinderCore.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.TablePanel.SetColumnSpan(this.LyricsFinderCore, 2);
-            this.LyricsFinderCore.DataBindings.Add(new System.Windows.Forms.Binding("Location", global::MediaCenter.LyricsFinder.Properties.Settings.Default, "MainFormLocation", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.LyricsFinderCore.DataDirectory = null;
             this.LyricsFinderCore.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricsFinderCore.IsDataChanged = false;
-            this.LyricsFinderCore.Location = global::MediaCenter.LyricsFinder.Properties.Settings.Default.MainFormLocation;
+            this.LyricsFinderCore.Location = new System.Drawing.Point(3, 3);
+            this.LyricsFinderCore.MinimumSize = new System.Drawing.Size(770, 200);
             this.LyricsFinderCore.Name = "LyricsFinderCore";
-            this.LyricsFinderCore.Size = new System.Drawing.Size(978, 717);
-            this.LyricsFinderCore.TabIndex = 2;
-            this.MainToolTip.SetToolTip(this.LyricsFinderCore, "Start lyrics search for all playlist items");
+            this.LyricsFinderCore.Size = new System.Drawing.Size(981, 617);
+            this.LyricsFinderCore.TabIndex = 4;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.CancelButton = this.ExitButton;
-            this.ClientSize = new System.Drawing.Size(984, 761);
+            this.ClientSize = new System.Drawing.Size(987, 661);
             this.Controls.Add(this.TablePanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(750, 300);
@@ -122,7 +128,9 @@ namespace MediaCenter.LyricsFinder
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_ShownAsync);
             this.TablePanel.ResumeLayout(false);
+            this.TablePanel.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -130,9 +138,9 @@ namespace MediaCenter.LyricsFinder
 
         private System.Windows.Forms.TableLayoutPanel TablePanel;
         private System.Windows.Forms.Button ExitButton;
-        private MediaCenter.LyricsFinder.LyricsFinderCore LyricsFinderCore;
         private System.Windows.Forms.Button RotButton;
         private System.Windows.Forms.ToolTip MainToolTip;
+        private LyricsFinderCore LyricsFinderCore;
     }
 
 }

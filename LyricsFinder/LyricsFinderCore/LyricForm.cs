@@ -338,7 +338,7 @@ namespace MediaCenter.LyricsFinder
                 }
                 else
                 {
-                    LyricsFinderCore.ShowMcControlForm(this, true);
+                    LyricsFinderCore.ShowMcPlayControl(this);
                     this.Focus();
                 }
 
@@ -693,9 +693,9 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        /**********************************/
-        /***** Private misc. routines *****/
-        /**********************************/
+        /**************************/
+        /***** Misc. routines *****/
+        /**************************/
 
         /// <summary>
         /// Deletes the text.
@@ -754,6 +754,34 @@ namespace MediaCenter.LyricsFinder
             var count = _serviceCounts.First(s => s.Key == serviceName).Value;
 
             return (count > 1) ? $"({count})" : string.Empty;
+        }
+
+
+        /// <summary>
+        /// Resizes the Media Center play control.
+        /// </summary>
+        public void PositionAndResizeMcPlayControl()
+        {
+            if (LyricsFinderCore.McPlayControl == null) return;
+
+            const int margin = 40;
+
+            var refCtl = HelpMenuItem;
+            // var refScreenLocation = refCtl.PointToScreen(refCtl.Location);
+            var leftOffset = refCtl.Bounds.X + margin;
+            //var left = refScreenLocation.X + leftOffset;
+            //var top = refScreenLocation.Y;
+            var left = leftOffset;
+            var top = refCtl.Bounds.Y;
+            var width = LyricFormMenuStrip.Width - leftOffset;
+            var height = LyricFormMenuStrip.Height + (int) LyricParmsPanel.RowStyles[0].Height;
+
+            // MessageBox.Show($"left={left} top={top} width={width} height={height}", "Test");
+
+            LyricsFinderCore.McPlayControl.Left = left;
+            LyricsFinderCore.McPlayControl.Top = top;
+            LyricsFinderCore.McPlayControl.Width = width;
+            LyricsFinderCore.McPlayControl.Height = height;
         }
 
 

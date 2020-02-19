@@ -56,8 +56,7 @@ namespace MediaCenter.LyricsFinder
         private DateTime _lastUpdateCheck = DateTime.MinValue;
 
         private BitmapForm _bitmapForm = null;
-        private LyricForm _lyricsForm = null;
-        private McControlForm _mcControlForm = null;
+        private LyricForm _lyricForm = null;
         private List<string> _noLyricsSearchList = new List<string>();
         private SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
         private McPlayListsResponse _currentUnsortedMcPlaylistsResponse = null;
@@ -508,13 +507,17 @@ namespace MediaCenter.LyricsFinder
                 // Get a list of the descendant lyrics service types
                 await Logging.LogAsync(_progressPercentage, $"Trying to find service types in \"{file}\"...", true);
 
-                IEnumerable<Type> assyLyricsServiceTypes;
+                IEnumerable<Type> assyLyricsServiceTypes = null;
 
                 try
                 {
                     assyLyricsServiceTypes = assy
                        .GetTypes()
                        .Where(t => t.IsSubclassOf(typeof(AbstractLyricService)));
+                }
+                catch (ReflectionTypeLoadException)
+                {
+                    continue;
                 }
                 catch (Exception ex)
                 {
@@ -728,6 +731,34 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Resizes the Media Center play control.
+        /// </summary>
+        internal void PositionAndResizeMcPlayControl()
+        {
+            if (McPlayControl == null) return;
+
+            const int margin = 10;
+
+            var refCtl = MainContainer.TopToolStripPanel;
+            // var refScreenLocation = refCtl.PointToScreen(refCtl.Location);
+            var leftOffset = TopSubMenuTextBox.Margin.Left + TopSubMenuTextBox.Width + TopSubMenuTextBox.Margin.Right + margin;
+            //var left = refScreenLocation.X + leftOffset;
+            //var top = refScreenLocation.Y;
+            var left = refCtl.Left + leftOffset;
+            var top = refCtl.Top;
+            var width = refCtl.Width - leftOffset;
+            var height = refCtl.Height;
+
+            // MessageBox.Show($"left={left} top={top} width={width} height={height}", "Test");
+
+            McPlayControl.Left = left;
+            McPlayControl.Top = top;
+            McPlayControl.Width = width;
+            McPlayControl.Height = height;
+        }
+
+
+        /// <summary>
         /// Resets the items status.
         /// </summary>
         private void PrepareItemStatesBeforeSearch()
@@ -842,28 +873,28 @@ namespace MediaCenter.LyricsFinder
                     {
                         imgCell.Value = Properties.Resources.Play;
 
-                        if (_mcControlForm != null)
-                            _mcControlForm.PlayStat();
+                        if (McPlayControl != null)
+                            McPlayControl.PlayStat();
                     }
                     else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
                         imgCell.Value = Properties.Resources.Pause;
 
-                        if (_mcControlForm != null)
-                            _mcControlForm.PauseStat();
+                        if (McPlayControl != null)
+                            McPlayControl.PauseStat();
                     }
                     else
                     {
                         imgCell.Value = _emptyPlayPauseImage;
 
-                        if (_mcControlForm != null)
-                            _mcControlForm.StopStat();
+                        if (McPlayControl != null)
+                            McPlayControl.StopStat();
                     }
 
-                    if (_mcControlForm != null)
+                    if (McPlayControl != null)
                     {
-                        await _mcControlForm.SetMaxSecondsAsync(int.Parse(mcInfo.DurationMS, CultureInfo.InvariantCulture) / 1000); // Set this before the current seconds
-                        await _mcControlForm.SetCurrentSecondsAsync(int.Parse(mcInfo.PositionMS, CultureInfo.InvariantCulture) / 1000);
+                        await McPlayControl.SetMaxSecondsAsync(int.Parse(mcInfo.DurationMS, CultureInfo.InvariantCulture) / 1000); // Set this before the current seconds
+                        await McPlayControl.SetCurrentSecondsAsync(int.Parse(mcInfo.PositionMS, CultureInfo.InvariantCulture) / 1000);
                     }
 
                     break;
@@ -882,24 +913,18 @@ namespace MediaCenter.LyricsFinder
                 ContextPlayPauseMenuItem.Text = (_playingKey == selectedKey) ? "Pause play" : "Play";
                 ContextPlayStopMenuItem.Visible = true;
                 ToolsPlayStartStopButton.SetRunningState(true);
-
-                //await ShowMcControlForm(MainContainer.TopToolStripPanel, true);
             }
             else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
             {
                 ContextPlayPauseMenuItem.Text = (_playingKey == selectedKey) ? "Continue play" : "Play";
                 ContextPlayStopMenuItem.Visible = false;
                 ToolsPlayStartStopButton.SetRunningState(false);
-
-                //await ShowMcControlForm(MainContainer.TopToolStripPanel, false);
             }
             else
             {
                 ContextPlayPauseMenuItem.Text = "Play";
                 ContextPlayStopMenuItem.Visible = false;
                 ToolsPlayStartStopButton.SetRunningState(false);
-
-                //await ShowMcControlForm(MainContainer.TopToolStripPanel, false);
             }
 
             McStatusTimer.Start();
@@ -955,6 +980,8 @@ namespace MediaCenter.LyricsFinder
             if ((colIdx < 0) || (colIdx > dgv.ColumnCount - 1)) return null;
             if ((rowIdx < 0) || (rowIdx > dgv.RowCount - 1)) return null;
 
+            SuspendLayout();
+
             var row = dgv.Rows[rowIdx];
             var rect = dgv.RectangleToScreen(dgv.GetCellDisplayRectangle(colIdx, rowIdx, true));
 
@@ -973,6 +1000,8 @@ namespace MediaCenter.LyricsFinder
             else
                 ret.ShowDialog(this);
 
+            ResumeLayout();
+
             return ret;
         }
 
@@ -985,6 +1014,8 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
+                SuspendLayout();
+
                 if (lyricForm.Result == DialogResult.Yes)
                 {
                     // Display the created/changed lyrics in the list
@@ -998,49 +1029,55 @@ namespace MediaCenter.LyricsFinder
                     IsDataChanged = true;
                 }
 
-                ShowMcControlForm(this, true);
+                ShowMcPlayControl(this);
                 this.Focus();
             }
             catch (Exception ex)
             {
                 await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
             }
+            finally
+            {
+                ResumeLayout();
+            }
         }
 
 
         /// <summary>
-        /// Shows the mc control form.
+        /// Shows the Media Center play control.
         /// </summary>
         /// <param name="owner">The owner control.</param>
-        /// <param name="isVisible">if set to <c>true</c> the form is visible; else it is hidden.</param>
-        public void ShowMcControlForm(Control owner, bool isVisible)
+        internal void ShowMcPlayControl(Control owner)
         {
-            const int margin = 10;
+            if (owner is null) throw new ArgumentNullException(nameof(owner));
+            if (!(owner is LyricsFinderCore || owner is LyricForm)) return;
 
-            var refCtl = MainContainer.TopToolStripPanel;
-            var refScreenLocation = refCtl.PointToScreen(refCtl.Location);
-            var subMenuWidth = TopSubMenuTextBox.Width + TopSubMenuTextBox.Margin.Left + TopSubMenuTextBox.Margin.Right;
-            var leftPos = refScreenLocation.X + subMenuWidth + margin;
-            var topPos = refScreenLocation.Y;
-            var width = refCtl.Width - subMenuWidth - 150;
+            SuspendLayout();
 
-            if (_mcControlForm != null)
+            if (McPlayControl != null)
             {
-                _mcControlForm.Close();
-                _mcControlForm = null; 
+                // _mcPlayControl.Close();
+                McPlayControl.Visible = false;
+                McPlayControl = null;
             }
 
-            if (isVisible)
-            {
-                _mcControlForm = new McControlForm(this, this)
-                {
-                    Left = leftPos,
-                    Top = topPos,
-                    Width = width
-                };
+            // _mcPlayControl = new McPlayControlForm(owner, this);
+            McPlayControl = new McPlayControl(owner, this);
 
-                _mcControlForm.Show(owner);
-            }
+            if (owner is LyricsFinderCore)
+                PositionAndResizeMcPlayControl();
+            else if (owner is LyricForm)
+                ((LyricForm) owner).PositionAndResizeMcPlayControl();
+
+            McPlayControl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            owner.Controls.Add(McPlayControl);
+
+            // _mcPlayControl.Show(owner);
+            McPlayControl.Visible = true;
+            McPlayControl.BringToFront();
+
+            ResumeLayout();
         }
 
 

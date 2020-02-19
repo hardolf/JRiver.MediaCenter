@@ -26,7 +26,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// Initializes the specified maximum window size.
         /// </summary>
         /// <param name="maxWindowSize">Maximum size of the window.</param>
-        public static void Init(Size maxWindowSize)
+        public static void InitMaxWindowSize(Size maxWindowSize)
         {
             _maxWindowSize = maxWindowSize;
         }

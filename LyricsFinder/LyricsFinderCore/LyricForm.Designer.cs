@@ -88,33 +88,33 @@
             // ArtistTextBox
             // 
             this.ArtistTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ArtistTextBox.Location = new System.Drawing.Point(3, 18);
+            this.ArtistTextBox.Location = new System.Drawing.Point(3, 43);
             this.ArtistTextBox.Multiline = true;
             this.ArtistTextBox.Name = "ArtistTextBox";
             this.ArtistTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.ArtistTextBox.Size = new System.Drawing.Size(121, 43);
+            this.ArtistTextBox.Size = new System.Drawing.Size(121, 44);
             this.ArtistTextBox.TabIndex = 1;
             this.LyricFormToolTip.SetToolTip(this.ArtistTextBox, "Artist name, change to refine search");
             // 
             // AlbumTextBox
             // 
             this.AlbumTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AlbumTextBox.Location = new System.Drawing.Point(130, 18);
+            this.AlbumTextBox.Location = new System.Drawing.Point(130, 43);
             this.AlbumTextBox.Multiline = true;
             this.AlbumTextBox.Name = "AlbumTextBox";
             this.AlbumTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.AlbumTextBox.Size = new System.Drawing.Size(122, 43);
+            this.AlbumTextBox.Size = new System.Drawing.Size(122, 44);
             this.AlbumTextBox.TabIndex = 1;
             this.LyricFormToolTip.SetToolTip(this.AlbumTextBox, "Album name, change to refine search");
             // 
             // TrackTextBox
             // 
             this.TrackTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TrackTextBox.Location = new System.Drawing.Point(258, 18);
+            this.TrackTextBox.Location = new System.Drawing.Point(258, 43);
             this.TrackTextBox.Multiline = true;
             this.TrackTextBox.Name = "TrackTextBox";
             this.TrackTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TrackTextBox.Size = new System.Drawing.Size(123, 43);
+            this.TrackTextBox.Size = new System.Drawing.Size(123, 44);
             this.TrackTextBox.TabIndex = 1;
             this.LyricFormToolTip.SetToolTip(this.TrackTextBox, "Track title, change to refine search");
             // 
@@ -194,27 +194,29 @@
             this.LyricParmsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LyricParmsPanel.ColumnCount = 3;
-            this.LyricParmsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.LyricParmsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33332F));
             this.LyricParmsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
             this.LyricParmsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
-            this.LyricParmsPanel.Controls.Add(this.ArtistLabel, 0, 0);
-            this.LyricParmsPanel.Controls.Add(this.AlbumLabel, 1, 0);
-            this.LyricParmsPanel.Controls.Add(this.TrackLabel, 2, 0);
-            this.LyricParmsPanel.Controls.Add(this.ArtistTextBox, 0, 1);
-            this.LyricParmsPanel.Controls.Add(this.AlbumTextBox, 1, 1);
-            this.LyricParmsPanel.Controls.Add(this.TrackTextBox, 2, 1);
-            this.LyricParmsPanel.Location = new System.Drawing.Point(0, 4);
+            this.LyricParmsPanel.Controls.Add(this.ArtistLabel, 0, 1);
+            this.LyricParmsPanel.Controls.Add(this.AlbumLabel, 1, 1);
+            this.LyricParmsPanel.Controls.Add(this.TrackLabel, 2, 1);
+            this.LyricParmsPanel.Controls.Add(this.ArtistTextBox, 0, 2);
+            this.LyricParmsPanel.Controls.Add(this.AlbumTextBox, 1, 2);
+            this.LyricParmsPanel.Controls.Add(this.TrackTextBox, 2, 2);
+            this.LyricParmsPanel.Location = new System.Drawing.Point(0, 3);
             this.LyricParmsPanel.Name = "LyricParmsPanel";
-            this.LyricParmsPanel.RowCount = 2;
-            this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
+            this.LyricParmsPanel.RowCount = 3;
+            this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.LyricParmsPanel.Size = new System.Drawing.Size(384, 64);
+            this.LyricParmsPanel.Size = new System.Drawing.Size(384, 90);
             this.LyricParmsPanel.TabIndex = 10;
             // 
             // ArtistLabel
             // 
+            this.ArtistLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ArtistLabel.AutoSize = true;
-            this.ArtistLabel.Location = new System.Drawing.Point(3, 0);
+            this.ArtistLabel.Location = new System.Drawing.Point(3, 27);
             this.ArtistLabel.Name = "ArtistLabel";
             this.ArtistLabel.Size = new System.Drawing.Size(30, 13);
             this.ArtistLabel.TabIndex = 0;
@@ -222,8 +224,9 @@
             // 
             // AlbumLabel
             // 
+            this.AlbumLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.AlbumLabel.AutoSize = true;
-            this.AlbumLabel.Location = new System.Drawing.Point(130, 0);
+            this.AlbumLabel.Location = new System.Drawing.Point(130, 27);
             this.AlbumLabel.Name = "AlbumLabel";
             this.AlbumLabel.Size = new System.Drawing.Size(36, 13);
             this.AlbumLabel.TabIndex = 0;
@@ -231,8 +234,9 @@
             // 
             // TrackLabel
             // 
+            this.TrackLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.TrackLabel.AutoSize = true;
-            this.TrackLabel.Location = new System.Drawing.Point(258, 0);
+            this.TrackLabel.Location = new System.Drawing.Point(258, 27);
             this.TrackLabel.Name = "TrackLabel";
             this.TrackLabel.Size = new System.Drawing.Size(58, 13);
             this.TrackLabel.TabIndex = 0;
@@ -264,11 +268,11 @@
             this.LyricTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.LyricTextBox.Location = new System.Drawing.Point(3, 74);
+            this.LyricTextBox.Location = new System.Drawing.Point(3, 99);
             this.LyricTextBox.Multiline = true;
             this.LyricTextBox.Name = "LyricTextBox";
             this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.LyricTextBox.Size = new System.Drawing.Size(378, 387);
+            this.LyricTextBox.Size = new System.Drawing.Size(378, 362);
             this.LyricTextBox.TabIndex = 5;
             this.LyricTextBox.TextChanged += new System.EventHandler(this.LyricTextBox_TextChangedAsync);
             this.LyricTextBox.Enter += new System.EventHandler(this.LyricTextBox_EnterAsync);
@@ -470,11 +474,12 @@
             this.KeyPreview = true;
             this.MainMenuStrip = this.LyricFormMenuStrip;
             this.MaximumSize = new System.Drawing.Size(800, 1000);
-            this.MinimumSize = new System.Drawing.Size(250, 200);
+            this.MinimumSize = new System.Drawing.Size(300, 300);
             this.Name = "LyricForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "LyricsForm";
+            this.TopMost = true;
             this.TransparencyKey = System.Drawing.Color.Teal;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricForm_FormClosingAsync);
             this.Load += new System.EventHandler(this.LyricForm_LoadAsync);

@@ -22,6 +22,9 @@ namespace MediaCenter.LyricsFinder
     public partial class MainForm : Form
     {
 
+        private readonly bool _isDesignTime = false;
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
         /// </summary>
@@ -35,6 +38,8 @@ namespace MediaCenter.LyricsFinder
             }
 
             InitializeComponent();
+
+            _isDesignTime = (LicenseManager.UsageMode == LicenseUsageMode.Designtime);
 
             LoadFormSettings();
         }
@@ -76,6 +81,8 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         private void LoadFormSettings()
         {
+            if (_isDesignTime) return;
+
             var rect = new Rectangle(Properties.Settings.Default.MainFormLocation, Properties.Settings.Default.MainFormSize);
 
             if (Screen.PrimaryScreen.Bounds.Contains(rect)
@@ -111,6 +118,8 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         private void SaveFormSettings()
         {
+            if (_isDesignTime) return;
+
             if (Screen.PrimaryScreen.Bounds.Contains(Bounds))
             {
                 Properties.Settings.Default.MainFormLocation = Location;
@@ -142,6 +151,8 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="FormClosingEventArgs"/> instance containing the event data.</param>
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (_isDesignTime) return;
+
             try
             {
                 if ((LyricsFinderCore != null) && LyricsFinderCore.IsDataChanged)
@@ -181,6 +192,8 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MainForm_ShownAsync(object sender, EventArgs e)
         {
+            if (_isDesignTime) return;
+
             try
             {
                 await LyricsFinderCore.InitCoreAsync();

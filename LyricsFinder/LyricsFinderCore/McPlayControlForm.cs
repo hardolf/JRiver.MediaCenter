@@ -20,7 +20,7 @@ namespace MediaCenter.LyricsFinder
     /// Media Center control form.
     /// </summary>
     /// <seealso cref="System.Windows.Forms.Form" />
-    public partial class McControlForm : Form
+    public partial class McPlayControlForm : Form
     {
 
         private bool _isLocked = false;
@@ -39,6 +39,7 @@ namespace MediaCenter.LyricsFinder
         /// <value>
         /// The current seconds.
         /// </value>
+        [Browsable(false)]
         public int CurrentSeconds
         {
             get { return _currentSeconds; }
@@ -50,15 +51,61 @@ namespace MediaCenter.LyricsFinder
         }
 
         /// <summary>
+        /// Gets or sets the large change.
+        /// </summary>
+        /// <value>
+        /// The large change.
+        /// </value>
+        [Browsable(true), Description("The number of seconds to jump when making a large jump.")]
+        public int LargeChange
+        {
+            get => McCurrentPositionTrackBar.LargeChange;
+            set => McCurrentPositionTrackBar.LargeChange = value;
+        }
+
+
+        /// <summary>
+        /// Gets or sets the lyrics finder core.
+        /// </summary>
+        /// <value>
+        /// The lyrics finder core.
+        /// </value>
+        [Browsable(false)]
+        private LyricsFinderCore LyricsFinderCore { get; set; }
+
+        /// <summary>
         /// Gets or sets the maximum seconds.
         /// </summary>
         /// <value>
         /// The maximum seconds.
         /// </value>
+        [Browsable(true)]
         public int MaxSeconds
         {
             get { return McCurrentPositionTrackBar.Maximum; }
             private set { McCurrentPositionTrackBar.Maximum = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the owner control.
+        /// </summary>
+        /// <value>
+        /// The owner control.
+        /// </value>
+        [Browsable(false)]
+        private Control OwnerControl { get; set; }
+
+        /// <summary>
+        /// Gets or sets the small change.
+        /// </summary>
+        /// <value>
+        /// The small change.
+        /// </value>
+        [Browsable(true), Description("The number of seconds to jump when making a small jump.")]
+        public int SmallChange
+        {
+            get => McCurrentPositionTrackBar.SmallChange;
+            set => McCurrentPositionTrackBar.SmallChange = value;
         }
 
 
@@ -70,27 +117,11 @@ namespace MediaCenter.LyricsFinder
         /// </value>
         private Image StopImage { get; set; }
 
-        /// <summary>
-        /// Gets or sets the owner control.
-        /// </summary>
-        /// <value>
-        /// The owner control.
-        /// </value>
-        private Control OwnerControl { get; set; }
 
         /// <summary>
-        /// Gets or sets the lyrics finder core.
+        /// Initializes a new instance of the <see cref="McPlayControlForm"/> class.
         /// </summary>
-        /// <value>
-        /// The lyrics finder core.
-        /// </value>
-        private LyricsFinderCore LyricsFinderCore { get; set; }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="McControlForm"/> class.
-        /// </summary>
-        private McControlForm()
+        private McPlayControlForm()
         {
             InitializeComponent();
 
@@ -99,11 +130,11 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="McControlForm" /> class.
+        /// Initializes a new instance of the <see cref="McPlayControlForm" /> class.
         /// </summary>
         /// <param name="owner">The owner.</param>
         /// <param name="lyricsFinderCore">The lyrics finder core.</param>
-        public McControlForm(Control owner, LyricsFinderCore lyricsFinderCore)
+        public McPlayControlForm(Control owner, LyricsFinderCore lyricsFinderCore)
             : this()
         {
             OwnerControl = owner;
@@ -123,7 +154,7 @@ namespace MediaCenter.LyricsFinder
                 return;
 
             var pos = McCurrentPositionTrackBar.Value;
-            var diff = (isLargeJump) ? McCurrentPositionTrackBar.LargeChange : McCurrentPositionTrackBar.SmallChange;
+            var diff = (isLargeJump) ? LargeChange : SmallChange;
 
             if (diff == 0)
                 return;
@@ -160,6 +191,8 @@ namespace MediaCenter.LyricsFinder
 
                 if (ToolsPlayStartStopButton.GetStoppingEventSubscribers().Length == 0)
                     ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_StopAsync;
+
+                TrackingLabel.Left = McCurrentPositionTrackBar.Width / 2 - TrackingLabel.Width / 2;
             }
             catch (Exception ex)
             {
@@ -310,7 +343,7 @@ namespace MediaCenter.LyricsFinder
             var posTxt = (max.TotalMinutes > 59) ? $"{pos.TotalHours:###0}:{pos.Minutes:00}:{pos.Seconds:00}" : $"{pos.TotalMinutes:#0}:{pos.Seconds:00}";
 
             TrackingLabel.Text = $"{posTxt} / {maxTxt}";
-            TrackingLabel.Left = Width / 2 - TrackingLabel.Width / 2;
+            TrackingLabel.Left = McCurrentPositionTrackBar.Width / 2 - TrackingLabel.Width / 2;
             TrackingLabel.BringToFront();
         }
 

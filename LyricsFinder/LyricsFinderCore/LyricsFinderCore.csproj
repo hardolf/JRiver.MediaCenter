@@ -16,7 +16,7 @@
     <AssemblyName>LyricsFinderCore</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>LyricsFinderCore.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -95,11 +95,17 @@
     <Compile Include="BitmapForm.Designer.cs">
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="McControlForm.cs">
+    <Compile Include="McPlayControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="McControlForm.Designer.cs">
-      <DependentUpon>McControlForm.cs</DependentUpon>
+    <Compile Include="McPlayControlForm.Designer.cs">
+      <DependentUpon>McPlayControlForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="McPlayControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="McPlayControl.Designer.cs">
+      <DependentUpon>McPlayControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\Helpers\LyricsFinderCoreConfigurationSectionHandler.cs" />
     <Compile Include="Model\LyricSearch.cs" />
@@ -188,8 +194,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="McControlForm.resx">
-      <DependentUpon>McControlForm.cs</DependentUpon>
+    <EmbeddedResource Include="McPlayControlForm.resx">
+      <DependentUpon>McPlayControlForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="McPlayControl.resx">
+      <DependentUpon>McPlayControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionForm.resx">
       <DependentUpon>OptionForm.cs</DependentUpon>

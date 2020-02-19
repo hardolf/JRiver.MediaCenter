@@ -108,6 +108,14 @@ namespace MediaCenter.LyricsFinder
         }
 
         /// <summary>
+        /// Gets the Media Center play control.
+        /// </summary>
+        /// <value>
+        /// The mc play control.
+        /// </value>
+        internal McPlayControl McPlayControl { get; private set; }
+
+        /// <summary>
         /// The lyrics finder data.
         /// </summary>
         internal LyricsFinderDataType LyricsFinderData { get; private set; }
@@ -228,17 +236,17 @@ namespace MediaCenter.LyricsFinder
                 }
                 else if (e.Alt && (e.KeyCode == Keys.L))
                 {
-                    _lyricsForm = ShowLyrics(colIdx, rowIdx);
+                    _lyricForm = ShowLyrics(colIdx, rowIdx);
                 }
                 else if (e.KeyCode == Keys.Left)
                 {
-                    if (_mcControlForm != null)
-                        await _mcControlForm.JumpAsync(true, e.Control);
+                    if (McPlayControl != null)
+                        await McPlayControl.JumpAsync(true, e.Control);
                 }
                 else if (e.KeyCode == Keys.Right)
                 {
-                    if (_mcControlForm != null)
-                        await _mcControlForm.JumpAsync(false, e.Control);
+                    if (McPlayControl != null)
+                        await McPlayControl.JumpAsync(false, e.Control);
                 }
                 else if (e.Control && (e.KeyCode == Keys.S))
                 {
@@ -275,8 +283,30 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                ShowMcControlForm(this, true);
+                if (_isDesignTime) return;
+
+                ShowMcPlayControl(this);
                 this.Focus();
+            }
+            catch (Exception ex)
+            {
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Move event of the LyricsFinderCore control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void LyricsFinderCore_LocationChangedAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_isDesignTime) return;
+
+                // PositionAndResizeMcPlayControl();
             }
             catch (Exception ex)
             {
@@ -296,7 +326,9 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                ErrorHandling.Init(this.Size);
+                ErrorHandling.InitMaxWindowSize(this.Size);
+
+                // PositionAndResizeMcPlayControl();
             }
             catch (Exception ex)
             {
@@ -325,7 +357,7 @@ namespace MediaCenter.LyricsFinder
                 var rowIdx = rows[0].Index;
 
                 if (e.ClickedItem == ContextEditMenuItem)
-                    _lyricsForm = ShowLyrics(colIdx, rowIdx);
+                    _lyricForm = ShowLyrics(colIdx, rowIdx);
                 else if (e.ClickedItem == ContextPlayPauseMenuItem)
                 {
                     await PlayOrPauseAsync();
@@ -400,7 +432,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
                 if (LyricsFinderData?.MainData == null) return;
-                if ((_lyricsForm != null) && _lyricsForm.Visible) return;
+                if ((_lyricForm != null) && _lyricForm.Visible) return;
                 if (e.RowIndex < 0) return;
 
                 var rows = MainGridView.Rows;
@@ -423,7 +455,7 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case (int)GridColumnEnum.Lyrics:
-                            _lyricsForm = ShowLyrics(e.ColumnIndex, e.RowIndex);
+                            _lyricForm = ShowLyrics(e.ColumnIndex, e.RowIndex);
                             break;
 
                         default:
@@ -452,14 +484,14 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
                 if (LyricsFinderData?.MainData == null) return;
-                if ((_lyricsForm != null) && _lyricsForm.Visible && !LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
+                if ((_lyricForm != null) && _lyricForm.Visible && !LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
                 if ((e.ColumnIndex == (int)GridColumnEnum.Lyrics) && !LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
                 if ((e.ColumnIndex == _currentMouseColumnIndex) && (e.RowIndex == _currentMouseRowIndex)) return;
 
                 _bitmapForm?.Close();
                 _bitmapForm = null;
-                _lyricsForm?.Close();
-                _lyricsForm = null;
+                _lyricForm?.Close();
+                _lyricForm = null;
 
                 switch (e.ColumnIndex)
                 {
@@ -473,7 +505,7 @@ namespace MediaCenter.LyricsFinder
                         break;
 
                     case (int)GridColumnEnum.Lyrics:
-                        _lyricsForm = ShowLyrics(e.ColumnIndex, e.RowIndex, LyricsFinderData.MainData.MouseMoveOpenLyricsForm);
+                        _lyricForm = ShowLyrics(e.ColumnIndex, e.RowIndex, LyricsFinderData.MainData.MouseMoveOpenLyricsForm);
                         break;
 
                     default:
@@ -562,8 +594,8 @@ namespace MediaCenter.LyricsFinder
                 {
                     _bitmapForm?.Close();
                     _bitmapForm = null;
-                    _lyricsForm?.Close();
-                    _lyricsForm = null;
+                    _lyricForm?.Close();
+                    _lyricForm = null;
                 }
             }
             catch (Exception ex)
