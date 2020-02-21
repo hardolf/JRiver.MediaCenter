@@ -72,7 +72,7 @@ namespace MediaCenter.SharedComponents
             package.HasActions = 0;
 
             // COM files
-            if ((comRegisterFileNames != null) && (comRegisterFileNames.Count() > 0))
+            if ((comRegisterFileNames != null) && (comRegisterFileNames.Any()))
             {
                 foreach (var fileName in comRegisterFileNames)
                 {
@@ -82,7 +82,7 @@ namespace MediaCenter.SharedComponents
             }
 
             // File entries
-            if ((sourceDirectories == null) || (sourceDirectories.Count() == 0))
+            if ((sourceDirectories == null) || (!sourceDirectories.Any()))
             {
                 // All files (*.*) file entry
                 fileEntry.Actions.Add(new MjpAction(fileAction));
@@ -133,6 +133,8 @@ namespace MediaCenter.SharedComponents
         /// <returns>Execution errorlevel, 0: successfull, 1: failed.</returns>
         public static int MjpCreatorExecute(string[] args)
         {
+            if (args is null) throw new ArgumentNullException(nameof(args));
+
             var fatalErrorText = "Fatal error:";
             var isOk = false;
             var beginTime = DateTime.Now;
@@ -146,7 +148,7 @@ namespace MediaCenter.SharedComponents
                 Logging.BeginLog();
                 Logging.LogInfo(Utility.GetProgramInfo());
                 Logging.DivideLog();
-                Logging.LogInfo($"{assyName} started {beginTime.ToString(Settings.Default.TimeFormat)}.");
+                Logging.LogInfo($"{assyName} started {beginTime.ToString(Settings.Default.TimeFormat, CultureInfo.InvariantCulture)}.");
                 Logging.LogInfo(Argument.GetCommandString(args));
                 Logging.DivideLog();
 
@@ -183,7 +185,7 @@ namespace MediaCenter.SharedComponents
                     var timeSpan = endTime - beginTime;
                     var timeMsg = string.Empty;
 
-                    timeMsg += $"at {endTime.ToString(Settings.Default.TimeFormat)} ";
+                    timeMsg += $"at {endTime.ToString(Settings.Default.TimeFormat, culture)} ";
                     timeMsg += $"after {timeSpan.ToString(Settings.Default.TimeSpanFormat, culture)} ";
                     timeMsg += $"({timeSpan.TotalSeconds.ToString(Settings.Default.TimeSpanSecondsFormat, culture)} seconds)";
 

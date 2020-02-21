@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -49,12 +50,14 @@ namespace MediaCenter.LyricsFinder
         /// <exception cref="System.Exception">MjpCreator failed creating MJP files.</exception>
         private static void MakeMcpFiles(Assembly assembly, string versionText, string packageRootFolder = "")
         {
+            if (assembly is null) throw new ArgumentNullException(nameof(assembly));
+
             var currentDir = Path.GetDirectoryName(Path.GetFullPath(assembly.Location));
             var instDir = Path.GetFullPath(Path.Combine(currentDir, $@"..\..\..\Installation"));
 
             packageRootFolder = packageRootFolder?.Trim() ?? string.Empty;
 
-            if ((!string.IsNullOrEmpty(packageRootFolder)) && (!packageRootFolder.EndsWith(@"\")))
+            if ((!string.IsNullOrEmpty(packageRootFolder)) && (!packageRootFolder.EndsWith(@"\", StringComparison.InvariantCultureIgnoreCase)))
                 packageRootFolder += @"\";
 
             var args = new List<string>

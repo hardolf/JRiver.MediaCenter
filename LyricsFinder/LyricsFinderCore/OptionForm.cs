@@ -24,16 +24,16 @@ namespace MediaCenter.LyricsFinder
     public partial class OptionForm : Form
     {
 
-        private string _title = "Options";
+        private readonly string _title = "Options";
 
-        private string _headerText = " Set the LyricsFinder options here.\r\n"
+        private readonly string _headerText = " Set the LyricsFinder options here.\r\n"
             + " Enable the LyricsFinder to connect with the Media Center by setting the connection options.\r\n"
             + " You can find the values in the Media Center (Tools menu > Options > Media Network).\r\n"
             + " Also, ensure that the Media Network service is enabled.";
 
         private string _initialText = string.Empty;
 
-        private LyricsFinderDataType _lyricsFinderData = null;
+        private readonly LyricsFinderDataType _lyricsFinderData = null;
 
 
         /// <summary>

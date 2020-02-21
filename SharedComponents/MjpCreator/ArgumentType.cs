@@ -31,7 +31,7 @@ namespace MediaCenter.SharedComponents
         /// <value>
         /// The argument flag character list.
         /// </value>
-        public char[] FlagChars { get; private set; }
+        private char[] FlagChars { get; set; }
 
         /// <summary>
         /// Gets or sets the help for this argument.
@@ -60,7 +60,7 @@ namespace MediaCenter.SharedComponents
         public string Name
         {
             get { return _name; }
-            set { _name = value.Trim(); }
+            set { _name = value?.Trim() ?? string.Empty; }
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace MediaCenter.SharedComponents
         public string NameAbbriv
         {
             get { return _nameAbbriv; }
-            set { _nameAbbriv = value.Trim(); }
+            set { _nameAbbriv = value?.Trim() ?? string.Empty; }
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace MediaCenter.SharedComponents
         /// <value>
         /// The name abbriv norm.
         /// </value>
-        protected internal string NameAbbrivNorm { get { return NameAbbriv?.Trim().ToLowerInvariant(); } }
+        protected internal string NameAbbrivNorm { get { return NameAbbriv?.Trim().ToLowerInvariant() ?? string.Empty; } }
 
         /// <summary>
         /// Gets or sets the argument value.
@@ -115,7 +115,7 @@ namespace MediaCenter.SharedComponents
             get { return _allowedValues; }
             set
             {
-                _allowedValues = value;
+                _allowedValues = value.Clone();
                 for (var i = 0; i < _allowedValues.Count; i++)
                 {
                     _allowedValues[i] = _allowedValues[i].Trim();
@@ -135,7 +135,7 @@ namespace MediaCenter.SharedComponents
             get { return _otherNamesForbiddenWithThis; }
             set
             {
-                _otherNamesForbiddenWithThis = value;
+                _otherNamesForbiddenWithThis = value.Clone();
                 for (var i = 0; i < _otherNamesForbiddenWithThis.Count; i++)
                 {
                     _otherNamesForbiddenWithThis[i] = _otherNamesForbiddenWithThis[i].Trim();
@@ -154,7 +154,7 @@ namespace MediaCenter.SharedComponents
             get { return _otherNamesForbiddenWithoutThis; }
             set
             {
-                _otherNamesForbiddenWithoutThis = value;
+                _otherNamesForbiddenWithoutThis = value.Clone();
                 for (var i = 0; i < _otherNamesForbiddenWithoutThis.Count; i++)
                 {
                     _otherNamesForbiddenWithoutThis[i] = _otherNamesForbiddenWithoutThis[i].Trim();
@@ -173,7 +173,7 @@ namespace MediaCenter.SharedComponents
             get { return _otherNamesRequiredWithThis; }
             set
             {
-                _otherNamesRequiredWithThis = value;
+                _otherNamesRequiredWithThis = value.Clone();
                 for (var i = 0; i < _otherNamesRequiredWithThis.Count; i++)
                 {
                     _otherNamesRequiredWithThis[i] = _otherNamesRequiredWithThis[i].Trim();
@@ -192,7 +192,7 @@ namespace MediaCenter.SharedComponents
             get { return _otherNamesRequiredWithoutThis; }
             set
             {
-                _otherNamesRequiredWithoutThis = value;
+                _otherNamesRequiredWithoutThis = value.Clone();
                 for (var i = 0; i < _otherNamesRequiredWithoutThis.Count; i++)
                 {
                     _otherNamesRequiredWithoutThis[i] = _otherNamesRequiredWithoutThis[i].Trim();
@@ -209,7 +209,7 @@ namespace MediaCenter.SharedComponents
         public IList<string> Values
         {
             get { return _values; }
-            set { _values = value; }
+            set { _values = value.Clone(); }
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Object"/> class. Default constructor.
+        /// Initializes a new instance of the <see cref="System.Object"/> class. Default constructor.
         /// </summary>
         public ArgumentType()
         {
@@ -289,23 +289,25 @@ namespace MediaCenter.SharedComponents
         public static ArgumentType Clone(
             ArgumentType arg)
         {
+            if (arg is null) throw new ArgumentNullException(nameof(arg));
+
             var ret = new ArgumentType()
-                {
-                    MultiValuesAllowed = arg.MultiValuesAllowed,
-                    Help = arg.Help,
-                    FlagChars = arg.FlagChars,
-                    Name = arg.Name,
-                    NameAbbriv = arg.NameAbbriv,
-                    Optional = arg.Optional,
-                    OtherNamesForbiddenWithThis = arg.OtherNamesForbiddenWithThis.Clone(),
-                    OtherNamesForbiddenWithoutThis = arg.OtherNamesForbiddenWithoutThis.Clone(),
-                    OtherNamesRequiredWithThis = arg.OtherNamesRequiredWithThis.Clone(),
-                    OtherNamesRequiredWithoutThis = arg.OtherNamesRequiredWithoutThis.Clone(),
-                    Specified = arg.Specified,
-                    Value = arg.Value,
-                    ValueRequired = arg.ValueRequired,
-                    Values = (IList<string>)arg.Values.Clone()
-                };
+            {
+                MultiValuesAllowed = arg.MultiValuesAllowed,
+                Help = arg.Help,
+                FlagChars = arg.FlagChars,
+                Name = arg.Name,
+                NameAbbriv = arg.NameAbbriv,
+                Optional = arg.Optional,
+                OtherNamesForbiddenWithThis = arg.OtherNamesForbiddenWithThis.Clone(),
+                OtherNamesForbiddenWithoutThis = arg.OtherNamesForbiddenWithoutThis.Clone(),
+                OtherNamesRequiredWithThis = arg.OtherNamesRequiredWithThis.Clone(),
+                OtherNamesRequiredWithoutThis = arg.OtherNamesRequiredWithoutThis.Clone(),
+                Specified = arg.Specified,
+                Value = arg.Value,
+                ValueRequired = arg.ValueRequired,
+                Values = (IList<string>)arg.Values.Clone()
+            };
 
             return ret;
         } // Clone
@@ -341,7 +343,7 @@ namespace MediaCenter.SharedComponents
         /// or
         /// or
         /// or</exception>
-        /// <exception cref="T:System.ArgumentException"></exception>
+        /// <exception cref="System.ArgumentException"></exception>
         /// <remarks>
         /// If <see cref="MultiValuesAllowed" /> is <c>true</c>, <see cref="Value" /> is set with the first value.
         /// </remarks>
@@ -350,13 +352,15 @@ namespace MediaCenter.SharedComponents
             IList<ArgumentType> argumentList,
             bool checkRules = false)
         {
+            if (args is null) throw new ArgumentNullException(nameof(args));
+
             if ((argumentList == null) || (!argumentList.Any()))
                 throw new ArgumentNullException(
-                    "argumentList",
+                    nameof(argumentList),
                     "The input list should be initialized fully populated with all possible arguments for the current application. The \"Specified\" properties are set to false initially.");
 
             var argLen = args.Length;
-            var argsLower = (string[]) args.Clone();
+            var argsLower = (string[])args.Clone();
 
             argsLower = argsLower.Select(arg => arg.Trim().ToLower()).ToArray();
 
@@ -383,7 +387,7 @@ namespace MediaCenter.SharedComponents
                     // Check for option as an option value
                     if (valIsOption && arg.ValueRequired && checkRules)
                         throw new ArgumentException(
-                            string.Format("Argument value starts with a flag character: '{0}'.", val[0]),
+                            $"Argument value starts with a flag character: '{val[0]}'.",
                             arg.NameAbbriv + " | " + arg.Name);
 
                     // Check and set Value
@@ -435,7 +439,7 @@ namespace MediaCenter.SharedComponents
                     foreach (var oa in arg.OtherNamesForbiddenWithThis.Where(argumentList.ContainsSpecifiedName))
                     {
                         throw new ArgumentException(
-                            string.Format("Forbidden dependency argument for \"{0}\" found: \"{1}\".", arg.Name, oa),
+                            $"Forbidden dependency argument for \"{arg.Name}\" found: \"{oa}\".",
                             oa);
                     }
                 }
@@ -445,7 +449,7 @@ namespace MediaCenter.SharedComponents
                     foreach (var oa in arg.OtherNamesForbiddenWithoutThis.Where(argumentList.ContainsSpecifiedName))
                     {
                         throw new ArgumentException(
-                            string.Format("Forbidden dependency argument for \"{0}\" found: \"{1}\".", arg.Name, oa),
+                            $"Forbidden dependency argument for \"{arg.Name}\" found: \"{oa}\".",
                             oa);
                     }
                 }
@@ -456,7 +460,7 @@ namespace MediaCenter.SharedComponents
                     foreach (var oa in arg.OtherNamesRequiredWithThis.Where(oa => !argumentList.ContainsSpecifiedName(oa)))
                     {
                         throw new ArgumentException(
-                            string.Format("Required dependency argument for \"{0}\" missing: \"{1}\".", arg.Name, oa),
+                            $"Required dependency argument for \"{arg.Name}\" missing: \"{oa}\".",
                             oa);
                     }
                 }
@@ -466,7 +470,7 @@ namespace MediaCenter.SharedComponents
                     foreach (var oa in arg.OtherNamesRequiredWithoutThis.Where(oa => !argumentList.ContainsSpecifiedName(oa)))
                     {
                         throw new ArgumentException(
-                            string.Format("Required dependency argument for \"{0}\" missing: \"{1}\".", arg.Name, oa),
+                            $"Required dependency argument for \"{arg.Name}\" missing: \"{oa}\".",
                             oa);
                     }
                 }
@@ -484,6 +488,8 @@ namespace MediaCenter.SharedComponents
             IEnumerable<ArgumentType> argumentList,
             bool abbriviatedOptions)
         {
+            if (argumentList is null) throw new ArgumentNullException(nameof(argumentList));
+
             const string fmt = "{0}{1}{2}";
             var ret = new StringBuilder();
 
@@ -497,22 +503,20 @@ namespace MediaCenter.SharedComponents
 
                 var value = (arg.AllowedValues.IsNullOrEmpty())
                     ? " value"
-                    : string.Format(" {0}", string.Join("|", arg.AllowedValues));
+                    : $" {string.Join("|", arg.AllowedValues)}";
 
                 if (abbriviatedOptions)
                 {
-                    ret.AppendFormat(
-                        fmt,
-                        ((arg.IsCommand) ? string.Empty : arg.FlagChars[0].ToString()), 
-                        arg.NameAbbriv, 
+                    ret.AppendFormat(CultureInfo.InvariantCulture, fmt,
+                        ((arg.IsCommand) ? string.Empty : arg.FlagChars[0].ToString(CultureInfo.InvariantCulture)),
+                        arg.NameAbbriv,
                         (arg.ValueRequired) ? value : "");
                 }
                 else
                 {
-                    ret.AppendFormat(
-                        fmt,
-                        ((arg.IsCommand) ? string.Empty : arg.FlagChars[0].ToString()), 
-                        arg.Name, 
+                    ret.AppendFormat(CultureInfo.InvariantCulture, fmt,
+                        ((arg.IsCommand) ? string.Empty : arg.FlagChars[0].ToString(CultureInfo.InvariantCulture)),
+                        arg.Name,
                         (arg.ValueRequired) ? value : "");
                 }
 
@@ -534,6 +538,8 @@ namespace MediaCenter.SharedComponents
         public static string SyntaxTextDetails(
             IList<ArgumentType> argumentList)
         {
+            if (argumentList is null) throw new ArgumentNullException(nameof(argumentList));
+
             var ret = new StringBuilder();
             var maxLen = argumentList.Select(x => x.Name?.Length ?? 0).Concat(new[] { 0 }).Max();
             var maxLenAbbriv = argumentList.Select(x => x.NameAbbriv?.Length ?? 0).Concat(new[] { 0 }).Max();
@@ -541,7 +547,7 @@ namespace MediaCenter.SharedComponents
 
             foreach (var arg in argumentList)
             {
-                ret.AppendFormat(fmt,
+                ret.AppendFormat(CultureInfo.InvariantCulture, fmt,
                     arg.NameAbbriv,
                     arg.Name,
                     ((arg.ValueRequired) ? "value" : "     "),
@@ -565,7 +571,7 @@ namespace MediaCenter.SharedComponents
         {
             var ret = new StringBuilder();
 
-            ret.AppendFormat(
+            ret.AppendFormat(CultureInfo.InvariantCulture,
                 "Name=\"{0}|{1}\"; values=\"{2}\".",
                 NameAbbriv, Name, Values.ToStringAppended());
 
@@ -602,71 +608,74 @@ namespace MediaCenter.SharedComponents
             return ret;
         } // valueIsOption char[] FlagChars
 
-
-        #region Sorting
-
-        /// <summary>
-        /// Sort by the full argument name, case insensitively.
-        /// </summary>
-        public class SortByArgumentName : IComparer<ArgumentType>
-        {
-
-            /// <summary>
-            /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
-            /// </summary>
-            /// <param name="x">The first object to compare.</param>
-            /// <param name="y">The second object to compare.</param>
-            /// <returns>
-            /// Value
-            /// Condition
-            /// Less than zero
-            /// <paramref name="x"/> is less than <paramref name="y"/>.
-            /// Zero
-            /// <paramref name="x"/> equals <paramref name="y"/>.
-            /// Greater than zero
-            /// <paramref name="x"/> is greater than <paramref name="y"/>.
-            /// </returns>
-            public int Compare(ArgumentType x,
-                               ArgumentType y)
-            {
-                return string.CompareOrdinal(x.NameNorm, y.NameNorm);
-            } // Compare
-
-        } // class SortByArgumentName
-
-
-        /// <summary>
-        /// Sort by the abbriviated argument name, case insensitively.
-        /// </summary>
-        public class SortByArgumentNameAbbriv : IComparer<ArgumentType>
-        {
-
-            /// <summary>
-            /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
-            /// </summary>
-            /// <param name="x">The first object to compare.</param>
-            /// <param name="y">The second object to compare.</param>
-            /// <returns>
-            /// Value
-            /// Condition
-            /// Less than zero
-            /// <paramref name="x"/> is less than <paramref name="y"/>.
-            /// Zero
-            /// <paramref name="x"/> equals <paramref name="y"/>.
-            /// Greater than zero
-            /// <paramref name="x"/> is greater than <paramref name="y"/>.
-            /// </returns>
-            public int Compare(ArgumentType x,
-                               ArgumentType y)
-            {
-                return string.CompareOrdinal(x.NameAbbrivNorm, y.NameAbbrivNorm);
-            } // Compare
-
-        } // class SortByArgumentNameAbbriv
-
-        #endregion Sorting
-
     }
+
+
+
+    /*
+    #region Sorting
+
+    /// <summary>
+    /// Sort by the full argument name, case insensitively.
+    /// </summary>
+    internal class SortByArgumentName : IComparer<ArgumentType>
+    {
+
+        /// <summary>
+        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <param name="x">The first object to compare.</param>
+        /// <param name="y">The second object to compare.</param>
+        /// <returns>
+        /// Value
+        /// Condition
+        /// Less than zero
+        /// <paramref name="x"/> is less than <paramref name="y"/>.
+        /// Zero
+        /// <paramref name="x"/> equals <paramref name="y"/>.
+        /// Greater than zero
+        /// <paramref name="x"/> is greater than <paramref name="y"/>.
+        /// </returns>
+        public int Compare(ArgumentType x,
+                           ArgumentType y)
+        {
+            return string.CompareOrdinal(x.NameNorm, y.NameNorm);
+        } // Compare
+
+    } // class SortByArgumentName
+
+
+    /// <summary>
+    /// Sort by the abbriviated argument name, case insensitively.
+    /// </summary>
+    internal class SortByArgumentNameAbbriv : IComparer<ArgumentType>
+    {
+
+        /// <summary>
+        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <param name="x">The first object to compare.</param>
+        /// <param name="y">The second object to compare.</param>
+        /// <returns>
+        /// Value
+        /// Condition
+        /// Less than zero
+        /// <paramref name="x"/> is less than <paramref name="y"/>.
+        /// Zero
+        /// <paramref name="x"/> equals <paramref name="y"/>.
+        /// Greater than zero
+        /// <paramref name="x"/> is greater than <paramref name="y"/>.
+        /// </returns>
+        public int Compare(ArgumentType x,
+                           ArgumentType y)
+        {
+            return string.CompareOrdinal(x.NameAbbrivNorm, y.NameAbbrivNorm);
+        } // Compare
+
+    } // class SortByArgumentNameAbbriv
+
+    #endregion Sorting
+    */
 
 
 
@@ -686,6 +695,8 @@ namespace MediaCenter.SharedComponents
         public static IList<string> Clone(
             this IEnumerable<string> stringList)
         {
+            if (stringList is null) throw new ArgumentNullException(nameof(stringList));
+
             var ret = stringList.ToList();
 
             return ret;
@@ -704,9 +715,11 @@ namespace MediaCenter.SharedComponents
             this IEnumerable<ArgumentType> arguments,
             string name)
         {
+            if (arguments is null) throw new ArgumentNullException(nameof(arguments));
+
             var ret = false;
 
-            name = name.Trim().ToLowerInvariant();
+            name = name?.Trim().ToLowerInvariant() ?? string.Empty;
 
             ret = arguments.Any(arg => (arg.NameNorm == name) || (arg.NameAbbrivNorm == name));
 
@@ -726,9 +739,11 @@ namespace MediaCenter.SharedComponents
             this IEnumerable<ArgumentType> arguments,
             string name)
         {
+            if (arguments is null) throw new ArgumentNullException(nameof(arguments));
+
             var ret = false;
 
-            name = name.Trim().ToLowerInvariant();
+            name = name?.Trim().ToLowerInvariant() ?? string.Empty;
 
             ret = arguments.Any(arg => ((arg.NameNorm == name) || (arg.NameAbbrivNorm == name)) && arg.Specified);
 
@@ -748,7 +763,9 @@ namespace MediaCenter.SharedComponents
             this IEnumerable<ArgumentType> arguments,
             string name)
         {
-            name = name.Trim().ToLowerInvariant();
+            if (arguments is null) throw new ArgumentNullException(nameof(arguments));
+
+            name = name?.Trim().ToLowerInvariant() ?? string.Empty;
 
             var ret = arguments.FirstOrDefault(arg => (arg.NameNorm == name) || (arg.NameAbbrivNorm == name));
 
@@ -804,6 +821,8 @@ namespace MediaCenter.SharedComponents
         public static string ToStringAppended(
             this IEnumerable<string> strings)
         {
+            if (strings is null) throw new ArgumentNullException(nameof(strings));
+
             var ret = new StringBuilder();
 
             foreach (var s in strings)

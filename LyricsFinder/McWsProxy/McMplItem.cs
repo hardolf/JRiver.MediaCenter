@@ -162,7 +162,19 @@ namespace MediaCenter.McWs
         /// <returns>Deep copy of the current McMplItem object.</returns>
         public McMplItem Clone()
         {
-            var ret = McMplItem.Clone(this);
+            var ret = Clone(this);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Clones this instance and removes any parenthesized text from Artist, Album and Name properties.
+        /// </summary>
+        /// <returns>Deep copy of the current McMplItem object, with any parenthesized text removed from Artist, Album and Name properties.</returns>
+        public McMplItem CloneAndRemoveParenthesizedText()
+        {
+            var ret = CloneAndRemoveParenthesizedText(this);
 
             return ret;
         }
@@ -224,6 +236,26 @@ namespace MediaCenter.McWs
             {
                 ret.Fields.Add(field.Key, field.Value);
             }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Clones the source and removes any parenthesized text from Artist, Album and Name properties.
+        /// </summary>
+        /// <param name="src">The source.</param>
+        /// <returns>Deep copy of the source McMplItem object, with any parenthesized text removed from Artist, Album and Name properties.</returns>
+        /// <exception cref="ArgumentNullException">src</exception>
+        public static McMplItem CloneAndRemoveParenthesizedText(McMplItem src)
+        {
+            if (src is null) throw new ArgumentNullException(nameof(src));
+
+            var ret = Clone(src);
+
+            ret.Artist = ret.Artist.RemoveParenthesizedText();
+            ret.Album = ret.Album.RemoveParenthesizedText();
+            ret.Name = ret.Name.RemoveParenthesizedText();
 
             return ret;
         }

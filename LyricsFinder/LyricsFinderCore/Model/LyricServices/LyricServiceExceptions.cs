@@ -109,17 +109,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Initializes a new instance of the <see cref="GeneralLyricServiceException"/> class.
         /// </summary>
-        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected GeneralLyricServiceException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeneralLyricServiceException"/> class.
-        /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public GeneralLyricServiceException(string message)
             : base(message)
@@ -170,6 +159,40 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             McItem = mcItem;
         }
 
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeneralLyricServiceException"/> class.
+        /// </summary>
+        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+        protected GeneralLyricServiceException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            if (info is null) throw new System.ArgumentNullException(nameof(info));
+
+            Credit = (CreditType)info.GetValue(nameof(Credit), typeof(CreditType));
+            IsGetAll = (bool)info.GetValue(nameof(IsGetAll), typeof(bool));
+            McItem = (McMplItem)info.GetValue(nameof(McItem), typeof(McMplItem));
+        }
+
+
+
+        /// <summary>
+        /// When overridden in a derived class, sets the <see cref="System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+        /// </summary>
+        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info is null) throw new System.ArgumentNullException(nameof(info));
+
+            base.GetObjectData(info, context);
+
+            info.AddValue(nameof(Credit), Credit);
+            info.AddValue(nameof(IsGetAll), IsGetAll);
+            info.AddValue(nameof(McItem), McItem);
+        }
+
     }
 
 
@@ -197,17 +220,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </summary>
         public LyricServiceCommunicationException()
             : base()
-        {
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LyricServiceCommunicationException"/> class.
-        /// </summary>
-        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected LyricServiceCommunicationException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
 
@@ -261,6 +273,30 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             : base(message, isGetAll, credit, mcItem, innerException)
         {
             RequestUri = requestUri;
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceCommunicationException"/> class.
+        /// </summary>
+        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+        protected LyricServiceCommunicationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            RequestUri = (Uri)info.GetValue(nameof(RequestUri), typeof(Uri));
+        }
+
+        /// <summary>
+        /// When overridden in a derived class, sets the <see cref="System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
+        /// </summary>
+        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+
+            info.AddValue(nameof(RequestUri), RequestUri);
         }
 
     }

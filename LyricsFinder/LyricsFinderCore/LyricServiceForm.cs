@@ -29,12 +29,12 @@ namespace MediaCenter.LyricsFinder.Model
 
         private string _initialText = string.Empty;
 
-        private LyricsFinderDataType _lyricsFinderData = null;
+        private readonly LyricsFinderDataType _lyricsFinderData = null;
 
         /// <summary>
         /// The callback function.
         /// </summary>
-        private Action<LyricServiceForm> _callback;
+        private readonly Action<LyricServiceForm> _callback;
 
 
         /// <summary>
@@ -173,11 +173,7 @@ namespace MediaCenter.LyricsFinder.Model
             tlp.Controls.Add(txtValue, 2, rowIdx);
 
             tlp.RowStyles.Clear();
-
-            foreach (RowStyle rs in tlp.RowStyles)
-            {
-                tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            }
+            tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
             if (tlp.Controls.Count > 0)
                 tlp.Controls[0].Select();

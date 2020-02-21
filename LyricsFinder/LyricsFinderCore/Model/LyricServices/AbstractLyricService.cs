@@ -556,27 +556,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             // If failed search, retry if parenthesized text is in search parameters
             if (ret.LyricResult == LyricsResultEnum.NotFound)
             {
-                // Is parenthesized text present?
-                var artistIdx = mcItem.Artist.IndexOf('(');
-                var albumIdx = mcItem.Album.IndexOf('(');
-                var nameIdx = mcItem.Name.IndexOf('(');
+                // Retry with parenthesized text removed
+                var mcItemClone = mcItem.CloneAndRemoveParenthesizedText();
 
-                if ((artistIdx > 0) || (albumIdx > 0) || (nameIdx > 0))
-                {
-                    // Retry with parenthesized text removed
-                    var mcItemClone = mcItem.Clone();
-
-                    if (artistIdx > 0)
-                        mcItemClone.Artist = mcItem.Artist.Substring(0, artistIdx).Trim();
-
-                    if (albumIdx > 0)
-                        mcItemClone.Album = mcItem.Album.Substring(0, albumIdx).Trim();
-
-                    if (nameIdx > 0)
-                        mcItemClone.Name = mcItem.Name.Substring(0, nameIdx).Trim();
-
-                    ret = await ProcessAsync(mcItemClone, cancellationToken, isGetAll);
-                }
+                ret = await ProcessAsync(mcItemClone, cancellationToken, isGetAll);
             }
 
             return ret;

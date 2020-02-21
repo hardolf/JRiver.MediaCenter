@@ -204,9 +204,18 @@ namespace MediaCenter.LyricsFinder.Model
             var xDoc = new XmlDocument() { XmlResolver = null };
             var nodeXml = string.Empty;
 
-            using (var sReader = new StreamReader(xDataFile))
-            using (var xReader = XmlReader.Create(sReader, new XmlReaderSettings() { XmlResolver = null }))
-                xDoc.Load(xReader);
+            StreamReader sr = null;
+            try
+            {
+                sr = new StreamReader(xDataFile);
+                using (var xr = XmlReader.Create(sr, new XmlReaderSettings() { XmlResolver = null }))
+                    xDoc.Load(xr);
+            }
+            finally
+            {
+                if (sr != null)
+                    sr.Dispose();
+            }
 
             var atts = xDoc.DocumentElement.Attributes;
             var serviceNodes = xDoc.GetElementsByTagName("LyricService");

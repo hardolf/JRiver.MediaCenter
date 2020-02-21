@@ -72,7 +72,7 @@ namespace MediaCenter.McWs
         /// The items.
         /// </value>
         [XmlIgnore]
-        public virtual Dictionary<int, McMplItem> Items { get; set; }
+        public virtual Dictionary<int, McMplItem> Items { get; } = new Dictionary<int, McMplItem>();
 
 
         /// <summary>
@@ -80,7 +80,6 @@ namespace MediaCenter.McWs
         /// </summary>
         protected McMplResponse()
         {
-            Items = new Dictionary<int, McMplItem>();
         }
 
 
@@ -128,6 +127,8 @@ namespace MediaCenter.McWs
         /// <returns>A shallow copy of the specified <see cref="McMplResponse"/> object.</returns>
         public static McMplResponse Clone(McMplResponse mcMplResponse)
         {
+            if (mcMplResponse is null) throw new ArgumentNullException(nameof(mcMplResponse));
+
             return mcMplResponse.Clone();
         }
 

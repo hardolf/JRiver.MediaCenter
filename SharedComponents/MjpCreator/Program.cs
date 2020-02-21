@@ -15,7 +15,7 @@ namespace MediaCenter.SharedComponents
     /// <summary>
     /// MjpCreator program.
     /// </summary>
-    public class Program
+    public static class Program
     {
 
         /// <summary>

@@ -229,14 +229,16 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         public virtual void ValidateDisplayProperties()
         {
-            var dps = new Dictionary<string, DisplayProperty>();
-
-            dps.Add(nameof(ServiceName), ServiceName);
-            dps.Add(nameof(Company), Company);
-            dps.Add(nameof(CreditUrl), CreditUrl);
-            dps.Add(nameof(Copyright), Copyright);
-            dps.Add(nameof(CreditTextFormat), CreditTextFormat);
-            dps.Add(nameof(ServiceUrl), ServiceUrl);
+            // Test initialization
+            var dps = new Dictionary<string, DisplayProperty>
+            {
+                { nameof(ServiceName), ServiceName },
+                { nameof(Company), Company },
+                { nameof(CreditUrl), CreditUrl },
+                { nameof(Copyright), Copyright },
+                { nameof(CreditTextFormat), CreditTextFormat },
+                { nameof(ServiceUrl), ServiceUrl }
+            };
         }
 
     }

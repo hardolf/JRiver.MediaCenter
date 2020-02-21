@@ -214,9 +214,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             base.ValidateDisplayProperties();
 
-            var dps = new Dictionary<string, DisplayProperty>();
-
-            dps.Add(nameof(Token), Token);
+            // Test initialization
+            var dps = new Dictionary<string, DisplayProperty>
+            {
+                { nameof(Token), Token }
+            };
         }
 
     }

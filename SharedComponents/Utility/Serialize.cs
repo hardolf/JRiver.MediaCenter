@@ -149,12 +149,20 @@ namespace MediaCenter.SharedComponents
                 }
             }
 
-            using (var sr = new StringReader(sb.ToString()))
+            StringReader sr = null;
+            try
             {
+                sr = new StringReader(sb.ToString());
                 using (var xr = XmlReader.Create(sr))
                 {
                     ret = serializer.Deserialize(xr);
                 }
+
+            }
+            finally
+            {
+                if (sr != null)
+                    sr.Dispose();
             }
 
             return ret;

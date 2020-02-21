@@ -400,16 +400,18 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             base.ValidateDisplayProperties();
 
-            var dps = new Dictionary<string, DisplayProperty>();
+            // Test initialization
+            var dps = new Dictionary<string, DisplayProperty>
+            {
+                { nameof(Token), Token },
+                { nameof(UserId), UserId },
+                { nameof(DailyQuota), DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture) },
 
-            dps.Add(nameof(Token), Token);
-            dps.Add(nameof(UserId), UserId);
-            dps.Add(nameof(DailyQuota), DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+                { "QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, null },
 
-            dps.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, null);
-
-            dps.Add("QuotaResetTimeService", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture));
-            dps.Add("QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture));
+                { "QuotaResetTimeService", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture) },
+                { "QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture) }
+            };
         }
 
     }

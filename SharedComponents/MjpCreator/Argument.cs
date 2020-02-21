@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -20,7 +21,7 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="T:System.Object" /> class.
+        ///     Initializes a new instance of the <see cref="System.Object" /> class.
         /// </summary>
         public Argument()
         {
@@ -102,8 +103,10 @@ namespace MediaCenter.SharedComponents
         public virtual void Check(
             string[] args)
         {
+            if (args is null) throw new ArgumentNullException(nameof(args));
+
             IsHelpRequired = (args.Length == 0)
-                || (args.Any(arg => "?|help".Contains(arg.ToLower().Substring(1))));
+                || (args.Any(arg => "?|HELP".Contains(arg.ToUpper(CultureInfo.InvariantCulture).Substring(1))));
 
             try
             {
@@ -158,6 +161,8 @@ namespace MediaCenter.SharedComponents
         public static string GetCommandString(
             string[] args)
         {
+            if (args is null) throw new ArgumentNullException(nameof(args));
+
             var ret = new StringBuilder();
 
             ret.Append(AppDomain.CurrentDomain.FriendlyName);

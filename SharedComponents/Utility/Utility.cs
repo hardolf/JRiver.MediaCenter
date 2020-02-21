@@ -541,6 +541,37 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Removes the parenthesized text.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <returns>
+        /// Original text with the parenthesized text removed.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">text</exception>
+        public static string RemoveParenthesizedText(this string text)
+        {
+            if (text is null) throw new ArgumentNullException(nameof(text));
+
+            var ret = text;
+            var openingChars = new[] { '(', '[', '{' };
+            var closingChars = new[] { ')', ']', '}' };
+
+            var idx1 = ret.IndexOfAny(openingChars);
+            var idx2 = ret.IndexOfAny(closingChars);
+
+            while ((idx1 >= 0) && (idx2 > idx1))
+            {
+                ret = ret.Remove(idx1, idx2 - idx1 + 1);
+
+                idx1 = ret.IndexOfAny(openingChars);
+                idx2 = ret.IndexOfAny(closingChars);
+            }
+
+            return ret?.Trim() ?? string.Empty;
+        }
+
+
+        /// <summary>
         /// Converts input string to a string without double spaces and with no more than 2 consecutive line endings.
         /// </summary>
         /// <param name="input">The input string.</param>

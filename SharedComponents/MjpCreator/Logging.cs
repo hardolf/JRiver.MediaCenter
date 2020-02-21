@@ -71,8 +71,8 @@ namespace MediaCenter.SharedComponents
             string processText,
             string timeFormat)
         {
-            var ret = string.Format(messageFormat, 
-                processText, DateTime.Now.ToString(timeFormat));
+            var ret = string.Format(CultureInfo.InvariantCulture, messageFormat, 
+                processText, DateTime.Now.ToString(timeFormat, CultureInfo.InvariantCulture));
 
             return ret;
         }
@@ -104,8 +104,8 @@ namespace MediaCenter.SharedComponents
             var duration = endTime - startTime;
             var culture = CultureInfo.InvariantCulture;
 
-            var ret = string.Format(messageFormat, 
-                processText, startTime.ToString(timeFormat), result, endTime.ToString(timeFormat),
+            var ret = string.Format(CultureInfo.InvariantCulture, messageFormat, 
+                processText, startTime.ToString(timeFormat, culture), result, endTime.ToString(timeFormat, culture),
                 duration.ToString(durationFormat, culture), duration.TotalSeconds.ToString(durationSecondsFormat, culture));
 
             return ret;
@@ -137,6 +137,9 @@ namespace MediaCenter.SharedComponents
             Exception ex,
             string optionalMessage = null)
         {
+            if (method is null) throw new ArgumentNullException(nameof(method));
+            if (ex is null) throw new ArgumentNullException(nameof(ex));
+
             var msg = $"Error in {method.Name}: {optionalMessage}" + Environment.NewLine + ex;
 
             Console.WriteLine(msg);

@@ -34,15 +34,15 @@ namespace MediaCenter.LyricsFinder
         /***** constants and variables *****/
         /***********************************/
 
-        private Action<LyricForm> _callback;
+        private readonly Action<LyricForm> _callback;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private string _initLyric = string.Empty;
-        private bool _isSearch = false;
+        private readonly string _initLyric = string.Empty;
+        private readonly bool _isSearch = false;
         private string _finalLyric = string.Empty;
         private LyricForm _searchForm = null;
-        private List<FoundLyricType> _foundLyricList = new List<FoundLyricType>();
-        private McMplItem _McItem = null;
-        private Dictionary<string, int> _serviceCounts = new Dictionary<string, int>();
+        private readonly List<FoundLyricType> _foundLyricList = new List<FoundLyricType>();
+        private readonly McMplItem _McItem = null;
+        private readonly Dictionary<string, int> _serviceCounts = new Dictionary<string, int>();
 
 
         /**********************/

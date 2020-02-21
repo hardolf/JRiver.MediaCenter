@@ -35,7 +35,7 @@ namespace MediaCenter.McWs
         /// The items.
         /// </value>
         [XmlIgnore]
-        public virtual Dictionary<string, string> Items { get; set; }
+        public virtual Dictionary<string, string> Items { get; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Gets or sets the XML root element.
@@ -65,7 +65,6 @@ namespace MediaCenter.McWs
         /// </summary>
         protected McResponse()
         {
-            Items = new Dictionary<string, string>();
         }
 
 
@@ -78,9 +77,18 @@ namespace MediaCenter.McWs
         {
             var xDoc = new XmlDocument() { XmlResolver = null };
 
-            using (var sReader = new StringReader(xml))
-            using (var xReader = XmlReader.Create(sReader, new XmlReaderSettings() { XmlResolver = null }))
-                xDoc.Load(xReader); 
+            StringReader sr = null;
+            try
+            {
+                sr = new StringReader(xml);
+                using (var xr = XmlReader.Create(sr, new XmlReaderSettings() { XmlResolver = null }))
+                    xDoc.Load(xr);
+            }
+            finally
+            {
+                if (sr != null)
+                    sr.Dispose();
+            }
 
             XmlRoot = xDoc.DocumentElement;
             Status = XmlRoot.GetAttribute("Status");

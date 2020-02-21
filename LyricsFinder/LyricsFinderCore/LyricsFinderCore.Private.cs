@@ -34,6 +34,9 @@ namespace MediaCenter.LyricsFinder
         /***** constants and variables *****/
         /***********************************/
 
+        private const int _mcStatusIntervalNormal = 300; // milliseconds
+        private const int _mcStatusIntervalError = 5000; // milliseconds
+
         const string _menuNameDelim = "_";
 
         private bool _isConnectedToMc = false;
@@ -48,8 +51,6 @@ namespace MediaCenter.LyricsFinder
         private int _playingKey = -1;
         private int _selectedKey = -1;
         private static int _progressPercentage = -1;
-        private static int _mcStatusIntervalNormal = 300; // milliseconds
-        private static int _mcStatusIntervalError = 5000; // milliseconds
 
         private readonly string _logHeader = "".PadRight(80, '-');
 
@@ -57,20 +58,20 @@ namespace MediaCenter.LyricsFinder
 
         private BitmapForm _bitmapForm = null;
         private LyricForm _lyricForm = null;
-        private List<string> _noLyricsSearchList = new List<string>();
-        private SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
+        private readonly List<string> _noLyricsSearchList = new List<string>();
+        private readonly SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
         private McPlayListsResponse _currentUnsortedMcPlaylistsResponse = null;
         private McMplResponse _currentLyricsFinderPlaylist = null;
         private McMplResponse _currentMcPlaylist = null;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private static Bitmap _emptyCoverImage = new Bitmap(400, 400);
-        private static Bitmap _emptyPlayPauseImage = new Bitmap(16, 16);
-        private static List<Bitmap> _itemBitmaps = new List<Bitmap>(); // For disposing purpose
+        private static readonly Bitmap _emptyCoverImage = new Bitmap(400, 400);
+        private static readonly Bitmap _emptyPlayPauseImage = new Bitmap(16, 16);
+        private static readonly List<Bitmap> _itemBitmaps = new List<Bitmap>(); // For disposing purpose
 
         // Instantiate a Singleton of the Semaphore with a value of 1. 
         // This means that only 1 thread can be granted access at a time. 
         // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
-        private static SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
 
         /**********************************/

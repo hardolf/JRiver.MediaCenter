@@ -171,7 +171,7 @@ namespace MediaCenter.McWs
 
                     if (!field.IsNullOrEmptyTrimmed())
                     {
-                        var rel = int.Parse(field);
+                        var rel = int.Parse(field, CultureInfo.InvariantCulture);
 
                         if (rel != 0)
                             sb.Append($"&Relative={rel}");

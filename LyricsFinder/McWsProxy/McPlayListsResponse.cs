@@ -33,7 +33,7 @@ namespace MediaCenter.McWs
         /// The items.
         /// </value>
         [XmlIgnore]
-        public virtual Dictionary<string, McPlayListType> Items { get; set; }
+        public virtual Dictionary<string, McPlayListType> Items { get; } = new Dictionary<string, McPlayListType>();
 
         [XmlAttribute("Status")]
         public string Status
@@ -44,7 +44,7 @@ namespace MediaCenter.McWs
             }
             set
             {
-                IsOk = value.Equals("OK", StringComparison.InvariantCultureIgnoreCase) ? true : false;
+                IsOk = (value != null) && (value.Equals("OK", StringComparison.InvariantCultureIgnoreCase) ? true : false);
             }
         }
 
@@ -54,7 +54,6 @@ namespace MediaCenter.McWs
         /// </summary>
         protected McPlayListsResponse()
         {
-            Items = new Dictionary<string, McPlayListType>();
         }
 
 
@@ -141,13 +140,15 @@ namespace MediaCenter.McWs
         /// </returns>
         public override bool Equals(object obj)
         {
+            if (obj is null) return false;
+
             var rsp = obj as McPlayListsResponse;
             var ret = (rsp != null) &&
                 (IsOk == rsp.IsOk) &&
                 (Items.Count == rsp.Items.Count) &&
                 (Status == rsp.Status);
 
-            if (ret)
+            if (ret && (rsp != null))
             {
                 for (int i = 0; i < rsp.Items.Count; i++)
                 {

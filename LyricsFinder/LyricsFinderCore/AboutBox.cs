@@ -22,10 +22,10 @@ namespace MediaCenter.LyricsFinder
     public partial class AboutBox : Form
     {
 
-        private Assembly _assembly = null;
-        private Size _maxWindowSize;
+        private readonly Assembly _assembly = null;
+        private readonly Size _maxWindowSize;
 
-        private string _extraDescription = "\r\nThe LyricsFinder looks for lyrics in public lyric web services.\r\n"
+        private readonly string _extraDescription = "\r\nThe LyricsFinder looks for lyrics in public lyric web services.\r\n"
             + "\r\nLookup is done for all - or just one at a time - of the current songs in the \"Playing Now\" list in the JRiver Media Center.\r\n"
             + "\r\nThe LyricsFinder can be used as a standalone program and/or as a plug-in for the JRiver Media Center.\r\n"
             + "\r\nThe found lyrics are saved in the songs' tags.";
