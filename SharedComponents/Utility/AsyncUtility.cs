@@ -202,7 +202,7 @@ namespace MediaCenter.SharedComponents
             else
             {
                 control.Enabled = enabled;
-                if (enabled)
+                if (enabled && control.CanFocus)
                     control.Focus();
             }
         }

@@ -70,6 +70,8 @@
             this.EditUpperCaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditSentenceCaseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.EditTrimMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.EditSpellCheckMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,7 +95,7 @@
             this.ArtistTextBox.Name = "ArtistTextBox";
             this.ArtistTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.ArtistTextBox.Size = new System.Drawing.Size(121, 44);
-            this.ArtistTextBox.TabIndex = 1;
+            this.ArtistTextBox.TabIndex = 3;
             this.LyricFormToolTip.SetToolTip(this.ArtistTextBox, "Artist name, change to refine search");
             // 
             // AlbumTextBox
@@ -104,7 +106,7 @@
             this.AlbumTextBox.Name = "AlbumTextBox";
             this.AlbumTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.AlbumTextBox.Size = new System.Drawing.Size(122, 44);
-            this.AlbumTextBox.TabIndex = 1;
+            this.AlbumTextBox.TabIndex = 4;
             this.LyricFormToolTip.SetToolTip(this.AlbumTextBox, "Album name, change to refine search");
             // 
             // TrackTextBox
@@ -115,7 +117,7 @@
             this.TrackTextBox.Name = "TrackTextBox";
             this.TrackTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.TrackTextBox.Size = new System.Drawing.Size(123, 44);
-            this.TrackTextBox.TabIndex = 1;
+            this.TrackTextBox.TabIndex = 5;
             this.LyricFormToolTip.SetToolTip(this.TrackTextBox, "Track title, change to refine search");
             // 
             // LyricFormTrackBar
@@ -125,7 +127,7 @@
             this.LyricFormTrackBar.Maximum = 0;
             this.LyricFormTrackBar.Name = "LyricFormTrackBar";
             this.LyricFormTrackBar.Size = new System.Drawing.Size(289, 45);
-            this.LyricFormTrackBar.TabIndex = 6;
+            this.LyricFormTrackBar.TabIndex = 2;
             this.LyricFormToolTip.SetToolTip(this.LyricFormTrackBar, "Switch between all the lyrics search results (Arrows)");
             this.LyricFormTrackBar.Visible = false;
             this.LyricFormTrackBar.Scroll += new System.EventHandler(this.LyricFormTrackBar_ScrollAsync);
@@ -150,7 +152,7 @@
             this.CloseButton.Location = new System.Drawing.Point(298, 477);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(74, 23);
-            this.CloseButton.TabIndex = 8;
+            this.CloseButton.TabIndex = 3;
             this.CloseButton.Text = "&Close (Esc)";
             this.LyricFormToolTip.SetToolTip(this.CloseButton, "Close the window (Esc)");
             this.CloseButton.UseVisualStyleBackColor = true;
@@ -210,7 +212,7 @@
             this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.LyricParmsPanel.Size = new System.Drawing.Size(384, 90);
-            this.LyricParmsPanel.TabIndex = 10;
+            this.LyricParmsPanel.TabIndex = 0;
             // 
             // ArtistLabel
             // 
@@ -229,7 +231,7 @@
             this.AlbumLabel.Location = new System.Drawing.Point(130, 27);
             this.AlbumLabel.Name = "AlbumLabel";
             this.AlbumLabel.Size = new System.Drawing.Size(36, 13);
-            this.AlbumLabel.TabIndex = 0;
+            this.AlbumLabel.TabIndex = 1;
             this.AlbumLabel.Text = "Album";
             // 
             // TrackLabel
@@ -239,7 +241,7 @@
             this.TrackLabel.Location = new System.Drawing.Point(258, 27);
             this.TrackLabel.Name = "TrackLabel";
             this.TrackLabel.Size = new System.Drawing.Size(58, 13);
-            this.TrackLabel.TabIndex = 0;
+            this.TrackLabel.TabIndex = 2;
             this.TrackLabel.Text = "Track Title";
             // 
             // LyricFormStatusStrip
@@ -273,7 +275,7 @@
             this.LyricTextBox.Name = "LyricTextBox";
             this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.LyricTextBox.Size = new System.Drawing.Size(378, 362);
-            this.LyricTextBox.TabIndex = 5;
+            this.LyricTextBox.TabIndex = 1;
             this.LyricTextBox.TextChanged += new System.EventHandler(this.LyricTextBox_TextChangedAsync);
             this.LyricTextBox.Enter += new System.EventHandler(this.LyricTextBox_EnterAsync);
             this.LyricTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricTextBox_KeyDownAsync);
@@ -291,7 +293,6 @@
             this.LyricFormMenuStrip.Name = "LyricFormMenuStrip";
             this.LyricFormMenuStrip.Size = new System.Drawing.Size(384, 24);
             this.LyricFormMenuStrip.TabIndex = 0;
-            this.LyricFormMenuStrip.Text = "menuStrip1";
             // 
             // EditMenuItem
             // 
@@ -310,6 +311,8 @@
             this.EditUpperCaseMenuItem,
             this.EditSentenceCaseMenuItem,
             this.EditSeparator2,
+            this.EditTrimMenuItem,
+            this.EditSeparator3,
             this.EditSpellCheckMenuItem});
             this.EditMenuItem.Name = "EditMenuItem";
             this.EditMenuItem.Size = new System.Drawing.Size(39, 20);
@@ -320,20 +323,20 @@
             // 
             this.EditUndoMenuItem.Name = "EditUndoMenuItem";
             this.EditUndoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.EditUndoMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.EditUndoMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditUndoMenuItem.Text = "&Undo";
             this.EditUndoMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditSeparator0
             // 
             this.EditSeparator0.Name = "EditSeparator0";
-            this.EditSeparator0.Size = new System.Drawing.Size(199, 6);
+            this.EditSeparator0.Size = new System.Drawing.Size(232, 6);
             // 
             // EditSelectAllMenuItem
             // 
             this.EditSelectAllMenuItem.Name = "EditSelectAllMenuItem";
             this.EditSelectAllMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.EditSelectAllMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.EditSelectAllMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditSelectAllMenuItem.Text = "Select &all";
             this.EditSelectAllMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -341,7 +344,7 @@
             // 
             this.EditCutMenuItem.Name = "EditCutMenuItem";
             this.EditCutMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.EditCutMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.EditCutMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditCutMenuItem.Text = "Cut";
             this.EditCutMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -349,7 +352,7 @@
             // 
             this.EditCopyMenuItem.Name = "EditCopyMenuItem";
             this.EditCopyMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.EditCopyMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.EditCopyMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditCopyMenuItem.Text = "Copy";
             this.EditCopyMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -357,7 +360,7 @@
             // 
             this.EditPasteMenuItem.Name = "EditPasteMenuItem";
             this.EditPasteMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.EditPasteMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.EditPasteMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditPasteMenuItem.Text = "Paste";
             this.EditPasteMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -365,19 +368,19 @@
             // 
             this.EditDeleteMenuItem.Name = "EditDeleteMenuItem";
             this.EditDeleteMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.EditDeleteMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.EditDeleteMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditDeleteMenuItem.Text = "Delete";
             this.EditDeleteMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditSeparator1
             // 
             this.EditSeparator1.Name = "EditSeparator1";
-            this.EditSeparator1.Size = new System.Drawing.Size(199, 6);
+            this.EditSeparator1.Size = new System.Drawing.Size(232, 6);
             // 
             // EditProperCaseMenuItem
             // 
             this.EditProperCaseMenuItem.Name = "EditProperCaseMenuItem";
-            this.EditProperCaseMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.EditProperCaseMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditProperCaseMenuItem.Text = "&Proper case selection";
             this.EditProperCaseMenuItem.ToolTipText = "In every word the first letter is capitalized";
             this.EditProperCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -385,7 +388,7 @@
             // EditTitleCaseMenuItem
             // 
             this.EditTitleCaseMenuItem.Name = "EditTitleCaseMenuItem";
-            this.EditTitleCaseMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.EditTitleCaseMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditTitleCaseMenuItem.Text = "&Title case selection";
             this.EditTitleCaseMenuItem.ToolTipText = "In every word the first letter is capitalized,\r\nexcept where word length is less " +
     "than 4";
@@ -394,7 +397,7 @@
             // EditLowerCaseMenuItem
             // 
             this.EditLowerCaseMenuItem.Name = "EditLowerCaseMenuItem";
-            this.EditLowerCaseMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.EditLowerCaseMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditLowerCaseMenuItem.Text = "&Lower case selection";
             this.EditLowerCaseMenuItem.ToolTipText = "All text is in small letters";
             this.EditLowerCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -402,7 +405,7 @@
             // EditUpperCaseMenuItem
             // 
             this.EditUpperCaseMenuItem.Name = "EditUpperCaseMenuItem";
-            this.EditUpperCaseMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.EditUpperCaseMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditUpperCaseMenuItem.Text = "&Upper case selection";
             this.EditUpperCaseMenuItem.ToolTipText = "All text is in capital letters";
             this.EditUpperCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -410,23 +413,36 @@
             // EditSentenceCaseMenuItem
             // 
             this.EditSentenceCaseMenuItem.Name = "EditSentenceCaseMenuItem";
-            this.EditSentenceCaseMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.EditSentenceCaseMenuItem.Text = "Sentence case selection";
+            this.EditSentenceCaseMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EditSentenceCaseMenuItem.Text = "&Sentence case selection";
             this.EditSentenceCaseMenuItem.ToolTipText = "In the first word after a newline or period, \r\nthe first letter is capitalized";
             this.EditSentenceCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditSeparator2
             // 
             this.EditSeparator2.Name = "EditSeparator2";
-            this.EditSeparator2.Size = new System.Drawing.Size(199, 6);
-            this.EditSeparator2.Visible = false;
+            this.EditSeparator2.Size = new System.Drawing.Size(232, 6);
+            // 
+            // EditTrimMenuItem
+            // 
+            this.EditTrimMenuItem.Name = "EditTrimMenuItem";
+            this.EditTrimMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EditTrimMenuItem.Text = "T&rim leading and trailing space";
+            this.EditTrimMenuItem.ToolTipText = "Trim leading and trailing space in each line of the selected (or all) text";
+            this.EditTrimMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditSeparator3
+            // 
+            this.EditSeparator3.Name = "EditSeparator3";
+            this.EditSeparator3.Size = new System.Drawing.Size(232, 6);
+            this.EditSeparator3.Visible = false;
             // 
             // EditSpellCheckMenuItem
             // 
             this.EditSpellCheckMenuItem.Name = "EditSpellCheckMenuItem";
             this.EditSpellCheckMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
-            this.EditSpellCheckMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.EditSpellCheckMenuItem.Text = "&Spell check selection";
+            this.EditSpellCheckMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EditSpellCheckMenuItem.Text = "Spell check selection";
             this.EditSpellCheckMenuItem.Visible = false;
             this.EditSpellCheckMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -479,7 +495,6 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "LyricsForm";
-            this.TopMost = true;
             this.TransparencyKey = System.Drawing.Color.Teal;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricForm_FormClosingAsync);
             this.Load += new System.EventHandler(this.LyricForm_LoadAsync);
@@ -543,5 +558,7 @@
         private System.Windows.Forms.ToolStripMenuItem EditPasteMenuItem;
         private System.Windows.Forms.ToolStripMenuItem EditSentenceCaseMenuItem;
         private System.Windows.Forms.ToolStripMenuItem EditDeleteMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditTrimMenuItem;
+        private System.Windows.Forms.ToolStripSeparator EditSeparator3;
     }
 }

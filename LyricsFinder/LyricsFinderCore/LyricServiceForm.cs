@@ -469,6 +469,7 @@ namespace MediaCenter.LyricsFinder.Model
             {
                 if (!_isListReady) return;
                 if (e.ColumnIndex != 0) return; // We only look at the checkbox column here
+                if (e.RowIndex < 0) return; // Ignore the header row
 
                 var row = LyricServiceListDataGridView.Rows[e.RowIndex];
                 var isChecked = (row.Cells[0].Value == null) || !((bool)row.Cells[0].Value);

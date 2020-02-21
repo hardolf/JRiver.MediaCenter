@@ -52,6 +52,14 @@ namespace MediaCenter.LyricsFinder
         }
 
         /// <summary>
+        /// Gets or sets the index of the current item.
+        /// </summary>
+        /// <value>
+        /// The index of the current item.
+        /// </value>
+        public int CurrentItems { get; private set; }
+
+        /// <summary>
         /// Gets or sets the large change.
         /// </summary>
         /// <value>
@@ -86,6 +94,14 @@ namespace MediaCenter.LyricsFinder
             get => McPositionTrackBar.Maximum;
             private set => McPositionTrackBar.Maximum = value;
         }
+
+        /// <summary>
+        /// Gets or sets the maximum number of items.
+        /// </summary>
+        /// <value>
+        /// The maximum number of items.
+        /// </value>
+        public int MaxItems { get; private set; }
 
         /// <summary>
         /// Gets or sets the owner control.
@@ -241,8 +257,8 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                await SetMaxSecondsAsync(0); // Set this before the current seconds
-                await SetCurrentSecondsAsync(0);
+                SetMaxState(0, 0); // Set this before the current seconds
+                SetCurrentState(0, 0);
 
                 if (ToolsPlayStartStopButton.GetStartingEventSubscribers().Length == 0)
                     ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_StartAsync;
@@ -284,9 +300,16 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void McControlLeftToolStrip_MouseEnter(object sender, EventArgs e)
+        private async void McControlLeftToolStrip_MouseEnterAsync(object sender, EventArgs e)
         {
-            this.Focus();
+            try
+            {
+                this.Focus();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
         }
 
 
@@ -311,22 +334,26 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Sets the current seconds.
         /// </summary>
-        /// <param name="value">The value.</param>
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task SetCurrentSecondsAsync(int value)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        /// <param name="currentSeconds">The current seconds.</param>
+        /// <param name="currentItems">The current items.</param>
+        public void SetCurrentState(int currentSeconds, int currentItems)
         {
+            const long secTicks = 10000000; // 1 tick is 100 ns
+
             if (_isLocked) return;
 
-            CurrentSeconds = value;
+            CurrentSeconds = currentSeconds;
+            CurrentItems = currentItems;
 
-            var max = new TimeSpan(McPositionTrackBar.Maximum * 10000000);
-            var maxTxt = (max.TotalMinutes > 59) ? $"{max.TotalHours:###0}:{max.Minutes:00}:{max.Seconds:00}" : $"{max.TotalMinutes:#0}:{max.Seconds:00}";
+            long maxTicks = MaxSeconds * secTicks;
+            var max = new TimeSpan(maxTicks);
+            var maxTxt = (max.Hours > 0) ? $"{max.Hours:###0}:{max.Minutes:00}:{max.Seconds:00}" : $"{max.Minutes:#0}:{max.Seconds:00}";
 
-            var pos = new TimeSpan(value * 10000000);
-            var posTxt = (max.TotalMinutes > 59) ? $"{pos.TotalHours:###0}:{pos.Minutes:00}:{pos.Seconds:00}" : $"{pos.TotalMinutes:#0}:{pos.Seconds:00}";
+            long posTicks = currentSeconds * secTicks;
+            var pos = new TimeSpan(posTicks);
+            var posTxt = (pos.Hours > 0) ? $"{pos.Hours:###0}:{pos.Minutes:00}:{pos.Seconds:00}" : $"{pos.Minutes:#0}:{pos.Seconds:00}";
 
-            TrackingLabel.Text = $"{posTxt} / {maxTxt}";
+            TrackingLabel.Text = $"{posTxt} / {maxTxt} - {CurrentItems} of {MaxItems}";
             TrackingLabel.Left = McPositionTrackBar.Width / 2 - TrackingLabel.Width / 2;
             TrackingLabel.BringToFront();
         }
@@ -335,14 +362,14 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Sets the maximum seconds.
         /// </summary>
-        /// <param name="value">The value.</param>
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        public async Task SetMaxSecondsAsync(int value)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        /// <param name="maxSeconds">The maximum sec onds.</param>
+        /// <param name="maxItems">The maximum items.</param>
+        public void SetMaxState(int maxSeconds, int maxItems)
         {
             if (_isLocked) return;
 
-            MaxSeconds = value;
+            MaxSeconds = maxSeconds;
+            MaxItems = maxItems;
         }
 
 
@@ -365,6 +392,9 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 await LyricsFinderCore.PlayOrPauseAsync();
+
+                if (OwnerControl.CanFocus)
+                    OwnerControl.Focus();
             }
             catch (Exception ex)
             {
@@ -383,6 +413,9 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 await LyricsFinderCore.PlayOrPauseAsync();
+
+                if (OwnerControl.CanFocus)
+                    OwnerControl.Focus();
             }
             catch (Exception ex)
             {

@@ -893,8 +893,8 @@ namespace MediaCenter.LyricsFinder
 
                     if (McPlayControl != null)
                     {
-                        await McPlayControl.SetMaxSecondsAsync(int.Parse(mcInfo.DurationMS, CultureInfo.InvariantCulture) / 1000); // Set this before the current seconds
-                        await McPlayControl.SetCurrentSecondsAsync(int.Parse(mcInfo.PositionMS, CultureInfo.InvariantCulture) / 1000);
+                        McPlayControl.SetMaxState(int.Parse(mcInfo.DurationMS, CultureInfo.InvariantCulture) / 1000, rows.Count); // Set max state before setting the current state
+                        McPlayControl.SetCurrentState(int.Parse(mcInfo.PositionMS, CultureInfo.InvariantCulture) / 1000, _playingIndex + 1);
                     }
 
                     break;

@@ -62,15 +62,16 @@
             // McControlToolStripContainer.LeftToolStripPanel
             // 
             this.McControlToolStripContainer.LeftToolStripPanel.Controls.Add(this.McControlLeftToolStrip);
-            this.McControlToolStripContainer.LeftToolStripPanel.MouseEnter += new System.EventHandler(this.McControlLeftToolStrip_MouseEnter);
+            this.McControlToolStripContainer.LeftToolStripPanel.MouseEnter += new System.EventHandler(this.McControlLeftToolStrip_MouseEnterAsync);
             this.McControlToolStripContainer.Location = new System.Drawing.Point(0, 0);
             this.McControlToolStripContainer.Name = "McControlToolStripContainer";
             // 
             // McControlToolStripContainer.RightToolStripPanel
             // 
             this.McControlToolStripContainer.RightToolStripPanel.Enabled = false;
-            this.McControlToolStripContainer.Size = new System.Drawing.Size(400, 75);
+            this.McControlToolStripContainer.Size = new System.Drawing.Size(400, 50);
             this.McControlToolStripContainer.TabIndex = 0;
+            this.McControlToolStripContainer.TabStop = false;
             this.McControlToolStripContainer.Text = "toolStripContainer1";
             // 
             // McControlToolStripContainer.TopToolStripPanel
@@ -82,7 +83,7 @@
             this.TrackingLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TrackingLabel.AutoSize = true;
-            this.TrackingLabel.BackColor = System.Drawing.Color.Transparent;
+            this.TrackingLabel.BackColor = System.Drawing.SystemColors.Control;
             this.TrackingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TrackingLabel.ForeColor = System.Drawing.SystemColors.ControlText;
             this.TrackingLabel.Location = new System.Drawing.Point(167, 28);
@@ -102,7 +103,7 @@
             this.McPositionTrackBar.Name = "McPositionTrackBar";
             this.McPositionTrackBar.Size = new System.Drawing.Size(356, 45);
             this.McPositionTrackBar.SmallChange = 5;
-            this.McPositionTrackBar.TabIndex = 3;
+            this.McPositionTrackBar.TabIndex = 1;
             this.McPositionTrackBar.TabStop = false;
             this.McPositionTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.McPositionTrackBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.McPositionTrackBar_MouseDownAsync);
@@ -120,7 +121,7 @@
             this.McControlLeftToolStrip.Location = new System.Drawing.Point(0, 3);
             this.McControlLeftToolStrip.Name = "McControlLeftToolStrip";
             this.McControlLeftToolStrip.Size = new System.Drawing.Size(31, 25);
-            this.McControlLeftToolStrip.TabIndex = 3;
+            this.McControlLeftToolStrip.TabIndex = 0;
             this.McControlLeftToolStrip.MouseEnter += new System.EventHandler(this.McPlayControl_MouseEnterAsync);
             // 
             // ToolsPlayStartStopButton
@@ -147,7 +148,7 @@
             this.BackColor = System.Drawing.Color.Transparent;
             this.Controls.Add(this.McControlToolStripContainer);
             this.Name = "McPlayControl";
-            this.Size = new System.Drawing.Size(400, 75);
+            this.Size = new System.Drawing.Size(400, 50);
             this.Load += new System.EventHandler(this.McPlayControl_LoadAsync);
             this.MouseEnter += new System.EventHandler(this.McPlayControl_MouseEnterAsync);
             this.McControlToolStripContainer.ContentPanel.ResumeLayout(false);

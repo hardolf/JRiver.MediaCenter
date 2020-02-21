@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -328,6 +329,8 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
+                BringToFront();
+
                 if (_isSearch)
                 {
                     UseWaitCursor = true;
@@ -523,6 +526,8 @@ namespace MediaCenter.LyricsFinder
 
                 switch (itemName)
                 {
+                    // Edit menu
+
                     case nameof(EditMenuItem):
                     case nameof(HelpMenuItem):
                     case nameof(ToolsMenuItem):
@@ -587,13 +592,29 @@ namespace MediaCenter.LyricsFinder
                         break;
 
                     case nameof(EditSpellCheckMenuItem):
-                        if (DoTextOperationQuestion(true))
-                            SpellCheck();
+                        //if (DoTextOperationQuestion(true))
+                        //    SpellCheck();
                         break;
 
                     case nameof(EditTitleCaseMenuItem):
                         if (DoTextOperationQuestion(true))
                             LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToTitleCase();
+                        break;
+
+                    case nameof(EditTrimMenuItem):
+                        if (DoTextOperationQuestion(true))
+                        {
+                            var sb = new StringBuilder();
+                            using (var sr = new StringReader(LyricTextBox.SelectedText))
+                            {
+                                string line;
+                                while ((line = sr.ReadLine()) != null)
+                                {
+                                    sb.AppendLine(line.Trim());
+                                }
+                            }
+                            LyricTextBox.SelectedText = sb.ToString();
+                        }
                         break;
 
                     case nameof(EditUpperCaseMenuItem):
@@ -612,9 +633,13 @@ namespace MediaCenter.LyricsFinder
                         }
                         break;
 
+                    // Help menu
+
                     case nameof(HelpHelpMenuItem):
                         System.Diagnostics.Process.Start("https://github.com/hardolf/JRiver.MediaCenter/wiki/Lyrics-Window");
                         break;
+
+                    // Tools menu
 
                     case nameof(ToolsSearchMenuItem):
                         SearchButton.PerformClick();
@@ -774,7 +799,7 @@ namespace MediaCenter.LyricsFinder
             var left = leftOffset;
             var top = refCtl.Bounds.Y;
             var width = LyricFormMenuStrip.Width - leftOffset;
-            var height = LyricFormMenuStrip.Height + (int) LyricParmsPanel.RowStyles[0].Height;
+            var height = LyricFormMenuStrip.Height + (int)LyricParmsPanel.RowStyles[0].Height;
 
             // MessageBox.Show($"left={left} top={top} width={width} height={height}", "Test");
 

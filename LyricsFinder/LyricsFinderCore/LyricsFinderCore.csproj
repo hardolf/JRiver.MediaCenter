@@ -95,11 +95,11 @@
     <Compile Include="BitmapForm.Designer.cs">
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="McPlayControlForm.cs">
+    <Compile Include="LyricServiceForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="McPlayControlForm.Designer.cs">
-      <DependentUpon>McPlayControlForm.cs</DependentUpon>
+    <Compile Include="LyricServiceForm.Designer.cs">
+      <DependentUpon>LyricServiceForm.cs</DependentUpon>
     </Compile>
     <Compile Include="McPlayControl.cs">
       <SubType>UserControl</SubType>
@@ -148,12 +148,6 @@
     <Compile Include="Model\Helpers\ErrorHandling.cs" />
     <Compile Include="Model\Helpers\Logging.cs" />
     <Compile Include="Model\LyricsFinderDataType.cs" />
-    <Compile Include="LyricServiceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="LyricServiceForm.Designer.cs">
-      <DependentUpon>LyricServiceForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Model\LyricServices\AbstractLyricService.cs" />
     <Compile Include="Model\LyricServices\CreditType.cs" />
     <Compile Include="Model\Helpers\Utility.cs" />
@@ -194,8 +188,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="McPlayControlForm.resx">
-      <DependentUpon>McPlayControlForm.cs</DependentUpon>
+    <EmbeddedResource Include="LyricServiceForm.resx">
+      <DependentUpon>LyricServiceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="McPlayControl.resx">
       <DependentUpon>McPlayControl.cs</DependentUpon>
@@ -211,9 +205,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LyricForm.resx">
       <DependentUpon>LyricForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="LyricServiceForm.resx">
-      <DependentUpon>LyricServiceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

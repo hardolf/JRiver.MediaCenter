@@ -30,19 +30,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricServiceForm));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricServiceForm));
             this.LyricServiceMainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.LyricServiceListPanel = new System.Windows.Forms.Panel();
             this.LyricServiceListContainer = new System.Windows.Forms.ToolStripContainer();
             this.LyricServiceListDataGridView = new System.Windows.Forms.DataGridView();
-            this.Active = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Service = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DailyCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DailyMaximum = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.QuotaResetTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LyricServiceListRightToolbar = new System.Windows.Forms.ToolStrip();
             this.MoveUpButton = new System.Windows.Forms.ToolStripButton();
             this.MoveDownButton = new System.Windows.Forms.ToolStripButton();
@@ -53,6 +48,11 @@
             this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.LyricServiceFormToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.Active = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Service = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DailyCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DailyMaximum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.QuotaResetTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LyricServiceMainTableLayoutPanel.SuspendLayout();
             this.LyricServiceListPanel.SuspendLayout();
             this.LyricServiceListContainer.ContentPanel.SuspendLayout();
@@ -136,62 +136,6 @@
             this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClickAsync);
             this.LyricServiceListDataGridView.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.LyricServiceListDataGridView_RowValidatingAsync);
             this.LyricServiceListDataGridView.SelectionChanged += new System.EventHandler(this.LyricServiceListDataGridView_SelectionChangedAsync);
-            // 
-            // Active
-            // 
-            this.Active.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Active.HeaderText = "Active";
-            this.Active.Name = "Active";
-            this.Active.ToolTipText = "Check if this lyrics service should be used during searhes";
-            this.Active.Width = 40;
-            // 
-            // Service
-            // 
-            this.Service.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.Service.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Service.HeaderText = "Service name";
-            this.Service.Name = "Service";
-            this.Service.ReadOnly = true;
-            this.Service.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Service.ToolTipText = "Lyrics service name";
-            // 
-            // DailyCount
-            // 
-            this.DailyCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.DailyCount.DefaultCellStyle = dataGridViewCellStyle2;
-            this.DailyCount.FillWeight = 80F;
-            this.DailyCount.HeaderText = "Today";
-            this.DailyCount.MinimumWidth = 60;
-            this.DailyCount.Name = "DailyCount";
-            this.DailyCount.ReadOnly = true;
-            this.DailyCount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DailyCount.ToolTipText = "Search count today to this service";
-            this.DailyCount.Width = 60;
-            // 
-            // DailyMaximum
-            // 
-            this.DailyMaximum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.DailyMaximum.DefaultCellStyle = dataGridViewCellStyle3;
-            this.DailyMaximum.HeaderText = "Maximum";
-            this.DailyMaximum.MinimumWidth = 60;
-            this.DailyMaximum.Name = "DailyMaximum";
-            this.DailyMaximum.ReadOnly = true;
-            this.DailyMaximum.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DailyMaximum.ToolTipText = "Maximum allowed searches today to this service";
-            this.DailyMaximum.Width = 60;
-            // 
-            // QuotaResetTime
-            // 
-            this.QuotaResetTime.HeaderText = "Next reset time";
-            this.QuotaResetTime.MinimumWidth = 120;
-            this.QuotaResetTime.Name = "QuotaResetTime";
-            this.QuotaResetTime.ReadOnly = true;
-            this.QuotaResetTime.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.QuotaResetTime.ToolTipText = "Local time of next quota reset";
-            this.QuotaResetTime.Width = 120;
             // 
             // LyricServiceListRightToolbar
             // 
@@ -283,6 +227,64 @@
             this.LyricServiceFormToolTip.AutoPopDelay = 15000;
             this.LyricServiceFormToolTip.InitialDelay = 500;
             this.LyricServiceFormToolTip.ReshowDelay = 100;
+            // 
+            // Active
+            // 
+            this.Active.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Active.HeaderText = "Active";
+            this.Active.Name = "Active";
+            this.Active.ReadOnly = true;
+            this.Active.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Active.ToolTipText = "Check if this lyrics service should be used during searhes";
+            this.Active.Width = 40;
+            // 
+            // Service
+            // 
+            this.Service.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.Service.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Service.HeaderText = "Service name";
+            this.Service.Name = "Service";
+            this.Service.ReadOnly = true;
+            this.Service.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Service.ToolTipText = "Lyrics service name";
+            // 
+            // DailyCount
+            // 
+            this.DailyCount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.DailyCount.DefaultCellStyle = dataGridViewCellStyle2;
+            this.DailyCount.FillWeight = 80F;
+            this.DailyCount.HeaderText = "Today";
+            this.DailyCount.MinimumWidth = 60;
+            this.DailyCount.Name = "DailyCount";
+            this.DailyCount.ReadOnly = true;
+            this.DailyCount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DailyCount.ToolTipText = "Search count today to this service";
+            this.DailyCount.Width = 60;
+            // 
+            // DailyMaximum
+            // 
+            this.DailyMaximum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.DailyMaximum.DefaultCellStyle = dataGridViewCellStyle3;
+            this.DailyMaximum.HeaderText = "Maximum";
+            this.DailyMaximum.MinimumWidth = 60;
+            this.DailyMaximum.Name = "DailyMaximum";
+            this.DailyMaximum.ReadOnly = true;
+            this.DailyMaximum.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DailyMaximum.ToolTipText = "Maximum allowed searches today to this service";
+            this.DailyMaximum.Width = 60;
+            // 
+            // QuotaResetTime
+            // 
+            this.QuotaResetTime.HeaderText = "Next reset time";
+            this.QuotaResetTime.MinimumWidth = 120;
+            this.QuotaResetTime.Name = "QuotaResetTime";
+            this.QuotaResetTime.ReadOnly = true;
+            this.QuotaResetTime.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.QuotaResetTime.ToolTipText = "Local time of next quota reset";
+            this.QuotaResetTime.Width = 120;
             // 
             // LyricServiceForm
             // 
