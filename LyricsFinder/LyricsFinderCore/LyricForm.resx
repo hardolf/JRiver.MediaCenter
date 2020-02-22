@@ -126,4 +126,27 @@
   <metadata name="LyricFormMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>325, 17</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="ToolsPlayStartStopButton.ImageStart" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADiSURBVDhPY0AHAgV8/7df2fYfyiUdgAygyBCQ5sLrduQb
+        AjOAbENAmvKu2v7Pumj1P/WsOemGgDSknbP4n3jS9H/0UcP/Ifv1STMEpDjmmPH/0AP6//13a/9336r+
+        32G9MvGGgBQG7tH977lN87/TBtX/1isV/psslvmvM1cSbAhUGW4AUuSyUe2/zWrF/6ZL5f7rzZf8rz5L
+        jDQXmC+X/6+/QPq/5izx/0pThUkPA+054v9Vp4v8l5skSJpmEABpkJ8s9F+qn590zSAA0iTezUueZhAA
+        aSRbMwhQpJl0wMAAAAqspGmOTfvLAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="ToolsPlayStartStopButton.ImageStop" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAOCAYAAAAmL5yKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFLSURBVDhPxZKxq4JQFMb7B5qatcAghxokcQkjJRBKcIii
+        NCiIHCwnhxqSpmjINiGlyTlw6B/8HvciDy7Z9uB9cJZzfnz33O/eyp8pSRJEUYTb7Yai9avL5QLP87Dd
+        bnE8Hj/mVHEc43Q64XA4fADn8xnz+RymaWK1WpUb3O93BEEA3/c/AHLqeDxGv9/HdDotN7her9jtdths
+        Nni/3wxEjDVNgyRJdIuizcp1XTq0LAuv14uB9vs9ZFkGz/PQdb3cYDQaodlsQhAEpGnKQOTeZFatVqGq
+        armBYRio1+vgOA4k0KJNtVwuqXGtVqM5FG1WZH1RFNFqtfB4PBhovV6j3W6j0WhgOByWG0wmE3S7XVrP
+        55OBSD6KoqDT6XwPkaw5GAxoZVnGQORpSXi9Xu/7MxJosVjAcRzkec5AYRjCtm3MZrPSf/KfqlR+ANeG
+        rdeMD3w7AAAAAElFTkSuQmCC
+</value>
+  </data>
 </root>

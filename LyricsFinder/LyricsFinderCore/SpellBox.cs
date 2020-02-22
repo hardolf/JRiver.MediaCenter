@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
 using System.Windows.Forms.Design;
+using System.Windows.Media;
 
 using MediaCenter.SharedComponents;
 
@@ -59,13 +61,23 @@ namespace MediaCenter.LyricsFinder
             _textBox.SpellCheck.IsEnabled = false;
 
             _textBox.KeyDown += (s, e) => OnKeyDownWpf(e);
-            //_textBox.MouseEnter += (s, e) => OnMouseEnter(EventArgs.Empty);
-            //_textBox.MouseLeave += (s, e) => OnMouseLeave(EventArgs.Empty);
+            _textBox.MouseEnter += (s, e) => OnEnterWpf(EventArgs.Empty);
+            _textBox.MouseLeave += (s, e) => OnLeaveWpf(EventArgs.Empty);
             _textBox.TextChanged += (s, e) => OnTextChangedWpf(EventArgs.Empty);
+
+            InstalledInputLanguages = System.Windows.Forms.InputLanguage.InstalledInputLanguages;
+            InstalledCultures = new List<CultureInfo>();
+
+            foreach (System.Windows.Forms.InputLanguage lang in InstalledInputLanguages)
+            {
+                InstalledCultures.Add(lang.Culture);
+            }
         }
 
 
-        // Properties
+        /**********************/
+        /***** Properties *****/
+        /**********************/
 
         /// <summary>
         /// Gets a value that indicates whether the most recent undo action can be redone.
@@ -91,6 +103,30 @@ namespace MediaCenter.LyricsFinder
         {
             get { return base.Child; }
             set { /* Do nothing to solve a problem with the serializer !! */ }
+        }
+
+        /// <summary>
+        /// Gets the installed input languages.
+        /// </summary>
+        /// <value>
+        /// The installed input languages.
+        /// </value>
+        protected System.Windows.Forms.InputLanguageCollection InstalledInputLanguages
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the installed cultures.
+        /// </summary>
+        /// <value>
+        /// The installed cultures.
+        /// </value>
+        public List<CultureInfo> InstalledCultures
+        {
+            get;
+            private set;
         }
 
         /// <summary>
@@ -121,7 +157,11 @@ namespace MediaCenter.LyricsFinder
         public virtual bool ReadOnly
         {
             get => _textBox.IsReadOnly;
-            set => _textBox.IsReadOnly = value;
+            set 
+            { 
+                _textBox.IsReadOnly = value;
+                _textBox.Background = (value) ? Brushes.WhiteSmoke : Brushes.White;
+            }
         }
 
         /// <summary>
@@ -228,19 +268,6 @@ namespace MediaCenter.LyricsFinder
         }
 
         /// <summary>
-        /// Gets or sets the text contents of the text box.
-        /// </summary>
-        /// <value>
-        /// A string containing the text contents of the text box. 
-        /// The default is an empty string ("").
-        /// </value>
-        public override string Text
-        {
-            get => _textBox.Text;
-            set => _textBox.Text = value;
-        }
-
-        /// <summary>
         /// Gets or sets a value that determines whether the spelling checker is enabled on this text-editing control, such as TextBox or RichTextBox.
         /// </summary>
         /// <value>
@@ -251,6 +278,19 @@ namespace MediaCenter.LyricsFinder
         {
             get => _textBox.SpellCheck.IsEnabled;
             set => _textBox.SpellCheck.IsEnabled = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the text contents of the text box.
+        /// </summary>
+        /// <value>
+        /// A string containing the text contents of the text box. 
+        /// The default is an empty string ("").
+        /// </value>
+        public override string Text
+        {
+            get => _textBox.Text;
+            set => _textBox.Text = value;
         }
 
         /// <summary>
@@ -267,7 +307,9 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        // Methods
+        /*******************/
+        /***** Methods *****/
+        /*******************/
 
         /// <summary>
         /// Clears information about the most recent operation from the undo buffer of the text box.
@@ -368,32 +410,33 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        // Events
+        /******************/
+        /***** Events *****/
+        /******************/
 
         /// <summary>
-        /// Occurs when the <see cref="System.Windows.Forms.Control.Text" /> property value changes.
+        /// Occurs when the control is entered.
         /// </summary>
         [Browsable(true)]
-        public new event EventHandler TextChanged;
+        public new event EventHandler Enter;
 
         /// <summary>
-        /// Raises the <see cref="TextChangedWpf" /> event.
+        /// Raises the <see cref="System.Windows.Forms.Control.Enter"/> event.
         /// </summary>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        protected virtual void OnTextChangedWpf(EventArgs e)
+        protected virtual void OnEnterWpf(EventArgs e)
         {
-            TextChanged?.Invoke(this, e);
+            Enter?.Invoke(this, e);
         }
 
+
         /// <summary>
-        /// Occurs when [key down].
+        /// Occurs when a key is pressed while the control has focus.
         /// </summary>
         [Browsable(true)]
         public new event EventHandler<System.Windows.Forms.KeyEventArgs> KeyDown;
 
         /// <summary>
-        /// Raises the <see cref="System.Windows.Forms.OnKeyDown" /> event with WPF event args.
+        /// Raises the <see cref="KeyDown" /> event with WPF event args converted to WinForms event args.
         /// </summary>
         /// <param name="e">The <see cref="System.Windows.Input.KeyEventArgs"/> instance containing the event data.</param>
         /// <remarks>
@@ -411,6 +454,38 @@ namespace MediaCenter.LyricsFinder
 
             //System.Windows.Forms.Control.KeyDown(this, new System.Windows.Forms.KeyEventArgs(formsKeys));
             KeyDown?.Invoke(this, new System.Windows.Forms.KeyEventArgs(formsKeys));
+        }
+
+
+        /// <summary>
+        /// Occurs when the input focus leaves the control.
+        /// </summary>
+        [Browsable(true)]
+        public new event EventHandler Leave;
+
+        /// <summary>
+        /// Raises the <see cref="System.Windows.Forms.Control.Leave"/> event.
+        /// </summary>
+        protected virtual void OnLeaveWpf(EventArgs e)
+        {
+            Leave?.Invoke(this, e);
+        }
+
+
+        /// <summary>
+        /// Occurs when the <see cref="System.Windows.Forms.Control.Text" /> property value changes.
+        /// </summary>
+        [Browsable(true)]
+        public new event EventHandler TextChanged;
+
+        /// <summary>
+        /// Raises the <see cref="TextChanged" /> event.
+        /// </summary>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        protected virtual void OnTextChangedWpf(EventArgs e)
+        {
+            TextChanged?.Invoke(this, e);
         }
 
     }

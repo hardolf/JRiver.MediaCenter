@@ -37,6 +37,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricForm));
             this.LyricFormToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ArtistTextBox = new System.Windows.Forms.TextBox();
             this.AlbumTextBox = new System.Windows.Forms.TextBox();
@@ -72,12 +73,15 @@
             this.EditSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.EditTrimMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.EditSpellCheckMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditToggleSpellCheckMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditSpellCheckLanguageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.LyricTextBox = new MediaCenter.LyricsFinder.SpellBox();
+            this.ToolsSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).BeginInit();
             this.LyricFormToolStripContainer.ContentPanel.SuspendLayout();
             this.LyricFormToolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -98,6 +102,7 @@
             this.ArtistTextBox.Size = new System.Drawing.Size(121, 44);
             this.ArtistTextBox.TabIndex = 3;
             this.LyricFormToolTip.SetToolTip(this.ArtistTextBox, "Artist name, change to refine search");
+            this.ArtistTextBox.Enter += new System.EventHandler(this.TopTextBox_EnterAsync);
             // 
             // AlbumTextBox
             // 
@@ -109,6 +114,7 @@
             this.AlbumTextBox.Size = new System.Drawing.Size(122, 44);
             this.AlbumTextBox.TabIndex = 4;
             this.LyricFormToolTip.SetToolTip(this.AlbumTextBox, "Album name, change to refine search");
+            this.AlbumTextBox.Enter += new System.EventHandler(this.TopTextBox_EnterAsync);
             // 
             // TrackTextBox
             // 
@@ -120,6 +126,7 @@
             this.TrackTextBox.Size = new System.Drawing.Size(123, 44);
             this.TrackTextBox.TabIndex = 5;
             this.LyricFormToolTip.SetToolTip(this.TrackTextBox, "Track title, change to refine search");
+            this.TrackTextBox.Enter += new System.EventHandler(this.TopTextBox_EnterAsync);
             // 
             // LyricFormTrackBar
             // 
@@ -309,7 +316,8 @@
             this.EditSeparator2,
             this.EditTrimMenuItem,
             this.EditSeparator3,
-            this.EditSpellCheckMenuItem});
+            this.EditToggleSpellCheckMenuItem,
+            this.EditSpellCheckLanguageMenuItem});
             this.EditMenuItem.Name = "EditMenuItem";
             this.EditMenuItem.Size = new System.Drawing.Size(39, 20);
             this.EditMenuItem.Text = "&Edit";
@@ -432,18 +440,26 @@
             this.EditSeparator3.Name = "EditSeparator3";
             this.EditSeparator3.Size = new System.Drawing.Size(232, 6);
             // 
-            // EditSpellCheckMenuItem
+            // EditToggleSpellCheckMenuItem
             // 
-            this.EditSpellCheckMenuItem.Name = "EditSpellCheckMenuItem";
-            this.EditSpellCheckMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
-            this.EditSpellCheckMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.EditSpellCheckMenuItem.Text = "Spell check selection";
-            this.EditSpellCheckMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            this.EditToggleSpellCheckMenuItem.Name = "EditToggleSpellCheckMenuItem";
+            this.EditToggleSpellCheckMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
+            this.EditToggleSpellCheckMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EditToggleSpellCheckMenuItem.Text = "Toggle spell check";
+            this.EditToggleSpellCheckMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditSpellCheckLanguageMenuItem
+            // 
+            this.EditSpellCheckLanguageMenuItem.Name = "EditSpellCheckLanguageMenuItem";
+            this.EditSpellCheckLanguageMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EditSpellCheckLanguageMenuItem.Text = "Spell check language";
             // 
             // ToolsMenuItem
             // 
             this.ToolsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToolsSearchMenuItem});
+            this.ToolsSearchMenuItem,
+            this.ToolsSeparator0,
+            this.ToolsPlayStartStopButton});
             this.ToolsMenuItem.Name = "ToolsMenuItem";
             this.ToolsMenuItem.Size = new System.Drawing.Size(46, 20);
             this.ToolsMenuItem.Text = "&Tools";
@@ -453,7 +469,7 @@
             // 
             this.ToolsSearchMenuItem.Name = "ToolsSearchMenuItem";
             this.ToolsSearchMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ToolsSearchMenuItem.Text = "&Search";
             this.ToolsSearchMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -479,6 +495,7 @@
             this.LyricTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.LyricTextBox.BackColor = System.Drawing.SystemColors.Control;
             this.LyricTextBox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LyricTextBox.Location = new System.Drawing.Point(4, 97);
             this.LyricTextBox.Multiline = true;
@@ -489,9 +506,33 @@
             this.LyricTextBox.Size = new System.Drawing.Size(377, 364);
             this.LyricTextBox.SpellCheckEnabled = false;
             this.LyricTextBox.TabIndex = 1;
-            this.LyricTextBox.TextChanged += new System.EventHandler(this.LyricTextBox_TextChangedAsync);
+            this.LyricTextBox.Enter += new System.EventHandler(this.LyricTextBox_EnterAsync);
             this.LyricTextBox.KeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.LyricTextBox_KeyDownAsync);
+            this.LyricTextBox.TextChanged += new System.EventHandler(this.LyricTextBox_TextChangedAsync);
             this.LyricTextBox.Child = new System.Windows.Controls.TextBox();
+            // 
+            // ToolsSeparator0
+            // 
+            this.ToolsSeparator0.Name = "ToolsSeparator0";
+            this.ToolsSeparator0.Size = new System.Drawing.Size(177, 6);
+            // 
+            // ToolsPlayStartStopButton
+            // 
+            this.ToolsPlayStartStopButton.AutoSize = false;
+            this.ToolsPlayStartStopButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.ToolsPlayStartStopButton.Clicked = false;
+            this.ToolsPlayStartStopButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ToolsPlayStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStart")));
+            this.ToolsPlayStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStop")));
+            this.ToolsPlayStartStopButton.ImageTransparentColor = System.Drawing.SystemColors.Control;
+            this.ToolsPlayStartStopButton.IsRunning = false;
+            this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
+            this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(30, 20);
+            this.ToolsPlayStartStopButton.Text = "Start &play";
+            this.ToolsPlayStartStopButton.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
+            this.ToolsPlayStartStopButton.TextStart = "Start &play";
+            this.ToolsPlayStartStopButton.TextStop = "Stop &play";
+            this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item";
             // 
             // LyricForm
             // 
@@ -563,7 +604,7 @@
         private System.Windows.Forms.ToolStripMenuItem EditLowerCaseMenuItem;
         private System.Windows.Forms.ToolStripMenuItem EditUpperCaseMenuItem;
         private System.Windows.Forms.ToolStripSeparator EditSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem EditSpellCheckMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditToggleSpellCheckMenuItem;
         private System.Windows.Forms.ToolStripSeparator EditSeparator0;
         private System.Windows.Forms.ToolStripMenuItem EditCutMenuItem;
         private System.Windows.Forms.ToolStripMenuItem EditCopyMenuItem;
@@ -574,5 +615,8 @@
         private System.Windows.Forms.ToolStripSeparator EditSeparator3;
         private System.Windows.Forms.Integration.ElementHost LyricElementHost;
         private SpellBox LyricTextBox;
+        private System.Windows.Forms.ToolStripMenuItem EditSpellCheckLanguageMenuItem;
+        private System.Windows.Forms.ToolStripSeparator ToolsSeparator0;
+        private StartStopToolStripButton ToolsPlayStartStopButton;
     }
 }

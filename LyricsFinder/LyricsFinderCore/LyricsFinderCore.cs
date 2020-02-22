@@ -108,6 +108,17 @@ namespace MediaCenter.LyricsFinder
         }
 
         /// <summary>
+        /// Gets a value indicating whether this instance is playing.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is playing; otherwise, <c>false</c>.
+        /// </value>
+        internal bool IsPlaying 
+        {
+            get => _playingIndex >= 0;
+        }
+
+        /// <summary>
         /// Gets the Media Center play control.
         /// </summary>
         /// <value>

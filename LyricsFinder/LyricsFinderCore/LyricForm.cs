@@ -43,6 +43,9 @@ namespace MediaCenter.LyricsFinder
         private readonly List<FoundLyricType> _foundLyricList = new List<FoundLyricType>();
         private readonly McMplItem _McItem = null;
         private readonly Dictionary<string, int> _serviceCounts = new Dictionary<string, int>();
+        private readonly CultureInfo _initialCulture = Thread.CurrentThread.CurrentCulture;
+        private readonly LyricsFinderCore _lyricsFinderCore = null;
+        private readonly LyricsFinderDataType _lyricsFinderData = null;
 
 
         /**********************/
@@ -67,28 +70,16 @@ namespace MediaCenter.LyricsFinder
         public string Lyric { get; private set; }
 
         /// <summary>
-        /// Gets or sets the lyric finder data.
-        /// </summary>
-        /// <value>
-        /// The lyric finder data.
-        /// </value>
-        private LyricsFinderDataType LyricsFinderData { get; set; }
-
-        /// <summary>
-        /// Gets or sets the lyrics finder core.
-        /// </summary>
-        /// <value>
-        /// The lyrics finder core.
-        /// </value>
-        private LyricsFinderCore LyricsFinderCore { get; set; }
-
-        /// <summary>
         /// Gets the dialog result.
         /// </summary>
         /// <value>
         /// The result.
         /// </value>
         public DialogResult Result { get; private set; }
+
+        public LyricsFinderCore LyricsFinderCore => _lyricsFinderCore;
+
+        public LyricsFinderDataType LyricsFinderData => _lyricsFinderData;
 
 
         /************************/
@@ -124,7 +115,7 @@ namespace MediaCenter.LyricsFinder
         /// callback
         /// or
         /// lyricsFinderData</exception>
-        internal LyricForm(DataGridViewTextBoxCell lyricCell, Point location, Size? size, Action<LyricForm> callback, LyricsFinderDataType lyricsFinderData, LyricsFinderCore lyricsFinderCore = null, bool isSearch = false, string artist = null, string album = null, string track = null)
+        internal LyricForm(DataGridViewTextBoxCell lyricCell, Point location, Size? size, Action<LyricForm> callback, LyricsFinderDataType lyricsFinderData, LyricsFinderCore lyricsFinderCore, bool isSearch = false, string artist = null, string album = null, string track = null)
             : this()
         {
 #pragma warning disable IDE0016 // Use 'throw' expression
@@ -139,11 +130,13 @@ namespace MediaCenter.LyricsFinder
             _initLyric = lyric?.Trim() ?? string.Empty;
             _finalLyric = _initLyric;
             _isSearch = isSearch;
-            LyricsFinderData = lyricsFinderData;
-            LyricsFinderCore = lyricsFinderCore;
+            _lyricsFinderData = lyricsFinderData;
+            _lyricsFinderCore = lyricsFinderCore;
 
             if (size != null)
                 Size = size.Value;
+
+            SharedComponents.Utility.EnableOrDisableToolStripMenuItems(HelpMenuItem, true);
 
             // Create a pseudo MC playlist item for the search
             var row = lyricCell.OwningRow;
@@ -156,11 +149,14 @@ namespace MediaCenter.LyricsFinder
                 AlbumTextBox.ReadOnly = true;
                 TrackTextBox.ReadOnly = true;
                 LyricTextBox.ReadOnly = true;
+                LyricTextBox.BackColor = SystemColors.ControlDark;
                 LyricFormTrackBar.Enabled = true;
                 LyricFormTrackBar.Visible = true;
                 LyricFormTrackBar.Select();
                 SearchButton.Enabled = false;
                 SearchButton.Visible = false;
+                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, false);
+                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(ToolsMenuItem, false);
 
                 _McItem = new McMplItem
                 {
@@ -182,6 +178,8 @@ namespace MediaCenter.LyricsFinder
                 LyricFormTrackBar.Visible = false;
                 SearchButton.Enabled = true;
                 SearchButton.Visible = true;
+                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, true);
+                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(ToolsMenuItem, true);
 
                 _McItem = new McMplItem
                 {
@@ -189,6 +187,21 @@ namespace MediaCenter.LyricsFinder
                     Album = row.Cells[(int)GridColumnEnum.Album].Value as string,
                     Name = row.Cells[(int)GridColumnEnum.Title].Value as string
                 };
+
+                // ToolsPlayStartStopButton.SetRunningState(lyricsFinderCore.IsPlaying);
+
+                _lyricsFinderCore.McPlayControl.McPlayStarting += McPlayControl_StartingAsync;
+                _lyricsFinderCore.McPlayControl.McPlayStopping += McPlayControl_StoppingAsync;
+
+                var installedCultures = LyricTextBox.InstalledCultures;
+
+                foreach (var culture in installedCultures)
+                {
+                    var name = $"{culture.EnglishName} ({culture.Name})";
+                    var item = new ToolStripMenuItem(name, null, MenuItemLanguage_ClickAsync);
+
+                    EditSpellCheckLanguageMenuItem.DropDownItems.Add(item);
+                }
             }
 
             ArtistTextBox.Text = _McItem.Artist;
@@ -279,6 +292,10 @@ namespace MediaCenter.LyricsFinder
                         default:
                             break;
                     }
+
+                    Thread.CurrentThread.CurrentCulture = _initialCulture;
+                    Thread.CurrentThread.CurrentUICulture = _initialCulture;
+                    System.Windows.Input.InputLanguageManager.Current.CurrentInputLanguage = _initialCulture;
                 }
 
                 _callback(this);
@@ -419,7 +436,20 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, true);
+                EditCopyMenuItem.Enabled = true;
+                EditCutMenuItem.Enabled = true;
+                EditDeleteMenuItem.Enabled = true;
+                EditLowerCaseMenuItem.Enabled = true;
+                EditPasteMenuItem.Enabled = true;
+                EditProperCaseMenuItem.Enabled = true;
+                EditSelectAllMenuItem.Enabled = true;
+                EditSentenceCaseMenuItem.Enabled = true;
+                EditSpellCheckLanguageMenuItem.Enabled = true;
+                EditTitleCaseMenuItem.Enabled = true;
+                EditToggleSpellCheckMenuItem.Enabled = true;
+                EditTrimMenuItem.Enabled = true;
+                EditUndoMenuItem.Enabled = true;
+                EditUpperCaseMenuItem.Enabled = true;
             }
             catch (Exception ex)
             {
@@ -457,24 +487,6 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the LeaveAsync event of the LyricTextBox control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void LyricTextBox_LeaveAsync(object sender, EventArgs e)
-        {
-            try
-            {
-                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, false);
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
-        }
-
-
-        /// <summary>
         /// Handles the TextChanged event of the LyricTextBox control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -503,136 +515,274 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
+                if (sender is ToolStripMenuItem menuItem)
+                    itemName = menuItem.Name;
+                else
+                    throw new Exception($"Unknown sender: \"{sender}\".");
+
+                var focusedControl = SharedComponents.Utility.GetFocusedControl(this);
+
+                if (focusedControl is TextBox)
+                {
+                    var txt = focusedControl as TextBox;
+
+                    switch (itemName)
+                    {
+                        // Edit menu
+
+                        case nameof(EditMenuItem):
+                        case nameof(HelpMenuItem):
+                        case nameof(ToolsMenuItem):
+                            break;
+
+                        case nameof(EditSelectAllMenuItem):
+                            txt.SelectAll();
+                            break;
+
+                        case nameof(EditCopyMenuItem):
+                            txt.ClearUndo();
+                            txt.Copy();
+                            break;
+
+                        case nameof(EditCutMenuItem):
+                            txt.ClearUndo();
+                            txt.Cut();
+                            break;
+
+                        case nameof(EditDeleteMenuItem):
+                            if (EditMenuItem.Enabled)
+                                txt.Text = string.Empty;
+                            break;
+
+                        case nameof(EditPasteMenuItem):
+                            // Determine if there is any text in the Clipboard to paste into the text box.
+                            if (Clipboard.GetDataObject().GetDataPresent(DataFormats.Text) == true)
+                                txt.Paste();
+                            break;
+
+                        case nameof(EditTrimMenuItem):
+                            txt.Text = txt.Text.Trim();
+                            break;
+
+                        case nameof(EditUndoMenuItem):
+                            if (txt.CanUndo == true)
+                            {
+                                if (txt.CanUndo)
+                                {
+                                    txt.Undo();
+                                    txt.ClearUndo(); // Clear the undo buffer to prevent last action from being redone 
+                                }
+                            }
+                            break;
+
+                        // Help menu
+
+                        case nameof(HelpHelpMenuItem):
+                            System.Diagnostics.Process.Start("https://github.com/hardolf/JRiver.MediaCenter/wiki/Lyrics-Window");
+                            break;
+
+                        // Tools menu
+
+                        case nameof(ToolsSearchMenuItem):
+                            SearchButton.PerformClick();
+                            break;
+
+                        default:
+                            throw new Exception($"Unknown menu item: \"{itemName}\".");
+                    }
+                }
+                else if (focusedControl is SpellBox)
+                {
+                    var txt = LyricTextBox;
+
+                    switch (itemName)
+                    {
+                        // Edit menu
+
+                        case nameof(EditMenuItem):
+                        case nameof(HelpMenuItem):
+                        case nameof(ToolsMenuItem):
+                            break;
+
+                        case nameof(EditSelectAllMenuItem):
+                            txt.SelectAll();
+                            break;
+
+                        case nameof(EditCopyMenuItem):
+                            if (DoTextOperationQuestion())
+                            {
+                                txt.ClearUndo();
+                                txt.Copy();
+                            }
+                            break;
+
+                        case nameof(EditCutMenuItem):
+                            if (DoTextOperationQuestion())
+                            {
+                                txt.ClearUndo();
+                                txt.Cut();
+                            }
+                            break;
+
+                        case nameof(EditDeleteMenuItem):
+                            if (EditMenuItem.Enabled)
+                                DeleteText();
+                            break;
+
+                        case nameof(EditLowerCaseMenuItem):
+                            if (DoTextOperationQuestion(true))
+                                txt.SelectedText = txt.SelectedText.ToLower(ci);
+                            break;
+
+                        case nameof(EditPasteMenuItem):
+                            // Determine if there is any text in the Clipboard to paste into the text box.
+                            if (Clipboard.GetDataObject().GetDataPresent(DataFormats.Text) == true)
+                            {
+                                // Determine if any text is selected in the text box.
+                                if (txt.SelectionLength > 0)
+                                {
+                                    // Ask user if they want to paste over currently selected text.
+                                    if (DialogResult.No == MessageBox.Show("Do you want to paste over current selection?"
+                                        , "Cut Example", MessageBoxButtons.YesNo))
+                                        // Move selection to the point after the current selection and paste.
+                                        txt.SelectionStart += txt.SelectionLength;
+                                }
+                                // Paste current text in Clipboard into text box.
+                                txt.Paste();
+                            }
+                            break;
+
+                        case nameof(EditProperCaseMenuItem):
+                            if (DoTextOperationQuestion(true))
+                                txt.SelectedText = txt.SelectedText.ToProperCase();
+                            break;
+
+                        case nameof(EditSentenceCaseMenuItem):
+                            if (DoTextOperationQuestion(true))
+                                txt.SelectedText = txt.SelectedText.ToSentenceCase();
+                            break;
+
+                        case nameof(EditToggleSpellCheckMenuItem):
+                            SetOrToggleSpellCheck();
+                            break;
+
+                        case nameof(EditTitleCaseMenuItem):
+                            if (DoTextOperationQuestion(true))
+                                txt.SelectedText = txt.SelectedText.ToTitleCase();
+                            break;
+
+                        case nameof(EditTrimMenuItem):
+                            if (DoTextOperationQuestion(true))
+                            {
+                                var sb = new StringBuilder();
+                                using (var sr = new StringReader(txt.SelectedText))
+                                {
+                                    string line;
+                                    while ((line = sr.ReadLine()) != null)
+                                    {
+                                        sb.AppendLine(line.Trim());
+                                    }
+                                }
+                                txt.SelectedText = sb.ToString();
+                            }
+                            break;
+
+                        case nameof(EditUpperCaseMenuItem):
+                            if (DoTextOperationQuestion(true))
+                                txt.SelectedText = txt.SelectedText.ToUpper(ci);
+                            break;
+
+                        case nameof(EditUndoMenuItem):
+                            if (txt.CanUndo == true)
+                            {
+                                if (txt.CanUndo)
+                                {
+                                    txt.Undo();
+                                    txt.ClearUndo(); // Clear the undo buffer to prevent last action from being redone 
+                                }
+                            }
+                            break;
+
+                        // Help menu
+
+                        case nameof(HelpHelpMenuItem):
+                            System.Diagnostics.Process.Start("https://github.com/hardolf/JRiver.MediaCenter/wiki/Lyrics-Window");
+                            break;
+
+                        // Tools menu
+
+                        case nameof(ToolsSearchMenuItem):
+                            SearchButton.PerformClick();
+                            break;
+
+                        default:
+                            throw new Exception($"Unknown menu item: \"{itemName}\".");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the ClickAsync event of the MenuItem (Language) control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void MenuItemLanguage_ClickAsync(object sender, EventArgs e)
+        {
+            string itemText;
+
+            try
+            {
                 if (!(sender is ToolStripMenuItem menuItem))
                     throw new Exception($"Unknown sender: \"{sender}\".");
                 else
-                    itemName = menuItem.Name;
+                    itemText = menuItem.Text;
 
-                switch (itemName)
-                {
-                    // Edit menu
+                var idx1 = itemText.LastIndexOf('(');
+                var idx2 = itemText.LastIndexOf(')');
 
-                    case nameof(EditMenuItem):
-                    case nameof(HelpMenuItem):
-                    case nameof(ToolsMenuItem):
-                        break;
+                if ((idx1 < 0) || (idx2 <= idx1))
+                    throw new Exception($"Improper format of language menu item \"{itemText}\".");
 
-                    case nameof(EditSelectAllMenuItem):
-                        LyricTextBox.SelectAll();
-                        break;
+                var cultureName = itemText.Substring(idx1 + 1, idx2 - idx1 - 1);
+                var culture = new CultureInfo(cultureName, true);
 
-                    case nameof(EditCopyMenuItem):
-                        if (DoTextOperationQuestion())
-                        {
-                            LyricTextBox.ClearUndo();
-                            LyricTextBox.Copy();
-                        }
-                        break;
+                Thread.CurrentThread.CurrentCulture = culture;
+                Thread.CurrentThread.CurrentUICulture = culture;
+                System.Windows.Input.InputLanguageManager.Current.CurrentInputLanguage = culture;
 
-                    case nameof(EditCutMenuItem):
-                        if (DoTextOperationQuestion())
-                        {
-                            LyricTextBox.ClearUndo();
-                            LyricTextBox.Cut();
-                        }
-                        break;
+                SetOrToggleSpellCheck(true);
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
 
-                    case nameof(EditDeleteMenuItem):
-                        if (EditMenuItem.Enabled)
-                            DeleteText();
-                        break;
 
-                    case nameof(EditLowerCaseMenuItem):
-                        if (DoTextOperationQuestion(true))
-                            LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToLower(ci);
-                        break;
+        internal async void McPlayControl_StartingAsync(object sender, StartStopButtonEventArgs e)
+        {
+            try
+            {
+                ToolsPlayStartStopButton.SetRunningState(true);
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
 
-                    case nameof(EditPasteMenuItem):
-                        // Determine if there is any text in the Clipboard to paste into the text box.
-                        if (Clipboard.GetDataObject().GetDataPresent(DataFormats.Text) == true)
-                        {
-                            // Determine if any text is selected in the text box.
-                            if (LyricTextBox.SelectionLength > 0)
-                            {
-                                // Ask user if they want to paste over currently selected text.
-                                if (DialogResult.No == MessageBox.Show("Do you want to paste over current selection?"
-                                    , "Cut Example", MessageBoxButtons.YesNo))
-                                    // Move selection to the point after the current selection and paste.
-                                    LyricTextBox.SelectionStart += LyricTextBox.SelectionLength;
-                            }
-                            // Paste current text in Clipboard into text box.
-                            LyricTextBox.Paste();
-                        }
-                        break;
 
-                    case nameof(EditProperCaseMenuItem):
-                        if (DoTextOperationQuestion(true))
-                            LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToProperCase();
-                        break;
-
-                    case nameof(EditSentenceCaseMenuItem):
-                        if (DoTextOperationQuestion(true))
-                            LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToSentenceCase();
-                        break;
-
-                    case nameof(EditSpellCheckMenuItem):
-                        //if (DoTextOperationQuestion(true))
-                        //    SpellCheck();
-                        break;
-
-                    case nameof(EditTitleCaseMenuItem):
-                        if (DoTextOperationQuestion(true))
-                            LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToTitleCase();
-                        break;
-
-                    case nameof(EditTrimMenuItem):
-                        if (DoTextOperationQuestion(true))
-                        {
-                            var sb = new StringBuilder();
-                            using (var sr = new StringReader(LyricTextBox.SelectedText))
-                            {
-                                string line;
-                                while ((line = sr.ReadLine()) != null)
-                                {
-                                    sb.AppendLine(line.Trim());
-                                }
-                            }
-                            LyricTextBox.SelectedText = sb.ToString();
-                        }
-                        break;
-
-                    case nameof(EditUpperCaseMenuItem):
-                        if (DoTextOperationQuestion(true))
-                            LyricTextBox.SelectedText = LyricTextBox.SelectedText.ToUpper(ci);
-                        break;
-
-                    case nameof(EditUndoMenuItem):
-                        if (LyricTextBox.CanUndo == true)
-                        {
-                            if (LyricTextBox.CanUndo)
-                            {
-                                LyricTextBox.Undo();
-                                LyricTextBox.ClearUndo(); // Clear the undo buffer to prevent last action from being redone 
-                            }
-                        }
-                        break;
-
-                    // Help menu
-
-                    case nameof(HelpHelpMenuItem):
-                        System.Diagnostics.Process.Start("https://github.com/hardolf/JRiver.MediaCenter/wiki/Lyrics-Window");
-                        break;
-
-                    // Tools menu
-
-                    case nameof(ToolsSearchMenuItem):
-                        SearchButton.PerformClick();
-                        break;
-
-                    default:
-                        throw new Exception($"Unknown menu item: \"{itemName}\".");
-                }
-
+        internal async void McPlayControl_StoppingAsync(object sender, StartStopButtonEventArgs e)
+        {
+            try
+            {
+                ToolsPlayStartStopButton.SetRunningState(false);
             }
             catch (Exception ex)
             {
@@ -694,6 +844,37 @@ namespace MediaCenter.LyricsFinder
                     _searchForm = null;
                     LyricTextBox.Select();
                 }
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the EnterAsync event of one of the TopTextBox controls.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void TopTextBox_EnterAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                EditCopyMenuItem.Enabled = true;
+                EditCutMenuItem.Enabled = true;
+                EditDeleteMenuItem.Enabled = true;
+                EditLowerCaseMenuItem.Enabled = false;
+                EditPasteMenuItem.Enabled = false;
+                EditProperCaseMenuItem.Enabled = false;
+                EditSelectAllMenuItem.Enabled = true;
+                EditSentenceCaseMenuItem.Enabled = false;
+                EditSpellCheckLanguageMenuItem.Enabled = false;
+                EditTitleCaseMenuItem.Enabled = false;
+                EditToggleSpellCheckMenuItem.Enabled = false;
+                EditTrimMenuItem.Enabled = false;
+                EditUndoMenuItem.Enabled = true;
+                EditUpperCaseMenuItem.Enabled = false;
             }
             catch (Exception ex)
             {
@@ -795,15 +976,6 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Spell check the selection.
-        /// </summary>
-        private void SpellCheck()
-        {
-            LyricTextBox.SpellCheckEnabled = !LyricTextBox.SpellCheckEnabled;
-        }
-
-
-        /// <summary>
         /// Searches this instance.
         /// </summary>
         /// <returns></returns>
@@ -833,6 +1005,33 @@ namespace MediaCenter.LyricsFinder
             LyricFormTrackBar_ScrollAsync(this, new EventArgs());
 
             LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
+        }
+
+
+        /// <summary>
+        /// Set or toggle the spell checking feature on or off.
+        /// </summary>
+        /// <param name="enable">if set to null, toggle the state on/off; else set it to the <c>enable</c> state.</param>
+        private void SetOrToggleSpellCheck(bool? enable = null)
+        {
+            try
+            {
+                SuspendLayout();
+
+                var txt = LyricTextBox.Text;
+
+                LyricTextBox.Text = string.Empty;
+                LyricTextBox.SpellCheckEnabled = enable ?? !LyricTextBox.SpellCheckEnabled;
+
+                LyricTextBox.SpellCheckEnabled = !LyricTextBox.SpellCheckEnabled;
+                LyricTextBox.SpellCheckEnabled = !LyricTextBox.SpellCheckEnabled;
+
+                LyricTextBox.Text = txt;
+            }
+            finally
+            {
+                ResumeLayout();
+            }
         }
 
     }

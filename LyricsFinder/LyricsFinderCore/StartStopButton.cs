@@ -13,12 +13,22 @@ namespace MediaCenter.LyricsFinder
 {
 
     /// <summary>
-    /// Start / stop toolstrip type.
+    /// Start/stop toolstrip button type.
     /// </summary>
     /// <seealso cref="System.Windows.Forms.ToolStripButton" />
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
-    internal partial class StartStopToolStripButton : ToolStripButton
+    public partial class StartStopToolStripButton : ToolStripButton
     {
+
+        private bool _clicked = false;
+        private bool _isRunning = false;
+
+        private string _textStart = "&Start";
+        private string _textStop = "&Stop";
+
+        private Bitmap _imageStart = null;
+        private Bitmap _imageStop = null;
+
 
         /// <summary>
         /// Occurs when starting.
@@ -29,16 +39,6 @@ namespace MediaCenter.LyricsFinder
         /// Occurs when stopping.
         /// </summary>
         internal event StopEventHandler Stopping;
-
-
-        private bool _clicked = false;
-        private bool _isRunning = false;
-
-        private string _textStart = "&Start";
-        private string _textStop = "&Stop";
-
-        private Bitmap _imageStart = null;
-        private Bitmap _imageStop = null;
 
 
         #region Constructors and Destructors
@@ -52,6 +52,57 @@ namespace MediaCenter.LyricsFinder
 
             this.IsRunning = false;
         } // StartStopToolStripButton constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartStopToolStripButton"/> class.
+        /// </summary>
+        /// <param name="text">The text to display on the <see cref="System.Windows.Forms.ToolStripButton" />.</param>
+        public StartStopToolStripButton(string text) 
+            : base(text)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartStopToolStripButton" /> class.
+        /// </summary>
+        /// <param name="image">The image to display on the <see cref="System.Windows.Forms.ToolStripButton" />.</param>
+        public StartStopToolStripButton(Image image) 
+            : base(image)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartStopToolStripButton"/> class.
+        /// </summary>
+        /// <param name="text">The text to display on the <see cref="System.Windows.Forms.ToolStripButton" />.</param>
+        /// <param name="image">The image to display on the <see cref="System.Windows.Forms.ToolStripButton" />.</param>
+        public StartStopToolStripButton(string text, Image image) 
+            : base(text, image)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartStopToolStripButton"/> class.
+        /// </summary>
+        /// <param name="text">The text to display on the <see cref="System.Windows.Forms.ToolStripButton" />.</param>
+        /// <param name="image">The image to display on the <see cref="System.Windows.Forms.ToolStripButton" />.</param>
+        /// <param name="onClick">An event handler that raises the <see cref="System.Windows.Forms.ToolStripItem.Click" /> event.</param>
+        public StartStopToolStripButton(string text, Image image, EventHandler onClick) 
+            : base(text, image, onClick)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartStopToolStripButton"/> class.
+        /// </summary>
+        /// <param name="text">The text to display on the <see cref="System.Windows.Forms.ToolStripButton" />.</param>
+        /// <param name="image">The image to display on the <see cref="System.Windows.Forms.ToolStripButton" />.</param>
+        /// <param name="onClick">An event handler that raises the <see cref="System.Windows.Forms.ToolStripItem.Click" /> event.</param>
+        /// <param name="name">The name of the <see cref="System.Windows.Forms.ToolStripButton" />.</param>
+        public StartStopToolStripButton(string text, Image image, EventHandler onClick, string name) 
+            : base(text, image, onClick, name)
+        {
+        }
 
         #endregion Constructors and Destructors
 
@@ -262,7 +313,7 @@ namespace MediaCenter.LyricsFinder
         {
             StartEventHandler handler = Starting;
 
-            // Invokes the delegates.
+            // Invoke the delegates.
             handler?.Invoke(this, e);
         } // OnStart
 
@@ -276,7 +327,7 @@ namespace MediaCenter.LyricsFinder
         {
             StopEventHandler handler = Stopping;
 
-            // Invokes the delegates.
+            // Invoke the delegates.
             handler?.Invoke(this, e);
         } // OnStop
 

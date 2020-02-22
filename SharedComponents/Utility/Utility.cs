@@ -220,6 +220,28 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Gets the focused control.
+        /// </summary>
+        /// <param name="control">The control.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">control</exception>
+        public static Control GetFocusedControl(Control control)
+        {
+            if (control is null) throw new ArgumentNullException(nameof(control));
+
+            var container = control as IContainerControl;
+
+            while (container != null)
+            {
+                control = container.ActiveControl;
+                container = control as IContainerControl;
+            }
+
+            return control;
+        }
+
+
+        /// <summary>
         /// Gets the size of the control text.
         /// </summary>
         /// <param name="control">The control.</param>

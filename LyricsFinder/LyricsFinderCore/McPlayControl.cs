@@ -35,6 +35,17 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Occurs when starting.
+        /// </summary>
+        internal event StartEventHandler McPlayStarting;
+
+        /// <summary>
+        /// Occurs when stopping.
+        /// </summary>
+        internal event StopEventHandler McPlayStopping;
+
+
+        /// <summary>
         /// Gets or sets the current seconds.
         /// </summary>
         /// <value>
@@ -132,6 +143,9 @@ namespace MediaCenter.LyricsFinder
         private McPlayControl()
         {
             InitializeComponent();
+
+            ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_StartAsync;
+            ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_StopAsync;
         }
 
 
@@ -260,12 +274,6 @@ namespace MediaCenter.LyricsFinder
                 SetMaxState(0, 0); // Set this before the current seconds
                 SetCurrentState(0, 0);
 
-                if (ToolsPlayStartStopButton.GetStartingEventSubscribers().Length == 0)
-                    ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_StartAsync;
-
-                if (ToolsPlayStartStopButton.GetStoppingEventSubscribers().Length == 0)
-                    ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_StopAsync;
-
                 TrackingLabel.Left = McPositionTrackBar.Width / 2 - TrackingLabel.Width / 2;
             }
             catch (Exception ex)
@@ -314,7 +322,44 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Called when [start].
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
+        internal virtual void OnStart(object sender, StartStopButtonEventArgs e)
+        {
+            StartEventHandler handler = McPlayStarting;
+
+            // Invoke the delegates.
+            handler?.Invoke(this, e);
+        }
+
+
+        /// <summary>
+        /// Called when [stop].
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="MediaCenter.LyricsFinder.StartStopButtonEventArgs" /> instance containing the event data.</param>
+        internal virtual void OnStop(object sender, StartStopButtonEventArgs e)
+        {
+            StopEventHandler handler = McPlayStopping;
+
+            // Invoke the delegates.
+            handler?.Invoke(this, e);
+        }
+
+
+        /// <summary>
         /// Pauses the playback.
+        /// </summary>
+        public void Pause()
+        {
+            ToolsPlayStartStopButton.Stop();
+        }
+
+
+        /// <summary>
+        /// Sets the status to playback paused without raising any events.
         /// </summary>
         public void PauseStat()
         {
@@ -323,7 +368,16 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Start or resume playback.
+        /// Starts the playback.
+        /// </summary>
+        public void Play()
+        {
+            ToolsPlayStartStopButton.Start();
+        }
+
+
+        /// <summary>
+        /// Sets the status to playback started without raising any events.
         /// </summary>
         public void PlayStat()
         {
@@ -376,6 +430,15 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Stops the playback.
         /// </summary>
+        public void Stop()
+        {
+            ToolsPlayStartStopButton.Stop();
+        }
+
+
+        /// <summary>
+        /// Sets the status to playback stopped without raising any events.
+        /// </summary>
         public void StopStat()
         {
             ToolsPlayStartStopButton.SetRunningState(false);
@@ -392,6 +455,8 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 await LyricsFinderCore.PlayOrPauseAsync();
+
+                OnStart(sender, e);
 
                 if (OwnerControl.CanFocus)
                     OwnerControl.Focus();
@@ -413,6 +478,8 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 await LyricsFinderCore.PlayOrPauseAsync();
+
+                OnStop(sender, e);
 
                 if (OwnerControl.CanFocus)
                     OwnerControl.Focus();
