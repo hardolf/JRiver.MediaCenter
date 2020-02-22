@@ -46,6 +46,7 @@
             this.CloseButton = new System.Windows.Forms.Button();
             this.LyricFormToolStripContainer = new System.Windows.Forms.ToolStripContainer();
             this.LyricFormPanel = new System.Windows.Forms.Panel();
+            this.LyricElementHost = new System.Windows.Forms.Integration.ElementHost();
             this.LyricParmsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ArtistLabel = new System.Windows.Forms.Label();
             this.AlbumLabel = new System.Windows.Forms.Label();
@@ -53,7 +54,6 @@
             this.LyricFormStatusStrip = new System.Windows.Forms.StatusStrip();
             this.LyricFormStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.LyricFormFoundStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.LyricTextBox = new System.Windows.Forms.TextBox();
             this.LyricFormMenuStrip = new System.Windows.Forms.MenuStrip();
             this.EditMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditUndoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,6 +77,7 @@
             this.ToolsSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.LyricTextBox = new MediaCenter.LyricsFinder.SpellBox();
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).BeginInit();
             this.LyricFormToolStripContainer.ContentPanel.SuspendLayout();
             this.LyricFormToolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -178,11 +179,12 @@
             // 
             // LyricFormPanel
             // 
+            this.LyricFormPanel.Controls.Add(this.LyricTextBox);
+            this.LyricFormPanel.Controls.Add(this.LyricElementHost);
             this.LyricFormPanel.Controls.Add(this.LyricParmsPanel);
             this.LyricFormPanel.Controls.Add(this.LyricFormStatusStrip);
             this.LyricFormPanel.Controls.Add(this.LyricFormTrackBar);
             this.LyricFormPanel.Controls.Add(this.SearchButton);
-            this.LyricFormPanel.Controls.Add(this.LyricTextBox);
             this.LyricFormPanel.Controls.Add(this.CloseButton);
             this.LyricFormPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricFormPanel.Location = new System.Drawing.Point(0, 0);
@@ -190,6 +192,17 @@
             this.LyricFormPanel.Size = new System.Drawing.Size(384, 537);
             this.LyricFormPanel.TabIndex = 1;
             this.LyricFormPanel.MouseEnter += new System.EventHandler(this.LyricForm_MouseEnterAsync);
+            // 
+            // LyricElementHost
+            // 
+            this.LyricElementHost.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LyricElementHost.Location = new System.Drawing.Point(4, 97);
+            this.LyricElementHost.Name = "LyricElementHost";
+            this.LyricElementHost.Size = new System.Drawing.Size(377, 364);
+            this.LyricElementHost.TabIndex = 10;
+            this.LyricElementHost.Child = null;
             // 
             // LyricParmsPanel
             // 
@@ -264,23 +277,6 @@
             // 
             this.LyricFormFoundStatusLabel.Name = "LyricFormFoundStatusLabel";
             this.LyricFormFoundStatusLabel.Size = new System.Drawing.Size(0, 17);
-            // 
-            // LyricTextBox
-            // 
-            this.LyricTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LyricTextBox.Location = new System.Drawing.Point(3, 99);
-            this.LyricTextBox.Multiline = true;
-            this.LyricTextBox.Name = "LyricTextBox";
-            this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.LyricTextBox.Size = new System.Drawing.Size(378, 362);
-            this.LyricTextBox.TabIndex = 1;
-            this.LyricTextBox.TextChanged += new System.EventHandler(this.LyricTextBox_TextChangedAsync);
-            this.LyricTextBox.Enter += new System.EventHandler(this.LyricTextBox_EnterAsync);
-            this.LyricTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricTextBox_KeyDownAsync);
-            this.LyricTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.LyricTextBox_KeyPressAsync);
-            this.LyricTextBox.Leave += new System.EventHandler(this.LyricTextBox_LeaveAsync);
             // 
             // LyricFormMenuStrip
             // 
@@ -435,7 +431,6 @@
             // 
             this.EditSeparator3.Name = "EditSeparator3";
             this.EditSeparator3.Size = new System.Drawing.Size(232, 6);
-            this.EditSeparator3.Visible = false;
             // 
             // EditSpellCheckMenuItem
             // 
@@ -443,7 +438,6 @@
             this.EditSpellCheckMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
             this.EditSpellCheckMenuItem.Size = new System.Drawing.Size(235, 22);
             this.EditSpellCheckMenuItem.Text = "Spell check selection";
-            this.EditSpellCheckMenuItem.Visible = false;
             this.EditSpellCheckMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // ToolsMenuItem
@@ -479,6 +473,25 @@
             this.HelpHelpMenuItem.Size = new System.Drawing.Size(118, 22);
             this.HelpHelpMenuItem.Text = "&Help";
             this.HelpHelpMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // LyricTextBox
+            // 
+            this.LyricTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LyricTextBox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LyricTextBox.Location = new System.Drawing.Point(4, 97);
+            this.LyricTextBox.Multiline = true;
+            this.LyricTextBox.Name = "LyricTextBox";
+            this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.LyricTextBox.SelectedText = "";
+            this.LyricTextBox.SelectionStart = 0;
+            this.LyricTextBox.Size = new System.Drawing.Size(377, 364);
+            this.LyricTextBox.SpellCheckEnabled = false;
+            this.LyricTextBox.TabIndex = 1;
+            this.LyricTextBox.TextChanged += new System.EventHandler(this.LyricTextBox_TextChangedAsync);
+            this.LyricTextBox.KeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.LyricTextBox_KeyDownAsync);
+            this.LyricTextBox.Child = new System.Windows.Controls.TextBox();
             // 
             // LyricForm
             // 
@@ -532,7 +545,6 @@
         private System.Windows.Forms.TextBox TrackTextBox;
         private System.Windows.Forms.TrackBar LyricFormTrackBar;
         private System.Windows.Forms.Button SearchButton;
-        private System.Windows.Forms.TextBox LyricTextBox;
         private System.Windows.Forms.Button CloseButton;
         private System.Windows.Forms.StatusStrip LyricFormStatusStrip;
         private System.Windows.Forms.ToolStripStatusLabel LyricFormStatusLabel;
@@ -560,5 +572,7 @@
         private System.Windows.Forms.ToolStripMenuItem EditDeleteMenuItem;
         private System.Windows.Forms.ToolStripMenuItem EditTrimMenuItem;
         private System.Windows.Forms.ToolStripSeparator EditSeparator3;
+        private System.Windows.Forms.Integration.ElementHost LyricElementHost;
+        private SpellBox LyricTextBox;
     }
 }

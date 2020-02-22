@@ -553,10 +553,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             var ret = await ProcessAsync(mcItem, cancellationToken, isGetAll);
 
-            // If failed search, retry if parenthesized text is in search parameters
+            // If failed search, retry with parenthesized text removed
             if (ret.LyricResult == LyricsResultEnum.NotFound)
             {
-                // Retry with parenthesized text removed
                 var mcItemClone = mcItem.CloneAndRemoveParenthesizedText();
 
                 ret = await ProcessAsync(mcItemClone, cancellationToken, isGetAll);

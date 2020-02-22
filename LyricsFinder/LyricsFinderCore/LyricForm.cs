@@ -437,6 +437,8 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
+                LyricForm_KeyDownAsync(sender, e); // KeyPreview doesn't work with the SpellBox WPF TextBox
+
                 e.Handled = false;
 
                 if (e.Control && (e.KeyCode == Keys.A))
@@ -446,24 +448,6 @@ namespace MediaCenter.LyricsFinder
                 }
                 else
                     e.Handled = false;
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the KeyPress event of the LyricTextBox control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="KeyPressEventArgs"/> instance containing the event data.</param>
-        private async void LyricTextBox_KeyPressAsync(object sender, KeyPressEventArgs e)
-        {
-            try
-            {
-                //LyricTextBox.sp
             }
             catch (Exception ex)
             {
@@ -815,7 +799,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         private void SpellCheck()
         {
-            throw new NotImplementedException();
+            LyricTextBox.SpellCheckEnabled = !LyricTextBox.SpellCheckEnabled;
         }
 
 
