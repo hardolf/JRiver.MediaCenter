@@ -263,7 +263,8 @@ namespace MediaCenter.LyricsFinder
                 {
                     await SaveAllAsync();
                 }
-                else if (e.KeyCode == Keys.Space)
+                else if ((e.KeyCode == Keys.Space) 
+                    || (e.Control && (e.KeyCode == Keys.P)))
                 {
                     await PlayOrPauseAsync();
                 }

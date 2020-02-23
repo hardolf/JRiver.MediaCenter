@@ -325,6 +325,11 @@ namespace MediaCenter.LyricsFinder
                     e.Handled = true;
                     Close();
                 }
+                else if (e.Control && (e.KeyCode == Keys.P))
+                {
+                    ToolsPlayStartStopButton.PerformClick();
+                    e.Handled = true;
+                }
             }
             catch (Exception ex)
             {
@@ -483,13 +488,18 @@ namespace MediaCenter.LyricsFinder
                             e.Handled = true;
                             break;
 
+                        case Keys.V:
+                            EditPasteMenuItem.PerformClick();
+                            e.Handled = true;
+                            break;
+
                         case Keys.X:
                             EditCutMenuItem.PerformClick();
                             e.Handled = true;
                             break;
 
-                        case Keys.V:
-                            EditPasteMenuItem.PerformClick();
+                        case Keys.Y:
+                            EditRedoMenuItem.PerformClick();
                             e.Handled = true;
                             break;
 
@@ -498,9 +508,8 @@ namespace MediaCenter.LyricsFinder
                             e.Handled = true;
                             break;
 
-                        case Keys.Y:
-                            EditRedoMenuItem.PerformClick();
-                            e.Handled = true;
+                        default:
+                            OnKeyDown(e);
                             break;
                     }
                 }

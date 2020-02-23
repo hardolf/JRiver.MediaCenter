@@ -501,14 +501,14 @@
             // 
             this.ToolsSearchMenuItem.Name = "ToolsSearchMenuItem";
             this.ToolsSearchMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ToolsSearchMenuItem.Text = "&Search";
             this.ToolsSearchMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // ToolsSeparator0
             // 
             this.ToolsSeparator0.Name = "ToolsSeparator0";
-            this.ToolsSeparator0.Size = new System.Drawing.Size(142, 6);
+            this.ToolsSeparator0.Size = new System.Drawing.Size(177, 6);
             // 
             // ToolsPlayStartStopButton
             // 
@@ -522,10 +522,10 @@
             this.ToolsPlayStartStopButton.IsRunning = false;
             this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
             this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(76, 20);
-            this.ToolsPlayStartStopButton.Text = "Start &play";
-            this.ToolsPlayStartStopButton.TextStart = "Start &play";
-            this.ToolsPlayStartStopButton.TextStop = "Stop &play";
-            this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item";
+            this.ToolsPlayStartStopButton.Text = "Start play";
+            this.ToolsPlayStartStopButton.TextStart = "Start play";
+            this.ToolsPlayStartStopButton.TextStop = "Stop play";
+            this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item (Ctrl + P)";
             // 
             // HelpMenuItem
             // 
