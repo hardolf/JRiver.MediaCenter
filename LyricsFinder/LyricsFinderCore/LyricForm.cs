@@ -44,8 +44,6 @@ namespace MediaCenter.LyricsFinder
         private readonly McMplItem _McItem = null;
         private readonly Dictionary<string, int> _serviceCounts = new Dictionary<string, int>();
         private readonly CultureInfo _initialCulture = Thread.CurrentThread.CurrentCulture;
-        private readonly LyricsFinderCore _lyricsFinderCore = null;
-        private readonly LyricsFinderDataType _lyricsFinderData = null;
 
 
         /**********************/
@@ -77,9 +75,9 @@ namespace MediaCenter.LyricsFinder
         /// </value>
         public DialogResult Result { get; private set; }
 
-        public LyricsFinderCore LyricsFinderCore => _lyricsFinderCore;
+        private LyricsFinderCore LyricsFinderCore { get; set; }
 
-        public LyricsFinderDataType LyricsFinderData => _lyricsFinderData;
+        private LyricsFinderDataType LyricsFinderData { get; set;  }
 
 
         /************************/
@@ -130,8 +128,8 @@ namespace MediaCenter.LyricsFinder
             _initLyric = lyric?.Trim() ?? string.Empty;
             _finalLyric = _initLyric;
             _isSearch = isSearch;
-            _lyricsFinderData = lyricsFinderData;
-            _lyricsFinderCore = lyricsFinderCore;
+            LyricsFinderData = lyricsFinderData;
+            LyricsFinderCore = lyricsFinderCore;
 
             if (size != null)
                 Size = size.Value;
@@ -188,10 +186,10 @@ namespace MediaCenter.LyricsFinder
                     Name = row.Cells[(int)GridColumnEnum.Title].Value as string
                 };
 
-                // ToolsPlayStartStopButton.SetRunningState(lyricsFinderCore.IsPlaying);
+                SetPlayingState(false);
 
-                _lyricsFinderCore.McPlayControl.McPlayStarting += McPlayControl_StartingAsync;
-                _lyricsFinderCore.McPlayControl.McPlayStopping += McPlayControl_StoppingAsync;
+                ToolsPlayStartStopButton.Starting += ToolsPlayStartStopButton_StartingAsync;
+                ToolsPlayStartStopButton.Stopping += ToolsPlayStartStopButton_StoppingAsync;
 
                 var installedCultures = LyricTextBox.InstalledCultures;
 
@@ -765,32 +763,6 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        internal async void McPlayControl_StartingAsync(object sender, StartStopButtonEventArgs e)
-        {
-            try
-            {
-                ToolsPlayStartStopButton.SetRunningState(true);
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
-        }
-
-
-        internal async void McPlayControl_StoppingAsync(object sender, StartStopButtonEventArgs e)
-        {
-            try
-            {
-                ToolsPlayStartStopButton.SetRunningState(false);
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
-        }
-
-
         /// <summary>
         /// Handles the Click event of the SearchButton control.
         /// </summary>
@@ -844,6 +816,44 @@ namespace MediaCenter.LyricsFinder
                     _searchForm = null;
                     LyricTextBox.Select();
                 }
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Starting event of the ToolsPlayStartStopButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
+        /// <exception cref="NotImplementedException"></exception>
+        private async void ToolsPlayStartStopButton_StartingAsync(object sender, StartStopButtonEventArgs e)
+        {
+            try
+            {
+                await LyricsFinderCore.PlayOrPauseAsync();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Stopping event of the ToolsPlayStartStopButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
+        /// <exception cref="NotImplementedException"></exception>
+        private async void ToolsPlayStartStopButton_StoppingAsync(object sender, StartStopButtonEventArgs e)
+        {
+            try
+            {
+                await LyricsFinderCore.PlayOrPauseAsync();
             }
             catch (Exception ex)
             {
@@ -1032,6 +1042,16 @@ namespace MediaCenter.LyricsFinder
             {
                 ResumeLayout();
             }
+        }
+
+
+        /// <summary>
+        /// Sets the playing state.
+        /// </summary>
+        /// <param name="isPlaying">if set to <c>true</c> the Media Center is playing; else <c>false</c>.</param>
+        internal void SetPlayingState(bool isPlaying)
+        {
+            ToolsPlayStartStopButton.SetRunningState(isPlaying);
         }
 
     }

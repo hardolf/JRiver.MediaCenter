@@ -873,30 +873,18 @@ namespace MediaCenter.LyricsFinder
                     if (mcInfo.Status?.StartsWith("Play", StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
                         imgCell.Value = Properties.Resources.Play;
-
-                        if (McPlayControl != null)
-                            McPlayControl.PlayStat();
                     }
                     else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
                     {
                         imgCell.Value = Properties.Resources.Pause;
-
-                        if (McPlayControl != null)
-                            McPlayControl.PauseStat();
                     }
                     else
                     {
                         imgCell.Value = _emptyPlayPauseImage;
-
-                        if (McPlayControl != null)
-                            McPlayControl.StopStat();
                     }
 
-                    if (McPlayControl != null)
-                    {
-                        McPlayControl.SetMaxState(int.Parse(mcInfo.DurationMS, CultureInfo.InvariantCulture) / 1000, rows.Count); // Set max state before setting the current state
-                        McPlayControl.SetCurrentState(int.Parse(mcInfo.PositionMS, CultureInfo.InvariantCulture) / 1000, _playingIndex + 1);
-                    }
+                    McPlayControl?.SetMaxState(int.Parse(mcInfo.DurationMS, CultureInfo.InvariantCulture) / 1000, rows.Count); // Set max state before setting the current state
+                    McPlayControl?.SetCurrentState(int.Parse(mcInfo.PositionMS, CultureInfo.InvariantCulture) / 1000, _playingIndex + 1);
 
                     break;
                 }
@@ -914,18 +902,24 @@ namespace MediaCenter.LyricsFinder
                 ContextPlayPauseMenuItem.Text = (_playingKey == selectedKey) ? "Pause play" : "Play";
                 ContextPlayStopMenuItem.Visible = true;
                 ToolsPlayStartStopButton.SetRunningState(true);
+                _lyricForm?.SetPlayingState(true);
+                McPlayControl?.PlayStat();
             }
             else if (mcInfo.Status?.StartsWith("Pause", StringComparison.InvariantCultureIgnoreCase) ?? false)
             {
                 ContextPlayPauseMenuItem.Text = (_playingKey == selectedKey) ? "Continue play" : "Play";
                 ContextPlayStopMenuItem.Visible = false;
                 ToolsPlayStartStopButton.SetRunningState(false);
+                _lyricForm?.SetPlayingState(false);
+                McPlayControl?.PauseStat();
             }
             else
             {
                 ContextPlayPauseMenuItem.Text = "Play";
                 ContextPlayStopMenuItem.Visible = false;
                 ToolsPlayStartStopButton.SetRunningState(false);
+                _lyricForm?.SetPlayingState(false);
+                McPlayControl?.StopStat();
             }
 
             McStatusTimer.Start();
@@ -972,14 +966,13 @@ namespace MediaCenter.LyricsFinder
         /// <param name="colIdx">Index of the col.</param>
         /// <param name="rowIdx">Index of the row.</param>
         /// <param name="isAutoOpen">if set to <c>true</c> the <see cref="LyricForm"/> is opened automatically when the mouse is moved over the lyrics column; else <c>false</c>.</param>
-        /// <returns><see cref="LyricForm"/> object.</returns>
         /// <exception cref="ArgumentException">Column {colIdx}</exception>
-        private LyricForm ShowLyrics(int colIdx, int rowIdx, bool isAutoOpen = false)
+        private void ShowLyrics(int colIdx, int rowIdx, bool isAutoOpen = false)
         {
             var dgv = MainGridView;
 
-            if ((colIdx < 0) || (colIdx > dgv.ColumnCount - 1)) return null;
-            if ((rowIdx < 0) || (rowIdx > dgv.RowCount - 1)) return null;
+            if ((colIdx < 0) || (colIdx > dgv.ColumnCount - 1)) return;
+            if ((rowIdx < 0) || (rowIdx > dgv.RowCount - 1)) return;
 
             SuspendLayout();
 
@@ -991,19 +984,18 @@ namespace MediaCenter.LyricsFinder
 
             var location = new Point(MousePosition.X, MousePosition.Y);
             var size = LyricsFinderData.MainData.LyricFormSize;
-            var ret = new LyricForm(cell, location, size, ShowLyricsCallbackAsync, LyricsFinderData, this)
+
+            _lyricForm = new LyricForm(cell, location, size, ShowLyricsCallbackAsync, LyricsFinderData, this)
             {
                 StartPosition = (isAutoOpen) ? FormStartPosition.Manual : FormStartPosition.CenterParent
             };
 
             if (isAutoOpen)
-                ret.Show(this);
+                _lyricForm.Show(this);
             else
-                ret.ShowDialog(this);
+                _lyricForm.ShowDialog(this);
 
             ResumeLayout();
-
-            return ret;
         }
 
 
@@ -1068,7 +1060,7 @@ namespace MediaCenter.LyricsFinder
             if (owner is LyricsFinderCore)
                 PositionAndResizeMcPlayControl();
             else if (owner is LyricForm)
-                ((LyricForm) owner).PositionAndResizeMcPlayControl();
+                ((LyricForm)owner).PositionAndResizeMcPlayControl();
 
             McPlayControl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 

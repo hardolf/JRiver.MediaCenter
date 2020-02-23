@@ -35,17 +35,6 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Occurs when starting.
-        /// </summary>
-        internal event StartEventHandler McPlayStarting;
-
-        /// <summary>
-        /// Occurs when stopping.
-        /// </summary>
-        internal event StopEventHandler McPlayStopping;
-
-
-        /// <summary>
         /// Gets or sets the current seconds.
         /// </summary>
         /// <value>
@@ -322,34 +311,6 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Called when [start].
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="StartStopButtonEventArgs"/> instance containing the event data.</param>
-        internal virtual void OnStart(object sender, StartStopButtonEventArgs e)
-        {
-            StartEventHandler handler = McPlayStarting;
-
-            // Invoke the delegates.
-            handler?.Invoke(this, e);
-        }
-
-
-        /// <summary>
-        /// Called when [stop].
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="MediaCenter.LyricsFinder.StartStopButtonEventArgs" /> instance containing the event data.</param>
-        internal virtual void OnStop(object sender, StartStopButtonEventArgs e)
-        {
-            StopEventHandler handler = McPlayStopping;
-
-            // Invoke the delegates.
-            handler?.Invoke(this, e);
-        }
-
-
-        /// <summary>
         /// Pauses the playback.
         /// </summary>
         public void Pause()
@@ -456,8 +417,6 @@ namespace MediaCenter.LyricsFinder
             {
                 await LyricsFinderCore.PlayOrPauseAsync();
 
-                OnStart(sender, e);
-
                 if (OwnerControl.CanFocus)
                     OwnerControl.Focus();
             }
@@ -478,8 +437,6 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 await LyricsFinderCore.PlayOrPauseAsync();
-
-                OnStop(sender, e);
 
                 if (OwnerControl.CanFocus)
                     OwnerControl.Focus();

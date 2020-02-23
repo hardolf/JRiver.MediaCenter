@@ -247,7 +247,7 @@ namespace MediaCenter.LyricsFinder
                 }
                 else if (e.Alt && (e.KeyCode == Keys.L))
                 {
-                    _lyricForm = ShowLyrics(colIdx, rowIdx);
+                    ShowLyrics(colIdx, rowIdx);
                 }
                 else if (e.KeyCode == Keys.Left)
                 {
@@ -368,7 +368,7 @@ namespace MediaCenter.LyricsFinder
                 var rowIdx = rows[0].Index;
 
                 if (e.ClickedItem == ContextEditMenuItem)
-                    _lyricForm = ShowLyrics(colIdx, rowIdx);
+                    ShowLyrics(colIdx, rowIdx);
                 else if (e.ClickedItem == ContextPlayPauseMenuItem)
                 {
                     await PlayOrPauseAsync();
@@ -466,7 +466,7 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case (int)GridColumnEnum.Lyrics:
-                            _lyricForm = ShowLyrics(e.ColumnIndex, e.RowIndex);
+                            ShowLyrics(e.ColumnIndex, e.RowIndex);
                             break;
 
                         default:
@@ -516,7 +516,7 @@ namespace MediaCenter.LyricsFinder
                         break;
 
                     case (int)GridColumnEnum.Lyrics:
-                        _lyricForm = ShowLyrics(e.ColumnIndex, e.RowIndex, LyricsFinderData.MainData.MouseMoveOpenLyricsForm);
+                        ShowLyrics(e.ColumnIndex, e.RowIndex, LyricsFinderData.MainData.MouseMoveOpenLyricsForm);
                         break;
 
                     default:
@@ -597,6 +597,7 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
                 if (LyricsFinderData?.MainData == null) return;
+                if ((_lyricForm != null) && _lyricForm.Visible && !LyricsFinderData.MainData.MouseMoveOpenLyricsForm) return;
 
                 var pt = Cursor.Position;
                 var rect = MainGridView.RectangleToScreen(MainGridView.ClientRectangle);
