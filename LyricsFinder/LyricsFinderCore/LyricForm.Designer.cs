@@ -59,6 +59,7 @@
             this.LyricFormMenuStrip = new System.Windows.Forms.MenuStrip();
             this.EditMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditUndoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditRedoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditSeparator0 = new System.Windows.Forms.ToolStripSeparator();
             this.EditSelectAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditCutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -95,11 +96,11 @@
             // ArtistTextBox
             // 
             this.ArtistTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ArtistTextBox.Location = new System.Drawing.Point(3, 43);
+            this.ArtistTextBox.Location = new System.Drawing.Point(3, 48);
             this.ArtistTextBox.Multiline = true;
             this.ArtistTextBox.Name = "ArtistTextBox";
             this.ArtistTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.ArtistTextBox.Size = new System.Drawing.Size(121, 44);
+            this.ArtistTextBox.Size = new System.Drawing.Size(121, 49);
             this.ArtistTextBox.TabIndex = 3;
             this.LyricFormToolTip.SetToolTip(this.ArtistTextBox, "Artist name, change to refine search");
             this.ArtistTextBox.Enter += new System.EventHandler(this.TopTextBox_EnterAsync);
@@ -107,11 +108,11 @@
             // AlbumTextBox
             // 
             this.AlbumTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AlbumTextBox.Location = new System.Drawing.Point(130, 43);
+            this.AlbumTextBox.Location = new System.Drawing.Point(130, 48);
             this.AlbumTextBox.Multiline = true;
             this.AlbumTextBox.Name = "AlbumTextBox";
             this.AlbumTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.AlbumTextBox.Size = new System.Drawing.Size(122, 44);
+            this.AlbumTextBox.Size = new System.Drawing.Size(122, 49);
             this.AlbumTextBox.TabIndex = 4;
             this.LyricFormToolTip.SetToolTip(this.AlbumTextBox, "Album name, change to refine search");
             this.AlbumTextBox.Enter += new System.EventHandler(this.TopTextBox_EnterAsync);
@@ -119,11 +120,11 @@
             // TrackTextBox
             // 
             this.TrackTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TrackTextBox.Location = new System.Drawing.Point(258, 43);
+            this.TrackTextBox.Location = new System.Drawing.Point(258, 48);
             this.TrackTextBox.Multiline = true;
             this.TrackTextBox.Name = "TrackTextBox";
             this.TrackTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TrackTextBox.Size = new System.Drawing.Size(123, 44);
+            this.TrackTextBox.Size = new System.Drawing.Size(123, 49);
             this.TrackTextBox.TabIndex = 5;
             this.LyricFormToolTip.SetToolTip(this.TrackTextBox, "Track title, change to refine search");
             this.TrackTextBox.Enter += new System.EventHandler(this.TopTextBox_EnterAsync);
@@ -206,14 +207,15 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LyricTextBox.BackColor = System.Drawing.SystemColors.Control;
-            this.LyricTextBox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LyricTextBox.Location = new System.Drawing.Point(4, 97);
+            this.LyricTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.LyricTextBox.Location = new System.Drawing.Point(4, 106);
             this.LyricTextBox.Multiline = true;
             this.LyricTextBox.Name = "LyricTextBox";
+            this.LyricTextBox.ParentForm = null;
             this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.LyricTextBox.SelectedText = "";
             this.LyricTextBox.SelectionStart = 0;
-            this.LyricTextBox.Size = new System.Drawing.Size(377, 364);
+            this.LyricTextBox.Size = new System.Drawing.Size(377, 355);
             this.LyricTextBox.SpellCheckEnabled = false;
             this.LyricTextBox.TabIndex = 1;
             this.LyricTextBox.Enter += new System.EventHandler(this.LyricTextBox_EnterAsync);
@@ -249,17 +251,17 @@
             this.LyricParmsPanel.Location = new System.Drawing.Point(0, 3);
             this.LyricParmsPanel.Name = "LyricParmsPanel";
             this.LyricParmsPanel.RowCount = 3;
-            this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.LyricParmsPanel.Size = new System.Drawing.Size(384, 90);
+            this.LyricParmsPanel.Size = new System.Drawing.Size(384, 100);
             this.LyricParmsPanel.TabIndex = 0;
             // 
             // ArtistLabel
             // 
             this.ArtistLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ArtistLabel.AutoSize = true;
-            this.ArtistLabel.Location = new System.Drawing.Point(3, 27);
+            this.ArtistLabel.Location = new System.Drawing.Point(3, 32);
             this.ArtistLabel.Name = "ArtistLabel";
             this.ArtistLabel.Size = new System.Drawing.Size(30, 13);
             this.ArtistLabel.TabIndex = 0;
@@ -269,7 +271,7 @@
             // 
             this.AlbumLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.AlbumLabel.AutoSize = true;
-            this.AlbumLabel.Location = new System.Drawing.Point(130, 27);
+            this.AlbumLabel.Location = new System.Drawing.Point(130, 32);
             this.AlbumLabel.Name = "AlbumLabel";
             this.AlbumLabel.Size = new System.Drawing.Size(36, 13);
             this.AlbumLabel.TabIndex = 1;
@@ -279,7 +281,7 @@
             // 
             this.TrackLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.TrackLabel.AutoSize = true;
-            this.TrackLabel.Location = new System.Drawing.Point(258, 27);
+            this.TrackLabel.Location = new System.Drawing.Point(258, 32);
             this.TrackLabel.Name = "TrackLabel";
             this.TrackLabel.Size = new System.Drawing.Size(58, 13);
             this.TrackLabel.TabIndex = 2;
@@ -322,6 +324,7 @@
             // 
             this.EditMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.EditUndoMenuItem,
+            this.EditRedoMenuItem,
             this.EditSeparator0,
             this.EditSelectAllMenuItem,
             this.EditCutMenuItem,
@@ -349,8 +352,16 @@
             this.EditUndoMenuItem.Name = "EditUndoMenuItem";
             this.EditUndoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.EditUndoMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.EditUndoMenuItem.Text = "&Undo";
+            this.EditUndoMenuItem.Text = "Undo";
             this.EditUndoMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditRedoMenuItem
+            // 
+            this.EditRedoMenuItem.Name = "EditRedoMenuItem";
+            this.EditRedoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
+            this.EditRedoMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EditRedoMenuItem.Text = "Redo";
+            this.EditRedoMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditSeparator0
             // 
@@ -362,7 +373,7 @@
             this.EditSelectAllMenuItem.Name = "EditSelectAllMenuItem";
             this.EditSelectAllMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
             this.EditSelectAllMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.EditSelectAllMenuItem.Text = "Select &all";
+            this.EditSelectAllMenuItem.Text = "Select all";
             this.EditSelectAllMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditCutMenuItem
@@ -490,14 +501,14 @@
             // 
             this.ToolsSearchMenuItem.Name = "ToolsSearchMenuItem";
             this.ToolsSearchMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(145, 22);
             this.ToolsSearchMenuItem.Text = "&Search";
             this.ToolsSearchMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // ToolsSeparator0
             // 
             this.ToolsSeparator0.Name = "ToolsSeparator0";
-            this.ToolsSeparator0.Size = new System.Drawing.Size(177, 6);
+            this.ToolsSeparator0.Size = new System.Drawing.Size(142, 6);
             // 
             // ToolsPlayStartStopButton
             // 
@@ -617,5 +628,6 @@
         private System.Windows.Forms.ToolStripMenuItem EditSpellCheckLanguageMenuItem;
         private System.Windows.Forms.ToolStripSeparator ToolsSeparator0;
         private StartStopToolStripButton ToolsPlayStartStopButton;
+        private System.Windows.Forms.ToolStripMenuItem EditRedoMenuItem;
     }
 }

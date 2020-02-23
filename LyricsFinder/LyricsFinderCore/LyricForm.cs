@@ -77,7 +77,7 @@ namespace MediaCenter.LyricsFinder
 
         private LyricsFinderCore LyricsFinderCore { get; set; }
 
-        private LyricsFinderDataType LyricsFinderData { get; set;  }
+        private LyricsFinderDataType LyricsFinderData { get; set; }
 
 
         /************************/
@@ -349,6 +349,7 @@ namespace MediaCenter.LyricsFinder
                 if (_isSearch)
                 {
                     UseWaitCursor = true;
+                    LyricTextBox.UseWaitCursor = true;
                     LyricFormStatusLabel.Text = "Searching...";
 
                     // LyricFormTimer.Start();
@@ -378,6 +379,7 @@ namespace MediaCenter.LyricsFinder
             finally
             {
                 UseWaitCursor = false;
+                LyricTextBox.UseWaitCursor = false;
             }
         }
 
@@ -465,17 +467,50 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                LyricForm_KeyDownAsync(sender, e); // KeyPreview doesn't work with the SpellBox WPF TextBox
-
                 e.Handled = false;
 
-                if (e.Control && (e.KeyCode == Keys.A))
+                if (e.Control)
                 {
-                    LyricTextBox.SelectAll();
+                    switch (e.KeyCode)
+                    {
+                        case Keys.A:
+                            EditSelectAllMenuItem.PerformClick();
+                            e.Handled = true;
+                            break;
+
+                        case Keys.C:
+                            EditCopyMenuItem.PerformClick();
+                            e.Handled = true;
+                            break;
+
+                        case Keys.X:
+                            EditCutMenuItem.PerformClick();
+                            e.Handled = true;
+                            break;
+
+                        case Keys.V:
+                            EditPasteMenuItem.PerformClick();
+                            e.Handled = true;
+                            break;
+
+                        case Keys.Z:
+                            EditUndoMenuItem.PerformClick();
+                            e.Handled = true;
+                            break;
+
+                        case Keys.Y:
+                            EditRedoMenuItem.PerformClick();
+                            e.Handled = true;
+                            break;
+                    }
+                }
+                else if (e.KeyCode == Keys.Delete)
+                {
+                    EditDeleteMenuItem.PerformClick();
                     e.Handled = true;
                 }
                 else
-                    e.Handled = false;
+                    OnKeyDown(e);
             }
             catch (Exception ex)
             {
@@ -691,14 +726,13 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(EditUndoMenuItem):
-                            if (txt.CanUndo == true)
-                            {
-                                if (txt.CanUndo)
-                                {
-                                    txt.Undo();
-                                    txt.ClearUndo(); // Clear the undo buffer to prevent last action from being redone 
-                                }
-                            }
+                            if (txt.CanUndo)
+                                txt.Undo();
+                            break;
+
+                        case nameof(EditRedoMenuItem):
+                            if (txt.CanRedo)
+                                txt.Redo();
                             break;
 
                         // Help menu

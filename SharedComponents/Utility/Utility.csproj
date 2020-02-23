@@ -62,6 +62,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="DateTimeWithZone.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="MessageFilter.cs" />
     <Compile Include="Serialize.cs" />
     <Compile Include="UndoRedo.cs" />
     <Compile Include="Utility.cs" />

@@ -13,7 +13,8 @@ using System.Windows.Forms.Design;
 using System.Windows.Media;
 
 using MediaCenter.SharedComponents;
-
+using System.Windows.Input;
+using System.Windows.Interop;
 
 namespace MediaCenter.LyricsFinder
 {
@@ -58,9 +59,14 @@ namespace MediaCenter.LyricsFinder
 
             base.Child = _textBox;
 
+            _textBox.Focusable = true;
+            _textBox.Loaded += TextBox_Loaded;
+
+            //_textBox.PreviewKeyDown += TextBox_PreviewKeyDown;
+
             _textBox.SpellCheck.IsEnabled = false;
 
-            _textBox.KeyDown += (s, e) => OnKeyDownWpf(e);
+            _textBox.PreviewKeyDown += (s, e) => OnPreviewKeyDownWpf(e);
             _textBox.MouseEnter += (s, e) => OnEnterWpf(EventArgs.Empty);
             _textBox.MouseLeave += (s, e) => OnLeaveWpf(EventArgs.Empty);
             _textBox.TextChanged += (s, e) => OnTextChangedWpf(EventArgs.Empty);
@@ -72,6 +78,24 @@ namespace MediaCenter.LyricsFinder
             {
                 InstalledCultures.Add(lang.Culture);
             }
+        }
+
+
+        /*********************/
+        /***** Delegates *****/
+        /*********************/
+
+        /// <summary>
+        /// Handles the Loaded event of the TextBox control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void TextBox_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_textBox.Focusable)
+                _textBox.Focus();
+
+            e.Handled = true;
         }
 
 
@@ -146,6 +170,14 @@ namespace MediaCenter.LyricsFinder
         }
 
         /// <summary>
+        /// Gets or sets the parent WinForms form.
+        /// </summary>
+        /// <value>
+        /// The parent WinForms form.
+        /// </value>
+        public virtual System.Windows.Forms.Form ParentForm { get; set; }
+
+        /// <summary>
         /// Gets or sets a value that indicates whether the text editing control is read-only to a user interacting with the control.
         /// </summary>
         /// <value>
@@ -157,8 +189,8 @@ namespace MediaCenter.LyricsFinder
         public virtual bool ReadOnly
         {
             get => _textBox.IsReadOnly;
-            set 
-            { 
+            set
+            {
                 _textBox.IsReadOnly = value;
                 _textBox.Background = (value) ? Brushes.WhiteSmoke : Brushes.White;
             }
@@ -172,14 +204,14 @@ namespace MediaCenter.LyricsFinder
         /// a horizontal scroll bar, a vertical scroll bar, or both. 
         /// The default is <c>ScrollBars.None</c>.
         /// </value>
-        public virtual System.Windows.Forms.ScrollBars ScrollBars 
-        { 
+        public virtual System.Windows.Forms.ScrollBars ScrollBars
+        {
             get
             {
-                var h = (_textBox.HorizontalScrollBarVisibility == ScrollBarVisibility.Auto) 
+                var h = (_textBox.HorizontalScrollBarVisibility == ScrollBarVisibility.Auto)
                     || (_textBox.HorizontalScrollBarVisibility == ScrollBarVisibility.Visible);
 
-                var v = (_textBox.VerticalScrollBarVisibility == ScrollBarVisibility.Auto) 
+                var v = (_textBox.VerticalScrollBarVisibility == ScrollBarVisibility.Auto)
                     || (_textBox.VerticalScrollBarVisibility == ScrollBarVisibility.Visible);
 
                 if (h && v)
@@ -291,6 +323,19 @@ namespace MediaCenter.LyricsFinder
         {
             get => _textBox.Text;
             set => _textBox.Text = value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to use the wait cursor for the current control and all child controls.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if a wait cursor should be used in the control; otherwise, <c>false</c>.
+        /// </value>
+        [DefaultValue(false)]
+        public new bool UseWaitCursor
+        {
+            get { return (Mouse.OverrideCursor == Cursors.Wait) ? true : false; }
+            set { Mouse.OverrideCursor = (value) ? Cursors.Wait : null; }
         }
 
         /// <summary>
@@ -442,18 +487,24 @@ namespace MediaCenter.LyricsFinder
         /// <remarks>
         /// Source inspired by: https://stackoverflow.com/questions/1153009/how-can-i-convert-system-windows-input-key-to-system-windows-forms-keys
         /// </remarks>
-        protected virtual void OnKeyDownWpf(System.Windows.Input.KeyEventArgs e)
+        protected virtual void OnPreviewKeyDownWpf(System.Windows.Input.KeyEventArgs e)
         {
             if (e is null) throw new ArgumentNullException(nameof(e));
 
             System.Windows.Input.Key wpfKey = e.Key;
-            System.Windows.Forms.Keys formsKeys;
+            System.Windows.Forms.Keys winFormsKeys;
 
             // wpfKey = System.Windows.Input.KeyInterop.KeyFromVirtualKey((int)formsKey);
-            formsKeys = (System.Windows.Forms.Keys)System.Windows.Input.KeyInterop.VirtualKeyFromKey(wpfKey);
+            winFormsKeys = (System.Windows.Forms.Keys)System.Windows.Input.KeyInterop.VirtualKeyFromKey(wpfKey);
+
+            if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Alt) > 0)
+                winFormsKeys |= System.Windows.Forms.Keys.Alt;
+
+            if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) > 0)
+                winFormsKeys |= System.Windows.Forms.Keys.Control;
 
             //System.Windows.Forms.Control.KeyDown(this, new System.Windows.Forms.KeyEventArgs(formsKeys));
-            KeyDown?.Invoke(this, new System.Windows.Forms.KeyEventArgs(formsKeys));
+            KeyDown?.Invoke(this, new System.Windows.Forms.KeyEventArgs(winFormsKeys));
         }
 
 
