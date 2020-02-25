@@ -594,7 +594,7 @@ namespace MediaCenter.LyricsFinder
                 name = tmp.Substring(idx + 1);
             }
 
-            await StatusMessageAsync($"Collecting the \"{name}\" playlist...");
+            await StatusMessageAsync($"Collecting the \"{name}\" playlist...", true, true);
 
             try
             {
@@ -606,7 +606,7 @@ namespace MediaCenter.LyricsFinder
                 else
                     ret = await McRestService.GetPlayNowListAsync();
 
-                await StatusMessageAsync($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.");
+                await StatusMessageAsync($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.", true, true);
             }
             finally
             {

@@ -216,7 +216,8 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                EnableOrDisableToolStripItems(false, FileMenuItem, ToolsPlayStartStopButton, ToolsSearchAllStartStopButton, SearchAllStartStopButton);
+                EnableOrDisableToolStripItems(false, FileMenuItem, ToolsPlayStartStopButton, ToolsSearchAllStartStopButton, SearchAllStartStopButton
+                    , ToolsPlayJumpAheadLargeMenuItem, ToolsPlayJumpAheadSmallMenuItem, ToolsPlayJumpBackLargeMenuItem, ToolsPlayJumpBackSmallMenuItem);
 
                 if (IsDataChanged)
                 {
@@ -255,7 +256,8 @@ namespace MediaCenter.LyricsFinder
             catch (Exception ex)
             {
                 EnableOrDisableToolStripItems(true);
-                EnableOrDisableToolStripItems(false, FileSelectPlaylistMenuItem, FileSaveMenuItem, ToolsPlayStartStopButton, ToolsSearchAllStartStopButton, SearchAllStartStopButton);
+                EnableOrDisableToolStripItems(false, FileSelectPlaylistMenuItem, FileSaveMenuItem, ToolsPlayStartStopButton, ToolsSearchAllStartStopButton, SearchAllStartStopButton
+                    , ToolsPlayJumpAheadLargeMenuItem, ToolsPlayJumpAheadSmallMenuItem, ToolsPlayJumpBackLargeMenuItem, ToolsPlayJumpBackSmallMenuItem);
 
                 await StatusMessageAsync($"Error {msg}.", true, true);
                 await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex, msg);

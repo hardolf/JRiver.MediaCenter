@@ -60,15 +60,13 @@ namespace MediaCenter.LyricsFinder
             base.Child = _textBox;
 
             _textBox.Focusable = true;
-            _textBox.Loaded += TextBox_Loaded;
-
-            //_textBox.PreviewKeyDown += TextBox_PreviewKeyDown;
-
+            _textBox.ContextMenu = null;
             _textBox.SpellCheck.IsEnabled = false;
 
-            _textBox.PreviewKeyDown += (s, e) => OnPreviewKeyDownWpf(e);
+            _textBox.Loaded += TextBox_Loaded;
             _textBox.MouseEnter += (s, e) => OnEnterWpf(EventArgs.Empty);
             _textBox.MouseLeave += (s, e) => OnLeaveWpf(EventArgs.Empty);
+            _textBox.PreviewKeyDown += (s, e) => OnPreviewKeyDownWpf(e);
             _textBox.TextChanged += (s, e) => OnTextChangedWpf(EventArgs.Empty);
 
             InstalledInputLanguages = System.Windows.Forms.InputLanguage.InstalledInputLanguages;
@@ -78,24 +76,6 @@ namespace MediaCenter.LyricsFinder
             {
                 InstalledCultures.Add(lang.Culture);
             }
-        }
-
-
-        /*********************/
-        /***** Delegates *****/
-        /*********************/
-
-        /// <summary>
-        /// Handles the Loaded event of the TextBox control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void TextBox_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (_textBox.Focusable)
-                _textBox.Focus();
-
-            e.Handled = true;
         }
 
 
@@ -455,9 +435,9 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        /******************/
-        /***** Events *****/
-        /******************/
+        /********************************/
+        /***** Events and Delegates *****/
+        /********************************/
 
         /// <summary>
         /// Occurs when the control is entered.
@@ -537,6 +517,20 @@ namespace MediaCenter.LyricsFinder
         protected virtual void OnTextChangedWpf(EventArgs e)
         {
             TextChanged?.Invoke(this, e);
+        }
+
+
+        /// <summary>
+        /// Handles the Loaded event of the TextBox control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void TextBox_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_textBox.Focusable)
+                _textBox.Focus();
+
+            e.Handled = true;
         }
 
     }

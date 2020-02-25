@@ -736,7 +736,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MenuItem_ClickAsync(object sender, EventArgs e)
         {
-            var itemName = "Undefined item";
+            var menuName = "Undefined menu";
             var msg = string.Empty;
 
             try
@@ -746,21 +746,21 @@ namespace MediaCenter.LyricsFinder
                 if (!(sender is ToolStripMenuItem menuItem))
                     throw new Exception($"Unknown sender: \"{sender}\".");
                 else
-                    itemName = menuItem.Name;
+                    menuName = menuItem.Name;
 
                 // Special handling of the select playlist menu
-                if (itemName.StartsWith(nameof(FileSelectPlaylistMenuItem), StringComparison.InvariantCultureIgnoreCase))
+                if (menuName.StartsWith(nameof(FileSelectPlaylistMenuItem), StringComparison.InvariantCultureIgnoreCase))
                 {
                     // Ignore any "Select playlist "branch" menu and only accept the "leaf"
                     if (menuItem.DropDownItems.Count > 0)
                         return;
 
                     // Get the MC playlist and let LyricsFinder know about it
-                    await ReloadPlaylistAsync(false, itemName);
+                    await ReloadPlaylistAsync(false, menuName);
                 }
                 else
                 {
-                    switch (itemName)
+                    switch (menuName)
                     {
                         case nameof(FileExitMenuItem):
                             // Close(); // Not done here, in standalone it is done in LyricsFinderExe, in plug-in it is done by Media Center
@@ -807,6 +807,22 @@ namespace MediaCenter.LyricsFinder
                                 frm.ShowDialog(this);
                             break;
 
+                        case nameof(ToolsPlayJumpAheadLargeMenuItem):
+                            await McPlayControl?.JumpAsync(false, true);
+                            break;
+
+                        case nameof(ToolsPlayJumpAheadSmallMenuItem):
+                            await McPlayControl?.JumpAsync(false, false);
+                            break;
+
+                        case nameof(ToolsPlayJumpBackLargeMenuItem):
+                            await McPlayControl?.JumpAsync(true, true);
+                            break;
+
+                        case nameof(ToolsPlayJumpBackSmallMenuItem):
+                            await McPlayControl?.JumpAsync(true, false);
+                            break;
+
                         case nameof(ToolsShowLogMenuItem):
                             Logging.ShowLogDir();
                             break;
@@ -822,14 +838,14 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         default:
-                            throw new Exception($"Unknown menu item: \"{itemName}\".");
+                            throw new Exception($"Unknown menu item: \"{menuName}\".");
                     }
                 }
             }
             catch (Exception ex)
             {
-                await StatusMessageAsync($"Error {(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item \"{itemName}\".", true, true);
-                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex, $"{(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item: \"{itemName}\"");
+                await StatusMessageAsync($"Error {(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item \"{menuName}\".", true, true);
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex, $"{(msg.IsNullOrEmptyTrimmed() ? msg : msg + " ")}in menu item: \"{menuName}\"");
             }
         }
 

@@ -56,7 +56,7 @@
             this.McControlToolStripContainer.ContentPanel.Controls.Add(this.TrackingLabel);
             this.McControlToolStripContainer.ContentPanel.Controls.Add(this.McPositionTrackBar);
             this.McControlToolStripContainer.ContentPanel.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
-            this.McControlToolStripContainer.ContentPanel.Size = new System.Drawing.Size(369, 50);
+            this.McControlToolStripContainer.ContentPanel.Size = new System.Drawing.Size(369, 25);
             this.McControlToolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // McControlToolStripContainer.LeftToolStripPanel

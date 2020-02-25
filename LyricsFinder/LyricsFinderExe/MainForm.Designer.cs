@@ -37,8 +37,8 @@ namespace MediaCenter.LyricsFinder
             this.TablePanel = new System.Windows.Forms.TableLayoutPanel();
             this.ExitButton = new System.Windows.Forms.Button();
             this.RotButton = new System.Windows.Forms.Button();
-            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.LyricsFinderCore = new MediaCenter.LyricsFinder.LyricsFinderCore();
+            this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.TablePanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,9 +69,9 @@ namespace MediaCenter.LyricsFinder
             this.ExitButton.Margin = new System.Windows.Forms.Padding(5);
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(75, 23);
-            this.ExitButton.TabIndex = 1;
+            this.ExitButton.TabIndex = 0;
             this.ExitButton.Text = "Exit";
-            this.MainToolTip.SetToolTip(this.ExitButton, "Exit the stand-alone LyricsFinder");
+            this.MainToolTip.SetToolTip(this.ExitButton, "Exit the stand-alone LyricsFinder (Escape)");
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -82,18 +82,11 @@ namespace MediaCenter.LyricsFinder
             this.RotButton.Margin = new System.Windows.Forms.Padding(5);
             this.RotButton.Name = "RotButton";
             this.RotButton.Size = new System.Drawing.Size(100, 24);
-            this.RotButton.TabIndex = 3;
+            this.RotButton.TabIndex = 2;
             this.RotButton.Text = "Examine the ROT";
             this.MainToolTip.SetToolTip(this.RotButton, resources.GetString("RotButton.ToolTip"));
             this.RotButton.UseVisualStyleBackColor = true;
             this.RotButton.Click += new System.EventHandler(this.RotButton_Click);
-            // 
-            // MainToolTip
-            // 
-            this.MainToolTip.AutomaticDelay = 200;
-            this.MainToolTip.AutoPopDelay = 10000;
-            this.MainToolTip.InitialDelay = 200;
-            this.MainToolTip.ReshowDelay = 40;
             // 
             // LyricsFinderCore
             // 
@@ -107,7 +100,14 @@ namespace MediaCenter.LyricsFinder
             this.LyricsFinderCore.MinimumSize = new System.Drawing.Size(770, 200);
             this.LyricsFinderCore.Name = "LyricsFinderCore";
             this.LyricsFinderCore.Size = new System.Drawing.Size(981, 617);
-            this.LyricsFinderCore.TabIndex = 4;
+            this.LyricsFinderCore.TabIndex = 1;
+            // 
+            // MainToolTip
+            // 
+            this.MainToolTip.AutomaticDelay = 200;
+            this.MainToolTip.AutoPopDelay = 10000;
+            this.MainToolTip.InitialDelay = 200;
+            this.MainToolTip.ReshowDelay = 40;
             // 
             // MainForm
             // 

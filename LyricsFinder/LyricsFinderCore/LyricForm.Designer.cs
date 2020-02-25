@@ -81,6 +81,8 @@
             this.ToolsSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsSeparator0 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
+            this.ToolsPlayJumpAheadLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsPlayJumpBackLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).BeginInit();
@@ -101,9 +103,10 @@
             this.ArtistTextBox.Name = "ArtistTextBox";
             this.ArtistTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.ArtistTextBox.Size = new System.Drawing.Size(121, 49);
-            this.ArtistTextBox.TabIndex = 3;
+            this.ArtistTextBox.TabIndex = 1;
             this.LyricFormToolTip.SetToolTip(this.ArtistTextBox, "Artist name, change to refine search");
-            this.ArtistTextBox.Enter += new System.EventHandler(this.TopTextBox_EnterAsync);
+            this.ArtistTextBox.Enter += new System.EventHandler(this.NonSpellChecBox_EnterAsync);
+            this.ArtistTextBox.Leave += new System.EventHandler(this.NonSpellChecBox_LeaveAsync);
             // 
             // AlbumTextBox
             // 
@@ -113,9 +116,10 @@
             this.AlbumTextBox.Name = "AlbumTextBox";
             this.AlbumTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.AlbumTextBox.Size = new System.Drawing.Size(122, 49);
-            this.AlbumTextBox.TabIndex = 4;
+            this.AlbumTextBox.TabIndex = 3;
             this.LyricFormToolTip.SetToolTip(this.AlbumTextBox, "Album name, change to refine search");
-            this.AlbumTextBox.Enter += new System.EventHandler(this.TopTextBox_EnterAsync);
+            this.AlbumTextBox.Enter += new System.EventHandler(this.NonSpellChecBox_EnterAsync);
+            this.AlbumTextBox.Leave += new System.EventHandler(this.NonSpellChecBox_LeaveAsync);
             // 
             // TrackTextBox
             // 
@@ -127,7 +131,8 @@
             this.TrackTextBox.Size = new System.Drawing.Size(123, 49);
             this.TrackTextBox.TabIndex = 5;
             this.LyricFormToolTip.SetToolTip(this.TrackTextBox, "Track title, change to refine search");
-            this.TrackTextBox.Enter += new System.EventHandler(this.TopTextBox_EnterAsync);
+            this.TrackTextBox.Enter += new System.EventHandler(this.NonSpellChecBox_EnterAsync);
+            this.TrackTextBox.Leave += new System.EventHandler(this.NonSpellChecBox_LeaveAsync);
             // 
             // LyricFormTrackBar
             // 
@@ -136,10 +141,12 @@
             this.LyricFormTrackBar.Maximum = 0;
             this.LyricFormTrackBar.Name = "LyricFormTrackBar";
             this.LyricFormTrackBar.Size = new System.Drawing.Size(289, 45);
-            this.LyricFormTrackBar.TabIndex = 2;
+            this.LyricFormTrackBar.TabIndex = 3;
             this.LyricFormToolTip.SetToolTip(this.LyricFormTrackBar, "Switch between all the lyrics search results (Arrows)");
             this.LyricFormTrackBar.Visible = false;
             this.LyricFormTrackBar.Scroll += new System.EventHandler(this.LyricFormTrackBar_ScrollAsync);
+            this.LyricFormTrackBar.Enter += new System.EventHandler(this.NonSpellChecBox_EnterAsync);
+            this.LyricFormTrackBar.Leave += new System.EventHandler(this.NonSpellChecBox_LeaveAsync);
             // 
             // SearchButton
             // 
@@ -147,12 +154,13 @@
             this.SearchButton.Location = new System.Drawing.Point(200, 477);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(75, 23);
-            this.SearchButton.TabIndex = 7;
+            this.SearchButton.TabIndex = 4;
             this.SearchButton.Text = "&Search...";
             this.LyricFormToolTip.SetToolTip(this.SearchButton, "Search for more lyrics");
             this.SearchButton.UseVisualStyleBackColor = true;
             this.SearchButton.Visible = false;
             this.SearchButton.Click += new System.EventHandler(this.SearchButton_ClickAsync);
+            this.SearchButton.Leave += new System.EventHandler(this.NonSpellChecBox_LeaveAsync);
             // 
             // CloseButton
             // 
@@ -161,7 +169,7 @@
             this.CloseButton.Location = new System.Drawing.Point(298, 477);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(74, 23);
-            this.CloseButton.TabIndex = 3;
+            this.CloseButton.TabIndex = 5;
             this.CloseButton.Text = "&Close (Esc)";
             this.LyricFormToolTip.SetToolTip(this.CloseButton, "Close the window (Esc)");
             this.CloseButton.UseVisualStyleBackColor = true;
@@ -179,6 +187,7 @@
             this.LyricFormToolStripContainer.Name = "LyricFormToolStripContainer";
             this.LyricFormToolStripContainer.Size = new System.Drawing.Size(384, 561);
             this.LyricFormToolStripContainer.TabIndex = 0;
+            this.LyricFormToolStripContainer.TabStop = false;
             this.LyricFormToolStripContainer.Text = "toolStripContainer1";
             // 
             // LyricFormToolStripContainer.TopToolStripPanel
@@ -217,8 +226,7 @@
             this.LyricTextBox.SelectionStart = 0;
             this.LyricTextBox.Size = new System.Drawing.Size(377, 355);
             this.LyricTextBox.SpellCheckEnabled = false;
-            this.LyricTextBox.TabIndex = 1;
-            this.LyricTextBox.Enter += new System.EventHandler(this.LyricTextBox_EnterAsync);
+            this.LyricTextBox.TabIndex = 2;
             this.LyricTextBox.KeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.LyricTextBox_KeyDownAsync);
             this.LyricTextBox.TextChanged += new System.EventHandler(this.LyricTextBox_TextChangedAsync);
             this.LyricTextBox.Child = new System.Windows.Controls.TextBox();
@@ -231,7 +239,8 @@
             this.LyricElementHost.Location = new System.Drawing.Point(4, 97);
             this.LyricElementHost.Name = "LyricElementHost";
             this.LyricElementHost.Size = new System.Drawing.Size(377, 364);
-            this.LyricElementHost.TabIndex = 10;
+            this.LyricElementHost.TabIndex = 1;
+            this.LyricElementHost.TabStop = false;
             this.LyricElementHost.Child = null;
             // 
             // LyricParmsPanel
@@ -274,7 +283,7 @@
             this.AlbumLabel.Location = new System.Drawing.Point(130, 32);
             this.AlbumLabel.Name = "AlbumLabel";
             this.AlbumLabel.Size = new System.Drawing.Size(36, 13);
-            this.AlbumLabel.TabIndex = 1;
+            this.AlbumLabel.TabIndex = 2;
             this.AlbumLabel.Text = "Album";
             // 
             // TrackLabel
@@ -284,7 +293,7 @@
             this.TrackLabel.Location = new System.Drawing.Point(258, 32);
             this.TrackLabel.Name = "TrackLabel";
             this.TrackLabel.Size = new System.Drawing.Size(58, 13);
-            this.TrackLabel.TabIndex = 2;
+            this.TrackLabel.TabIndex = 4;
             this.TrackLabel.Text = "Track Title";
             // 
             // LyricFormStatusStrip
@@ -295,7 +304,7 @@
             this.LyricFormStatusStrip.Location = new System.Drawing.Point(0, 515);
             this.LyricFormStatusStrip.Name = "LyricFormStatusStrip";
             this.LyricFormStatusStrip.Size = new System.Drawing.Size(384, 22);
-            this.LyricFormStatusStrip.TabIndex = 9;
+            this.LyricFormStatusStrip.TabIndex = 6;
             this.LyricFormStatusStrip.Text = "statusStrip1";
             // 
             // LyricFormStatusLabel
@@ -319,6 +328,7 @@
             this.LyricFormMenuStrip.Name = "LyricFormMenuStrip";
             this.LyricFormMenuStrip.Size = new System.Drawing.Size(384, 24);
             this.LyricFormMenuStrip.TabIndex = 0;
+            this.LyricFormMenuStrip.TabStop = true;
             // 
             // EditMenuItem
             // 
@@ -491,7 +501,9 @@
             this.ToolsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolsSearchMenuItem,
             this.ToolsSeparator0,
-            this.ToolsPlayStartStopButton});
+            this.ToolsPlayStartStopButton,
+            this.ToolsPlayJumpAheadLargeMenuItem,
+            this.ToolsPlayJumpBackLargeMenuItem});
             this.ToolsMenuItem.Name = "ToolsMenuItem";
             this.ToolsMenuItem.Size = new System.Drawing.Size(46, 20);
             this.ToolsMenuItem.Text = "&Tools";
@@ -501,14 +513,14 @@
             // 
             this.ToolsSearchMenuItem.Name = "ToolsSearchMenuItem";
             this.ToolsSearchMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.S)));
-            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.ToolsSearchMenuItem.Size = new System.Drawing.Size(240, 22);
             this.ToolsSearchMenuItem.Text = "&Search";
             this.ToolsSearchMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // ToolsSeparator0
             // 
             this.ToolsSeparator0.Name = "ToolsSeparator0";
-            this.ToolsSeparator0.Size = new System.Drawing.Size(177, 6);
+            this.ToolsSeparator0.Size = new System.Drawing.Size(237, 6);
             // 
             // ToolsPlayStartStopButton
             // 
@@ -526,6 +538,22 @@
             this.ToolsPlayStartStopButton.TextStart = "Start play";
             this.ToolsPlayStartStopButton.TextStop = "Stop play";
             this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item (Ctrl + P)";
+            // 
+            // ToolsPlayJumpAheadLargeMenuItem
+            // 
+            this.ToolsPlayJumpAheadLargeMenuItem.Name = "ToolsPlayJumpAheadLargeMenuItem";
+            this.ToolsPlayJumpAheadLargeMenuItem.ShortcutKeyDisplayString = "Ctrl+Right";
+            this.ToolsPlayJumpAheadLargeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.ToolsPlayJumpAheadLargeMenuItem.Text = "Forward 10 seconds";
+            this.ToolsPlayJumpAheadLargeMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // ToolsPlayJumpBackLargeMenuItem
+            // 
+            this.ToolsPlayJumpBackLargeMenuItem.Name = "ToolsPlayJumpBackLargeMenuItem";
+            this.ToolsPlayJumpBackLargeMenuItem.ShortcutKeyDisplayString = "Ctrl+Left";
+            this.ToolsPlayJumpBackLargeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.ToolsPlayJumpBackLargeMenuItem.Text = "Rewind 10 seconds";
+            this.ToolsPlayJumpBackLargeMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // HelpMenuItem
             // 
@@ -629,5 +657,7 @@
         private System.Windows.Forms.ToolStripSeparator ToolsSeparator0;
         private StartStopToolStripButton ToolsPlayStartStopButton;
         private System.Windows.Forms.ToolStripMenuItem EditRedoMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolsPlayJumpAheadLargeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolsPlayJumpBackLargeMenuItem;
     }
 }

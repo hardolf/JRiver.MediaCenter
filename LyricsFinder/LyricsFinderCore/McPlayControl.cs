@@ -176,7 +176,7 @@ namespace MediaCenter.LyricsFinder
             if (newPos > McPositionTrackBar.Maximum)
                 newPos = McPositionTrackBar.Maximum;
 
-            var rsp = await McRestService.PositionAsync((int) (newPos * 1000));
+            var rsp = await McRestService.PositionAsync((int)(newPos * 1000));
 
             if (!rsp.IsOk)
                 throw new Exception($"Setting play position to {pos} seconds in Media Center failed.");

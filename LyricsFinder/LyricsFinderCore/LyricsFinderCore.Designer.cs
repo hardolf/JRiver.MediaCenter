@@ -127,6 +127,10 @@ namespace MediaCenter.LyricsFinder
             this.ContextPlayStopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.McStatusTimer = new System.Windows.Forms.Timer(this.components);
             this.UpdateCheckTimer = new System.Windows.Forms.Timer(this.components);
+            this.ToolsPlayJumpAheadSmallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsPlayJumpBackSmallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsPlayJumpAheadLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsPlayJumpBackLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainContainer.BottomToolStripPanel.SuspendLayout();
             this.MainContainer.ContentPanel.SuspendLayout();
             this.MainContainer.TopToolStripPanel.SuspendLayout();
@@ -235,11 +239,11 @@ namespace MediaCenter.LyricsFinder
             this.OverwriteMenuItem.CheckOnClick = true;
             this.OverwriteMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.OverwriteMenuItem.Name = "OverwriteMenuItem";
-            this.OverwriteMenuItem.ShortcutKeyDisplayString = "(Alt+E)";
+            this.OverwriteMenuItem.ShortcutKeyDisplayString = "";
             this.OverwriteMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
             this.OverwriteMenuItem.Size = new System.Drawing.Size(144, 23);
             this.OverwriteMenuItem.Text = "Overwrite &existing lyrics";
-            this.OverwriteMenuItem.ToolTipText = "Should the operation overwrite existing lyrics?";
+            this.OverwriteMenuItem.ToolTipText = "Should the operation overwrite existing lyrics? (Alt+E)";
             this.OverwriteMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // MainStatusStrip
@@ -503,6 +507,10 @@ namespace MediaCenter.LyricsFinder
             this.ToolsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolsSearchAllStartStopButton,
             this.ToolsPlayStartStopButton,
+            this.ToolsPlayJumpAheadSmallMenuItem,
+            this.ToolsPlayJumpBackSmallMenuItem,
+            this.ToolsPlayJumpAheadLargeMenuItem,
+            this.ToolsPlayJumpBackLargeMenuItem,
             this.ToolSepMenuItem1,
             this.ToolsLyricServicesMenuItem,
             this.ToolsOptionsMenuItem,
@@ -547,13 +555,13 @@ namespace MediaCenter.LyricsFinder
             // ToolSepMenuItem1
             // 
             this.ToolSepMenuItem1.Name = "ToolSepMenuItem1";
-            this.ToolSepMenuItem1.Size = new System.Drawing.Size(185, 6);
+            this.ToolSepMenuItem1.Size = new System.Drawing.Size(237, 6);
             // 
             // ToolsLyricServicesMenuItem
             // 
             this.ToolsLyricServicesMenuItem.Name = "ToolsLyricServicesMenuItem";
             this.ToolsLyricServicesMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Y)));
-            this.ToolsLyricServicesMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.ToolsLyricServicesMenuItem.Size = new System.Drawing.Size(240, 22);
             this.ToolsLyricServicesMenuItem.Text = "L&yric services...";
             this.ToolsLyricServicesMenuItem.ToolTipText = "Select the services to be used when searching for lyrics. \r\nYou can also change t" +
     "he search service order.";
@@ -563,7 +571,7 @@ namespace MediaCenter.LyricsFinder
             // 
             this.ToolsOptionsMenuItem.Name = "ToolsOptionsMenuItem";
             this.ToolsOptionsMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.O)));
-            this.ToolsOptionsMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.ToolsOptionsMenuItem.Size = new System.Drawing.Size(240, 22);
             this.ToolsOptionsMenuItem.Text = "&Options...";
             this.ToolsOptionsMenuItem.ToolTipText = "Configure connection to Media Center Network Service";
             this.ToolsOptionsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -571,12 +579,12 @@ namespace MediaCenter.LyricsFinder
             // ToolSepMenuItem2
             // 
             this.ToolSepMenuItem2.Name = "ToolSepMenuItem2";
-            this.ToolSepMenuItem2.Size = new System.Drawing.Size(185, 6);
+            this.ToolSepMenuItem2.Size = new System.Drawing.Size(237, 6);
             // 
             // ToolsShowLogMenuItem
             // 
             this.ToolsShowLogMenuItem.Name = "ToolsShowLogMenuItem";
-            this.ToolsShowLogMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.ToolsShowLogMenuItem.Size = new System.Drawing.Size(240, 22);
             this.ToolsShowLogMenuItem.Text = "Show &logs folder...";
             this.ToolsShowLogMenuItem.ToolTipText = "Open the folder where the logs are located";
             this.ToolsShowLogMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -584,13 +592,13 @@ namespace MediaCenter.LyricsFinder
             // ToolSepMenuItem3
             // 
             this.ToolSepMenuItem3.Name = "ToolSepMenuItem3";
-            this.ToolSepMenuItem3.Size = new System.Drawing.Size(185, 6);
+            this.ToolSepMenuItem3.Size = new System.Drawing.Size(237, 6);
             this.ToolSepMenuItem3.Visible = false;
             // 
             // ToolsTestMenuItem
             // 
             this.ToolsTestMenuItem.Name = "ToolsTestMenuItem";
-            this.ToolsTestMenuItem.Size = new System.Drawing.Size(188, 22);
+            this.ToolsTestMenuItem.Size = new System.Drawing.Size(240, 22);
             this.ToolsTestMenuItem.Text = "Test";
             this.ToolsTestMenuItem.Visible = false;
             this.ToolsTestMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -693,7 +701,7 @@ namespace MediaCenter.LyricsFinder
             this.ContextPlayPauseMenuItem,
             this.ContextPlayStopMenuItem});
             this.MainContextMenu.Name = "ContextMenu";
-            this.MainContextMenu.Size = new System.Drawing.Size(206, 92);
+            this.MainContextMenu.Size = new System.Drawing.Size(206, 70);
             this.MainContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.MainContextMenu_OpeningAsync);
             this.MainContextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MainContextMenu_ItemClickedAsync);
             // 
@@ -726,6 +734,38 @@ namespace MediaCenter.LyricsFinder
             // 
             this.UpdateCheckTimer.Interval = 5000;
             this.UpdateCheckTimer.Tick += new System.EventHandler(this.UpdateCheckTimer_TickAsync);
+            // 
+            // ToolsPlayJumpAheadSmallMenuItem
+            // 
+            this.ToolsPlayJumpAheadSmallMenuItem.Name = "ToolsPlayJumpAheadSmallMenuItem";
+            this.ToolsPlayJumpAheadSmallMenuItem.ShortcutKeyDisplayString = "Right";
+            this.ToolsPlayJumpAheadSmallMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.ToolsPlayJumpAheadSmallMenuItem.Text = "Forward 5 seconds";
+            this.ToolsPlayJumpAheadSmallMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // ToolsPlayJumpBackSmallMenuItem
+            // 
+            this.ToolsPlayJumpBackSmallMenuItem.Name = "ToolsPlayJumpBackSmallMenuItem";
+            this.ToolsPlayJumpBackSmallMenuItem.ShortcutKeyDisplayString = "Left";
+            this.ToolsPlayJumpBackSmallMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.ToolsPlayJumpBackSmallMenuItem.Text = "Rewind 5 seconds";
+            this.ToolsPlayJumpBackSmallMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // ToolsPlayJumpAheadLargeMenuItem
+            // 
+            this.ToolsPlayJumpAheadLargeMenuItem.Name = "ToolsPlayJumpAheadLargeMenuItem";
+            this.ToolsPlayJumpAheadLargeMenuItem.ShortcutKeyDisplayString = "Ctrl+Right";
+            this.ToolsPlayJumpAheadLargeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.ToolsPlayJumpAheadLargeMenuItem.Text = "Forward 10 seconds";
+            this.ToolsPlayJumpAheadLargeMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // ToolsPlayJumpBackLargeMenuItem
+            // 
+            this.ToolsPlayJumpBackLargeMenuItem.Name = "ToolsPlayJumpBackLargeMenuItem";
+            this.ToolsPlayJumpBackLargeMenuItem.ShortcutKeyDisplayString = "Ctrl+Left";
+            this.ToolsPlayJumpBackLargeMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.ToolsPlayJumpBackLargeMenuItem.Text = "Rewind 10 seconds";
+            this.ToolsPlayJumpBackLargeMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // LyricsFinderCore
             // 
@@ -822,6 +862,10 @@ namespace MediaCenter.LyricsFinder
         private System.Windows.Forms.DataGridViewTextBoxColumn Lyrics;
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         private System.Windows.Forms.ToolStripTextBox DataChangedTextBox;
+        private System.Windows.Forms.ToolStripMenuItem ToolsPlayJumpAheadSmallMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolsPlayJumpBackSmallMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolsPlayJumpAheadLargeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolsPlayJumpBackLargeMenuItem;
     }
 
 }
