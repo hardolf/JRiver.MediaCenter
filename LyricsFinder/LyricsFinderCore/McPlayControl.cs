@@ -34,6 +34,10 @@ namespace MediaCenter.LyricsFinder
         private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
 
+        /**********************/
+        /***** Properties *****/
+        /**********************/
+
         /// <summary>
         /// Gets or sets the current seconds.
         /// </summary>
@@ -58,6 +62,20 @@ namespace MediaCenter.LyricsFinder
         /// The index of the current item.
         /// </value>
         public int CurrentItems { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the control has input focus.
+        /// </summary>
+        public override bool Focused
+        {
+            get
+            {
+                var ret = base.Focused || TrackingLabel.Focused || McPositionTrackBar.Focused
+                    || McControlLeftToolStrip.Focused || McControlToolStripContainer.Focused;
+
+                return ret;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the large change.
@@ -126,6 +144,10 @@ namespace MediaCenter.LyricsFinder
         }
 
 
+        /************************/
+        /***** Constructors *****/
+        /************************/
+
         /// <summary>
         /// Prevents a default instance of the <see cref="McPlayControl"/> class from being created.
         /// </summary>
@@ -150,6 +172,10 @@ namespace MediaCenter.LyricsFinder
             LyricsFinderCore = lyricsFinderCore;
         }
 
+
+        /********************************/
+        /***** Methods and delegates*****/
+        /********************************/
 
         /// <summary>
         /// Jump the playing position.
@@ -180,6 +206,67 @@ namespace MediaCenter.LyricsFinder
 
             if (!rsp.IsOk)
                 throw new Exception($"Setting play position to {pos} seconds in Media Center failed.");
+        }
+
+
+        /// <summary>
+        /// Handles the MouseEnter event of the McControlLeftToolStrip control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void McControlLeftToolStrip_MouseEnterAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Focus();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Load event of the McPlayControl control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void McPlayControl_LoadAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                SetMaxState(0, 0); // Set this before the current seconds
+                SetCurrentState(0, 0);
+
+                McPositionTrackBar.Top = 0;
+
+                TrackingLabel.Left = McPositionTrackBar.Width / 2 - TrackingLabel.Width / 2;
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Handles the MouseEnter event of the McPlayControl control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void McPlayControl_MouseEnterAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Focus();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
         }
 
 
@@ -252,56 +339,20 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Handles the Load event of the McPlayControl control.
+        /// Handles the PreviewKeyDown event of the McPositionTrackBar control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void McPlayControl_LoadAsync(object sender, EventArgs e)
+        /// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+        private async void McPositionTrackBar_PreviewKeyDownAsync(object sender, PreviewKeyDownEventArgs e)
         {
             try
             {
-                SetMaxState(0, 0); // Set this before the current seconds
-                SetCurrentState(0, 0);
-
-                TrackingLabel.Left = McPositionTrackBar.Width / 2 - TrackingLabel.Width / 2;
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
-        }
-
-
-
-
-        /// <summary>
-        /// Handles the MouseEnter event of the McPlayControl control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void McPlayControl_MouseEnterAsync(object sender, EventArgs e)
-        {
-            try
-            {
-                this.Focus();
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the MouseEnter event of the McControlLeftToolStrip control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void McControlLeftToolStrip_MouseEnterAsync(object sender, EventArgs e)
-        {
-            try
-            {
-                this.Focus();
+                switch (e.KeyCode)
+                {
+                    case Keys.Tab:
+                        e.IsInputKey = true;
+                        break;
+                }
             }
             catch (Exception ex)
             {

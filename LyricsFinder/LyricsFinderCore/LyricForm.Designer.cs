@@ -188,7 +188,6 @@
             this.LyricFormToolStripContainer.Size = new System.Drawing.Size(384, 561);
             this.LyricFormToolStripContainer.TabIndex = 0;
             this.LyricFormToolStripContainer.TabStop = false;
-            this.LyricFormToolStripContainer.Text = "toolStripContainer1";
             // 
             // LyricFormToolStripContainer.TopToolStripPanel
             // 
@@ -568,7 +567,7 @@
             // 
             this.HelpHelpMenuItem.Name = "HelpHelpMenuItem";
             this.HelpHelpMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.HelpHelpMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.HelpHelpMenuItem.Size = new System.Drawing.Size(180, 22);
             this.HelpHelpMenuItem.Text = "&Help";
             this.HelpHelpMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 

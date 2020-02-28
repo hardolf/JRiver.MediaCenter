@@ -41,7 +41,7 @@ namespace MediaCenter.LyricsFinder
         private string _finalLyric = string.Empty;
         private LyricForm _searchForm = null;
         private readonly List<FoundLyricType> _foundLyricList = new List<FoundLyricType>();
-        private readonly McMplItem _McItem = null;
+        private readonly McMplItem _mcItem = null;
         private readonly Dictionary<string, int> _serviceCounts = new Dictionary<string, int>();
         private readonly CultureInfo _initialCulture = Thread.CurrentThread.CurrentCulture;
 
@@ -156,7 +156,7 @@ namespace MediaCenter.LyricsFinder
                 SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, false);
                 SharedComponents.Utility.EnableOrDisableToolStripMenuItems(ToolsMenuItem, false);
 
-                _McItem = new McMplItem
+                _mcItem = new McMplItem
                 {
                     Artist = artist,
                     Album = album,
@@ -179,7 +179,7 @@ namespace MediaCenter.LyricsFinder
                 SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, true);
                 SharedComponents.Utility.EnableOrDisableToolStripMenuItems(ToolsMenuItem, true);
 
-                _McItem = new McMplItem
+                _mcItem = new McMplItem
                 {
                     Artist = row.Cells[(int)GridColumnEnum.Artist].Value as string,
                     Album = row.Cells[(int)GridColumnEnum.Album].Value as string,
@@ -202,9 +202,9 @@ namespace MediaCenter.LyricsFinder
                 }
             }
 
-            ArtistTextBox.Text = _McItem.Artist;
-            AlbumTextBox.Text = _McItem.Album;
-            TrackTextBox.Text = _McItem.Name;
+            ArtistTextBox.Text = _mcItem.Artist;
+            AlbumTextBox.Text = _mcItem.Album;
+            TrackTextBox.Text = _mcItem.Name;
 
             Location = location;
             LyricCell = lyricCell;
@@ -328,17 +328,17 @@ namespace MediaCenter.LyricsFinder
                         break;
 
                     case Keys.Left:
-                        if (e.Control && !LyricTextBox.Focused)
+                        if (LyricsFinderCore.McPlayControl?.Focused ?? false)
                         {
-                            await LyricsFinderCore.McPlayControl?.JumpAsync(true, true);
+                            await LyricsFinderCore.McPlayControl?.JumpAsync(true, e.Control);
                             e.Handled = true;
                         }
                         break;
 
                     case Keys.Right:
-                        if (e.Control && !LyricTextBox.Focused)
+                        if (LyricsFinderCore.McPlayControl?.Focused ?? false)
                         {
-                            await LyricsFinderCore.McPlayControl?.JumpAsync(false, true);
+                            await LyricsFinderCore.McPlayControl?.JumpAsync(false, e.Control);
                             e.Handled = true;
                         }
                         break;
@@ -348,6 +348,22 @@ namespace MediaCenter.LyricsFinder
                         {
                             ToolsPlayStartStopButton.PerformClick();
                             e.Handled = true;
+                        }
+                        break;
+
+                    case Keys.Tab:
+                        if (LyricsFinderCore.McPlayControl.Focused)
+                        {
+                            if (e.Shift)
+                            {
+                                CloseButton.Focus();
+                                e.Handled = true;
+                            } 
+                            else
+                            {
+                                ArtistTextBox.Focus();
+                                e.Handled = true;
+                            }
                         }
                         break;
 
@@ -1030,7 +1046,7 @@ namespace MediaCenter.LyricsFinder
             _foundLyricList.Clear();
 
             _cancellationTokenSource = new CancellationTokenSource();
-            var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _McItem, _cancellationTokenSource.Token, true).ConfigureAwait(true);
+            var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _mcItem, _cancellationTokenSource.Token, true).ConfigureAwait(true);
 
             // Process the results
             foreach (var service in resultServices)
@@ -1087,24 +1103,16 @@ namespace MediaCenter.LyricsFinder
         {
             var focusedControl = SharedComponents.Utility.GetFocusedControl(this);
 
-            EditCopyMenuItem.Enabled = true;
-            EditCutMenuItem.Enabled = true;
-            EditDeleteMenuItem.Enabled = true;
-            EditLowerCaseMenuItem.Enabled = (focusedControl is SpellBox);
-            EditPasteMenuItem.Enabled = true;
-            EditProperCaseMenuItem.Enabled = (focusedControl is SpellBox);
-            EditSelectAllMenuItem.Enabled = true;
-            EditSentenceCaseMenuItem.Enabled = (focusedControl is SpellBox);
-            EditSpellCheckLanguageMenuItem.Enabled = (focusedControl is SpellBox);
-            EditTitleCaseMenuItem.Enabled = (focusedControl is SpellBox);
-            EditToggleSpellCheckMenuItem.Enabled = (focusedControl is SpellBox);
-            EditTrimMenuItem.Enabled = (focusedControl is SpellBox);
-            EditRedoMenuItem.Enabled = (focusedControl is SpellBox);
-            EditUndoMenuItem.Enabled = true;
-            EditUpperCaseMenuItem.Enabled = (focusedControl is SpellBox);
+            SharedComponents.Utility.EnableOrDisableToolStripItems(true, 
+                EditCopyMenuItem, EditCutMenuItem, EditDeleteMenuItem, EditPasteMenuItem, EditSelectAllMenuItem, EditUndoMenuItem);
 
-            ToolsPlayJumpAheadLargeMenuItem.Enabled = !_isSearch;
-            ToolsPlayJumpBackLargeMenuItem.Enabled = !_isSearch;
+            SharedComponents.Utility.EnableOrDisableToolStripItems((focusedControl is SpellBox),
+                EditLowerCaseMenuItem, EditProperCaseMenuItem, EditSentenceCaseMenuItem, EditSpellCheckLanguageMenuItem,
+                EditTitleCaseMenuItem, EditToggleSpellCheckMenuItem, EditTrimMenuItem, EditRedoMenuItem, EditUpperCaseMenuItem);
+
+            SharedComponents.Utility.EnableOrDisableToolStripItems(!_isSearch,
+                ToolsPlayJumpAheadLargeMenuItem, ToolsPlayJumpBackLargeMenuItem);
+
             ToolsPlayJumpAheadLargeMenuItem.ShowShortcutKeys = !(focusedControl is SpellBox);
             ToolsPlayJumpBackLargeMenuItem.ShowShortcutKeys = !(focusedControl is SpellBox);
         }
