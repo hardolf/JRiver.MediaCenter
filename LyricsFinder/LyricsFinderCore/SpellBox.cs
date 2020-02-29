@@ -110,16 +110,17 @@ namespace MediaCenter.LyricsFinder
         }
 
         /// <summary>
+        /// Gets a value that indicates whether the control has input focus.
+        /// </summary>
+        public override bool Focused { get => _textBox.IsFocused; }
+
+        /// <summary>
         /// Gets the installed input languages.
         /// </summary>
         /// <value>
         /// The installed input languages.
         /// </value>
-        protected System.Windows.Forms.InputLanguageCollection InstalledInputLanguages
-        {
-            get;
-            private set;
-        }
+        protected System.Windows.Forms.InputLanguageCollection InstalledInputLanguages { get; private set; }
 
         /// <summary>
         /// Gets the installed cultures.
@@ -127,11 +128,7 @@ namespace MediaCenter.LyricsFinder
         /// <value>
         /// The installed cultures.
         /// </value>
-        public List<CultureInfo> InstalledCultures
-        {
-            get;
-            private set;
-        }
+        public List<CultureInfo> InstalledCultures { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="SpellBox"/> is multiline.
@@ -172,6 +169,7 @@ namespace MediaCenter.LyricsFinder
             set
             {
                 _textBox.IsReadOnly = value;
+                _textBox.IsReadOnlyCaretVisible = value;
                 _textBox.Background = (value) ? Brushes.WhiteSmoke : Brushes.White;
             }
         }
@@ -373,6 +371,15 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Focuses this instance.
+        /// </summary>
+        public new void Focus()
+        {
+            _textBox.Focus();
+        }
+
+
+        /// <summary>
         /// Pastes the contents of the Clipboard over the current selection in the text editing control.
         /// </summary>
         public virtual void Paste()
@@ -390,6 +397,67 @@ namespace MediaCenter.LyricsFinder
         public virtual bool Redo()
         {
             return _textBox.Redo();
+        }
+
+
+        /// <summary>
+        /// Scrolls to the home or end of the text.
+        /// </summary>
+        /// <param name="isHome">if set to <c>true</c> scroll to home; else scroll to the end.</param>
+        public virtual void ScrollHomeOrEnd(bool isHome)
+        {
+            if (isHome)
+                _textBox.ScrollToHome();
+            else
+                _textBox.ScrollToEnd();
+        }
+
+
+        /// <summary>
+        /// Scrolls left or right.
+        /// </summary>
+        /// <param name="isLeft">if set to <c>true</c> scroll left; else scroll right.</param>
+        /// <param name="isPage">if set to <c>true</c> scroll a full page; else scroll 1 line.</param>
+        public virtual void ScrollHorizontal(bool isLeft, bool isPage)
+        {
+            if (isLeft)
+            {
+                if (isPage)
+                    _textBox.PageLeft();
+                else
+                    _textBox.LineLeft();
+            }
+            else
+            {
+                if (isPage)
+                    _textBox.PageRight();
+                else
+                    _textBox.LineRight();
+            }
+        }
+
+
+        /// <summary>
+        /// Scrolls up or down.
+        /// </summary>
+        /// <param name="isDown">if set to <c>true</c> scroll down; else scroll up.</param>
+        /// <param name="isPage">if set to <c>true</c> scroll a full page; else scroll 1 line.</param>
+        public virtual void ScrollVertical(bool isDown, bool isPage)
+        {
+            if (isDown)
+            {
+                if (isPage)
+                    _textBox.PageDown();
+                else
+                    _textBox.LineDown();
+            }
+            else
+            {
+                if (isPage)
+                    _textBox.PageUp();
+                else
+                    _textBox.LineUp();
+            }
         }
 
 
@@ -482,6 +550,9 @@ namespace MediaCenter.LyricsFinder
 
             if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) > 0)
                 winFormsKeys |= System.Windows.Forms.Keys.Control;
+
+            if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Shift) > 0)
+                winFormsKeys |= System.Windows.Forms.Keys.Shift;
 
             //System.Windows.Forms.Control.KeyDown(this, new System.Windows.Forms.KeyEventArgs(formsKeys));
             KeyDown?.Invoke(this, new System.Windows.Forms.KeyEventArgs(winFormsKeys));

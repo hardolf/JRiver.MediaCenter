@@ -313,6 +313,9 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        /// <remarks>
+        /// Some of the logic compensates for the oddities of the TrackBar (Tab key).
+        /// </remarks>
         private async void LyricForm_KeyDownAsync(object sender, KeyEventArgs e)
         {
             try
@@ -335,14 +338,6 @@ namespace MediaCenter.LyricsFinder
                         }
                         break;
 
-                    case Keys.Right:
-                        if (LyricsFinderCore.McPlayControl?.Focused ?? false)
-                        {
-                            await LyricsFinderCore.McPlayControl?.JumpAsync(false, e.Control);
-                            e.Handled = true;
-                        }
-                        break;
-
                     case Keys.P:
                         if (e.Control)
                         {
@@ -351,14 +346,47 @@ namespace MediaCenter.LyricsFinder
                         }
                         break;
 
+                    case Keys.Right:
+                        if (LyricsFinderCore.McPlayControl?.Focused ?? false)
+                        {
+                            await LyricsFinderCore.McPlayControl?.JumpAsync(false, e.Control);
+                            e.Handled = true;
+                        }
+                        break;
+
                     case Keys.Tab:
-                        if (LyricsFinderCore.McPlayControl.Focused)
+                        if (_isSearch && ArtistTextBox.Focused && e.Shift)
+                        {
+                            CloseButton.Focus();
+                            e.Handled = true;
+
+                        }
+                        else if (_isSearch && CloseButton.Focused && !e.Shift)
+                        {
+                            ArtistTextBox.Focus();
+                            e.Handled = true;
+
+                        }
+                        else if (_isSearch && LyricFormTrackBar.Focused)
+                        {
+                            if (e.Shift)
+                            {
+                                LyricTextBox.Focus();
+                                e.Handled = true;
+                            }
+                            else
+                            {
+                                CloseButton.Focus();
+                                e.Handled = true;
+                            }
+                        }
+                        else if (!_isSearch && LyricsFinderCore.McPlayControl.Focused)
                         {
                             if (e.Shift)
                             {
                                 CloseButton.Focus();
                                 e.Handled = true;
-                            } 
+                            }
                             else
                             {
                                 ArtistTextBox.Focus();
@@ -456,6 +484,29 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the PreviewKeyDownAsync event of the LyricFormTrackBar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+        private async void LyricFormTrackBar_PreviewKeyDownAsync(object sender, PreviewKeyDownEventArgs e)
+        {
+            try
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.Tab:
+                        e.IsInputKey = true;
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the Scroll event of the LyricTrackBar control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -477,18 +528,6 @@ namespace MediaCenter.LyricsFinder
 
                 LyricFormFoundStatusLabel.Text = $"Source: {serviceName} {GetServiceCountText(serviceName)}";
                 LyricFormFoundStatusLabel.BorderSides = ToolStripStatusLabelBorderSides.Left;
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
-        }
-
-
-        private async void LyricTextBox_EnterAsync(object sender, EventArgs e)
-        {
-            try
-            {
             }
             catch (Exception ex)
             {
@@ -537,23 +576,6 @@ namespace MediaCenter.LyricsFinder
                 }
                 else
                     OnKeyDown(e);
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
-        }
-
-
-        /// <summary>
-        /// Handles the TextChanged event of the LyricTextBox control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void LyricTextBox_TextChangedAsync(object sender, EventArgs e)
-        {
-            try
-            {
             }
             catch (Exception ex)
             {
@@ -1103,7 +1125,7 @@ namespace MediaCenter.LyricsFinder
         {
             var focusedControl = SharedComponents.Utility.GetFocusedControl(this);
 
-            SharedComponents.Utility.EnableOrDisableToolStripItems(true, 
+            SharedComponents.Utility.EnableOrDisableToolStripItems(true,
                 EditCopyMenuItem, EditCutMenuItem, EditDeleteMenuItem, EditPasteMenuItem, EditSelectAllMenuItem, EditUndoMenuItem);
 
             SharedComponents.Utility.EnableOrDisableToolStripItems((focusedControl is SpellBox),

@@ -102,7 +102,7 @@
             this.ArtistTextBox.Multiline = true;
             this.ArtistTextBox.Name = "ArtistTextBox";
             this.ArtistTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.ArtistTextBox.Size = new System.Drawing.Size(121, 49);
+            this.ArtistTextBox.Size = new System.Drawing.Size(121, 52);
             this.ArtistTextBox.TabIndex = 1;
             this.LyricFormToolTip.SetToolTip(this.ArtistTextBox, "Artist name, change to refine search");
             this.ArtistTextBox.Enter += new System.EventHandler(this.NonSpellChecBox_EnterAsync);
@@ -115,7 +115,7 @@
             this.AlbumTextBox.Multiline = true;
             this.AlbumTextBox.Name = "AlbumTextBox";
             this.AlbumTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.AlbumTextBox.Size = new System.Drawing.Size(122, 49);
+            this.AlbumTextBox.Size = new System.Drawing.Size(122, 52);
             this.AlbumTextBox.TabIndex = 3;
             this.LyricFormToolTip.SetToolTip(this.AlbumTextBox, "Album name, change to refine search");
             this.AlbumTextBox.Enter += new System.EventHandler(this.NonSpellChecBox_EnterAsync);
@@ -128,7 +128,7 @@
             this.TrackTextBox.Multiline = true;
             this.TrackTextBox.Name = "TrackTextBox";
             this.TrackTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TrackTextBox.Size = new System.Drawing.Size(123, 49);
+            this.TrackTextBox.Size = new System.Drawing.Size(123, 52);
             this.TrackTextBox.TabIndex = 5;
             this.LyricFormToolTip.SetToolTip(this.TrackTextBox, "Track title, change to refine search");
             this.TrackTextBox.Enter += new System.EventHandler(this.NonSpellChecBox_EnterAsync);
@@ -141,12 +141,13 @@
             this.LyricFormTrackBar.Maximum = 0;
             this.LyricFormTrackBar.Name = "LyricFormTrackBar";
             this.LyricFormTrackBar.Size = new System.Drawing.Size(289, 45);
-            this.LyricFormTrackBar.TabIndex = 3;
+            this.LyricFormTrackBar.TabIndex = 2;
             this.LyricFormToolTip.SetToolTip(this.LyricFormTrackBar, "Switch between all the lyrics search results (Arrows)");
             this.LyricFormTrackBar.Visible = false;
             this.LyricFormTrackBar.Scroll += new System.EventHandler(this.LyricFormTrackBar_ScrollAsync);
             this.LyricFormTrackBar.Enter += new System.EventHandler(this.NonSpellChecBox_EnterAsync);
             this.LyricFormTrackBar.Leave += new System.EventHandler(this.NonSpellChecBox_LeaveAsync);
+            this.LyricFormTrackBar.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.LyricFormTrackBar_PreviewKeyDownAsync);
             // 
             // SearchButton
             // 
@@ -154,7 +155,7 @@
             this.SearchButton.Location = new System.Drawing.Point(200, 477);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(75, 23);
-            this.SearchButton.TabIndex = 4;
+            this.SearchButton.TabIndex = 3;
             this.SearchButton.Text = "&Search...";
             this.LyricFormToolTip.SetToolTip(this.SearchButton, "Search for more lyrics");
             this.SearchButton.UseVisualStyleBackColor = true;
@@ -169,7 +170,7 @@
             this.CloseButton.Location = new System.Drawing.Point(298, 477);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(74, 23);
-            this.CloseButton.TabIndex = 5;
+            this.CloseButton.TabIndex = 4;
             this.CloseButton.Text = "&Close (Esc)";
             this.LyricFormToolTip.SetToolTip(this.CloseButton, "Close the window (Esc)");
             this.CloseButton.UseVisualStyleBackColor = true;
@@ -178,13 +179,25 @@
             // LyricFormToolStripContainer
             // 
             // 
+            // LyricFormToolStripContainer.BottomToolStripPanel
+            // 
+            this.LyricFormToolStripContainer.BottomToolStripPanel.Enabled = false;
+            // 
             // LyricFormToolStripContainer.ContentPanel
             // 
             this.LyricFormToolStripContainer.ContentPanel.Controls.Add(this.LyricFormPanel);
             this.LyricFormToolStripContainer.ContentPanel.Size = new System.Drawing.Size(384, 537);
             this.LyricFormToolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            // 
+            // LyricFormToolStripContainer.LeftToolStripPanel
+            // 
+            this.LyricFormToolStripContainer.LeftToolStripPanel.Enabled = false;
             this.LyricFormToolStripContainer.Location = new System.Drawing.Point(0, 0);
             this.LyricFormToolStripContainer.Name = "LyricFormToolStripContainer";
+            // 
+            // LyricFormToolStripContainer.RightToolStripPanel
+            // 
+            this.LyricFormToolStripContainer.RightToolStripPanel.Enabled = false;
             this.LyricFormToolStripContainer.Size = new System.Drawing.Size(384, 561);
             this.LyricFormToolStripContainer.TabIndex = 0;
             this.LyricFormToolStripContainer.TabStop = false;
@@ -195,13 +208,13 @@
             // 
             // LyricFormPanel
             // 
+            this.LyricFormPanel.Controls.Add(this.LyricParmsPanel);
             this.LyricFormPanel.Controls.Add(this.LyricTextBox);
             this.LyricFormPanel.Controls.Add(this.LyricElementHost);
-            this.LyricFormPanel.Controls.Add(this.LyricParmsPanel);
-            this.LyricFormPanel.Controls.Add(this.LyricFormStatusStrip);
             this.LyricFormPanel.Controls.Add(this.LyricFormTrackBar);
             this.LyricFormPanel.Controls.Add(this.SearchButton);
             this.LyricFormPanel.Controls.Add(this.CloseButton);
+            this.LyricFormPanel.Controls.Add(this.LyricFormStatusStrip);
             this.LyricFormPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricFormPanel.Location = new System.Drawing.Point(0, 0);
             this.LyricFormPanel.Name = "LyricFormPanel";
@@ -216,18 +229,17 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LyricTextBox.BackColor = System.Drawing.SystemColors.Control;
             this.LyricTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.LyricTextBox.Location = new System.Drawing.Point(4, 106);
+            this.LyricTextBox.Location = new System.Drawing.Point(4, 112);
             this.LyricTextBox.Multiline = true;
             this.LyricTextBox.Name = "LyricTextBox";
             this.LyricTextBox.ParentForm = null;
             this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.LyricTextBox.SelectedText = "";
             this.LyricTextBox.SelectionStart = 0;
-            this.LyricTextBox.Size = new System.Drawing.Size(377, 355);
+            this.LyricTextBox.Size = new System.Drawing.Size(377, 349);
             this.LyricTextBox.SpellCheckEnabled = false;
-            this.LyricTextBox.TabIndex = 2;
+            this.LyricTextBox.TabIndex = 1;
             this.LyricTextBox.KeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.LyricTextBox_KeyDownAsync);
-            this.LyricTextBox.TextChanged += new System.EventHandler(this.LyricTextBox_TextChangedAsync);
             this.LyricTextBox.Child = new System.Windows.Controls.TextBox();
             // 
             // LyricElementHost
@@ -235,9 +247,9 @@
             this.LyricElementHost.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.LyricElementHost.Location = new System.Drawing.Point(4, 97);
+            this.LyricElementHost.Location = new System.Drawing.Point(4, 112);
             this.LyricElementHost.Name = "LyricElementHost";
-            this.LyricElementHost.Size = new System.Drawing.Size(377, 364);
+            this.LyricElementHost.Size = new System.Drawing.Size(377, 349);
             this.LyricElementHost.TabIndex = 1;
             this.LyricElementHost.TabStop = false;
             this.LyricElementHost.Child = null;
@@ -262,7 +274,7 @@
             this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.LyricParmsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.LyricParmsPanel.Size = new System.Drawing.Size(384, 100);
+            this.LyricParmsPanel.Size = new System.Drawing.Size(384, 103);
             this.LyricParmsPanel.TabIndex = 0;
             // 
             // ArtistLabel
@@ -303,8 +315,7 @@
             this.LyricFormStatusStrip.Location = new System.Drawing.Point(0, 515);
             this.LyricFormStatusStrip.Name = "LyricFormStatusStrip";
             this.LyricFormStatusStrip.Size = new System.Drawing.Size(384, 22);
-            this.LyricFormStatusStrip.TabIndex = 6;
-            this.LyricFormStatusStrip.Text = "statusStrip1";
+            this.LyricFormStatusStrip.TabIndex = 5;
             // 
             // LyricFormStatusLabel
             // 
@@ -567,7 +578,7 @@
             // 
             this.HelpHelpMenuItem.Name = "HelpHelpMenuItem";
             this.HelpHelpMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.HelpHelpMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.HelpHelpMenuItem.Size = new System.Drawing.Size(118, 22);
             this.HelpHelpMenuItem.Text = "&Help";
             this.HelpHelpMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
