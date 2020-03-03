@@ -244,15 +244,14 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 while (exx.InnerException != null)
                     exx = exx.InnerException;
 
-                var chk = "The underlying connection was closed: The connection was closed unexpectedly";
-
-                if (exx.Message.Contains(chk))
+                if (exx.Message.Contains("403"))
                 {
                     IsActive = false;
 
-                    throw new LyricsQuotaExceededException($"Lyric service \"{Credit.ServiceName}\" experienced a \"{chk}\" error. "
-                            + "This is possibly a temporary ban of your IP address "
-                            + $"and the service is now disabled in LyricsFinder. No more requests will be sent to this service until corrected.", ex);
+                    throw new IpBannedException($"Lyric service \"{Credit.ServiceName}\" experienced a \"{exx.Message}\" error. "
+                            + "This is possibly a temporary ban of your IP address and the service is now disabled in LyricsFinder. "
+                            + "No more requests will be sent to this service until corrected. "
+                            + "You could try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.", ex);
                 }
                 else
                     throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);

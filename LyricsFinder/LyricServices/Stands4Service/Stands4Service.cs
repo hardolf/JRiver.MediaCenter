@@ -360,7 +360,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 IsActive = false;
 
                 throw new LyricsQuotaExceededException($"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day "
-                    + $"and is now disabled in LyricsFinder. No more requests will be sent to this service until corrected.", ex);
+                    + "and is now disabled in LyricsFinder. No more requests will be sent to this service until corrected.", ex);
             }
             catch (HttpRequestException ex)
             {
