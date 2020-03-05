@@ -50,14 +50,7 @@ namespace MediaCenter.LyricsFinder
         /***** Properties *****/
         /**********************/
 
-        /// <summary>
-        /// Gets the lyric cell.
-        /// </summary>
-        /// <value>
-        /// The lyric cell.
-        /// </value>
-        public DataGridViewTextBoxCell LyricCell { get; private set; }
-
+        private FindReplaceForm FindOrReplaceForm { get; } = new FindReplaceForm();
 
         /// <summary>
         /// Gets the lyric.
@@ -68,16 +61,24 @@ namespace MediaCenter.LyricsFinder
         public string Lyric { get; private set; }
 
         /// <summary>
+        /// Gets the lyric cell.
+        /// </summary>
+        /// <value>
+        /// The lyric cell.
+        /// </value>
+        public DataGridViewTextBoxCell LyricCell { get; private set; }
+
+        private LyricsFinderCore LyricsFinderCore { get; set; }
+
+        private LyricsFinderDataType LyricsFinderData { get; set; }
+
+        /// <summary>
         /// Gets the dialog result.
         /// </summary>
         /// <value>
         /// The result.
         /// </value>
         public DialogResult Result { get; private set; }
-
-        private LyricsFinderCore LyricsFinderCore { get; set; }
-
-        private LyricsFinderDataType LyricsFinderData { get; set; }
 
 
         /************************/
@@ -571,8 +572,8 @@ namespace MediaCenter.LyricsFinder
                 }
                 else if (e.KeyCode == Keys.Delete)
                 {
-                    //EditDeleteMenuItem.PerformClick();
                     e.Handled = true;
+                    //EditDeleteMenuItem.PerformClick();
                 }
                 else
                     OnKeyDown(e);
@@ -634,6 +635,11 @@ namespace MediaCenter.LyricsFinder
                                 txt.Cut();
                                 break;
 
+                            case nameof(EditFindMenuItem):
+                            case nameof(EditFindReplaceNextMenuItem):
+                            case nameof(EditReplaceMenuItem):
+                                break;
+
                             case nameof(EditPasteMenuItem):
                                 // Determine if there is any text in the Clipboard to paste into the text box.
                                 if (Clipboard.GetDataObject().GetDataPresent(DataFormats.Text) == true)
@@ -688,6 +694,14 @@ namespace MediaCenter.LyricsFinder
                                 txt.Cut();
                                 break;
 
+                            case nameof(EditFindMenuItem):
+                                FindReplace(true);
+                                break;
+
+                            case nameof(EditFindReplaceNextMenuItem):
+                                FindReplace(null);
+                                break;
+
                             case nameof(EditLowerCaseMenuItem):
                                 if (DoTextOperationQuestion(true))
                                     txt.SelectedText = txt.SelectedText.ToLower(ci);
@@ -702,6 +716,10 @@ namespace MediaCenter.LyricsFinder
                             case nameof(EditProperCaseMenuItem):
                                 if (DoTextOperationQuestion(true))
                                     txt.SelectedText = txt.SelectedText.ToProperCase();
+                                break;
+
+                            case nameof(EditReplaceMenuItem):
+                                FindReplace(false);
                                 break;
 
                             case nameof(EditSentenceCaseMenuItem):
@@ -1018,6 +1036,56 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Finds/replaces text.
+        /// </summary>
+        /// <param name="isFind">if set to <c>true</c> find text; else replace text.</param>
+        private void FindReplace(bool? isFind = null)
+        {
+            if (!LyricTextBox.Focused) return;
+
+            FindOrReplaceForm.Show(this, isFind, LyricTextBox.SelectedText);
+        }
+
+
+        /// <summary>
+        /// Find/replace action method.
+        /// </summary>
+        /// <param name="isNext">if set to <c>true</c> this call is a next call; else the first call.</param>
+        /// <param name="findText">The find text.</param>
+        /// <param name="replaceText">The replace text.</param>
+        /// <exception cref="ArgumentNullException">findText</exception>
+        internal void FindReplaceAction(bool isNext, string findText, string replaceText = null)
+        {
+            if (findText.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(findText));
+
+            if (LyricTextBox.SelectionStart < LyricTextBox.Text.Length - findText.Length - 1)
+            {
+                var startIdx = LyricTextBox.SelectionStart;
+                var foundIdx = (isNext) 
+                    ? LyricTextBox.Text.IndexOf(findText, startIdx + 1, StringComparison.InvariantCultureIgnoreCase)
+                    : LyricTextBox.Text.IndexOf(findText, startIdx, StringComparison.InvariantCultureIgnoreCase);
+
+                if (foundIdx >= startIdx)
+                {
+                    if (replaceText == null)
+                    {
+                        LyricTextBox.SelectionStart = foundIdx;
+                        LyricTextBox.SelectionLength = findText.Length;
+                    }
+                    else
+                    {
+                        LyricTextBox.Text = LyricTextBox.Text.Remove(foundIdx, findText.Length).Insert(foundIdx, replaceText);
+                        LyricTextBox.SelectionStart = foundIdx;
+                        LyricTextBox.SelectionLength = replaceText.Length;
+                    }
+                }
+                else
+                    FindOrReplaceForm.Hide();
+            }
+        }
+
+
+        /// <summary>
         /// Gets the service count.
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
@@ -1126,11 +1194,14 @@ namespace MediaCenter.LyricsFinder
             var focusedControl = SharedComponents.Utility.GetFocusedControl(this);
 
             SharedComponents.Utility.EnableOrDisableToolStripItems(true,
-                EditCopyMenuItem, EditCutMenuItem, EditDeleteMenuItem, EditPasteMenuItem, EditSelectAllMenuItem, EditUndoMenuItem);
+                EditCopyMenuItem, EditCutMenuItem, EditDeleteMenuItem, EditPasteMenuItem, EditSelectAllMenuItem,
+                EditUndoMenuItem, EditRedoMenuItem);
 
             SharedComponents.Utility.EnableOrDisableToolStripItems((focusedControl is SpellBox),
-                EditLowerCaseMenuItem, EditProperCaseMenuItem, EditSentenceCaseMenuItem, EditSpellCheckLanguageMenuItem,
-                EditTitleCaseMenuItem, EditToggleSpellCheckMenuItem, EditTrimMenuItem, EditRedoMenuItem, EditUpperCaseMenuItem);
+                EditFindMenuItem, EditFindReplaceNextMenuItem, EditReplaceMenuItem,
+                EditSpellCheckLanguageMenuItem, EditToggleSpellCheckMenuItem,
+                EditLowerCaseMenuItem, EditProperCaseMenuItem, EditSentenceCaseMenuItem,
+                EditTitleCaseMenuItem, EditTrimMenuItem, EditRedoMenuItem, EditUpperCaseMenuItem);
 
             SharedComponents.Utility.EnableOrDisableToolStripItems(!_isSearch,
                 ToolsPlayJumpAheadLargeMenuItem, ToolsPlayJumpBackLargeMenuItem);

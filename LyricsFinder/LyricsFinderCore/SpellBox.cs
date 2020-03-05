@@ -59,8 +59,10 @@ namespace MediaCenter.LyricsFinder
 
             base.Child = _textBox;
 
-            _textBox.Focusable = true;
+            _textBox.AutoWordSelection = false;
             _textBox.ContextMenu = null;
+            _textBox.Focusable = true;
+            _textBox.IsInactiveSelectionHighlightEnabled = true;
             _textBox.SpellCheck.IsEnabled = false;
 
             _textBox.Loaded += TextBox_Loaded;
@@ -68,6 +70,9 @@ namespace MediaCenter.LyricsFinder
             _textBox.MouseLeave += (s, e) => OnLeaveWpf(EventArgs.Empty);
             _textBox.PreviewKeyDown += (s, e) => OnPreviewKeyDownWpf(e);
             _textBox.TextChanged += (s, e) => OnTextChangedWpf(EventArgs.Empty);
+
+            _textBox.Resources[SystemColors.InactiveSelectionHighlightBrushKey] = SystemColors.HighlightBrush;
+            _textBox.Resources[SystemColors.InactiveSelectionHighlightTextBrushKey] = SystemColors.HighlightTextBrush;
 
             InstalledInputLanguages = System.Windows.Forms.InputLanguage.InstalledInputLanguages;
             InstalledCultures = new List<CultureInfo>();

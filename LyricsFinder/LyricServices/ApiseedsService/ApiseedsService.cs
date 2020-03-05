@@ -118,7 +118,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 // Example GET request:
                 // https://orion.apiseeds.com/api/music/lyric/dire straits/brothers in arms?apikey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-                ub = new UriBuilder($"{Credit.ServiceUrl}/{item.Artist}/{item.Name}?apikey={Token}");
+                var itemName = item.Name.Trim();
+
+                if (itemName.EndsWith("?", StringComparison.InvariantCultureIgnoreCase))
+                    itemName = itemName.Substring(0, itemName.Length - 1);
+
+                ub = new UriBuilder($"{Credit.ServiceUrl}/{item.Artist}/{itemName}?apikey={Token}");
 
                 // First we search for the track
                 json = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
