@@ -36,6 +36,7 @@
             this.FindTextLabel = new System.Windows.Forms.Label();
             this.ReplaceTextLabel = new System.Windows.Forms.Label();
             this.FindTextBox = new System.Windows.Forms.TextBox();
+            this.ReplaceAllButton = new System.Windows.Forms.Button();
             this.FindReplaceToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.FindReplaceTableLayoutPanel.SuspendLayout();
             this.SuspendLayout();
@@ -53,6 +54,7 @@
             this.FindReplaceTableLayoutPanel.Controls.Add(this.FindTextLabel, 0, 0);
             this.FindReplaceTableLayoutPanel.Controls.Add(this.ReplaceTextLabel, 0, 1);
             this.FindReplaceTableLayoutPanel.Controls.Add(this.FindTextBox, 1, 0);
+            this.FindReplaceTableLayoutPanel.Controls.Add(this.ReplaceAllButton, 1, 2);
             this.FindReplaceTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FindReplaceTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.FindReplaceTableLayoutPanel.Name = "FindReplaceTableLayoutPanel";
@@ -72,7 +74,7 @@
             this.ReplaceTextBox.Location = new System.Drawing.Point(83, 28);
             this.ReplaceTextBox.Name = "ReplaceTextBox";
             this.ReplaceTextBox.Size = new System.Drawing.Size(248, 20);
-            this.ReplaceTextBox.TabIndex = 5;
+            this.ReplaceTextBox.TabIndex = 3;
             this.FindReplaceToolTip.SetToolTip(this.ReplaceTextBox, "Text to replace the found text");
             // 
             // OkButton
@@ -81,7 +83,7 @@
             this.OkButton.Location = new System.Drawing.Point(170, 55);
             this.OkButton.Name = "OkButton";
             this.OkButton.Size = new System.Drawing.Size(75, 23);
-            this.OkButton.TabIndex = 0;
+            this.OkButton.TabIndex = 5;
             this.OkButton.Text = "OK";
             this.FindReplaceToolTip.SetToolTip(this.OkButton, "Start the search/replace process (Enter)");
             this.OkButton.UseVisualStyleBackColor = true;
@@ -94,7 +96,7 @@
             this.CancelFormButton.Location = new System.Drawing.Point(256, 55);
             this.CancelFormButton.Name = "CancelFormButton";
             this.CancelFormButton.Size = new System.Drawing.Size(75, 23);
-            this.CancelFormButton.TabIndex = 1;
+            this.CancelFormButton.TabIndex = 6;
             this.CancelFormButton.Text = "Cancel";
             this.FindReplaceToolTip.SetToolTip(this.CancelFormButton, "Stop the find/replace (Escape)");
             this.CancelFormButton.UseVisualStyleBackColor = true;
@@ -108,7 +110,7 @@
             this.FindTextLabel.Location = new System.Drawing.Point(3, 0);
             this.FindTextLabel.Name = "FindTextLabel";
             this.FindTextLabel.Size = new System.Drawing.Size(47, 25);
-            this.FindTextLabel.TabIndex = 2;
+            this.FindTextLabel.TabIndex = 0;
             this.FindTextLabel.Text = "Find text";
             this.FindTextLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -120,7 +122,7 @@
             this.ReplaceTextLabel.Location = new System.Drawing.Point(3, 25);
             this.ReplaceTextLabel.Name = "ReplaceTextLabel";
             this.ReplaceTextLabel.Size = new System.Drawing.Size(67, 25);
-            this.ReplaceTextLabel.TabIndex = 3;
+            this.ReplaceTextLabel.TabIndex = 2;
             this.ReplaceTextLabel.Text = "Replace text";
             this.ReplaceTextLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -133,8 +135,20 @@
             this.FindTextBox.Location = new System.Drawing.Point(83, 3);
             this.FindTextBox.Name = "FindTextBox";
             this.FindTextBox.Size = new System.Drawing.Size(248, 20);
-            this.FindTextBox.TabIndex = 4;
+            this.FindTextBox.TabIndex = 1;
             this.FindReplaceToolTip.SetToolTip(this.FindTextBox, "Text to search for");
+            // 
+            // ReplaceAllButton
+            // 
+            this.ReplaceAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ReplaceAllButton.Location = new System.Drawing.Point(86, 55);
+            this.ReplaceAllButton.Name = "ReplaceAllButton";
+            this.ReplaceAllButton.Size = new System.Drawing.Size(75, 23);
+            this.ReplaceAllButton.TabIndex = 4;
+            this.ReplaceAllButton.Text = "Replace &all";
+            this.FindReplaceToolTip.SetToolTip(this.ReplaceAllButton, "Start the search/replace process (Enter)");
+            this.ReplaceAllButton.UseVisualStyleBackColor = true;
+            this.ReplaceAllButton.Click += new System.EventHandler(this.OkButton_ClickAsync);
             // 
             // FindReplaceForm
             // 
@@ -167,5 +181,6 @@
         private System.Windows.Forms.TextBox FindTextBox;
         private System.Windows.Forms.Label ReplaceTextLabel;
         private System.Windows.Forms.Button OkButton;
+        private System.Windows.Forms.Button ReplaceAllButton;
     }
 }

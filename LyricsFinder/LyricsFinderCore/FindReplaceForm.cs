@@ -51,6 +51,7 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 Hide();
+                OwnerForm.Focus();
             }
             catch (Exception ex)
             {
@@ -130,12 +131,24 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                OwnerForm.FindReplaceAction(_isNext, FindTextBox.Text, (_isFind) ? null : ReplaceTextBox.Text);
-                OwnerForm.Focus();
+                do
+                {
+                    // Do the find or replace operation in the parent form
+                    OwnerForm.FindReplaceAction(_isNext, FindTextBox.Text, (_isFind) ? null : ReplaceTextBox.Text);
 
-                Focus();
+                    // Ensure that the found text is highlighted in the parent form - and that this FindReplaceForm regains focus
+                    OwnerForm.Focus();
+                    Focus();
 
-                _isNext = true;
+                    // From now on, we do repeat searches
+                    _isNext = true;
+
+                    OkButton.Text = "Next";
+
+                    FindReplaceToolTip.SetToolTip(OkButton, (_isFind)
+                        ? "Find next (F3)"
+                        : "Find and replace next (F3)");
+                } while (Visible && (sender == ReplaceAllButton));
             }
             catch (Exception ex)
             {
@@ -145,18 +158,21 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Initializes the specified is find.
+        /// Initializes the specified find or replace and opens this form.
         /// </summary>
-        /// <param name="ownerForm">The owner window.</param>
-        /// <param name="isFind">if set to <c>true</c> find text; else replace text.</param>
-        /// <param name="selectedText">The selected text.</param>
+        /// <param name="ownerForm">The owner form.</param>
+        /// <param name="isFind">if set to <c>true</c> find text; else find and replace text.</param>
+        /// <param name="selectedText">The selected text in the parent form.</param>
         /// <exception cref="ArgumentNullException">owner</exception>
         internal void Show(LyricForm ownerForm, bool? isFind = null, string selectedText = "")
         {
             if (ownerForm is null) throw new ArgumentNullException(nameof(ownerForm));
 
+            // If this form is already visible, this call must be a repeat search
             _isNext = Visible;
 
+            // Null means that we should do the same operation as the last time we did a find/replace.
+            // In that case, _isFind stays the same as the last time.
             if (isFind.HasValue)
                 _isFind = isFind.Value;
 
@@ -164,23 +180,29 @@ namespace MediaCenter.LyricsFinder
 
             Text = (_isFind) ? "Find text" : "Find and replace text";
 
-            ReplaceTextBox.Enabled = !_isFind;
-            ReplaceTextLabel.Enabled = !_isFind;
+            // Set the replace buttons' text and tooltips
+            ReplaceAllButton.Enabled = !_isFind;
+            ReplaceAllButton.Visible = !_isFind;
 
-            ReplaceTextBox.Visible = !_isFind;
+            ReplaceTextLabel.Enabled = !_isFind;
             ReplaceTextLabel.Visible = !_isFind;
 
+            ReplaceTextBox.Enabled = !_isFind;
+            ReplaceTextBox.Visible = !_isFind;
+
+            // Set the OK (Find/replace) buttons' text and tooltips,
+            // depending on whether this call is the first search or a repeat search
             if (_isNext)
             {
                 OkButton.Text = "Next";
 
-                FindReplaceToolTip.SetToolTip(OkButton, (_isFind) 
-                    ? "Find next (F3)" 
+                FindReplaceToolTip.SetToolTip(OkButton, (_isFind)
+                    ? "Find next (F3)"
                     : "Find and replace next (F3)");
             }
             else
             {
-                OkButton.Text = "OK";
+                OkButton.Text = (_isFind) ? "Find" : "Find/replace";
 
                 if (!selectedText.IsNullOrEmptyTrimmed())
                     FindTextBox.Text = selectedText;
@@ -190,13 +212,23 @@ namespace MediaCenter.LyricsFinder
                     : "Find and replace (F3)");
             }
 
+            // Place this form to the left of the parent's top-left corner
             Location = new Point(ownerForm.Left - Width, ownerForm.Top);
             BringToFront();
-            FindTextBox.Focus();
-            FindTextBox.SelectAll();
 
             if (!Visible)
                 base.Show(ownerForm);
+
+            // Ensure that the find text is highlighted
+            OkButton.Select();
+            FindTextBox.Select();
+
+            if (_isNext)
+                OkButton.PerformClick();
+
+            // Prevent getting the selected text as the first match
+            if (!selectedText.IsNullOrEmptyTrimmed())
+                _isNext = true;
         }
 
     }
