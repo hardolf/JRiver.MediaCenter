@@ -61,6 +61,9 @@
             this.EditUndoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditRedoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.EditFindMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditReplaceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditFindReplaceNextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.EditSelectAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditCutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,9 +89,6 @@
             this.ToolsPlayJumpBackLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.EditFindMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.EditReplaceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.EditFindReplaceNextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).BeginInit();
             this.LyricFormToolStripContainer.ContentPanel.SuspendLayout();
             this.LyricFormToolStripContainer.TopToolStripPanel.SuspendLayout();
@@ -284,8 +284,9 @@
             this.LyricTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.LyricTextBox.BackColor = System.Drawing.SystemColors.Control;
+            this.LyricTextBox.BackColor = System.Drawing.SystemColors.Window;
             this.LyricTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.LyricTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.LyricTextBox.Location = new System.Drawing.Point(4, 112);
             this.LyricTextBox.Multiline = true;
             this.LyricTextBox.Name = "LyricTextBox";
@@ -395,6 +396,30 @@
             // 
             this.EditSeparator0.Name = "EditSeparator0";
             this.EditSeparator0.Size = new System.Drawing.Size(232, 6);
+            // 
+            // EditFindMenuItem
+            // 
+            this.EditFindMenuItem.Name = "EditFindMenuItem";
+            this.EditFindMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.EditFindMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EditFindMenuItem.Text = "Find...";
+            this.EditFindMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditReplaceMenuItem
+            // 
+            this.EditReplaceMenuItem.Name = "EditReplaceMenuItem";
+            this.EditReplaceMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
+            this.EditReplaceMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EditReplaceMenuItem.Text = "Replace...";
+            this.EditReplaceMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditFindReplaceNextMenuItem
+            // 
+            this.EditFindReplaceNextMenuItem.Name = "EditFindReplaceNextMenuItem";
+            this.EditFindReplaceNextMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
+            this.EditFindReplaceNextMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EditFindReplaceNextMenuItem.Text = "Find / Replace next...";
+            this.EditFindReplaceNextMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditSeparator1
             // 
@@ -594,30 +619,6 @@
             this.HelpHelpMenuItem.Size = new System.Drawing.Size(118, 22);
             this.HelpHelpMenuItem.Text = "&Help";
             this.HelpHelpMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
-            // 
-            // EditFindMenuItem
-            // 
-            this.EditFindMenuItem.Name = "EditFindMenuItem";
-            this.EditFindMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.EditFindMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.EditFindMenuItem.Text = "Find...";
-            this.EditFindMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
-            // 
-            // EditReplaceMenuItem
-            // 
-            this.EditReplaceMenuItem.Name = "EditReplaceMenuItem";
-            this.EditReplaceMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
-            this.EditReplaceMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.EditReplaceMenuItem.Text = "Replace...";
-            this.EditReplaceMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
-            // 
-            // EditFindReplaceNextMenuItem
-            // 
-            this.EditFindReplaceNextMenuItem.Name = "EditFindReplaceNextMenuItem";
-            this.EditFindReplaceNextMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.EditFindReplaceNextMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.EditFindReplaceNextMenuItem.Text = "Find / Replace next...";
-            this.EditFindReplaceNextMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // LyricForm
             // 

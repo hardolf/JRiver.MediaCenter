@@ -128,6 +128,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 }
             }
 
+            if (divNode == null) return string.Empty;
+
             ret = divNode.InnerText;
             ret = ret.LfToCrLf(); // Ensure proper Windows CRLF line endings
             ret = ret.Trim('\r', '\n');

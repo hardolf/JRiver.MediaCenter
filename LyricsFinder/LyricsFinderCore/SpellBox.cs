@@ -60,8 +60,10 @@ namespace MediaCenter.LyricsFinder
             base.Child = _textBox;
 
             _textBox.AutoWordSelection = false;
+            _textBox.Background = Brushes.White;
             _textBox.ContextMenu = null;
             _textBox.Focusable = true;
+            _textBox.Foreground = Brushes.Black;
             _textBox.IsInactiveSelectionHighlightEnabled = true;
             _textBox.SpellCheck.IsEnabled = false;
 

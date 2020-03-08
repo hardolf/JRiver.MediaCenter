@@ -519,6 +519,25 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Determines whether parenthesized text is present in the specified text.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <returns><c>true</c> if parenthesized text is present in the specified text; else <c>false</c>.</returns>
+        /// <exception cref="System.ArgumentNullException">text</exception>
+        public static bool IsParenthesizedTextPresent(this string text)
+        {
+            if (text.IsNullOrEmptyTrimmed()) return false;
+
+            var openingChars = new[] { '(', '[', '{' };
+            var closingChars = new[] { ')', ']', '}' };
+            var idx1 = text.IndexOfAny(openingChars);
+            var idx2 = text.IndexOfAny(closingChars);
+
+            return ((idx1 >= 0) || (idx2 >= 0));
+        }
+
+
+        /// <summary>
         /// Converts Unix-style linefeeds to Windows-style line endings (LF to CR + LF)
         /// </summary>
         /// <param name="input">The input.</param>

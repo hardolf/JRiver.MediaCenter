@@ -10,8 +10,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ApiseedsService")]
-[assembly: AssemblyDescription("Apiseeds service API client")]
+[assembly: AssemblyTitle("CajunLyricsService")]
+[assembly: AssemblyDescription("CajunLyrics service API client")]
 //[assembly: AssemblyConfiguration("")]
 //[assembly: AssemblyCompany("Hardolf")]
 //[assembly: AssemblyProduct("LyricsFinder")]
