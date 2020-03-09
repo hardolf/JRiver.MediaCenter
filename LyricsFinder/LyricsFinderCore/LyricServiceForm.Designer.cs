@@ -30,14 +30,19 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricServiceForm));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricServiceForm));
             this.LyricServiceMainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.LyricServiceListPanel = new System.Windows.Forms.Panel();
             this.LyricServiceListContainer = new System.Windows.Forms.ToolStripContainer();
             this.LyricServiceListDataGridView = new System.Windows.Forms.DataGridView();
+            this.Active = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Service = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DailyCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DailyMaximum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.QuotaResetTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LyricServiceListRightToolbar = new System.Windows.Forms.ToolStrip();
             this.MoveUpButton = new System.Windows.Forms.ToolStripButton();
             this.MoveDownButton = new System.Windows.Forms.ToolStripButton();
@@ -48,11 +53,6 @@
             this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.LyricServiceFormToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.Active = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Service = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DailyCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DailyMaximum = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.QuotaResetTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LyricServiceMainTableLayoutPanel.SuspendLayout();
             this.LyricServiceListPanel.SuspendLayout();
             this.LyricServiceListContainer.ContentPanel.SuspendLayout();
@@ -74,9 +74,9 @@
             this.LyricServiceMainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.LyricServiceMainTableLayoutPanel.Name = "LyricServiceMainTableLayoutPanel";
             this.LyricServiceMainTableLayoutPanel.RowCount = 2;
-            this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 160F));
+            this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 180F));
             this.LyricServiceMainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.LyricServiceMainTableLayoutPanel.Size = new System.Drawing.Size(483, 180);
+            this.LyricServiceMainTableLayoutPanel.Size = new System.Drawing.Size(483, 200);
             this.LyricServiceMainTableLayoutPanel.TabIndex = 1;
             // 
             // LyricServiceListPanel
@@ -85,7 +85,7 @@
             this.LyricServiceListPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricServiceListPanel.Location = new System.Drawing.Point(3, 3);
             this.LyricServiceListPanel.Name = "LyricServiceListPanel";
-            this.LyricServiceListPanel.Size = new System.Drawing.Size(477, 154);
+            this.LyricServiceListPanel.Size = new System.Drawing.Size(477, 174);
             this.LyricServiceListPanel.TabIndex = 14;
             // 
             // LyricServiceListContainer
@@ -95,7 +95,7 @@
             // LyricServiceListContainer.ContentPanel
             // 
             this.LyricServiceListContainer.ContentPanel.Controls.Add(this.LyricServiceListDataGridView);
-            this.LyricServiceListContainer.ContentPanel.Size = new System.Drawing.Size(433, 134);
+            this.LyricServiceListContainer.ContentPanel.Size = new System.Drawing.Size(433, 154);
             this.LyricServiceListContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricServiceListContainer.LeftToolStripPanelVisible = false;
             this.LyricServiceListContainer.Location = new System.Drawing.Point(0, 0);
@@ -105,7 +105,7 @@
             // LyricServiceListContainer.RightToolStripPanel
             // 
             this.LyricServiceListContainer.RightToolStripPanel.Controls.Add(this.LyricServiceListRightToolbar);
-            this.LyricServiceListContainer.Size = new System.Drawing.Size(477, 154);
+            this.LyricServiceListContainer.Size = new System.Drawing.Size(477, 174);
             this.LyricServiceListContainer.TabIndex = 5;
             this.LyricServiceListContainer.Text = "Lyrics services";
             this.LyricServiceListContainer.TopToolStripPanelVisible = false;
@@ -131,102 +131,11 @@
             this.LyricServiceListDataGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.LyricServiceListDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.LyricServiceListDataGridView.ShowEditingIcon = false;
-            this.LyricServiceListDataGridView.Size = new System.Drawing.Size(433, 134);
+            this.LyricServiceListDataGridView.Size = new System.Drawing.Size(433, 154);
             this.LyricServiceListDataGridView.TabIndex = 0;
             this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClickAsync);
             this.LyricServiceListDataGridView.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.LyricServiceListDataGridView_RowValidatingAsync);
             this.LyricServiceListDataGridView.SelectionChanged += new System.EventHandler(this.LyricServiceListDataGridView_SelectionChangedAsync);
-            // 
-            // LyricServiceListRightToolbar
-            // 
-            this.LyricServiceListRightToolbar.Dock = System.Windows.Forms.DockStyle.None;
-            this.LyricServiceListRightToolbar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.LyricServiceListRightToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MoveUpButton,
-            this.MoveDownButton});
-            this.LyricServiceListRightToolbar.Location = new System.Drawing.Point(0, 3);
-            this.LyricServiceListRightToolbar.Name = "LyricServiceListRightToolbar";
-            this.LyricServiceListRightToolbar.Size = new System.Drawing.Size(24, 48);
-            this.LyricServiceListRightToolbar.TabIndex = 0;
-            // 
-            // MoveUpButton
-            // 
-            this.MoveUpButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.MoveUpButton.Image = ((System.Drawing.Image)(resources.GetObject("MoveUpButton.Image")));
-            this.MoveUpButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.MoveUpButton.Name = "MoveUpButton";
-            this.MoveUpButton.Size = new System.Drawing.Size(22, 20);
-            this.MoveUpButton.Text = "Up";
-            this.MoveUpButton.ToolTipText = "Move the selected service up";
-            this.MoveUpButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_ClickAsync);
-            // 
-            // MoveDownButton
-            // 
-            this.MoveDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.MoveDownButton.Image = ((System.Drawing.Image)(resources.GetObject("MoveDownButton.Image")));
-            this.MoveDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.MoveDownButton.Name = "MoveDownButton";
-            this.MoveDownButton.Size = new System.Drawing.Size(22, 20);
-            this.MoveDownButton.Text = "Down";
-            this.MoveDownButton.ToolTipText = "Move the selected service down";
-            this.MoveDownButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_ClickAsync);
-            // 
-            // LyricServiceDetailsTableLayoutPanel
-            // 
-            this.LyricServiceDetailsTableLayoutPanel.AutoSize = true;
-            this.LyricServiceDetailsTableLayoutPanel.ColumnCount = 3;
-            this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
-            this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
-            this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 163);
-            this.LyricServiceDetailsTableLayoutPanel.Name = "LyricServiceDetailsTableLayoutPanel";
-            this.LyricServiceDetailsTableLayoutPanel.Padding = new System.Windows.Forms.Padding(7);
-            this.LyricServiceDetailsTableLayoutPanel.RowCount = 1;
-            this.LyricServiceDetailsTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.LyricServiceDetailsTableLayoutPanel.Size = new System.Drawing.Size(248, 14);
-            this.LyricServiceDetailsTableLayoutPanel.TabIndex = 0;
-            // 
-            // BottomToolStripPanel
-            // 
-            this.BottomToolStripPanel.Location = new System.Drawing.Point(0, 0);
-            this.BottomToolStripPanel.Name = "BottomToolStripPanel";
-            this.BottomToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.BottomToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.BottomToolStripPanel.Size = new System.Drawing.Size(0, 0);
-            // 
-            // TopToolStripPanel
-            // 
-            this.TopToolStripPanel.Location = new System.Drawing.Point(0, 0);
-            this.TopToolStripPanel.Name = "TopToolStripPanel";
-            this.TopToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.TopToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.TopToolStripPanel.Size = new System.Drawing.Size(0, 0);
-            // 
-            // RightToolStripPanel
-            // 
-            this.RightToolStripPanel.Location = new System.Drawing.Point(0, 0);
-            this.RightToolStripPanel.Name = "RightToolStripPanel";
-            this.RightToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.RightToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.RightToolStripPanel.Size = new System.Drawing.Size(0, 0);
-            // 
-            // LeftToolStripPanel
-            // 
-            this.LeftToolStripPanel.Location = new System.Drawing.Point(0, 0);
-            this.LeftToolStripPanel.Name = "LeftToolStripPanel";
-            this.LeftToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.LeftToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.LeftToolStripPanel.Size = new System.Drawing.Size(0, 0);
-            // 
-            // ContentPanel
-            // 
-            this.ContentPanel.Size = new System.Drawing.Size(417, 124);
-            // 
-            // LyricServiceFormToolTip
-            // 
-            this.LyricServiceFormToolTip.AutoPopDelay = 15000;
-            this.LyricServiceFormToolTip.InitialDelay = 500;
-            this.LyricServiceFormToolTip.ReshowDelay = 100;
             // 
             // Active
             // 
@@ -285,6 +194,97 @@
             this.QuotaResetTime.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.QuotaResetTime.ToolTipText = "Local time of next quota reset";
             this.QuotaResetTime.Width = 120;
+            // 
+            // LyricServiceListRightToolbar
+            // 
+            this.LyricServiceListRightToolbar.Dock = System.Windows.Forms.DockStyle.None;
+            this.LyricServiceListRightToolbar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.LyricServiceListRightToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MoveUpButton,
+            this.MoveDownButton});
+            this.LyricServiceListRightToolbar.Location = new System.Drawing.Point(0, 3);
+            this.LyricServiceListRightToolbar.Name = "LyricServiceListRightToolbar";
+            this.LyricServiceListRightToolbar.Size = new System.Drawing.Size(24, 48);
+            this.LyricServiceListRightToolbar.TabIndex = 0;
+            // 
+            // MoveUpButton
+            // 
+            this.MoveUpButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.MoveUpButton.Image = ((System.Drawing.Image)(resources.GetObject("MoveUpButton.Image")));
+            this.MoveUpButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.MoveUpButton.Name = "MoveUpButton";
+            this.MoveUpButton.Size = new System.Drawing.Size(22, 20);
+            this.MoveUpButton.Text = "Up";
+            this.MoveUpButton.ToolTipText = "Move the selected service up";
+            this.MoveUpButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_ClickAsync);
+            // 
+            // MoveDownButton
+            // 
+            this.MoveDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.MoveDownButton.Image = ((System.Drawing.Image)(resources.GetObject("MoveDownButton.Image")));
+            this.MoveDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.MoveDownButton.Name = "MoveDownButton";
+            this.MoveDownButton.Size = new System.Drawing.Size(22, 20);
+            this.MoveDownButton.Text = "Down";
+            this.MoveDownButton.ToolTipText = "Move the selected service down";
+            this.MoveDownButton.Click += new System.EventHandler(this.LyricServicesContainer_RightPanelButton_ClickAsync);
+            // 
+            // LyricServiceDetailsTableLayoutPanel
+            // 
+            this.LyricServiceDetailsTableLayoutPanel.AutoSize = true;
+            this.LyricServiceDetailsTableLayoutPanel.ColumnCount = 3;
+            this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
+            this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
+            this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 183);
+            this.LyricServiceDetailsTableLayoutPanel.Name = "LyricServiceDetailsTableLayoutPanel";
+            this.LyricServiceDetailsTableLayoutPanel.Padding = new System.Windows.Forms.Padding(7);
+            this.LyricServiceDetailsTableLayoutPanel.RowCount = 1;
+            this.LyricServiceDetailsTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.LyricServiceDetailsTableLayoutPanel.Size = new System.Drawing.Size(248, 14);
+            this.LyricServiceDetailsTableLayoutPanel.TabIndex = 0;
+            // 
+            // BottomToolStripPanel
+            // 
+            this.BottomToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.BottomToolStripPanel.Name = "BottomToolStripPanel";
+            this.BottomToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.BottomToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.BottomToolStripPanel.Size = new System.Drawing.Size(0, 0);
+            // 
+            // TopToolStripPanel
+            // 
+            this.TopToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.TopToolStripPanel.Name = "TopToolStripPanel";
+            this.TopToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.TopToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.TopToolStripPanel.Size = new System.Drawing.Size(0, 0);
+            // 
+            // RightToolStripPanel
+            // 
+            this.RightToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.RightToolStripPanel.Name = "RightToolStripPanel";
+            this.RightToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.RightToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.RightToolStripPanel.Size = new System.Drawing.Size(0, 0);
+            // 
+            // LeftToolStripPanel
+            // 
+            this.LeftToolStripPanel.Location = new System.Drawing.Point(0, 0);
+            this.LeftToolStripPanel.Name = "LeftToolStripPanel";
+            this.LeftToolStripPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.LeftToolStripPanel.RowMargin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.LeftToolStripPanel.Size = new System.Drawing.Size(0, 0);
+            // 
+            // ContentPanel
+            // 
+            this.ContentPanel.Size = new System.Drawing.Size(417, 124);
+            // 
+            // LyricServiceFormToolTip
+            // 
+            this.LyricServiceFormToolTip.AutoPopDelay = 15000;
+            this.LyricServiceFormToolTip.InitialDelay = 500;
+            this.LyricServiceFormToolTip.ReshowDelay = 100;
             // 
             // LyricServiceForm
             // 

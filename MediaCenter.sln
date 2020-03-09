@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LyricsFinderExe", "LyricsFi
 		{8554F018-9DD0-4D3D-A66E-39C1935931A4} = {8554F018-9DD0-4D3D-A66E-39C1935931A4}
 		{469CD424-9DB1-4AAC-9A30-F1565DC27932} = {469CD424-9DB1-4AAC-9A30-F1565DC27932}
 		{2561A23A-EE2E-4861-9607-787AFDE5BB2C} = {2561A23A-EE2E-4861-9607-787AFDE5BB2C}
+		{64FD013C-1487-4522-A1D1-52DF7FAB56E3} = {64FD013C-1487-4522-A1D1-52DF7FAB56E3}
+		{C8ABA056-783D-4D56-A693-07542ECEA396} = {C8ABA056-783D-4D56-A693-07542ECEA396}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LyricsFinderCore", "LyricsFinder\LyricsFinderCore\LyricsFinderCore.csproj", "{D91DA58C-6415-43EF-B177-7BA28ACE7E01}"
@@ -51,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LyricsFinderPlugin", "Lyric
 		{8554F018-9DD0-4D3D-A66E-39C1935931A4} = {8554F018-9DD0-4D3D-A66E-39C1935931A4}
 		{469CD424-9DB1-4AAC-9A30-F1565DC27932} = {469CD424-9DB1-4AAC-9A30-F1565DC27932}
 		{2561A23A-EE2E-4861-9607-787AFDE5BB2C} = {2561A23A-EE2E-4861-9607-787AFDE5BB2C}
+		{64FD013C-1487-4522-A1D1-52DF7FAB56E3} = {64FD013C-1487-4522-A1D1-52DF7FAB56E3}
+		{C8ABA056-783D-4D56-A693-07542ECEA396} = {C8ABA056-783D-4D56-A693-07542ECEA396}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChartLyricsService", "LyricsFinder\LyricServices\ChartLyricsService\ChartLyricsService.csproj", "{E5447105-2481-44BD-835E-2C5071D7A23D}"
@@ -59,8 +63,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusiXmatchService", "Lyrics
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{0091BD82-6FC4-42A3-92CD-FA2413362A28}"
 	ProjectSection(SolutionItems) = preProject
-		Images\LyricsFinder_Detail.png = Images\LyricsFinder_Detail.png
+		Images\LyricsFinder_LyricServicesWindow.png = Images\LyricsFinder_LyricServicesWindow.png
+		Images\LyricsFinder_LyricsWindow.png = Images\LyricsFinder_LyricsWindow.png
+		Images\LyricsFinder_LyricsWindow_Search.png = Images\LyricsFinder_LyricsWindow_Search.png
 		Images\LyricsFinder_Main.png = Images\LyricsFinder_Main.png
+		Images\LyricsFinder_Main_200x123.png = Images\LyricsFinder_Main_200x123.png
+		Images\LyricsFinder_Main_600x370.png = Images\LyricsFinder_Main_600x370.png
+		Images\LyricsFinder_MediaCenter_Access_600x503.png = Images\LyricsFinder_MediaCenter_Access_600x503.png
+		Images\LyricsFinder_MediaCenter_Access_814x683.png = Images\LyricsFinder_MediaCenter_Access_814x683.png
+		Images\LyricsFinder_MediaCenter_Plugin_Show_600x503.png = Images\LyricsFinder_MediaCenter_Plugin_Show_600x503.png
+		Images\LyricsFinder_MediaCenter_Plugin_Show_814x683.png = Images\LyricsFinder_MediaCenter_Plugin_Show_814x683.png
+		Images\LyricsFinder_Standalone.png = Images\LyricsFinder_Standalone.png
 		Images\MediaCenter_Main.png = Images\MediaCenter_Main.png
 	EndProjectSection
 EndProject
@@ -85,6 +98,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MjpCreator", "SharedComponents\MjpCreator\MjpCreator.csproj", "{952DAB91-37DC-407D-B9B5-A9824989D622}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "McWsProxy", "LyricsFinder\McWsProxy\McWsProxy.csproj", "{9AEF0631-402E-40CC-B077-CF7B325C9F62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CajunLyricsService", "LyricsFinder\LyricServices\CajunLyricsService\CajunLyricsService.csproj", "{64FD013C-1487-4522-A1D1-52DF7FAB56E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LololyricsService", "LyricsFinder\LyricServices\LololyricsService\LololyricsService.csproj", "{C8ABA056-783D-4D56-A693-07542ECEA396}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -152,6 +169,14 @@ Global
 		{9AEF0631-402E-40CC-B077-CF7B325C9F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AEF0631-402E-40CC-B077-CF7B325C9F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AEF0631-402E-40CC-B077-CF7B325C9F62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64FD013C-1487-4522-A1D1-52DF7FAB56E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64FD013C-1487-4522-A1D1-52DF7FAB56E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64FD013C-1487-4522-A1D1-52DF7FAB56E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64FD013C-1487-4522-A1D1-52DF7FAB56E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8ABA056-783D-4D56-A693-07542ECEA396}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8ABA056-783D-4D56-A693-07542ECEA396}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8ABA056-783D-4D56-A693-07542ECEA396}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8ABA056-783D-4D56-A693-07542ECEA396}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -172,6 +197,8 @@ Global
 		{2561A23A-EE2E-4861-9607-787AFDE5BB2C} = {0AC7251C-BC72-43D0-AE83-2D31B7ADA90E}
 		{952DAB91-37DC-407D-B9B5-A9824989D622} = {CA83D225-0385-4F41-89F8-40C241A34E4E}
 		{9AEF0631-402E-40CC-B077-CF7B325C9F62} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
+		{64FD013C-1487-4522-A1D1-52DF7FAB56E3} = {0AC7251C-BC72-43D0-AE83-2D31B7ADA90E}
+		{C8ABA056-783D-4D56-A693-07542ECEA396} = {0AC7251C-BC72-43D0-AE83-2D31B7ADA90E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C6AD8E8-9745-4BBC-928D-B3CC9DDD774A}

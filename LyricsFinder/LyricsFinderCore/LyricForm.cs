@@ -1132,6 +1132,9 @@ namespace MediaCenter.LyricsFinder
         /// <returns></returns>
         private async Task SearchAsync()
         {
+            var begin = DateTime.Now;
+            var end = begin;
+
             // Clear list and search for all the lyrics in each lyric service
             _foundLyricList.Clear();
 
@@ -1155,7 +1158,9 @@ namespace MediaCenter.LyricsFinder
             LyricFormTrackBar.Maximum = _foundLyricList.Count - 1;
             LyricFormTrackBar_ScrollAsync(this, new EventArgs());
 
-            LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found";
+            end = DateTime.Now;
+
+            LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found in {(end - begin).TotalSeconds:###,###,##0.} seconds";
         }
 
 

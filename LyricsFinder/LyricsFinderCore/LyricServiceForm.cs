@@ -389,63 +389,85 @@ namespace MediaCenter.LyricsFinder.Model
                 var serviceIdx = -1;
                 var service = GetSelectedService(out serviceIdx);
 
-                if (e.KeyCode == Keys.Escape)
+                switch (e.KeyCode)
                 {
-                    Close();
-                }
-                else if (e.KeyCode == Keys.Down)
-                {
-                    if (row.Index >= dgv.RowCount - 1) return;
-                    if (await IsValidateCancelAsync()) return;
-                    dgv.Rows[row.Index + 1].Selected = true;
-                }
-                else if ((e.KeyCode == Keys.End) || (e.KeyCode == Keys.PageDown))
-                {
-                    if (row.Index >= dgv.RowCount - 1)
-                        return;
-                    else
-                        dgv.Rows[dgv.RowCount - 1].Selected = true;
-                }
-                else if ((e.KeyCode == Keys.Home) || (e.KeyCode == Keys.PageUp))
-                {
-                    if (row.Index <= 0)
-                        return;
-                    else
-                        dgv.Rows[0].Selected = true;
-                }
-                else if (e.KeyCode == Keys.Space)
-                {
-                    if (row.Index < 0)
-                        return;
-                    else
-                    {
-                        var isChecked = (row.Cells[0].Value == null) || !((bool)row.Cells[0].Value);
+                    case Keys.Down:
+                        if (row.Index >= dgv.RowCount - 1) return;
+                        if (await IsValidateCancelAsync()) return;
+                        dgv.Rows[row.Index + 1].Selected = true;
+                        break;
 
-                        row.Cells[0].Value = isChecked;
-                        ShowDetails(isChecked);
-                    }
-                }
-                else if (e.KeyCode == Keys.Tab)
-                {
-                    var tlp = LyricServiceDetailsTableLayoutPanel;
+                    case Keys.End:
+                        if (row.Index >= dgv.RowCount - 1)
+                            return;
+                        else
+                            dgv.Rows[dgv.RowCount - 1].Selected = true;
+                        break;
 
-                    foreach (var ctl in tlp.Controls)
-                    {
-                        if (ctl is TextBox txt)
+                    case Keys.Escape:
+                        Close();
+                        break;
+
+                    case Keys.Home:
+                        if (row.Index <= 0)
+                            return;
+                        else
+                            dgv.Rows[0].Selected = true;
+                        break;
+
+                    case Keys.PageDown:
+                        if (row.Index + dgv.DisplayedRowCount(false) >= dgv.RowCount - 1)
+                            dgv.Rows[dgv.RowCount - 1].Selected = true;
+                        else
+                            dgv.Rows[row.Index + dgv.DisplayedRowCount(false)].Selected = true;
+                        break;
+
+                    case Keys.PageUp:
+                        if (row.Index - dgv.DisplayedRowCount(false) <= 0)
+                            dgv.Rows[0].Selected = true;
+                        else
+                            dgv.Rows[row.Index - dgv.DisplayedRowCount(false)].Selected = true;
+                        break;
+
+                    case Keys.Space:
+                        if (row.Index < 0)
+                            return;
+                        else
                         {
-                            txt.Select();
-                            break;
+                            var isChecked = (row.Cells[0].Value == null) || !((bool)row.Cells[0].Value);
+
+                            row.Cells[0].Value = isChecked;
+                            ShowDetails(isChecked);
                         }
-                    }
+                        break;
+
+                    case Keys.Tab:
+                        var tlp = LyricServiceDetailsTableLayoutPanel;
+                        foreach (var ctl in tlp.Controls)
+                        {
+                            if (ctl is TextBox txt)
+                            {
+                                txt.Select();
+                                break;
+                            }
+                        }
+                        break;
+
+                    case Keys.Up:
+                        if (row.Index <= 0) return;
+                        if (await IsValidateCancelAsync()) return;
+                        dgv.Rows[row.Index - 1].Selected = true;
+                        break;
+
+                    default:
+                        e.Handled = false;
+                        break;
                 }
-                else if (e.KeyCode == Keys.Up)
-                {
-                    if (row.Index <= 0) return;
-                    if (await IsValidateCancelAsync()) return;
-                    dgv.Rows[row.Index - 1].Selected = true;
-                }
-                else
-                    e.Handled = false;
+
+                // Scroll to bring the selected row into view
+                dgv.FirstDisplayedScrollingRowIndex = (dgv.SelectedRows[0].Index > 0)
+                    ? dgv.SelectedRows[0].Index - 1
+                    : dgv.SelectedRows[0].Index;
             }
             catch (Exception ex)
             {
