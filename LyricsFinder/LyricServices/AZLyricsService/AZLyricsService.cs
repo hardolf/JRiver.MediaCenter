@@ -206,11 +206,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="Stands4Service" />.
         /// </returns>
         /// <exception cref="ArgumentNullException">item</exception>
-        /// <exception cref="LyricsQuotaExceededException">Lyric service \"{Credit.ServiceName}\" experienced a \"{chk}\" error. "
-        ///                         + "This is possibly a temporary ban of your IP address "
-        ///                         + $"and the service is now disabled in LyricsFinder. No more requests will be sent to this service until corrected.</exception>
+        /// <exception cref="IpBannedException">Lyric service \"{Credit.ServiceName}\" experienced a \"{exx.Message}\" error. "
+        ///                             + "This is possibly a temporary ban of your IP address and the service is now disabled in LyricsFinder. "
+        ///                             + "No more requests will be sent to this service until corrected. "
+        ///                             + "You could try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.</exception>
         /// <exception cref="LyricServiceCommunicationException"></exception>
         /// <exception cref="GeneralLyricServiceException"></exception>
+        /// <exception cref="LyricsQuotaExceededException">Lyric service \"{Credit.ServiceName}\" experienced a \"{chk}\" error. "
+        /// + "This is possibly a temporary ban of your IP address "
+        /// + $"and the service is now disabled in LyricsFinder. "
+        /// + "No more requests will be sent to this service until corrected."</exception>
         /// <exception cref="System.ArgumentNullException">item</exception>
         public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
         {
@@ -227,7 +232,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 ub.Query = $"q={item.Artist} {item.Album} {item.Name}";
                 html = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
-                await ExtractAllLyricTextsAsync(GetResultUris(html), cancellationToken, isGetAll).ConfigureAwait(false);
+                // We force serial search in order to avoid IP address banning from the service
+                await ExtractAllLyricTextsAsync(GetResultUris(html), cancellationToken, isGetAll, true).ConfigureAwait(false);
 
                 // If not found or if we want all possible results, we next try a more lax query without the album
                 if (isGetAll || (LyricResult != LyricsResultEnum.Found))
@@ -235,7 +241,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     ub.Query = $"q={item.Artist} {item.Name}";
                     html = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
-                    await ExtractAllLyricTextsAsync(GetResultUris(html), cancellationToken, isGetAll).ConfigureAwait(false);
+                    // We force serial search in order to avoid IP address banning from the service
+                    await ExtractAllLyricTextsAsync(GetResultUris(html), cancellationToken, isGetAll, true).ConfigureAwait(false);
                 }
             }
             catch (HttpRequestException ex)

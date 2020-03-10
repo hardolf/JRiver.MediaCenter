@@ -173,6 +173,24 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual DateTime LastRequest { get; set; }
 
         /// <summary>
+        /// Gets or sets the last search start time.
+        /// </summary>
+        /// <value>
+        /// The last search start time.
+        /// </value>
+        [XmlIgnore]
+        public virtual DateTime LastSearchStart { get; set; }
+
+        /// <summary>
+        /// Gets or sets the last search stop time.
+        /// </summary>
+        /// <value>
+        /// The last search stop time.
+        /// </value>
+        [XmlIgnore]
+        public virtual DateTime LastSearchStop { get; set; }
+
+        /// <summary>
         /// Gets or sets the request count today.
         /// </summary>
         /// <value>
@@ -346,18 +364,34 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Waits randomized delay, based on the standard delay.
+        /// </summary>
+        /// <param name="standardDelay">The standard delay in milliseconds.</param>
+        /// <remarks>
+        /// Half of the standard delay is randomized, e.g. if standard delay is 4000 ms, the final delay may be between 2000 and 5999 ms.
+        /// </remarks>
+        protected virtual async Task DelayRandomizedAsync(int standardDelay)
+        {
+            var rand = new Random();
+            var delay = rand.Next(standardDelay / 2, (int)(standardDelay * 1.5));
+
+            await Task.Delay(delay);
+        }
+
+
+        /// <summary>
         /// Extracts all the lyrics from all the Uris.
         /// </summary>
         /// <param name="uris">The uris.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="isGetAll">if set to <c>true</c> extracts all lyrics from all the Uris; else exits after the first hit.</param>
-        /// <returns></returns>
+        /// <param name="isGetAll">if set to <c>true</c> extracts all lyrics from all the Uris deafult using parallell search; else exits after the first hit, default using serial search.</param>
+        /// <param name="isSerialSearchForced">if set to <c>true</c> serial search is forced even when getting all hits; else default to parallell search when getting all hits.</param>
         /// <exception cref="ArgumentNullException">uris</exception>
-        protected virtual async Task ExtractAllLyricTextsAsync(IEnumerable<Uri> uris, CancellationToken cancellationToken, bool isGetAll = false)
+        protected virtual async Task ExtractAllLyricTextsAsync(IEnumerable<Uri> uris, CancellationToken cancellationToken, bool isGetAll = false, bool isSerialSearchForced = false)
         {
             if (uris == null) throw new ArgumentNullException(nameof(uris));
 
-            if (isGetAll)
+            if (isGetAll && !isSerialSearchForced)
             {
                 // Parallel search
                 var tasks = new List<Task>();
@@ -371,12 +405,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
             else
             {
-                // Serial search, probably hits on the first try
+                // Serial search, breaks on the first hit if not getting all hits
                 foreach (var uri in uris)
                 {
                     var lyricText = await ExtractOneLyricTextAsync(uri, cancellationToken).ConfigureAwait(false);
 
-                    if (!lyricText.IsNullOrEmptyTrimmed())
+                    if (!lyricText.IsNullOrEmptyTrimmed() && !isGetAll)
                         break;
                 }
             }
@@ -433,7 +467,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             var ret = string.Empty;
 
-            await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
+            await DelayRandomizedAsync(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
 
             try
             {
@@ -551,6 +585,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
+            LastSearchStart = DateTime.Now;
+            LastSearchStop = DateTime.Now;
+
             var ret = await ProcessAsync(mcItem, cancellationToken, isGetAll);
 
             // If failed search, retry with parenthesized text removed
@@ -561,6 +598,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 ret = await ProcessAsync(mcItemClone, cancellationToken, isGetAll);
             }
+
+            LastSearchStop = DateTime.Now;
 
             return ret;
         }

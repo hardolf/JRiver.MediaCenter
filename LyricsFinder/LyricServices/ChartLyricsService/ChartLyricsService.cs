@@ -96,7 +96,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 msg = "SearchLyric";
 
                 // We need to do the following delay and search code here because the service request is done with SOAP and not through HttpGetStringAsync
-                await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches).ConfigureAwait(false);
+                await DelayRandomizedAsync(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches).ConfigureAwait(false);
 
                 var rsp1 = Array.Empty<SearchLyricResult>();
 
@@ -116,7 +116,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         if (rspLyricResult == null) continue;
                         if (rspLyricResult.LyricId == 0) continue;
 
-                        await Task.Delay(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches).ConfigureAwait(false);
+                        await DelayRandomizedAsync(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches).ConfigureAwait(false);
 
                         msg = "GetLyric";
                         var rsp2 = client.GetLyric(rspLyricResult.LyricId, rspLyricResult.LyricChecksum);

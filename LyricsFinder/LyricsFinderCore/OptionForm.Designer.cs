@@ -421,8 +421,7 @@
             this.DelayMilliSecondsBetweenSearchesUpDown.Name = "DelayMilliSecondsBetweenSearchesUpDown";
             this.DelayMilliSecondsBetweenSearchesUpDown.Size = new System.Drawing.Size(80, 20);
             this.DelayMilliSecondsBetweenSearchesUpDown.TabIndex = 16;
-            this.OptionToolTip.SetToolTip(this.DelayMilliSecondsBetweenSearchesUpDown, "Delay milliseconds between searches.\r\nCan be used as a countermeasure \r\nagainst s" +
-        "ervice banning of your IP address.");
+            this.OptionToolTip.SetToolTip(this.DelayMilliSecondsBetweenSearchesUpDown, resources.GetString("DelayMilliSecondsBetweenSearchesUpDown.ToolTip"));
             // 
             // SerialServiceRequestsDuringAutomaticSearchLabel
             // 

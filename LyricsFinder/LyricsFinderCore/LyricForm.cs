@@ -43,6 +43,7 @@ namespace MediaCenter.LyricsFinder
         private readonly List<FoundLyricType> _foundLyricList = new List<FoundLyricType>();
         private readonly McMplItem _mcItem = null;
         private readonly Dictionary<string, int> _serviceCounts = new Dictionary<string, int>();
+        private readonly Dictionary<string, TimeSpan> _serviceDurations = new Dictionary<string, TimeSpan>();
         private readonly CultureInfo _initialCulture = Thread.CurrentThread.CurrentCulture;
 
 
@@ -526,9 +527,7 @@ namespace MediaCenter.LyricsFinder
                 LyricTextBox.SelectionLength = 0;
 
                 Lyric = LyricTextBox.Text;
-
-                LyricFormFoundStatusLabel.Text = $"Source: {serviceName} {GetServiceCountText(serviceName)}";
-                LyricFormFoundStatusLabel.BorderSides = ToolStripStatusLabelBorderSides.Left;
+                LyricFormFoundStatusLabel.Text = GetServiceText(serviceName);
             }
             catch (Exception ex)
             {
@@ -1090,11 +1089,14 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
         /// <returns>Hit count of the specified service.</returns>
-        private string GetServiceCountText(string serviceName)
+        private string GetServiceText(string serviceName)
         {
             var count = _serviceCounts.First(s => s.Key == serviceName).Value;
+            var lyricStr = (count > 1) ? "lyrics" : "lyric";
+            var duration = _serviceDurations.First(s => s.Key == serviceName).Value;
+            var ret = $"Source: {serviceName} ({count} {lyricStr} found in {duration.TotalSeconds:###,##0.} seconds)";
 
-            return (count > 1) ? $"({count})" : string.Empty;
+            return ret;
         }
 
 
@@ -1147,6 +1149,7 @@ namespace MediaCenter.LyricsFinder
                 if (service.LyricResult != LyricsResultEnum.Found) continue;
 
                 _serviceCounts.Add(service.Credit.ServiceName, service.FoundLyricList.Count);
+                _serviceDurations.Add(service.Credit.ServiceName, (service.LastSearchStop - service.LastSearchStart));
 
                 foreach (var foundLyric in service.FoundLyricList)
                 {
@@ -1160,7 +1163,9 @@ namespace MediaCenter.LyricsFinder
 
             end = DateTime.Now;
 
-            LyricFormStatusLabel.Text = $"{_foundLyricList.Count} lyrics found in {(end - begin).TotalSeconds:###,###,##0.} seconds";
+            var lyricStr = (_foundLyricList.Count > 1) ? "lyrics" : "lyric";
+
+            LyricFormStatusLabel.Text = $"{_foundLyricList.Count} {lyricStr} found total in {(end - begin).TotalSeconds:###,##0.} seconds";
         }
 
 

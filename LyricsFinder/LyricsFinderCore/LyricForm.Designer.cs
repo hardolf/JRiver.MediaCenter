@@ -46,6 +46,10 @@
             this.SearchButton = new System.Windows.Forms.Button();
             this.CloseButton = new System.Windows.Forms.Button();
             this.LyricFormToolStripContainer = new System.Windows.Forms.ToolStripContainer();
+            this.LyricFormFoundStatusStrip = new System.Windows.Forms.StatusStrip();
+            this.LyricFormFoundStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.LyricFormStatusStrip = new System.Windows.Forms.StatusStrip();
+            this.LyricFormStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.LyricFormPanel = new System.Windows.Forms.Panel();
             this.LyricParmsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ArtistLabel = new System.Windows.Forms.Label();
@@ -53,9 +57,6 @@
             this.TrackLabel = new System.Windows.Forms.Label();
             this.LyricTextBox = new MediaCenter.LyricsFinder.SpellBox();
             this.LyricElementHost = new System.Windows.Forms.Integration.ElementHost();
-            this.LyricFormStatusStrip = new System.Windows.Forms.StatusStrip();
-            this.LyricFormStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.LyricFormFoundStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.LyricFormMenuStrip = new System.Windows.Forms.MenuStrip();
             this.EditMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EditUndoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,12 +91,14 @@
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).BeginInit();
+            this.LyricFormToolStripContainer.BottomToolStripPanel.SuspendLayout();
             this.LyricFormToolStripContainer.ContentPanel.SuspendLayout();
             this.LyricFormToolStripContainer.TopToolStripPanel.SuspendLayout();
             this.LyricFormToolStripContainer.SuspendLayout();
+            this.LyricFormFoundStatusStrip.SuspendLayout();
+            this.LyricFormStatusStrip.SuspendLayout();
             this.LyricFormPanel.SuspendLayout();
             this.LyricParmsPanel.SuspendLayout();
-            this.LyricFormStatusStrip.SuspendLayout();
             this.LyricFormMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -140,8 +143,9 @@
             // 
             // LyricFormTrackBar
             // 
-            this.LyricFormTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.LyricFormTrackBar.Location = new System.Drawing.Point(3, 467);
+            this.LyricFormTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LyricFormTrackBar.Location = new System.Drawing.Point(3, 444);
             this.LyricFormTrackBar.Maximum = 0;
             this.LyricFormTrackBar.Name = "LyricFormTrackBar";
             this.LyricFormTrackBar.Size = new System.Drawing.Size(289, 45);
@@ -156,7 +160,7 @@
             // SearchButton
             // 
             this.SearchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchButton.Location = new System.Drawing.Point(200, 477);
+            this.SearchButton.Location = new System.Drawing.Point(200, 458);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(75, 23);
             this.SearchButton.TabIndex = 3;
@@ -171,7 +175,7 @@
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(298, 477);
+            this.CloseButton.Location = new System.Drawing.Point(298, 458);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(74, 23);
             this.CloseButton.TabIndex = 4;
@@ -185,12 +189,14 @@
             // 
             // LyricFormToolStripContainer.BottomToolStripPanel
             // 
+            this.LyricFormToolStripContainer.BottomToolStripPanel.Controls.Add(this.LyricFormFoundStatusStrip);
+            this.LyricFormToolStripContainer.BottomToolStripPanel.Controls.Add(this.LyricFormStatusStrip);
             this.LyricFormToolStripContainer.BottomToolStripPanel.Enabled = false;
             // 
             // LyricFormToolStripContainer.ContentPanel
             // 
             this.LyricFormToolStripContainer.ContentPanel.Controls.Add(this.LyricFormPanel);
-            this.LyricFormToolStripContainer.ContentPanel.Size = new System.Drawing.Size(384, 537);
+            this.LyricFormToolStripContainer.ContentPanel.Size = new System.Drawing.Size(384, 493);
             this.LyricFormToolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // LyricFormToolStripContainer.LeftToolStripPanel
@@ -210,6 +216,40 @@
             // 
             this.LyricFormToolStripContainer.TopToolStripPanel.Controls.Add(this.LyricFormMenuStrip);
             // 
+            // LyricFormFoundStatusStrip
+            // 
+            this.LyricFormFoundStatusStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.LyricFormFoundStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.LyricFormFoundStatusLabel});
+            this.LyricFormFoundStatusStrip.Location = new System.Drawing.Point(0, 0);
+            this.LyricFormFoundStatusStrip.Name = "LyricFormFoundStatusStrip";
+            this.LyricFormFoundStatusStrip.Size = new System.Drawing.Size(384, 22);
+            this.LyricFormFoundStatusStrip.SizingGrip = false;
+            this.LyricFormFoundStatusStrip.TabIndex = 6;
+            // 
+            // LyricFormFoundStatusLabel
+            // 
+            this.LyricFormFoundStatusLabel.Name = "LyricFormFoundStatusLabel";
+            this.LyricFormFoundStatusLabel.Size = new System.Drawing.Size(0, 17);
+            this.LyricFormFoundStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // LyricFormStatusStrip
+            // 
+            this.LyricFormStatusStrip.AutoSize = false;
+            this.LyricFormStatusStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.LyricFormStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.LyricFormStatusLabel});
+            this.LyricFormStatusStrip.Location = new System.Drawing.Point(0, 22);
+            this.LyricFormStatusStrip.Name = "LyricFormStatusStrip";
+            this.LyricFormStatusStrip.Size = new System.Drawing.Size(384, 22);
+            this.LyricFormStatusStrip.TabIndex = 5;
+            // 
+            // LyricFormStatusLabel
+            // 
+            this.LyricFormStatusLabel.Name = "LyricFormStatusLabel";
+            this.LyricFormStatusLabel.Size = new System.Drawing.Size(0, 17);
+            this.LyricFormStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // LyricFormPanel
             // 
             this.LyricFormPanel.Controls.Add(this.LyricParmsPanel);
@@ -218,11 +258,10 @@
             this.LyricFormPanel.Controls.Add(this.LyricFormTrackBar);
             this.LyricFormPanel.Controls.Add(this.SearchButton);
             this.LyricFormPanel.Controls.Add(this.CloseButton);
-            this.LyricFormPanel.Controls.Add(this.LyricFormStatusStrip);
             this.LyricFormPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LyricFormPanel.Location = new System.Drawing.Point(0, 0);
             this.LyricFormPanel.Name = "LyricFormPanel";
-            this.LyricFormPanel.Size = new System.Drawing.Size(384, 537);
+            this.LyricFormPanel.Size = new System.Drawing.Size(384, 493);
             this.LyricFormPanel.TabIndex = 1;
             this.LyricFormPanel.MouseEnter += new System.EventHandler(this.LyricForm_MouseEnterAsync);
             // 
@@ -294,7 +333,7 @@
             this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.LyricTextBox.SelectedText = "";
             this.LyricTextBox.SelectionStart = 0;
-            this.LyricTextBox.Size = new System.Drawing.Size(377, 349);
+            this.LyricTextBox.Size = new System.Drawing.Size(377, 326);
             this.LyricTextBox.SpellCheckEnabled = false;
             this.LyricTextBox.TabIndex = 1;
             this.LyricTextBox.KeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.LyricTextBox_KeyDownAsync);
@@ -307,30 +346,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LyricElementHost.Location = new System.Drawing.Point(4, 112);
             this.LyricElementHost.Name = "LyricElementHost";
-            this.LyricElementHost.Size = new System.Drawing.Size(377, 349);
+            this.LyricElementHost.Size = new System.Drawing.Size(377, 326);
             this.LyricElementHost.TabIndex = 1;
             this.LyricElementHost.TabStop = false;
             this.LyricElementHost.Child = null;
-            // 
-            // LyricFormStatusStrip
-            // 
-            this.LyricFormStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.LyricFormStatusLabel,
-            this.LyricFormFoundStatusLabel});
-            this.LyricFormStatusStrip.Location = new System.Drawing.Point(0, 515);
-            this.LyricFormStatusStrip.Name = "LyricFormStatusStrip";
-            this.LyricFormStatusStrip.Size = new System.Drawing.Size(384, 22);
-            this.LyricFormStatusStrip.TabIndex = 5;
-            // 
-            // LyricFormStatusLabel
-            // 
-            this.LyricFormStatusLabel.Name = "LyricFormStatusLabel";
-            this.LyricFormStatusLabel.Size = new System.Drawing.Size(0, 17);
-            // 
-            // LyricFormFoundStatusLabel
-            // 
-            this.LyricFormFoundStatusLabel.Name = "LyricFormFoundStatusLabel";
-            this.LyricFormFoundStatusLabel.Size = new System.Drawing.Size(0, 17);
             // 
             // LyricFormMenuStrip
             // 
@@ -641,17 +660,21 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricForm_KeyDownAsync);
             this.MouseEnter += new System.EventHandler(this.LyricForm_MouseEnterAsync);
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).EndInit();
+            this.LyricFormToolStripContainer.BottomToolStripPanel.ResumeLayout(false);
+            this.LyricFormToolStripContainer.BottomToolStripPanel.PerformLayout();
             this.LyricFormToolStripContainer.ContentPanel.ResumeLayout(false);
             this.LyricFormToolStripContainer.TopToolStripPanel.ResumeLayout(false);
             this.LyricFormToolStripContainer.TopToolStripPanel.PerformLayout();
             this.LyricFormToolStripContainer.ResumeLayout(false);
             this.LyricFormToolStripContainer.PerformLayout();
+            this.LyricFormFoundStatusStrip.ResumeLayout(false);
+            this.LyricFormFoundStatusStrip.PerformLayout();
+            this.LyricFormStatusStrip.ResumeLayout(false);
+            this.LyricFormStatusStrip.PerformLayout();
             this.LyricFormPanel.ResumeLayout(false);
             this.LyricFormPanel.PerformLayout();
             this.LyricParmsPanel.ResumeLayout(false);
             this.LyricParmsPanel.PerformLayout();
-            this.LyricFormStatusStrip.ResumeLayout(false);
-            this.LyricFormStatusStrip.PerformLayout();
             this.LyricFormMenuStrip.ResumeLayout(false);
             this.LyricFormMenuStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -675,7 +698,6 @@
         private System.Windows.Forms.Button CloseButton;
         private System.Windows.Forms.StatusStrip LyricFormStatusStrip;
         private System.Windows.Forms.ToolStripStatusLabel LyricFormStatusLabel;
-        private System.Windows.Forms.ToolStripStatusLabel LyricFormFoundStatusLabel;
         private System.Windows.Forms.MenuStrip LyricFormMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem EditMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ToolsMenuItem;
@@ -711,5 +733,7 @@
         private System.Windows.Forms.ToolStripMenuItem EditFindMenuItem;
         private System.Windows.Forms.ToolStripMenuItem EditReplaceMenuItem;
         private System.Windows.Forms.ToolStripMenuItem EditFindReplaceNextMenuItem;
+        private System.Windows.Forms.StatusStrip LyricFormFoundStatusStrip;
+        private System.Windows.Forms.ToolStripStatusLabel LyricFormFoundStatusLabel;
     }
 }

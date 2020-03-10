@@ -319,8 +319,8 @@ namespace MediaCenter.LyricsFinder
         [DefaultValue(false)]
         public new bool UseWaitCursor
         {
-            get { return (Mouse.OverrideCursor == Cursors.Wait) ? true : false; }
-            set { Mouse.OverrideCursor = (value) ? Cursors.Wait : null; }
+            get { return (_textBox.Cursor == Cursors.Wait) ? true : false; }
+            set { _textBox.Cursor = (value) ? Cursors.Wait : null; }
         }
 
         /// <summary>
