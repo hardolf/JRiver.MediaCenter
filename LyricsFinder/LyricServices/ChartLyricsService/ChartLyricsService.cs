@@ -77,7 +77,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </returns>
         /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="LyricServiceCommunicationException"></exception>
-        /// <exception cref="GeneralLyricServiceException"></exception>
+        /// <exception cref="LyricServiceBaseException"></exception>
         /// <exception cref="System.ArgumentNullException">item</exception>
         public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
         {
@@ -96,7 +96,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 msg = "SearchLyric";
 
                 // We need to do the following delay and search code here because the service request is done with SOAP and not through HttpGetStringAsync
-                await DelayRandomizedAsync(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches).ConfigureAwait(false);
+                await AsyncUtility.RandomizedDelayAsync(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches).ConfigureAwait(false);
 
                 var rsp1 = Array.Empty<SearchLyricResult>();
 
@@ -116,7 +116,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         if (rspLyricResult == null) continue;
                         if (rspLyricResult.LyricId == 0) continue;
 
-                        await DelayRandomizedAsync(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches).ConfigureAwait(false);
+                        await AsyncUtility.RandomizedDelayAsync(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches).ConfigureAwait(false);
 
                         msg = "GetLyric";
                         var rsp2 = client.GetLyric(rspLyricResult.LyricId, rspLyricResult.LyricChecksum);
@@ -152,7 +152,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 }
                 catch { /* I don't care */ }
 
-                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed on {msg}.", isGetAll, Credit, item, ex);
+                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed on {msg}.", isGetAll, Credit, item, ex);
             }
 
             return this;

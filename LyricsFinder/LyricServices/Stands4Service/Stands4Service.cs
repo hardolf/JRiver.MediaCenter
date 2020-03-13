@@ -296,7 +296,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 QuotaResetTime.AddDays(quotaDiffDays);
                 await ResetTodayCountersAsync().ConfigureAwait(false);
-
                 await Logging.LogAsync(0, $"A new quota-day has begun for lyric service \"{Credit.ServiceName}\", request counters are reset.").ConfigureAwait(false);
             }
 
@@ -319,7 +318,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="LyricsQuotaExceededException">Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day "
         /// + $"and is now disabled in LyricsFinder, no more requests will be sent to this service until corrected.</exception>
         /// <exception cref="LyricServiceCommunicationException"></exception>
-        /// <exception cref="GeneralLyricServiceException"></exception>
+        /// <exception cref="LyricServiceBaseException"></exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".</exception>
         public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
@@ -359,16 +358,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 IsActive = false;
 
-                throw new LyricsQuotaExceededException($"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day "
-                    + "and is now disabled in LyricsFinder. No more requests will be sent to this service until corrected.", ex);
+                throw new LyricsQuotaExceededException($"\r\n"
+                    + $"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day \r\n"
+                    + "The service is now disabled in LyricsFinder. \r\n"
+                    + "No more requests will be sent to this service until corrected.", 
+                    ex);
             }
             catch (HttpRequestException ex)
             {
-                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
-            }
-            catch (Exception ex)
-            {
-                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", 
+                    isGetAll, Credit, item, ub.Uri, ex);
             }
 
             return this;

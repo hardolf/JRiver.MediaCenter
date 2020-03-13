@@ -106,7 +106,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                     sb.Append($"request: \"{ex1.RequestUri.AbsoluteUri}\", ");
                     sb.Append($"error: {msg}");
                 }
-                else if (innerEx is GeneralLyricServiceException ex2)
+                else if (innerEx is LyricServiceBaseException ex2)
                 {
                     sb.Append($"The lyric service failed during lyrics search ");
                     sb.Append($"for Artist \"{ex2.McItem.Artist}\",  Album \"{ex2.McItem.Album}\" and Song \"{ex2.McItem.Name}\", ");

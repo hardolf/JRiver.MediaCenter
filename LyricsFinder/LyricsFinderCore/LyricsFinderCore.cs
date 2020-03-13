@@ -936,8 +936,6 @@ namespace MediaCenter.LyricsFinder
 
                 ToolsSearchAllStartStopButton.Start();
 
-                // UseWaitCursor = true;
-
                 // Start the automatic search process job
                 _cancellationTokenSource = new CancellationTokenSource();
                 await SearchAllProcessAsync(_cancellationTokenSource.Token);

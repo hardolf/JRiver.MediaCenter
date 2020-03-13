@@ -11,12 +11,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 {
 
     /// <summary>
-    /// General lyric service exception.
+    /// Lyric service exception base class, generally non-fatal.
     /// </summary>
     /// <seealso cref="System.Exception" />
     [ComVisible(false)]
     [Serializable]
-    public class GeneralLyricServiceException : Exception
+    public class LyricServiceBaseException : Exception
     {
 
         /// <summary>
@@ -45,74 +45,41 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeneralLyricServiceException" /> class.
+        /// Initializes a new instance of the <see cref="LyricServiceBaseException" /> class.
         /// </summary>
-        public GeneralLyricServiceException()
+        public LyricServiceBaseException()
             : base()
         {
         }
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeneralLyricServiceException"/> class.
+        /// Initializes a new instance of the <see cref="LyricServiceBaseException"/> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public GeneralLyricServiceException(string message)
+        public LyricServiceBaseException(string message)
             : base(message)
         {
         }
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeneralLyricServiceException" /> class.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        /// <param name="isGetAll">if set to <c>true</c> the lyric service was in a "get all" mode; else <c>false</c>.</param>
-        /// <param name="credit">The credit object.</param>
-        /// <param name="mcItem">The Media Center MPL item.</param>
-        public GeneralLyricServiceException(string message, bool isGetAll, CreditType credit, McMplItem mcItem)
-            : base(message)
-        {
-            Credit = credit;
-            IsGetAll = isGetAll;
-            McItem = mcItem;
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeneralLyricServiceException"/> class.
+        /// Initializes a new instance of the <see cref="LyricServiceBaseException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
-        public GeneralLyricServiceException(string message, Exception innerException)
+        public LyricServiceBaseException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeneralLyricServiceException" /> class.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="isGetAll">if set to <c>true</c> the lyric service was in a "get all" mode; else <c>false</c>.</param>
-        /// <param name="credit">The credit object.</param>
-        /// <param name="mcItem">The Media Center MPL item.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
-        public GeneralLyricServiceException(string message, bool isGetAll, CreditType credit, McMplItem mcItem, Exception innerException)
-            : base(message, innerException)
-        {
-            Credit = credit;
-            IsGetAll = isGetAll;
-            McItem = mcItem;
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GeneralLyricServiceException"/> class.
+        /// Initializes a new instance of the <see cref="LyricServiceBaseException"/> class.
         /// </summary>
         /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
         /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected GeneralLyricServiceException(SerializationInfo info, StreamingContext context)
+        protected LyricServiceBaseException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
             if (info is null) throw new System.ArgumentNullException(nameof(info));
@@ -122,6 +89,38 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             McItem = (McMplItem)info.GetValue(nameof(McItem), typeof(McMplItem));
         }
 
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceBaseException" /> class.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        /// <param name="isGetAll">if set to <c>true</c> the lyric service was in a "get all" mode; else <c>false</c>.</param>
+        /// <param name="credit">The credit object.</param>
+        /// <param name="mcItem">The Media Center MPL item.</param>
+        public LyricServiceBaseException(string message, bool isGetAll, CreditType credit, McMplItem mcItem)
+            : base(message)
+        {
+            Credit = credit;
+            IsGetAll = isGetAll;
+            McItem = mcItem;
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceBaseException" /> class.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="isGetAll">if set to <c>true</c> the lyric service was in a "get all" mode; else <c>false</c>.</param>
+        /// <param name="credit">The credit object.</param>
+        /// <param name="mcItem">The Media Center MPL item.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
+        public LyricServiceBaseException(string message, bool isGetAll, CreditType credit, McMplItem mcItem, Exception innerException)
+            : base(message, innerException)
+        {
+            Credit = credit;
+            IsGetAll = isGetAll;
+            McItem = mcItem;
+        }
 
 
         /// <summary>
@@ -150,7 +149,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     /// <seealso cref="System.Exception" />
     [ComVisible(false)]
     [Serializable]
-    public class LyricServiceCommunicationException : GeneralLyricServiceException
+    public class LyricServiceCommunicationException : LyricServiceBaseException
     {
 
         /// <summary>
@@ -182,6 +181,29 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceCommunicationException"/> class.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
+        public LyricServiceCommunicationException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceCommunicationException"/> class.
+        /// </summary>
+        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+        protected LyricServiceCommunicationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            RequestUri = (Uri)info.GetValue(nameof(RequestUri), typeof(Uri));
+        }
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LyricServiceCommunicationException" /> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
@@ -193,17 +215,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             : base(message, isGetAll, credit, mcItem)
         {
             RequestUri = requestUri;
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LyricServiceCommunicationException"/> class.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
-        public LyricServiceCommunicationException(string message, Exception innerException)
-            : base(message, innerException)
-        {
         }
 
 
@@ -224,17 +235,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LyricServiceCommunicationException"/> class.
-        /// </summary>
-        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected LyricServiceCommunicationException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            RequestUri = (Uri)info.GetValue(nameof(RequestUri), typeof(Uri));
-        }
-
-        /// <summary>
         /// When overridden in a derived class, sets the <see cref="System.Runtime.Serialization.SerializationInfo" /> with information about the exception.
         /// </summary>
         /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
@@ -251,12 +251,172 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
     /// <summary>
+    /// Exception is thrown when the IP is banned.
+    /// </summary>
+    /// <seealso cref="System.Exception" />
+    [ComVisible(false)]
+    [Serializable]
+    public class LyricServiceIpBannedException : LyricServiceBaseException
+    {
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBannedException" /> class.
+        /// </summary>
+        public LyricServiceIpBannedException()
+            : base()
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBannedException"/> class.
+        /// </summary>
+        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+        protected LyricServiceIpBannedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBannedException"/> class.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public LyricServiceIpBannedException(string message)
+            : base(message)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBannedException"/> class.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
+        public LyricServiceIpBannedException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBannedException" /> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="isGetAll">if set to <c>true</c> [is get all].</param>
+        /// <param name="credit">The credit.</param>
+        /// <param name="mcItem">The mc item.</param>
+        public LyricServiceIpBannedException(string message, bool isGetAll, CreditType credit, McMplItem mcItem)
+                    : base(message, isGetAll, credit, mcItem)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBannedException" /> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="isGetAll">if set to <c>true</c> [is get all].</param>
+        /// <param name="credit">The credit.</param>
+        /// <param name="mcItem">The mc item.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
+        public LyricServiceIpBannedException(string message, bool isGetAll, CreditType credit, McMplItem mcItem, Exception innerException)
+                    : base(message, isGetAll, credit, mcItem, innerException)
+        {
+        }
+
+    }
+
+
+
+    /// <summary>
+    /// Exception is thrown when the IP is in danger of being banned.
+    /// </summary>
+    /// <seealso cref="System.Exception" />
+    [ComVisible(false)]
+    [Serializable]
+    public class LyricServiceIpBanWarningException : LyricServiceBaseException
+    {
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBanWarningException" /> class.
+        /// </summary>
+        public LyricServiceIpBanWarningException()
+            : base()
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBanWarningException"/> class.
+        /// </summary>
+        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
+        protected LyricServiceIpBanWarningException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBanWarningException"/> class.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public LyricServiceIpBanWarningException(string message)
+            : base(message)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBanWarningException"/> class.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
+        public LyricServiceIpBanWarningException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBanWarningException" /> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="isGetAll">if set to <c>true</c> [is get all].</param>
+        /// <param name="credit">The credit.</param>
+        /// <param name="mcItem">The mc item.</param>
+        public LyricServiceIpBanWarningException(string message, bool isGetAll, CreditType credit, McMplItem mcItem)
+                    : base(message, isGetAll, credit, mcItem)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LyricServiceIpBanWarningException" /> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="isGetAll">if set to <c>true</c> [is get all].</param>
+        /// <param name="credit">The credit.</param>
+        /// <param name="mcItem">The mc item.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
+        public LyricServiceIpBanWarningException(string message, bool isGetAll, CreditType credit, McMplItem mcItem, Exception innerException)
+                    : base(message, isGetAll, credit, mcItem, innerException)
+        {
+        }
+
+    }
+
+
+
+    /// <summary>
     /// Exception is thrown when the lyrics quota is exceeded.
     /// </summary>
     /// <seealso cref="System.Exception" />
     [ComVisible(false)]
     [Serializable]
-    public class LyricsQuotaExceededException : Exception
+    public class LyricsQuotaExceededException : LyricServiceBaseException
     {
 
         /// <summary>
@@ -299,56 +459,30 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
         }
 
-    }
-
-
-
-    /// <summary>
-    /// Exception is thrown when the IP is banned.
-    /// </summary>
-    /// <seealso cref="System.Exception" />
-    [ComVisible(false)]
-    [Serializable]
-    public class IpBannedException : Exception
-    {
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IpBannedException" /> class.
+        /// Initializes a new instance of the <see cref="LyricsQuotaExceededException" /> class.
         /// </summary>
-        public IpBannedException()
-            : base()
+        /// <param name="message">The message.</param>
+        /// <param name="isGetAll">if set to <c>true</c> [is get all].</param>
+        /// <param name="credit">The credit.</param>
+        /// <param name="mcItem">The mc item.</param>
+        public LyricsQuotaExceededException(string message, bool isGetAll, CreditType credit, McMplItem mcItem)
+                    : base(message, isGetAll, credit, mcItem)
         {
         }
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IpBannedException"/> class.
+        /// Initializes a new instance of the <see cref="LyricsQuotaExceededException" /> class.
         /// </summary>
-        /// <param name="info">The <see cref="System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected IpBannedException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IpBannedException"/> class.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public IpBannedException(string message)
-            : base(message)
-        {
-        }
-
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IpBannedException"/> class.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference (<see langword="Nothing" /> in Visual Basic) if no inner exception is specified.</param>
-        public IpBannedException(string message, Exception innerException)
-            : base(message, innerException)
+        /// <param name="message">The message.</param>
+        /// <param name="isGetAll">if set to <c>true</c> [is get all].</param>
+        /// <param name="credit">The credit.</param>
+        /// <param name="mcItem">The mc item.</param>
+        /// <param name="innerException">The inner exception.</param>
+        public LyricsQuotaExceededException(string message, bool isGetAll, CreditType credit, McMplItem mcItem, Exception innerException)
+                    : base(message, isGetAll, credit, mcItem, innerException)
         {
         }
 

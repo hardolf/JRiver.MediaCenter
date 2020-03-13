@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -197,26 +198,27 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Processes the specified MediaCenter item.
+        /// Processes the asynchronous.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
-        /// <returns>
-        ///   <see cref="AbstractLyricService" /> descendant object of type <see cref="Stands4Service" />.
-        /// </returns>
+        /// <param name="isGetAll">if set to <c>true</c> [is get all].</param>
+        /// <returns></returns>
         /// <exception cref="ArgumentNullException">item</exception>
-        /// <exception cref="IpBannedException">Lyric service \"{Credit.ServiceName}\" experienced a \"{exx.Message}\" error. "
-        ///                             + "This is possibly a temporary ban of your IP address and the service is now disabled in LyricsFinder. "
-        ///                             + "No more requests will be sent to this service until corrected. "
-        ///                             + "You could try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.</exception>
+        /// <exception cref="LyricServiceIpBanWarningException"></exception>
+        /// <exception cref="LyricServiceIpBannedException">
+        /// Lyric service \"{Credit.ServiceName}\" is in danger of a ban of your IP address. \r\n"
+        ///                         + "The service is now disabled in LyricsFinder. \r\n"
+        ///                         + "No more requests will be sent to this service until corrected. \r\n"
+        ///                         + "You should try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.
+        /// or
+        /// Lyric service \"{Credit.ServiceName}\" experienced a \"{exx.Message}\" error. \r\n"
+        ///                             + "This is possibly a temporary ban of your IP address and the service is now disabled in LyricsFinder. \r\n"
+        ///                             + "No more requests will be sent to this service until corrected. \r\n"
+        ///                             + "You could try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.
+        /// </exception>
         /// <exception cref="LyricServiceCommunicationException"></exception>
-        /// <exception cref="GeneralLyricServiceException"></exception>
-        /// <exception cref="LyricsQuotaExceededException">Lyric service \"{Credit.ServiceName}\" experienced a \"{chk}\" error. "
-        /// + "This is possibly a temporary ban of your IP address "
-        /// + $"and the service is now disabled in LyricsFinder. "
-        /// + "No more requests will be sent to this service until corrected."</exception>
-        /// <exception cref="System.ArgumentNullException">item</exception>
+        /// <exception cref="LyricServiceBaseException"></exception>
         public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
@@ -232,6 +234,18 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 ub.Query = $"q={item.Artist} {item.Album} {item.Name}";
                 html = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
+                if (html.ToUpper(CultureInfo.InvariantCulture).Contains("<FORM ID=\"AZ_UNBLOCK\""))
+                {
+                    IsActive = false;
+
+                    throw new LyricServiceIpBannedException($"\r\n"
+                            + $"Lyric service \"{Credit.ServiceName}\" is in danger of a ban of your IP address. \r\n"
+                            + "The service is now disabled in LyricsFinder. \r\n"
+                            + "No more requests will be sent to this service until corrected. \r\n"
+                            + "You should try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.",
+                            isGetAll, Credit, item);
+                }
+
                 // We force serial search in order to avoid IP address banning from the service
                 await ExtractAllLyricTextsAsync(GetResultUris(html), cancellationToken, isGetAll, true).ConfigureAwait(false);
 
@@ -245,6 +259,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     await ExtractAllLyricTextsAsync(GetResultUris(html), cancellationToken, isGetAll, true).ConfigureAwait(false);
                 }
             }
+            catch (LyricServiceIpBanWarningException ex)
+            {
+                throw new LyricServiceIpBanWarningException(ex.Message, ex.InnerException);
+            }
             catch (HttpRequestException ex)
             {
                 // Get the first exception
@@ -257,17 +275,20 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 {
                     IsActive = false;
 
-                    throw new IpBannedException($"Lyric service \"{Credit.ServiceName}\" experienced a \"{exx.Message}\" error. "
-                            + "This is possibly a temporary ban of your IP address and the service is now disabled in LyricsFinder. "
-                            + "No more requests will be sent to this service until corrected. "
-                            + "You could try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.", ex);
+                    throw new LyricServiceIpBannedException($"\r\n"
+                            + "Lyric service \"{Credit.ServiceName}\" experienced a \"{exx.Message}\" error. \r\n"
+                            + "This is possibly a temporary ban of your IP address and the service is now disabled in LyricsFinder. \r\n"
+                            + "No more requests will be sent to this service until corrected. \r\n"
+                            + "You could try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.", 
+                            isGetAll, Credit, item, ex);
                 }
                 else
-                    throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
+                    throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", 
+                        isGetAll, Credit, item, ub.Uri, ex);
             }
             catch (Exception ex)
             {
-                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
+                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
             }
 
             return this;

@@ -364,22 +364,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
-        /// Waits randomized delay, based on the standard delay.
-        /// </summary>
-        /// <param name="standardDelay">The standard delay in milliseconds.</param>
-        /// <remarks>
-        /// Half of the standard delay is randomized, e.g. if standard delay is 4000 ms, the final delay may be between 2000 and 5999 ms.
-        /// </remarks>
-        protected virtual async Task DelayRandomizedAsync(int standardDelay)
-        {
-            var rand = new Random();
-            var delay = rand.Next(standardDelay / 2, (int)(standardDelay * 1.5));
-
-            await Task.Delay(delay);
-        }
-
-
-        /// <summary>
         /// Extracts all the lyrics from all the Uris.
         /// </summary>
         /// <param name="uris">The uris.</param>
@@ -467,7 +451,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             var ret = string.Empty;
 
-            await DelayRandomizedAsync(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
+            await AsyncUtility.RandomizedDelayAsync(LyricsFinderData.MainData.DelayMilliSecondsBetweenSearches);
 
             try
             {
@@ -586,7 +570,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
             LastSearchStart = DateTime.Now;
-            LastSearchStop = DateTime.Now;
+            LastSearchStop = LastSearchStart;
 
             var ret = await ProcessAsync(mcItem, cancellationToken, isGetAll);
 

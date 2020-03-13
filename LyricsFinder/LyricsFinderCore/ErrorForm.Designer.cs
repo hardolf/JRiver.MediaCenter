@@ -42,7 +42,6 @@
             // ErrorPanel
             // 
             this.ErrorPanel.AutoSize = true;
-            this.ErrorPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ErrorPanel.Controls.Add(this.ErrorLayoutPanel);
             this.ErrorPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ErrorPanel.Location = new System.Drawing.Point(0, 0);
@@ -53,7 +52,6 @@
             // ErrorLayoutPanel
             // 
             this.ErrorLayoutPanel.AutoSize = true;
-            this.ErrorLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ErrorLayoutPanel.ColumnCount = 2;
             this.ErrorLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.ErrorLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -113,7 +111,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.CancelButton = this.CloseButton;
             this.ClientSize = new System.Drawing.Size(384, 211);
             this.Controls.Add(this.ErrorPanel);

@@ -135,7 +135,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </returns>
         /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="LyricServiceCommunicationException"></exception>
-        /// <exception cref="GeneralLyricServiceException"></exception>
+        /// <exception cref="LyricServiceBaseException"></exception>
         /// <exception cref="System.ArgumentNullException">item</exception>
         public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
         {
@@ -190,7 +190,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
             catch (Exception ex)
             {
-                throw new GeneralLyricServiceException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
+                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
             }
 
             return this;

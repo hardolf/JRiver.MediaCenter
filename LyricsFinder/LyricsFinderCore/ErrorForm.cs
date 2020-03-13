@@ -115,22 +115,25 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
+                var isAutoSize = false;
+                Size textSize;
+
+                // Get the size of a temporary text box
+                using (var txt = new TextBox())
+                {
+                    txt.Text = message;
+                    textSize = txt.GetControlTextSize();
+                };
+
                 using (var frm = new ErrorForm())
                 {
                     frm.MaximumSize = maxWindowSize;
-                    frm.ErrorTextBox.Text = message;
-                    frm.ErrorTextBox.Select(0, 0);
-
-                    if (!title.IsNullOrEmptyTrimmed())
-                        frm.Text = title;
-
-                    var textSize = frm.ErrorTextBox.GetControlTextSize();
 
                     if ((textSize.Height > maxWindowSize.Height)
                         && (textSize.Width > maxWindowSize.Width))
                     {
-                        frm.ErrorTextBox.ScrollBars = ScrollBars.Both;
                         frm.Size = maxWindowSize;
+                        frm.ErrorTextBox.ScrollBars = ScrollBars.Both;
                     }
                     else if (textSize.Height > maxWindowSize.Height)
                     {
@@ -145,6 +148,15 @@ namespace MediaCenter.LyricsFinder
                         frm.ErrorTextBox.Width = maxWindowSize.Width - (2 * 15);
                     }
                     else
+                        isAutoSize = true;
+
+                    if (!title.IsNullOrEmptyTrimmed())
+                        frm.Text = title;
+
+                    frm.ErrorTextBox.Text = message;
+                    frm.ErrorTextBox.Select(0, 0);
+
+                    if (isAutoSize)
                         frm.ErrorTextBox.AutoSizeTextBox();
 
                     frm.ShowDialog(owner);

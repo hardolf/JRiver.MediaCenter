@@ -365,6 +365,7 @@ namespace MediaCenter.LyricsFinder
             var msg = $"Process worker {workerNumber} failed. ";
             var lyricCell = row.Cells[(int)GridColumnEnum.Lyrics];
             var statusCell = row.Cells[(int)GridColumnEnum.Status];
+            var lyricExceptions = new List<Exception>();
 
             try
             {
@@ -405,7 +406,7 @@ namespace MediaCenter.LyricsFinder
                         statusCell.Value = $"{LyricsResultEnum.Processing.ResultText()}...";
 
                         // Try to get the first search hit
-                        var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _currentLyricsFinderPlaylist.Items[key], cancellationToken, false);
+                        var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _currentLyricsFinderPlaylist.Items[key], lyricExceptions, cancellationToken, false);
 
                         // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
                         await _semaphoreSlim.WaitAsync();
@@ -461,6 +462,9 @@ namespace MediaCenter.LyricsFinder
                         statusCell.Value = (found)
                             ? LyricsResultEnum.Found.ResultText()
                             : LyricsResultEnum.NotFound.ResultText();
+
+                        if (lyricExceptions.Any())
+                            throw new Exception("A lyric service failed.", lyricExceptions.First());
                     }
                     else if (!OverwriteMenuItem.Checked
                         && !oldLyric.IsNullOrEmptyTrimmed())

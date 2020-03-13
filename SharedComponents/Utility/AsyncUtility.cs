@@ -185,6 +185,22 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Waits for a randomized number of milliseconds, based on the standard delay.
+        /// </summary>
+        /// <param name="standardDelay">The standard delay in milliseconds.</param>
+        /// <remarks>
+        /// Half of the standard delay is randomized, e.g. if standard delay is 4000 ms, the final delay may be somewhere between 2000 and 5999 ms.
+        /// </remarks>
+        public static async Task RandomizedDelayAsync(int standardDelay)
+        {
+            var rand = new Random();
+            var delay = rand.Next(standardDelay / 2, (int)(standardDelay * 1.5));
+
+            await Task.Delay(delay).ConfigureAwait(false);
+        }
+
+
+        /// <summary>
         /// Sets the control enabled.
         /// </summary>
         /// <param name="control">The control.</param>

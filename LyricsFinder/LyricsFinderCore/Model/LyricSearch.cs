@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
+
 
 namespace MediaCenter.LyricsFinder.Model
 {
@@ -25,6 +27,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// </summary>
         /// <param name="lyricsFinderData">The lyrics finder data.</param>
         /// <param name="mcItem">The Media Center item.</param>
+        /// <param name="exceptions">The exceptions.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> [get all].</param>
         /// <returns>
@@ -38,15 +41,17 @@ namespace MediaCenter.LyricsFinder.Model
         /// <para>We clone each active service before using the clone to the search.</para>
         /// <para>This is done in order to avoid duplicate lyrics during concurrent searches with the same service.</para>
         /// </remarks>
-        public static async Task<List<AbstractLyricService>> SearchAsync(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
+        public static async Task<List<AbstractLyricService>> SearchAsync(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, IList<Exception> exceptions, CancellationToken cancellationToken, bool isGetAll = false)
         {
             var ret = new List<AbstractLyricService>(); // List of service clones
             var services = new List<AbstractLyricService>(); // List of services in LyricsFinderData
+            LyricServiceBaseException lyricServiceException = null;
 
             try
             {
                 if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
                 if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
+                if (exceptions is null) throw new ArgumentNullException(nameof(exceptions));
 
                 // Set up the tasks for the search
                 var tasks = new List<Task<AbstractLyricService>>();
@@ -64,21 +69,44 @@ namespace MediaCenter.LyricsFinder.Model
                 if (!cancellationToken.IsCancellationRequested)
                 {
                     if (isGetAll)
-                        _ = await Task.WhenAll(tasks);
+                        try
+                        {
+                            _ = await Task.WhenAll(tasks);
+                        }
+                        catch (LyricServiceBaseException ex)
+                        {
+                            lyricServiceException = ex;
+                        }
                     else
                     {
                         if (lyricsFinderData.MainData.SerialServiceRequestsDuringAutomaticSearch)
                         {
                             foreach (var task in tasks)
                             {
-                                _ = await task;
+                                try
+                                {
+                                    _ = await task;
+                                }
+                                catch (LyricServiceBaseException ex)
+                                {
+                                    lyricServiceException = ex;
+                                }
 
                                 if (task.Result.LyricResult == LyricsResultEnum.Found)
                                     break;
                             }
                         }
                         else
-                            _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricsResultEnum.Found);
+                        {
+                            try
+                            {
+                                _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricsResultEnum.Found);
+                            }
+                            catch (LyricServiceBaseException ex)
+                            {
+                                lyricServiceException = ex;
+                            }
+                        }
                     }
                 }
             }
@@ -104,6 +132,9 @@ namespace MediaCenter.LyricsFinder.Model
                     lyricsFinderData.SaveAsync();
                 }
             }
+
+            if (lyricServiceException != null)
+                exceptions.Add(lyricServiceException);
 
             return ret;
         }

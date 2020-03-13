@@ -427,12 +427,18 @@ namespace MediaCenter.LyricsFinder
                     UseWaitCursor = true;
                     LyricTextBox.UseWaitCursor = true;
                     LyricFormStatusLabel.Text = "Searching...";
+                    msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
 
                     // LyricFormTimer.Start();
-                    await SearchAsync();
-
-                    if (LyricFormTrackBar.CanFocus)
-                        LyricFormTrackBar.Focus();
+                    try
+                    {
+                        await SearchAsync();
+                    }
+                    finally
+                    {
+                        if (LyricFormTrackBar.CanFocus)
+                            LyricFormTrackBar.Focus();
+                    }
                 }
                 else
                 {
@@ -446,12 +452,6 @@ namespace MediaCenter.LyricsFinder
                     LyricFormStatusLabel.Text = "Search canceled.";
 
                 SetMenuStates();
-            }
-            catch (LyricsQuotaExceededException ex)
-            {
-                msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
-                await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync(msg, ex);
-                LyricFormStatusLabel.Text = "Service quota exceeded.";
             }
             catch (Exception ex)
             {
@@ -1135,13 +1135,13 @@ namespace MediaCenter.LyricsFinder
         private async Task SearchAsync()
         {
             var begin = DateTime.Now;
-            var end = begin;
+            var lyricExceptions = new List<Exception>();
 
             // Clear list and search for all the lyrics in each lyric service
             _foundLyricList.Clear();
 
             _cancellationTokenSource = new CancellationTokenSource();
-            var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _mcItem, _cancellationTokenSource.Token, true).ConfigureAwait(true);
+            var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _mcItem, lyricExceptions, _cancellationTokenSource.Token, true).ConfigureAwait(true);
 
             // Process the results
             foreach (var service in resultServices)
@@ -1161,11 +1161,13 @@ namespace MediaCenter.LyricsFinder
             LyricFormTrackBar.Maximum = _foundLyricList.Count - 1;
             LyricFormTrackBar_ScrollAsync(this, new EventArgs());
 
-            end = DateTime.Now;
-
+            var end = DateTime.Now;
             var lyricStr = (_foundLyricList.Count > 1) ? "lyrics" : "lyric";
 
             LyricFormStatusLabel.Text = $"{_foundLyricList.Count} {lyricStr} found total in {(end - begin).TotalSeconds:###,##0.} seconds";
+
+            if (lyricExceptions.Any())
+                await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync("A lyric service failed.", lyricExceptions.First());
         }
 
 
