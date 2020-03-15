@@ -338,7 +338,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 // Quota exceeded?
                 if (txt.ToUpperInvariant().Contains("<ERROR>DAILY USAGE EXCEEDED</ERROR>"))
-                    throw new LyricsQuotaExceededException();
+                {
+                    IsActive = false;
+
+                    throw new LyricsQuotaExceededException("\r\n"
+                        + $"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day \r\n"
+                        + "The service is now disabled in LyricsFinder. \r\n"
+                        + "No more requests will be sent to this service until corrected.",
+                        isGetAll, Credit, item);
+                }
 
                 // Deserialize the returned JSON
                 var results = txt.XmlDeserializeFromString<StandsResultListType>();
@@ -354,20 +362,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         await ExtractAllLyricTextsAsync(item, results, cancellationToken, isGetAll, false).ConfigureAwait(false);
                 }
             }
-            catch (LyricsQuotaExceededException ex)
-            {
-                IsActive = false;
-
-                throw new LyricsQuotaExceededException($"\r\n"
-                    + $"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day \r\n"
-                    + "The service is now disabled in LyricsFinder. \r\n"
-                    + "No more requests will be sent to this service until corrected.", 
-                    ex);
-            }
             catch (HttpRequestException ex)
             {
-                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", 
-                    isGetAll, Credit, item, ub.Uri, ex);
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.",  isGetAll, Credit, item, ub.Uri, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
             }
 
             return this;

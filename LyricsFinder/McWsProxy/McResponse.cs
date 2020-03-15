@@ -84,6 +84,10 @@ namespace MediaCenter.McWs
                 using (var xr = XmlReader.Create(sr, new XmlReaderSettings() { XmlResolver = null }))
                     xDoc.Load(xr);
             }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error loading XML string \"{xml}\".", ex);
+            }
             finally
             {
                 if (sr != null)

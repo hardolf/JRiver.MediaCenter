@@ -106,7 +106,7 @@ namespace MediaCenter.SharedComponents
             if (args is null) throw new ArgumentNullException(nameof(args));
 
             IsHelpRequired = (args.Length == 0)
-                || (args.Any(arg => "?|HELP".Contains(arg.ToUpper(CultureInfo.InvariantCulture).Substring(1))));
+                || (args.Any(arg => "?|HELP".Contains(arg.ToUpperInvariant().Substring(1))));
 
             try
             {

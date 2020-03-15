@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -26,6 +27,26 @@ namespace MediaCenter.SharedComponents
         private static HttpClientHandler _httpClientHandler = new HttpClientHandler();
         private static HttpClient _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
         private static readonly HttpClient _httpClientAnonymous = new HttpClient();
+        private static readonly Dictionary<string, string> _httpHeaders = new Dictionary<string, string>
+            {
+                // { "Accept-Charset", "ISO-8859-1" }, // Avoid this, obsolete
+                // { "Accept", "text/html,application/xhtml+xml,application/xml" },
+                // { "Accept-Encoding", "gzip, deflate" }, // Avoid this as it will make problems with some lyric services, e.g. CajunLyricsService
+                { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident / 7.0; rv: 11.0) like Gecko"} // Internet Explorer 11 on Wondows 10
+                // { "User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0" } // Browser version dependent
+            };
+
+
+        /// <summary>
+        /// Initializes the <see cref="Utility"/> class.
+        /// </summary>
+        static Utility()
+        {
+            foreach (var httpHeader in _httpHeaders)
+            {
+                _httpClientAnonymous.DefaultRequestHeaders.TryAddWithoutValidation(httpHeader.Key, httpHeader.Value);
+            }
+        }
 
 
         /// <summary>
@@ -402,6 +423,8 @@ namespace MediaCenter.SharedComponents
         /// <returns>
         /// Complete REST service Web request string.
         /// </returns>
+        /// <exception cref="ArgumentNullException">requestUrl</exception>
+        /// <exception cref="HttpRequestException">\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".</exception>
         public static async Task<string> HttpGetStringAsync(this Uri requestUrl, string userName = "", string password = "")
         {
             if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
@@ -414,7 +437,7 @@ namespace MediaCenter.SharedComponents
                     ret = await _httpClientAnonymous.GetStringAsync(requestUrl).ConfigureAwait(false);
                 else
                 {
-                    _httpClientWithCredentials.Dispose();
+                    _httpClientWithCredentials?.Dispose();
                     _httpClientHandler = new HttpClientHandler
                     {
                         AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,

@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.ServiceModel.Configuration;
@@ -616,8 +617,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             IsConfigurationFileUsed = (Credit == null)
                 || (Comment.IsNullOrEmptyTrimmed()
-                    && ((Credit.CreditUrl == null) || Credit.CreditUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
-                    && ((Credit.ServiceUrl == null) || Credit.ServiceUrl.AbsoluteUri.ToUpper(CultureInfo.InvariantCulture).Contains("LOCALHOST"))
+                    && ((Credit.CreditUrl == null) || Credit.CreditUrl.AbsoluteUri.ToUpperInvariant().Contains("LOCALHOST"))
+                    && ((Credit.ServiceUrl == null) || Credit.ServiceUrl.AbsoluteUri.ToUpperInvariant().Contains("LOCALHOST"))
                     && Credit.Company.IsNullOrEmptyTrimmed()
                     && Credit.ServiceName.IsNullOrEmptyTrimmed());
 

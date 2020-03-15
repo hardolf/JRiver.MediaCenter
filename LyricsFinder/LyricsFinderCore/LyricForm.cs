@@ -356,6 +356,14 @@ namespace MediaCenter.LyricsFinder
                         }
                         break;
 
+                    case Keys.Space:
+                        if (LyricsFinderCore.McPlayControl?.Focused ?? false)
+                        {
+                            ToolsPlayStartStopButton.PerformClick();
+                            e.Handled = true;
+                        }
+                        break;
+
                     case Keys.Tab:
                         if (_isSearch && ArtistTextBox.Focused && e.Shift)
                         {
