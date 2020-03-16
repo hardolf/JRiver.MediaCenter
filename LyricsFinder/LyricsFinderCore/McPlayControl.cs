@@ -178,7 +178,7 @@ namespace MediaCenter.LyricsFinder
         /********************************/
 
         /// <summary>
-        /// Jump the playing position.
+        /// Jump the playing position asynchronous.
         /// </summary>
         /// <param name="isBackward">if set to <c>true</c> jump backward; else jump forward.</param>
         /// <param name="isLargeJump">if set to <c>true</c> the jump is large; else it is small.</param>
@@ -202,10 +202,36 @@ namespace MediaCenter.LyricsFinder
             if (newPos > McPositionTrackBar.Maximum)
                 newPos = McPositionTrackBar.Maximum;
 
-            var rsp = await McRestService.PositionAsync((int)(newPos * 1000));
+            var rsp = await McRestService.PositionAsync(newPos * 1000);
 
             if (!rsp.IsOk)
                 throw new Exception($"Setting play position to {pos} seconds in Media Center failed.");
+        }
+
+
+        /// <summary>
+        /// Jumps the playing position to the end asynchronous.
+        /// </summary>
+        public async Task JumpEndAsync()
+        {
+
+            var rsp = await McRestService.PositionAsync(McPositionTrackBar.Maximum * 1000);
+
+            if (!rsp.IsOk)
+                throw new Exception($"Setting play position to the track end in Media Center failed.");
+        }
+
+
+        /// <summary>
+        /// Jumps the playing position to the beginning asynchronous.
+        /// </summary>
+        public async Task JumpBeginningAsync()
+        {
+
+            var rsp = await McRestService.PositionAsync(McPositionTrackBar.Minimum * 1000);
+
+            if (!rsp.IsOk)
+                throw new Exception($"Setting play position to the track beginning in Media Center failed.");
         }
 
 

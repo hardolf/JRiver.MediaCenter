@@ -92,3 +92,4 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.SpellBox.Select(System.Int32,System.Int32)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "<Pending>", Scope = "member", Target = "~P:MediaCenter.LyricsFinder.SpellBox.ReadOnly")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>", Scope = "member", Target = "~P:MediaCenter.LyricsFinder.SpellBox.UseWaitCursor")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.LyricsFinder.LyricForm.FindReplaceAction(System.Boolean,System.String,System.String)~System.Boolean")]

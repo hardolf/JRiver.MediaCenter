@@ -575,8 +575,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             var ret = await ProcessAsync(mcItem, cancellationToken, isGetAll);
 
-            // If failed search, retry with parenthesized text removed
-            if ((ret.LyricResult == LyricsResultEnum.NotFound)
+            // If failed search and still active, retry with any parenthesized text removed
+            if (IsActive
+                && (ret.LyricResult == LyricsResultEnum.NotFound)
                 && (mcItem.Artist.IsParenthesizedTextPresent() || mcItem.Album.IsParenthesizedTextPresent() || mcItem.Name.IsParenthesizedTextPresent()))
             {
                 var mcItemClone = mcItem.CloneAndRemoveParenthesizedText();

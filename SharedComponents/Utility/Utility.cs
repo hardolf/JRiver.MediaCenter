@@ -24,16 +24,17 @@ namespace MediaCenter.SharedComponents
     {
 
         // We don't dispose of these objects
-        private static HttpClientHandler _httpClientHandler = new HttpClientHandler();
-        private static HttpClient _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
-        private static readonly HttpClient _httpClientAnonymous = new HttpClient();
+        private static HttpClientHandler _httpClientHandlerAnonymous = new HttpClientHandler();
+        private static HttpClientHandler _httpClientHandlerWithCredentials = new HttpClientHandler();
+        private static HttpClient _httpClientAnonymous = new HttpClient(_httpClientHandlerAnonymous, true);
+        private static HttpClient _httpClientWithCredentials = new HttpClient(_httpClientHandlerWithCredentials, true);
         private static readonly Dictionary<string, string> _httpHeaders = new Dictionary<string, string>
             {
                 // { "Accept-Charset", "ISO-8859-1" }, // Avoid this, obsolete
-                // { "Accept", "text/html,application/xhtml+xml,application/xml" },
-                // { "Accept-Encoding", "gzip, deflate" }, // Avoid this as it will make problems with some lyric services, e.g. CajunLyricsService
+                // { "Accept", "text/html,application/xhtml+xml,application/xml" }, // Not used yet...
+                { "Accept-Encoding", "gzip, deflate" }, // Only use this if also using AutomaticDecompression on the handler, as it will otherwise make problems with some lyric services, e.g. CajunLyricsService
                 { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident / 7.0; rv: 11.0) like Gecko"} // Internet Explorer 11 on Wondows 10
-                // { "User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0" } // Browser version dependent
+                // { "User-Agent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0" } // Not used, as it is browser version dependent
             };
 
 
@@ -42,10 +43,8 @@ namespace MediaCenter.SharedComponents
         /// </summary>
         static Utility()
         {
-            foreach (var httpHeader in _httpHeaders)
-            {
-                _httpClientAnonymous.DefaultRequestHeaders.TryAddWithoutValidation(httpHeader.Key, httpHeader.Value);
-            }
+            CreateHttpClient();
+            CreateHttpClient("noname"); // Dummy creation
         }
 
 
@@ -140,6 +139,52 @@ namespace MediaCenter.SharedComponents
             var ret = compareList.Any(s => input.Contains(s.ToUpperInvariant()));
 
             return ret;
+        }
+
+
+        /// <summary>
+        /// Creates the HTTP client.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <remarks>
+        /// If <c>userName</c> is not specified, an anonymous HTTP client is created.
+        /// </remarks>
+        private static void CreateHttpClient(string userName = "", string password = "")
+        {
+            if (userName.IsNullOrEmptyTrimmed())
+            {
+                _httpClientAnonymous?.Dispose(); // Dispose the old HTTP client, if it was instantiated
+
+                _httpClientHandlerAnonymous = new HttpClientHandler
+                {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                };
+
+                _httpClientAnonymous = new HttpClient(_httpClientHandlerAnonymous, true);
+
+                foreach (var httpHeader in _httpHeaders)
+                {
+                    _httpClientAnonymous.DefaultRequestHeaders.TryAddWithoutValidation(httpHeader.Key, httpHeader.Value);
+                }
+            }
+            else
+            {
+                _httpClientWithCredentials?.Dispose(); // Dispose the old HTTP client, if it was instantiated
+
+                _httpClientHandlerWithCredentials = new HttpClientHandler
+                {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                    Credentials = new NetworkCredential(userName, password)
+                };
+
+                _httpClientWithCredentials = new HttpClient(_httpClientHandlerWithCredentials, true);
+
+                foreach (var httpHeader in _httpHeaders)
+                {
+                    _httpClientWithCredentials.DefaultRequestHeaders.TryAddWithoutValidation(httpHeader.Key, httpHeader.Value);
+                }
+            }
         }
 
 
@@ -389,13 +434,7 @@ namespace MediaCenter.SharedComponents
                     st = await _httpClientAnonymous.GetStreamAsync(requestUrl).ConfigureAwait(false);
                 else
                 {
-                    _httpClientWithCredentials.Dispose();
-                    _httpClientHandler = new HttpClientHandler
-                    {
-                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-                        Credentials = new NetworkCredential(userName, password)
-                    };
-                    _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
+                    CreateHttpClient(userName, password);
 
                     st = await _httpClientWithCredentials.GetStreamAsync(requestUrl).ConfigureAwait(false);
                 }
@@ -437,17 +476,10 @@ namespace MediaCenter.SharedComponents
                     ret = await _httpClientAnonymous.GetStringAsync(requestUrl).ConfigureAwait(false);
                 else
                 {
-                    _httpClientWithCredentials?.Dispose();
-                    _httpClientHandler = new HttpClientHandler
-                    {
-                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-                        Credentials = new NetworkCredential(userName, password)
-                    };
-                    _httpClientWithCredentials = new HttpClient(_httpClientHandler, true);
+                    CreateHttpClient(userName, password);
 
                     ret = await _httpClientWithCredentials.GetStringAsync(requestUrl).ConfigureAwait(false);
                 }
-
             }
             catch (HttpRequestException ex)
             {
@@ -636,6 +668,27 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Counts all of the string's lines.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>Number of lines in the <c>input</c> string.</returns>
+        public static int StringLineCount(this string input)
+        {
+            var ret = 0;
+
+            using (var sr = new StringReader(input))
+            {
+                while (sr.ReadLine() != null)
+                {
+                    ret++;
+                }
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Converts input string to a string without double spaces and with no more than 2 consecutive line endings.
         /// </summary>
         /// <param name="input">The input string.</param>
@@ -740,6 +793,57 @@ namespace MediaCenter.SharedComponents
             ret = string.Join(Environment.NewLine, lines);
 
             return ret;
+        }
+
+
+        /// <summary>
+        /// Trims all of the string's lines.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>The <c>input</c> string with each of it's lines trimmed.</returns>
+        public static string TrimStringLines(this string input)
+        {
+            var ret = new StringBuilder();
+
+            using (var sr = new StringReader(input))
+            {
+                string line;
+
+                while ((line = sr.ReadLine()) != null)
+                {
+                    ret.AppendLine(line.Trim());
+                }
+            }
+
+            return ret.ToString();
+        }
+
+
+        /// <summary>
+        /// Trims all of the string's lines.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="numberOfLines">The number of lines.</param>
+        /// <returns>
+        /// The first <c>numberOfLines</c> lines of the <c>input</c> string.
+        /// </returns>
+        public static string TruncateStringLines(this string input, int numberOfLines)
+        {
+            var cnt = 0;
+            var ret = new StringBuilder();
+
+            using (var sr = new StringReader(input))
+            {
+                string line;
+
+                while ((cnt < numberOfLines) && ((line = sr.ReadLine()) != null))
+                {
+                    cnt++;
+                    ret.AppendLine(line.Trim());
+                }
+            }
+
+            return ret.ToString();
         }
 
     }

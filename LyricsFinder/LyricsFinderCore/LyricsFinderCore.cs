@@ -434,6 +434,33 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the CellFormatting event of the MainGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellFormattingEventArgs"/> instance containing the event data.</param>
+        private async void MainGridView_CellFormattingAsync(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            try
+            {
+                if (_isDesignTime) return;
+                if (e.ColumnIndex != (int)GridColumnEnum.Lyrics) return;
+
+                var cell = MainGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                var txt = e.Value.ToString();
+
+                if (txt.StringLineCount() > _maxLyricToolTipLines)
+                    txt = txt.TruncateStringLines(_maxLyricToolTipLines).Trim() + Environment.NewLine + "...";
+
+                cell.ToolTipText = txt;
+            }
+            catch (Exception ex)
+            {
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the CellMouseClick event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>

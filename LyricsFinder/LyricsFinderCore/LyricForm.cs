@@ -326,10 +326,26 @@ namespace MediaCenter.LyricsFinder
 
                 switch (e.KeyCode)
                 {
+                    case Keys.End:
+                        if (LyricsFinderCore.McPlayControl?.Focused ?? false)
+                        {
+                            await LyricsFinderCore.McPlayControl?.JumpEndAsync();
+                            e.Handled = true;
+                        }
+                        break;
+
                     case Keys.Escape:
                         _cancellationTokenSource.Cancel();
                         e.Handled = true;
                         Close();
+                        break;
+
+                    case Keys.Home:
+                        if (LyricsFinderCore.McPlayControl?.Focused ?? false)
+                        {
+                            await LyricsFinderCore.McPlayControl?.JumpBeginningAsync();
+                            e.Handled = true;
+                        }
                         break;
 
                     case Keys.Left:
@@ -745,18 +761,7 @@ namespace MediaCenter.LyricsFinder
 
                             case nameof(EditTrimMenuItem):
                                 if (DoTextOperationQuestion(true))
-                                {
-                                    var sb = new StringBuilder();
-                                    using (var sr = new StringReader(txt.SelectedText))
-                                    {
-                                        string line;
-                                        while ((line = sr.ReadLine()) != null)
-                                        {
-                                            sb.AppendLine(line.Trim());
-                                        }
-                                    }
-                                    txt.SelectedText = sb.ToString();
-                                }
+                                    txt.SelectedText = txt.SelectedText.TrimStringLines();
                                 break;
 
                             case nameof(EditUpperCaseMenuItem):
@@ -1060,10 +1065,14 @@ namespace MediaCenter.LyricsFinder
         /// <param name="isNext">if set to <c>true</c> this call is a next call; else the first call.</param>
         /// <param name="findText">The find text.</param>
         /// <param name="replaceText">The replace text.</param>
+        /// <returns><c>true</c> if the <c>findText</c> was found; else <c>false</c>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         /// <exception cref="ArgumentNullException">findText</exception>
-        internal void FindReplaceAction(bool isNext, string findText, string replaceText = null)
+        internal bool FindReplaceAction(bool isNext, string findText, string replaceText = null)
         {
             if (findText.IsNullOrEmptyTrimmed()) throw new ArgumentOutOfRangeException($"{nameof(findText)} must have a value.");
+
+            var ret = false;
 
             if (LyricTextBox.SelectionStart < LyricTextBox.Text.Length - findText.Length - 1)
             {
@@ -1085,10 +1094,15 @@ namespace MediaCenter.LyricsFinder
                         LyricTextBox.SelectionStart = foundIdx;
                         LyricTextBox.SelectionLength = replaceText.Length;
                     }
+
+                    ret = true;
                 }
-                else
-                    FindOrReplaceForm.Hide();
             }
+
+            if (!ret)
+                FindOrReplaceForm.Hide();
+
+            return ret;
         }
 
 

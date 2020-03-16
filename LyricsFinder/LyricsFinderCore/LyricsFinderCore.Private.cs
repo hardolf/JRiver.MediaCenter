@@ -34,6 +34,7 @@ namespace MediaCenter.LyricsFinder
         /***** constants and variables *****/
         /***********************************/
 
+        private const int _maxLyricToolTipLines = 40;
         private const int _mcStatusIntervalNormal = 300; // milliseconds
         private const int _mcStatusIntervalError = 5000; // milliseconds
 
