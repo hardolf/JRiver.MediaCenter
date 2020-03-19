@@ -250,7 +250,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 await ExtractAllLyricTextsAsync(GetResultUris(html), cancellationToken, isGetAll, true).ConfigureAwait(false);
 
                 // If not found or if we want all possible results, we next try a more lax query without the album
-                if (isGetAll || (LyricResult != LyricsResultEnum.Found))
+                if (IsActive && 
+                    (isGetAll || (LyricResult != LyricsResultEnum.Found)))
                 {
                     ub.Query = $"q={item.Artist} {item.Name}";
                     html = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);

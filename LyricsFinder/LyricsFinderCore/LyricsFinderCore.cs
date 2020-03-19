@@ -113,7 +113,7 @@ namespace MediaCenter.LyricsFinder
         /// <value>
         ///   <c>true</c> if this instance is playing; otherwise, <c>false</c>.
         /// </value>
-        internal bool IsPlaying 
+        internal bool IsPlaying
         {
             get => _playingIndex >= 0;
         }
@@ -224,14 +224,12 @@ namespace MediaCenter.LyricsFinder
                 e.Handled = true;
 
                 var dgv = MainGridView;
-                var rows = MainGridView.SelectedRows;
 
-                if (rows.Count < 1)
-                    return;
+                if (dgv.SelectedRows.Count < 1) return;
 
                 var selectedRowIndex = (dgv.SelectedRows.Count > 0) ? dgv.SelectedRows[0].Index : -1;
                 var colIdx = (int)GridColumnEnum.Lyrics;
-                var rowIdx = rows[0].Index;
+                var rowIdx = dgv.SelectedRows[0].Index;
 
                 if (e.KeyCode == Keys.Down)
                 {
@@ -239,11 +237,24 @@ namespace MediaCenter.LyricsFinder
                     {
                         dgv.ClearSelection();
                         dgv.Rows[selectedRowIndex + 1].Selected = true;
+                        ScrollDataGrid(dgv.SelectedRows[0].Index);
                     }
+                }
+                else if (e.KeyCode == Keys.End)
+                {
+                    dgv.ClearSelection();
+                    dgv.Rows[dgv.Rows.Count - 1].Selected = true;
+                    ScrollDataGrid(dgv.SelectedRows[0].Index);
                 }
                 else if (e.KeyCode == Keys.Enter)
                 {
                     ToolsPlayStartStopButton.PerformClick();
+                }
+                else if (e.KeyCode == Keys.Home)
+                {
+                    dgv.ClearSelection();
+                    dgv.Rows[0].Selected = true;
+                    ScrollDataGrid(dgv.SelectedRows[0].Index);
                 }
                 else if (e.Alt && (e.KeyCode == Keys.L))
                 {
@@ -263,7 +274,7 @@ namespace MediaCenter.LyricsFinder
                 {
                     await SaveAllAsync();
                 }
-                else if ((e.KeyCode == Keys.Space) 
+                else if ((e.KeyCode == Keys.Space)
                     || (e.Control && (e.KeyCode == Keys.P)))
                 {
                     await PlayOrPauseAsync();
@@ -274,6 +285,7 @@ namespace MediaCenter.LyricsFinder
                     {
                         dgv.ClearSelection();
                         dgv.Rows[selectedRowIndex - 1].Selected = true;
+                        ScrollDataGrid(dgv.SelectedRows[0].Index);
                     }
                 }
                 else
@@ -446,7 +458,9 @@ namespace MediaCenter.LyricsFinder
                 if (e.ColumnIndex != (int)GridColumnEnum.Lyrics) return;
 
                 var cell = MainGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                var txt = e.Value.ToString();
+                var txt = e.Value?.ToString();
+
+                if (txt.IsNullOrEmptyTrimmed()) return;
 
                 if (txt.StringLineCount() > _maxLyricToolTipLines)
                     txt = txt.TruncateStringLines(_maxLyricToolTipLines).Trim() + Environment.NewLine + "...";
@@ -584,7 +598,7 @@ namespace MediaCenter.LyricsFinder
                     if (key == _selectedKey)
                     {
                         row.Selected = true;
-                        MainGridView.FirstDisplayedScrollingRowIndex = (row.Index > 2) ? row.Index - 3 : 0;
+                        ScrollDataGrid(row.Index);
                         break;
                     }
                 }

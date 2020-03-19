@@ -547,7 +547,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             // Skip if we are over the quota limit
             if (IsActive && await IsQuotaExceededAsync())
-                QuotaError();
+                QuotaError(mcItem, isGetAll);
 
             return this;
         }
@@ -594,14 +594,19 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Sets the IsActive property to <c>false</c> and throws a quota error.
         /// </summary>
-        /// <exception cref="LyricsQuotaExceededException">Lyric service ... is exceeding its quota ...</exception>
-        protected virtual void QuotaError()
+        /// <param name="mcItem">The item.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <exception cref="LyricsQuotaExceededException">Lyric service ... is exceeding its quota...</exception>
+        protected virtual void QuotaError(McMplItem mcItem = null, bool isGetAll = false)
         {
             IsActive = false;
 
-            throw new LyricsQuotaExceededException($"Lyric service \"{Credit.ServiceName}\" "
-                + "is exceeding its quota and is now disabled in LyricsFinder, "
-                + "no more requests will be sent to this service until corrected.");
+            throw new LyricsQuotaExceededException("\r\n"
+                + $"Lyric service \"{Credit.ServiceName}\" is exceeding its quota. \r\n"
+                + "The service is now disabled in LyricsFinder. \r\n"
+                + "Check the service in the lyric service form. \r\n"
+                + "No more requests will be sent to this service until corrected.",
+                isGetAll, Credit, mcItem);
         }
 
 

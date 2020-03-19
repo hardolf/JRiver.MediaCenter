@@ -73,6 +73,8 @@ namespace MediaCenter.LyricsFinder
 
         private LyricsFinderDataType LyricsFinderData { get; set; }
 
+        private Form OwnerForm { get; set; }
+
         /// <summary>
         /// Gets the dialog result.
         /// </summary>
@@ -100,6 +102,7 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Initializes a new instance of the <see cref="LyricForm" /> class.
         /// </summary>
+        /// <param name="ownerForm">The owner form.</param>
         /// <param name="lyricCell">The lyric cell.</param>
         /// <param name="location">The location.</param>
         /// <param name="size">The size.</param>
@@ -115,7 +118,7 @@ namespace MediaCenter.LyricsFinder
         /// callback
         /// or
         /// lyricsFinderData</exception>
-        internal LyricForm(DataGridViewTextBoxCell lyricCell, Point location, Size? size, Action<LyricForm> callback, LyricsFinderDataType lyricsFinderData, LyricsFinderCore lyricsFinderCore, bool isSearch = false, string artist = null, string album = null, string track = null)
+        internal LyricForm(Form ownerForm, DataGridViewTextBoxCell lyricCell, Point location, Size? size, Action<LyricForm> callback, LyricsFinderDataType lyricsFinderData, LyricsFinderCore lyricsFinderCore, bool isSearch = false, string artist = null, string album = null, string track = null)
             : this()
         {
 #pragma warning disable IDE0016 // Use 'throw' expression
@@ -132,6 +135,7 @@ namespace MediaCenter.LyricsFinder
             _isSearch = isSearch;
             LyricsFinderData = lyricsFinderData;
             LyricsFinderCore = lyricsFinderCore;
+            OwnerForm = ownerForm;
 
             if (size != null)
                 Size = size.Value;
@@ -381,17 +385,37 @@ namespace MediaCenter.LyricsFinder
                         break;
 
                     case Keys.Tab:
-                        if (_isSearch && ArtistTextBox.Focused && e.Shift)
+                        if (e.Control)
+                        {
+                            if (FindOrReplaceForm.CanFocus)
+                            {
+                                var x = LyricTextBox.Focused;
+                                var y = FindOrReplaceForm.Focused;
+                                FindOrReplaceForm.Focus();
+                                //if (CloseButton.CanFocus)
+                                //    CloseButton.Focus();
+                                e.Handled = true;
+                            }
+                            else if ((_searchForm != null) && _searchForm.CanFocus)
+                            {
+                                _searchForm.Focus();
+                                e.Handled = true;
+                            }
+                            else if ((OwnerForm != null) && OwnerForm.CanFocus)
+                            {
+                                OwnerForm.Focus();
+                                e.Handled = true;
+                            }
+                        }
+                        else if (_isSearch && ArtistTextBox.Focused && e.Shift)
                         {
                             CloseButton.Focus();
                             e.Handled = true;
-
                         }
                         else if (_isSearch && CloseButton.Focused && !e.Shift)
                         {
                             ArtistTextBox.Focus();
                             e.Handled = true;
-
                         }
                         else if (_isSearch && LyricFormTrackBar.Focused)
                         {
@@ -419,10 +443,9 @@ namespace MediaCenter.LyricsFinder
                                 e.Handled = true;
                             }
                         }
-                        break;
+                        break; // case Keys.Tab end
 
                     default:
-                        e.Handled = false;
                         break;
                 }
             }
@@ -917,7 +940,7 @@ namespace MediaCenter.LyricsFinder
                 if (_searchForm != null)
                     _searchForm.Close();
 
-                _searchForm = new LyricForm(LyricCell, Location, Size, SearchLyricCallbackAsync, LyricsFinderData, LyricsFinderCore, true, ArtistTextBox.Text, AlbumTextBox.Text, TrackTextBox.Text);
+                _searchForm = new LyricForm(this, LyricCell, Location, Size, SearchLyricCallbackAsync, LyricsFinderData, LyricsFinderCore, true, ArtistTextBox.Text, AlbumTextBox.Text, TrackTextBox.Text);
                 _searchForm.Show(this);
             }
             catch (Exception ex)
@@ -1001,23 +1024,6 @@ namespace MediaCenter.LyricsFinder
         }
 
 
-        /// <summary>
-        /// Handles the EnterAsync event of one of the TopTextBox controls.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private async void TopTextBox_EnterAsync(object sender, EventArgs e)
-        {
-            try
-            {
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
-            }
-        }
-
-
         /**************************/
         /***** Misc. routines *****/
         /**************************/
@@ -1077,7 +1083,7 @@ namespace MediaCenter.LyricsFinder
             if (LyricTextBox.SelectionStart < LyricTextBox.Text.Length - findText.Length - 1)
             {
                 var startIdx = LyricTextBox.SelectionStart;
-                var foundIdx = (isNext) 
+                var foundIdx = (isNext)
                     ? LyricTextBox.Text.IndexOf(findText, startIdx + 1, StringComparison.InvariantCultureIgnoreCase)
                     : LyricTextBox.Text.IndexOf(findText, startIdx, StringComparison.InvariantCultureIgnoreCase);
 

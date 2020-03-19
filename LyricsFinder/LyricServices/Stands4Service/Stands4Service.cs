@@ -141,8 +141,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             try
             {
-                DisplayProperties.Add("QuotaResetTimeService", "QuotaResetTime", "ServiceLocalTime", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture), 
-                    "Next quota reset local time, service", null, true, 
+                DisplayProperties.Add("QuotaResetTimeService", "QuotaResetTime", "ServiceLocalTime", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture),
+                    "Next quota reset local time, service", null, true,
                     DateTime.Now.ToLocalTime().AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture));
             }
             catch (TimeZoneNotFoundException ex)
@@ -174,6 +174,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             if (resultList == null) throw new ArgumentNullException(nameof(resultList));
+            if (!IsActive) return;
 
             if (isGetAll)
             {
@@ -232,6 +233,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         protected override async Task<string> ExtractOneLyricTextAsync(Uri uri, CancellationToken cancellationToken)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
+            if (!IsActive) return string.Empty;
 
             var ret = await base.ExtractOneLyricTextAsync(uri, cancellationToken).ConfigureAwait(false);
             var html = await base.HttpGetStringAsync(uri).ConfigureAwait(false);
@@ -338,15 +340,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 // Quota exceeded?
                 if (txt.ToUpperInvariant().Contains("<ERROR>DAILY USAGE EXCEEDED</ERROR>"))
-                {
-                    IsActive = false;
-
-                    throw new LyricsQuotaExceededException("\r\n"
-                        + $"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day \r\n"
-                        + "The service is now disabled in LyricsFinder. \r\n"
-                        + "No more requests will be sent to this service until corrected.",
-                        isGetAll, Credit, item);
-                }
+                    QuotaError(item, isGetAll);
 
                 // Deserialize the returned JSON
                 var results = txt.XmlDeserializeFromString<StandsResultListType>();
@@ -358,13 +352,14 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     await ExtractAllLyricTextsAsync(item, results, cancellationToken, isGetAll, true).ConfigureAwait(false);
 
                     // If not found or if we want all possible results, we next try a more lax test without the album
-                    if (isGetAll || (LyricResult != LyricsResultEnum.Found))
+                    if (IsActive &&
+                        (isGetAll || (LyricResult != LyricsResultEnum.Found)))
                         await ExtractAllLyricTextsAsync(item, results, cancellationToken, isGetAll, false).ConfigureAwait(false);
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.",  isGetAll, Credit, item, ub.Uri, ex);
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
             }
             catch (Exception ex)
             {
@@ -372,6 +367,29 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
 
             return this;
+        }
+
+
+        /// <summary>
+        /// Sets the IsActive property to <c>false</c> and throws a quota error.
+        /// </summary>
+        /// <param name="mcItem">The item.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <exception cref="LyricsQuotaExceededException">Lyric service ... is exceeding its quota...</exception>
+        /// <remarks>
+        /// Do NOT call the base routine!
+        /// It would throw another exception!
+        /// </remarks>
+        protected override void QuotaError(McMplItem mcItem = null, bool isGetAll = false)
+        {
+            IsActive = false;
+
+            throw new LyricsQuotaExceededException("\r\n"
+                + $"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day. \r\n"
+                + "The service is now disabled in LyricsFinder. \r\n"
+                + "Check the service daily request count in the lyric service form. \r\n"
+                + "No more requests will be sent to this service until corrected.",
+                isGetAll, Credit, mcItem);
         }
 
 

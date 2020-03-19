@@ -148,8 +148,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
 
-                // Example GET request:
+                // Example GET requests:
+                // http://api.cajunlyrics.com/LyricSearchList.php?artist=Bruce%20Daigrepont&title=La%20Jalouserie
                 // http://api.cajunlyrics.com/LyricDirectSearch.php?artist=Bruce%20Daigrepont&title=La%20Jalouserie
+                // http://api.cajunlyrics.com/LyricDirectSearch.php?ID=64
 
                 var itemName = item.Name.Trim();
                 var uris = new List<Uri>();
@@ -170,7 +172,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 var lyricIds = ExtractAllLyricIds(xmlText);
 
                 // If no results where found, repeat the search with the track title alone (no artist)
-                if (!lyricIds.Any())
+                if (IsActive && !lyricIds.Any())
                 {
                     ub = new UriBuilder($"{uriText}/LyricSearchList.php?title={itemName}");
 

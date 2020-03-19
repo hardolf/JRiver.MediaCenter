@@ -70,7 +70,6 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 FindTextBox.Select();
-                // Console.Beep();
             }
             catch (Exception ex)
             {
@@ -95,6 +94,14 @@ namespace MediaCenter.LyricsFinder
                 {
                     e.Handled = true;
                     OkButton.PerformClick();
+                }
+                else if (e.KeyCode == Keys.Tab)
+                {
+                    if (OwnerForm.CanFocus)
+                    {
+                        e.Handled = true;
+                        OwnerForm.Focus();
+                    }
                 }
             }
             catch (Exception ex)
@@ -149,6 +156,9 @@ namespace MediaCenter.LyricsFinder
                         ? "Find next (F3)"
                         : "Find and replace next (F3)");
                 } while (Visible && (sender == ReplaceAllButton));
+
+                if (OwnerForm.CanFocus)
+                    OwnerForm.Focus();
             }
             catch (Exception ex)
             {

@@ -64,6 +64,7 @@
             // 
             this.McControlToolStripContainer.LeftToolStripPanel.Controls.Add(this.McControlLeftToolStrip);
             this.McControlToolStripContainer.LeftToolStripPanel.MouseEnter += new System.EventHandler(this.McControlLeftToolStrip_MouseEnterAsync);
+            this.McControlToolStripContainer.LeftToolStripPanel.MouseLeave += new System.EventHandler(this.McControlLeftToolStrip_MouseLeaveAsync);
             this.McControlToolStripContainer.Location = new System.Drawing.Point(0, 0);
             this.McControlToolStripContainer.Name = "McControlToolStripContainer";
             // 
@@ -93,6 +94,9 @@
             this.McPositionTrackBar.SmallChange = 5;
             this.McPositionTrackBar.TabIndex = 2;
             this.McPositionTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.McPositionTrackBar.KeyDown += new System.Windows.Forms.KeyEventHandler(this.McPositionTrackBar_KeyDownAndUpAsync);
+            this.McPositionTrackBar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.McPositionTrackBar_KeyPressAsync);
+            this.McPositionTrackBar.KeyUp += new System.Windows.Forms.KeyEventHandler(this.McPositionTrackBar_KeyDownAndUpAsync);
             this.McPositionTrackBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.McPositionTrackBar_MouseDownAsync);
             this.McPositionTrackBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.McPositionTrackBar_MouseUpAsync);
             this.McPositionTrackBar.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.McPositionTrackBar_PreviewKeyDownAsync);
@@ -154,6 +158,7 @@
             this.Size = new System.Drawing.Size(400, 60);
             this.Load += new System.EventHandler(this.McPlayControl_LoadAsync);
             this.MouseEnter += new System.EventHandler(this.McPlayControl_MouseEnterAsync);
+            this.MouseLeave += new System.EventHandler(this.McPlayControl_MouseLeaveAsync);
             this.McControlToolStripContainer.ContentPanel.ResumeLayout(false);
             this.McControlToolStripContainer.ContentPanel.PerformLayout();
             this.McControlToolStripContainer.LeftToolStripPanel.ResumeLayout(false);

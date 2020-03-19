@@ -828,6 +828,25 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Scrolls the data grid.
+        /// </summary>
+        /// <param name="rowIndex">Index of the row.</param>
+        private void ScrollDataGrid(int rowIndex)
+        {
+            if (rowIndex < 0) return;
+            if (rowIndex > MainGridView.Rows.Count - 1) return;
+            if ((rowIndex > MainGridView.FirstDisplayedScrollingRowIndex)
+                && (rowIndex < MainGridView.FirstDisplayedScrollingRowIndex + MainGridView.DisplayedRowCount(false)))
+                return;
+
+            MainGridView.CurrentCell = MainGridView.Rows[rowIndex].Cells[0];
+
+            if (rowIndex < MainGridView.FirstDisplayedScrollingRowIndex)
+                MainGridView.FirstDisplayedScrollingRowIndex = rowIndex;
+        }
+
+
+        /// <summary>
         /// Sets the play images.
         /// </summary>
         /// <returns>Playing row index or -1 if nothing is playing.</returns>
@@ -986,7 +1005,7 @@ namespace MediaCenter.LyricsFinder
             var location = new Point(MousePosition.X, MousePosition.Y);
             var size = LyricsFinderData.MainData.LyricFormSize;
 
-            _lyricForm = new LyricForm(cell, location, size, ShowLyricsCallbackAsync, LyricsFinderData, this)
+            _lyricForm = new LyricForm(null, cell, location, size, ShowLyricsCallbackAsync, LyricsFinderData, this)
             {
                 StartPosition = (isAutoOpen) ? FormStartPosition.Manual : FormStartPosition.CenterParent
             };

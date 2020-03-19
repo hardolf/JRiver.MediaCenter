@@ -76,6 +76,8 @@ namespace MediaCenter.LyricsFinder
             _textBox.Resources[SystemColors.InactiveSelectionHighlightBrushKey] = SystemColors.HighlightBrush;
             _textBox.Resources[SystemColors.InactiveSelectionHighlightTextBrushKey] = SystemColors.HighlightTextBrush;
 
+            // PreviewKeyDown += (s, e) => OnPreviewKeyDown(e);
+
             InstalledInputLanguages = System.Windows.Forms.InputLanguage.InstalledInputLanguages;
             InstalledCultures = new List<CultureInfo>();
 
@@ -521,8 +523,9 @@ namespace MediaCenter.LyricsFinder
         public new event EventHandler Enter;
 
         /// <summary>
-        /// Raises the <see cref="System.Windows.Forms.Control.Enter"/> event.
+        /// Raises the <see cref="System.Windows.Forms.Control.Enter" /> event.
         /// </summary>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected virtual void OnEnterWpf(EventArgs e)
         {
             Enter?.Invoke(this, e);
@@ -538,7 +541,8 @@ namespace MediaCenter.LyricsFinder
         /// <summary>
         /// Raises the <see cref="KeyDown" /> event with WPF event args converted to WinForms event args.
         /// </summary>
-        /// <param name="e">The <see cref="System.Windows.Input.KeyEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="System.Windows.Input.KeyEventArgs" /> instance containing the event data.</param>
+        /// <exception cref="ArgumentNullException">e</exception>
         /// <remarks>
         /// Source inspired by: https://stackoverflow.com/questions/1153009/how-can-i-convert-system-windows-input-key-to-system-windows-forms-keys
         /// </remarks>
@@ -547,22 +551,32 @@ namespace MediaCenter.LyricsFinder
             if (e is null) throw new ArgumentNullException(nameof(e));
 
             System.Windows.Input.Key wpfKey = e.Key;
-            System.Windows.Forms.Keys winFormsKeys;
+            System.Windows.Forms.Keys wfKeys;
 
-            // wpfKey = System.Windows.Input.KeyInterop.KeyFromVirtualKey((int)formsKey);
-            winFormsKeys = (System.Windows.Forms.Keys)System.Windows.Input.KeyInterop.VirtualKeyFromKey(wpfKey);
+            // wpfKey = System.Windows.Input.KeyInterop.KeyFromVirtualKey((int)winFormsKeys);
+            wfKeys = (System.Windows.Forms.Keys)System.Windows.Input.KeyInterop.VirtualKeyFromKey(wpfKey);
 
             if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Alt) > 0)
-                winFormsKeys |= System.Windows.Forms.Keys.Alt;
+                wfKeys |= System.Windows.Forms.Keys.Alt;
 
             if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Control) > 0)
-                winFormsKeys |= System.Windows.Forms.Keys.Control;
+                wfKeys |= System.Windows.Forms.Keys.Control;
 
             if ((System.Windows.Input.Keyboard.Modifiers & System.Windows.Input.ModifierKeys.Shift) > 0)
-                winFormsKeys |= System.Windows.Forms.Keys.Shift;
+                wfKeys |= System.Windows.Forms.Keys.Shift;
 
-            //System.Windows.Forms.Control.KeyDown(this, new System.Windows.Forms.KeyEventArgs(formsKeys));
-            KeyDown?.Invoke(this, new System.Windows.Forms.KeyEventArgs(winFormsKeys));
+            var wfKeyEventArgs = new System.Windows.Forms.KeyEventArgs(wfKeys);
+
+            // For some reason Ctrl+Tab needs extra handling, otherwise focus cannot be moved away from the SpellBox.
+            // So we simulate the Shift key being pressed also.
+            if (wfKeyEventArgs.Control && !wfKeyEventArgs.Shift && (wfKeyEventArgs.KeyCode == System.Windows.Forms.Keys.Tab))
+            {
+                wfKeys |= System.Windows.Forms.Keys.Shift;
+                wfKeyEventArgs = new System.Windows.Forms.KeyEventArgs(wfKeys);
+                e.Handled = true;
+            }
+
+            KeyDown?.Invoke(this, wfKeyEventArgs);
         }
 
 
@@ -573,11 +587,29 @@ namespace MediaCenter.LyricsFinder
         public new event EventHandler Leave;
 
         /// <summary>
-        /// Raises the <see cref="System.Windows.Forms.Control.Leave"/> event.
+        /// Raises the <see cref="System.Windows.Forms.Control.Leave" /> event.
         /// </summary>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected virtual void OnLeaveWpf(EventArgs e)
         {
             Leave?.Invoke(this, e);
+        }
+
+
+        /// <summary>
+        /// Occurs when a key is pressed while the control has focus.
+        /// </summary>
+        [Browsable(true)]
+        public new event EventHandler<System.Windows.Forms.PreviewKeyDownEventArgs> PreviewKeyDown;
+
+        /// <summary>
+        /// Raises the <see cref="System.Windows.Forms.Control.PreviewKeyDown" /> event.
+        /// </summary>
+        /// <param name="e">The <see cref="System.Windows.Forms.PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        protected override void OnPreviewKeyDown(System.Windows.Forms.PreviewKeyDownEventArgs e)
+        {
+            PreviewKeyDown?.Invoke(this, e);
         }
 
 

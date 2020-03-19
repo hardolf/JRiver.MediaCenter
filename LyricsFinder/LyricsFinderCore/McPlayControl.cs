@@ -24,6 +24,8 @@ namespace MediaCenter.LyricsFinder
     public partial class McPlayControl : UserControl
     {
 
+        private const int _mcPositionTrackBarMouseBufferZone = 5; // Seconds
+
         private bool _isLocked = false;
 
         private int _currentSeconds = 0;
@@ -254,6 +256,25 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the MouseLeave event of the McControlLeftToolStrip control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+        private async void McControlLeftToolStrip_MouseLeaveAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                if (OwnerControl.CanFocus)
+                    OwnerControl.Focus();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the Load event of the McPlayControl control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -297,6 +318,48 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the KeyDown event of the McPositionTrackBar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        /// <remarks>
+        /// We don't handle key operations in the trackbar, we let the parent controls do that.
+        /// </remarks>
+        private async void McPositionTrackBar_KeyDownAndUpAsync(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                e.Handled = true;
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the KeyPressAsync event of the McPositionTrackBar control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyPressEventArgs"/> instance containing the event data.</param>
+        /// <remarks>
+        /// We don't handle key operations in the trackbar, we let the parent controls do that.
+        /// </remarks>
+        private async void McPositionTrackBar_KeyPressAsync(object sender, KeyPressEventArgs e)
+        {
+            try
+            {
+                e.Handled = true;
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the MouseDown event of the McCurrentPositionTrackBar control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -323,6 +386,25 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the MouseLeave event of the McPlayControl control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void McPlayControl_MouseLeaveAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                if (OwnerControl.CanFocus)
+                    OwnerControl.Focus();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the MouseUp event of the McCurrentPositionTrackBar control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -336,15 +418,21 @@ namespace MediaCenter.LyricsFinder
 
                 _isLocked = false;
 
-                var pos = McPositionTrackBar.Value;
-                var diff = Math.Abs(pos - CurrentSeconds);
+                // Current trackbar position
+                var currentPosInt = McPositionTrackBar.Value;
 
-                if (diff != 0)
+                // Jump to the clicked location (in seconds) but keep a buffer zone of +/- _mcPositionTrackBarMouseBufferZone/2 seconds
+                var newPosDbl = ((double)e.X / (double)McPositionTrackBar.Width) * (McPositionTrackBar.Maximum - McPositionTrackBar.Minimum);
+                var newPosInt = Convert.ToInt32(newPosDbl);
+                var newDiff = Math.Abs(newPosInt - CurrentSeconds);
+
+                // Change only if outside the trackbar buffer zone
+                if (newDiff > _mcPositionTrackBarMouseBufferZone / 2)
                 {
-                    var rsp = await McRestService.PositionAsync(pos * 1000);
+                    var rsp = await McRestService.PositionAsync(newPosInt * 1000); // milliseconds
 
                     if (!rsp.IsOk)
-                        throw new Exception($"Setting play position to {pos} seconds in Media Center failed.");
+                        throw new Exception($"Setting play position to {currentPosInt} seconds in Media Center failed.");
                 }
 
                 if (OwnerControl.CanFocus)
