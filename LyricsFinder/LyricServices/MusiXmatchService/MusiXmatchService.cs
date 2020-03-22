@@ -106,7 +106,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
             var ret = await base.ExtractOneLyricTextAsync(uri, cancellationToken).ConfigureAwait(false);
-            var json = await base.HttpGetStringAsync(uri).ConfigureAwait(false);
+            var json = await HttpGetStringAsync(uri).ConfigureAwait(false);
 
             // Deserialize the returned JSON
             var lyricDyn = JsonConvert.DeserializeObject<dynamic>(json);
@@ -165,7 +165,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 // http://api.musixmatch.com/ws/1.1/track.lyrics.get?apikey=xxxxxxxxxxxxxxxxxxxxx&track_id=72952844&commontrack_id=61695
 
                 // First we search for the track
-                json = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+                json = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                 // Deserialize the returned JSON
                 var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);

@@ -638,7 +638,6 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MenuItem_ClickAsync(object sender, EventArgs e)
         {
-            var ci = CultureInfo.CurrentCulture;
             var menuName = "Undefined menu";
 
             try
@@ -735,9 +734,7 @@ namespace MediaCenter.LyricsFinder
                                 break;
 
                             case nameof(EditDeleteMenuItem):
-                                if (txt.SelectionLength < 1)
-                                    txt.SelectionLength = 1;
-                                txt.Cut();
+                                txt.SetSelectionText(SelectionOperation.Cut);
                                 break;
 
                             case nameof(EditFindMenuItem):
@@ -750,7 +747,7 @@ namespace MediaCenter.LyricsFinder
 
                             case nameof(EditLowerCaseMenuItem):
                                 if (DoTextOperationQuestion(true))
-                                    txt.SelectedText = txt.SelectedText.ToLower(ci);
+                                    txt.SetSelectionText(SelectionOperation.LowerCase);
                                 break;
 
                             case nameof(EditPasteMenuItem):
@@ -761,7 +758,7 @@ namespace MediaCenter.LyricsFinder
 
                             case nameof(EditProperCaseMenuItem):
                                 if (DoTextOperationQuestion(true))
-                                    txt.SelectedText = txt.SelectedText.ToProperCase();
+                                    txt.SetSelectionText(SelectionOperation.ProperCase);
                                 break;
 
                             case nameof(EditReplaceMenuItem):
@@ -770,7 +767,7 @@ namespace MediaCenter.LyricsFinder
 
                             case nameof(EditSentenceCaseMenuItem):
                                 if (DoTextOperationQuestion(true))
-                                    txt.SelectedText = txt.SelectedText.ToSentenceCase();
+                                    txt.SetSelectionText(SelectionOperation.SentenceCase);
                                 break;
 
                             case nameof(EditToggleSpellCheckMenuItem):
@@ -779,17 +776,17 @@ namespace MediaCenter.LyricsFinder
 
                             case nameof(EditTitleCaseMenuItem):
                                 if (DoTextOperationQuestion(true))
-                                    txt.SelectedText = txt.SelectedText.ToTitleCase();
+                                    txt.SetSelectionText(SelectionOperation.TitleCase);
                                 break;
 
                             case nameof(EditTrimMenuItem):
                                 if (DoTextOperationQuestion(true))
-                                    txt.SelectedText = txt.SelectedText.TrimStringLines();
+                                    txt.SetSelectionText(SelectionOperation.Trim);
                                 break;
 
                             case nameof(EditUpperCaseMenuItem):
                                 if (DoTextOperationQuestion(true))
-                                    txt.SelectedText = txt.SelectedText.ToUpper(ci);
+                                    txt.SetSelectionText(SelectionOperation.UpperCase);
                                 break;
 
                             case nameof(EditUndoMenuItem):

@@ -72,17 +72,20 @@ namespace MediaCenter.SharedComponents
         /// Capitalizes the word using proper case.
         /// </summary>
         /// <param name="word">The word.</param>
+        /// <param name="cultureInfo">The culture information.</param>
         /// <returns>
         /// Capitalized word string.
         /// </returns>
         /// <exception cref="ArgumentNullException">word</exception>
         /// <exception cref="ArgumentException">The {nameof(word)} may not contain spaces: {word}.</exception>
-        /// <remarks>For definition, <see href="https://www.computerhope.com/jargon/p/proper-case.htm"/>.</remarks>
-        public static string CapitalizeWord(this string word)
+        /// <remarks>
+        /// For definition, <see href="https://www.computerhope.com/jargon/p/proper-case.htm" />.
+        /// </remarks>
+        public static string CapitalizeWord(this string word, CultureInfo cultureInfo = null)
         {
             if (word == null) throw new ArgumentNullException(nameof(word));
 
-            var ci = CultureInfo.CurrentCulture;
+            var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var ret = word.Trim();
 
             if (ret.Contains(' ')) throw new ArgumentException($"The {nameof(word)} may not contain spaces: {word}.");
@@ -98,17 +101,20 @@ namespace MediaCenter.SharedComponents
         /// Capitalizes the word using title case.
         /// </summary>
         /// <param name="word">The word.</param>
+        /// <param name="cultureInfo">The culture information.</param>
         /// <returns>
         /// Capitalized word string.
         /// </returns>
         /// <exception cref="ArgumentNullException">word</exception>
         /// <exception cref="ArgumentException">The {nameof(word)} may not contain spaces: {word}.</exception>
-        /// <remarks>For definition, <see href="https://www.computerhope.com/jargon/t/title-case.htm"/>.</remarks>
-        public static string CapitalizeWordTitle(this string word)
+        /// <remarks>
+        /// For definition, <see href="https://www.computerhope.com/jargon/t/title-case.htm" />.
+        /// </remarks>
+        public static string CapitalizeWordTitle(this string word, CultureInfo cultureInfo = null)
         {
             if (word == null) throw new ArgumentNullException(nameof(word));
 
-            var ci = CultureInfo.CurrentCulture;
+            var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var ret = word.Trim();
 
             if (ret.Contains(' ')) throw new ArgumentException($"The {nameof(word)} may not contain spaces: {word}.");
@@ -712,12 +718,16 @@ namespace MediaCenter.SharedComponents
         /// Converts input string to proper case.
         /// </summary>
         /// <param name="input">The input string.</param>
-        /// <returns>Proper case version of the input string.</returns>
-        public static string ToProperCase(this string input)
+        /// <param name="cultureInfo">The culture information.</param>
+        /// <returns>
+        /// Proper case version of the input string.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">input</exception>
+        public static string ToProperCase(this string input, CultureInfo cultureInfo = null)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            var ci = CultureInfo.CurrentCulture;
+            var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var ti = ci.TextInfo;
             var ret = input;
 
@@ -731,12 +741,16 @@ namespace MediaCenter.SharedComponents
         /// Converts input string to sentence case.
         /// </summary>
         /// <param name="input">The input string.</param>
-        /// <returns>Sentence case version of the input string.</returns>
-        public static string ToSentenceCase(this string input)
+        /// <param name="cultureInfo">The culture information.</param>
+        /// <returns>
+        /// Sentence case version of the input string.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">input</exception>
+        public static string ToSentenceCase(this string input, CultureInfo cultureInfo = null)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            var ci = CultureInfo.CurrentCulture;
+            var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var isNextUpper = true; // Start with upper case
             var ret = new StringBuilder(input.ToNormalizedString());
 
@@ -762,12 +776,16 @@ namespace MediaCenter.SharedComponents
         /// Converts input string to title case.
         /// </summary>
         /// <param name="input">The input string.</param>
-        /// <returns>Title case version of the input string.</returns>
-        public static string ToTitleCase(this string input)
+        /// <param name="cultureInfo">The culture information.</param>
+        /// <returns>
+        /// Title case version of the input string.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">input</exception>
+        public static string ToTitleCase(this string input, CultureInfo cultureInfo = null)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            var ci = CultureInfo.CurrentCulture;
+            var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var ret = input.ToNormalizedString();
             var lines = ret.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
@@ -803,6 +821,8 @@ namespace MediaCenter.SharedComponents
         /// <returns>The <c>input</c> string with each of it's lines trimmed.</returns>
         public static string TrimStringLines(this string input)
         {
+            if (input.IsNullOrEmptyTrimmed()) return input;
+
             var ret = new StringBuilder();
 
             using (var sr = new StringReader(input))
@@ -814,6 +834,10 @@ namespace MediaCenter.SharedComponents
                     ret.AppendLine(line.Trim());
                 }
             }
+
+            // Remove the last line-end if the input string does not end with a line-end
+            if (!input.EndsWith(Environment.NewLine, StringComparison.InvariantCultureIgnoreCase))
+                ret.Length = ret.Length - Environment.NewLine.Length;
 
             return ret.ToString();
         }

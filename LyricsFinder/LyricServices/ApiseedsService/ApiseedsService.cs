@@ -126,7 +126,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 ub = new UriBuilder($"{Credit.ServiceUrl}/{item.Artist}/{itemName}?apikey={Token}");
 
                 // First we search for the track
-                json = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+                json = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                 // Deserialize the returned JSON
                 var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);

@@ -87,8 +87,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
             var ret = await base.ExtractOneLyricTextAsync(uri, cancellationToken).ConfigureAwait(false);
-            var html = await base.HttpGetStringAsync(uri).ConfigureAwait(false);
+            var html = await HttpGetStringAsync(uri).ConfigureAwait(false);
             var doc = new HtmlDocument();
+
+            TestIpBanWarning(html);
 
             doc.LoadHtml(html);
 
@@ -200,10 +202,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Processes the asynchronous.
         /// </summary>
-        /// <param name="item">The item.</param>
+        /// <param name="mcItem">The item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="isGetAll">if set to <c>true</c> [is get all].</param>
-        /// <returns></returns>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <returns>
+        ///   <see cref="AZLyricsService" /> descendant object.
+        /// </returns>
         /// <exception cref="ArgumentNullException">item</exception>
         /// <exception cref="LyricServiceIpBanWarningException"></exception>
         /// <exception cref="LyricServiceIpBannedException">
@@ -219,32 +223,22 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </exception>
         /// <exception cref="LyricServiceCommunicationException"></exception>
         /// <exception cref="LyricServiceBaseException"></exception>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
             var html = string.Empty;
             var ub = new UriBuilder(Credit.ServiceUrl);
 
             try
             {
-                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
+                await base.ProcessAsync(mcItem, cancellationToken).ConfigureAwait(false); // Result: not found
 
                 // First we try a rigorous query
-                ub.Query = $"q={item.Artist} {item.Album} {item.Name}";
-                html = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+                ub.Query = $"q={mcItem.Artist} {mcItem.Album} {mcItem.Name}";
+                html = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
-                if (html.ToUpperInvariant().Contains("<FORM ID=\"AZ_UNBLOCK\""))
-                {
-                    IsActive = false;
-
-                    throw new LyricServiceIpBanWarningException("\r\n"
-                            + $"Lyric service \"{Credit.ServiceName}\" is in danger of a ban of your IP address. \r\n"
-                            + "The service is now disabled in LyricsFinder. \r\n"
-                            + "No more requests will be sent to this service until corrected. \r\n"
-                            + "You should try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.",
-                            isGetAll, Credit, item);
-                }
+                TestIpBanWarning(html, mcItem, isGetAll);
 
                 // We force serial search in order to avoid IP address banning from the service
                 await ExtractAllLyricTextsAsync(GetResultUris(html), cancellationToken, isGetAll, true).ConfigureAwait(false);
@@ -253,8 +247,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 if (IsActive && 
                     (isGetAll || (LyricResult != LyricsResultEnum.Found)))
                 {
-                    ub.Query = $"q={item.Artist} {item.Name}";
-                    html = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+                    ub.Query = $"q={mcItem.Artist} {mcItem.Name}";
+                    html = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+
+                    TestIpBanWarning(html, mcItem, isGetAll);
 
                     // We force serial search in order to avoid IP address banning from the service
                     await ExtractAllLyricTextsAsync(GetResultUris(html), cancellationToken, isGetAll, true).ConfigureAwait(false);
@@ -277,17 +273,43 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                             + "This is possibly a temporary ban of your IP address and the service is now disabled in LyricsFinder. \r\n"
                             + "No more requests will be sent to this service until corrected. \r\n"
                             + "You could try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.", 
-                            isGetAll, Credit, item, ex);
+                            isGetAll, Credit, mcItem, ex);
                 }
                 else
-                    throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.",  isGetAll, Credit, item, ub.Uri, ex);
+                    throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.",  isGetAll, Credit, mcItem, ub.Uri, ex);
             }
             catch (Exception ex)
             {
-                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
+                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed.", isGetAll, Credit, mcItem, ex);
             }
 
             return this;
+        }
+
+
+        /// <summary>
+        /// Tests if the <c>html</c> contains an IP ban warning.
+        /// </summary>
+        /// <param name="html">The HTML.</param>
+        /// <param name="mcItem">The item.</param>
+        /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
+        /// <exception cref="ArgumentNullException">html</exception>
+        /// <exception cref="LyricServiceIpBanWarningException">..."</exception>
+        private void TestIpBanWarning(string html, McMplItem mcItem = null, bool isGetAll = false)
+        {
+            if (html.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(html));
+
+            if (html.ToUpperInvariant().Contains("<FORM ID=\"AZ_UNBLOCK\""))
+            {
+                IsActive = false;
+
+                throw new LyricServiceIpBanWarningException("\r\n"
+                        + $"Lyric service \"{Credit.ServiceName}\" is in danger of a ban of your IP address. \r\n"
+                        + "The service is now disabled in LyricsFinder. \r\n"
+                        + "No more requests will be sent to this service until corrected. \r\n"
+                        + "You should try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.",
+                        isGetAll, Credit, mcItem);
+            }
         }
 
     }

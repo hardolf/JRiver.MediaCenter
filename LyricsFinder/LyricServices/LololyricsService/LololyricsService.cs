@@ -83,7 +83,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
             var ret = await base.ExtractOneLyricTextAsync(uri, cancellationToken).ConfigureAwait(false);
-            var html = await base.HttpGetStringAsync(uri).ConfigureAwait(false);
+            var html = await HttpGetStringAsync(uri).ConfigureAwait(false);
             var doc = new HtmlDocument();
 
             doc.LoadHtml(html);
@@ -168,7 +168,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 else
                     ub = new UriBuilder($"{uriText}?artist={item.Artist}&track={itemName}");
 
-                xmlText = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+                xmlText = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                 // Deserialize the returned XML
                 var loadOptions = LoadOptions.PreserveWhitespace;

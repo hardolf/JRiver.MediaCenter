@@ -41,9 +41,11 @@ namespace MediaCenter.LyricsFinder
     /// There's a nagging problem with the Font, there is no easy way to map a WF Font to the WPF font properties. 
     /// The easiest workaround for that is to set the form's Font to "Segoe UI", the default for WPF.
     /// </para>
+    /// <para>
+    ///[DesignerSerializer("System.Windows.Forms.Design.ControlCodeDomSerializer, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.ComponentModel.Design.Serialization.CodeDomSerializer, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
+    /// </para>
     /// </remarks>
     [Designer(typeof(ControlDesigner))]
-    //[DesignerSerializer("System.Windows.Forms.Design.ControlCodeDomSerializer, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.ComponentModel.Design.Serialization.CodeDomSerializer, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
     public class SpellBox : ElementHost
     {
 
@@ -491,6 +493,74 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Sets the selection text.
+        /// </summary>
+        /// <param name="selectionOperation">The selection operation to be used.</param>
+        /// <param name="cultureInfo">The culture information.</param>
+        public virtual void SetSelectionText(SelectionOperation selectionOperation, CultureInfo cultureInfo = null)
+        {
+            var ci = cultureInfo ?? CultureInfo.CurrentCulture;
+            var selStart = SelectionStart;
+            var selLength = SelectionLength;
+            var selText = SelectedText;
+
+            if (selLength < 1)
+                SelectionLength = 1;
+
+            switch (selectionOperation)
+            {
+                case SelectionOperation.Copy:
+                    Copy();
+                    break;
+
+                case SelectionOperation.Cut:
+                case SelectionOperation.Delete:
+                    Cut();
+                    selLength = 0;
+                    break;
+
+                case SelectionOperation.LowerCase:
+                    SelectedText = selText.ToLower(ci);
+                    break;
+
+                case SelectionOperation.Paste:
+                    // Determine if there is any text in the Clipboard to paste into the text box.
+                    if (Clipboard.GetDataObject().GetDataPresent(DataFormats.Text) == true)
+                        Paste();
+                    break;
+
+                case SelectionOperation.ProperCase:
+                    SelectedText = selText.ToProperCase(ci);
+                    break;
+
+                case SelectionOperation.SentenceCase:
+                    SelectedText = selText.ToSentenceCase(ci);
+                    break;
+
+                case SelectionOperation.TitleCase:
+                    SelectedText = selText.ToTitleCase(ci);
+                    break;
+
+                case SelectionOperation.Trim:
+                    var tmp = selText.TrimStringLines();
+                    SelectedText = tmp;
+                    selLength = tmp.Length;
+                    break;
+
+                case SelectionOperation.UpperCase:
+                    SelectedText = selText.ToUpper(ci);
+                    break;
+
+                default:
+                    break;
+            }
+
+            SelectionStart = selStart;
+            SelectionLength = selLength;
+        }
+
+
+        /// <summary>
         /// Undoes this instance.
         /// </summary>
         /// <returns>
@@ -643,6 +713,27 @@ namespace MediaCenter.LyricsFinder
             e.Handled = true;
         }
 
+    }
+
+
+
+    /// <summary>
+    /// Selection operations.
+    /// </summary>
+    public enum SelectionOperation
+    {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        Copy,
+        Cut,
+        Delete,
+        LowerCase,
+        Paste,
+        ProperCase,
+        SentenceCase,
+        TitleCase,
+        Trim,
+        UpperCase
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 
 }

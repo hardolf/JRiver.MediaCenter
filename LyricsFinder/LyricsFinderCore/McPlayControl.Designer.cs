@@ -57,7 +57,7 @@
             this.McControlToolStripContainer.ContentPanel.Controls.Add(this.McPositionTrackBar);
             this.McControlToolStripContainer.ContentPanel.Controls.Add(this.TrackingLabel);
             this.McControlToolStripContainer.ContentPanel.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
-            this.McControlToolStripContainer.ContentPanel.Size = new System.Drawing.Size(369, 60);
+            this.McControlToolStripContainer.ContentPanel.Size = new System.Drawing.Size(368, 60);
             this.McControlToolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // McControlToolStripContainer.LeftToolStripPanel
@@ -90,7 +90,7 @@
             this.McPositionTrackBar.Location = new System.Drawing.Point(0, 3);
             this.McPositionTrackBar.Maximum = 100;
             this.McPositionTrackBar.Name = "McPositionTrackBar";
-            this.McPositionTrackBar.Size = new System.Drawing.Size(356, 45);
+            this.McPositionTrackBar.Size = new System.Drawing.Size(355, 45);
             this.McPositionTrackBar.SmallChange = 5;
             this.McPositionTrackBar.TabIndex = 2;
             this.McPositionTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
@@ -126,7 +126,7 @@
             this.ToolsPlayStartStopButton});
             this.McControlLeftToolStrip.Location = new System.Drawing.Point(0, 3);
             this.McControlLeftToolStrip.Name = "McControlLeftToolStrip";
-            this.McControlLeftToolStrip.Size = new System.Drawing.Size(31, 25);
+            this.McControlLeftToolStrip.Size = new System.Drawing.Size(32, 44);
             this.McControlLeftToolStrip.TabIndex = 0;
             this.McControlLeftToolStrip.TabStop = true;
             this.McControlLeftToolStrip.MouseEnter += new System.EventHandler(this.McPlayControl_MouseEnterAsync);
@@ -146,7 +146,7 @@
             this.ToolsPlayStartStopButton.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
             this.ToolsPlayStartStopButton.TextStart = "";
             this.ToolsPlayStartStopButton.TextStop = "";
-            this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item";
+            this.ToolsPlayStartStopButton.ToolTipText = "Start / pause play of the current item (Ctrl+P)";
             // 
             // McPlayControl
             // 

@@ -104,7 +104,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (uri == null) throw new ArgumentNullException(nameof(uri));
 
             var ret = await base.ExtractOneLyricTextAsync(uri, cancellationToken).ConfigureAwait(false);
-            var xmlText = await base.HttpGetStringAsync(uri).ConfigureAwait(false);
+            var xmlText = await HttpGetStringAsync(uri).ConfigureAwait(false);
 
             // Deserialize the returned XML
             var loadOptions = LoadOptions.PreserveWhitespace;
@@ -166,7 +166,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 // First we search for the artist and track title
                 ub = new UriBuilder($"{uriText}/LyricSearchList.php?artist={item.Artist}&title={itemName}");
 
-                xmlText = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+                xmlText = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                 // Deserialize the returned XML
                 var lyricIds = ExtractAllLyricIds(xmlText);
@@ -176,7 +176,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 {
                     ub = new UriBuilder($"{uriText}/LyricSearchList.php?title={itemName}");
 
-                    xmlText = await base.HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
+                    xmlText = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                     // Deserialize the returned XML
                     lyricIds = ExtractAllLyricIds(xmlText);
