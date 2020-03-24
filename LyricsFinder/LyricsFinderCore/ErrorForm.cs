@@ -127,6 +127,7 @@ namespace MediaCenter.LyricsFinder
 
                 using (var frm = new ErrorForm())
                 {
+                    frm.StartPosition = FormStartPosition.CenterParent;
                     frm.MaximumSize = maxWindowSize;
 
                     if ((textSize.Height > maxWindowSize.Height)

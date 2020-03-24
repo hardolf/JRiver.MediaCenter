@@ -129,7 +129,7 @@ namespace MediaCenter.LyricsFinder.Model
                 finally
                 {
                     // Save the service counters etc.
-                    lyricsFinderData.SaveAsync();
+                    await lyricsFinderData.SaveAsync();
                 }
             }
 

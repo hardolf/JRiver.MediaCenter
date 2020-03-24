@@ -1114,11 +1114,11 @@ namespace MediaCenter.LyricsFinder
                 if (_isDesignTime) return;
 
                 // Is it about time for a check?
-                var updInterval = LyricsFinderData.MainData.UpdateCheckIntervalDays;
+                var updIntervalDays = LyricsFinderData.MainData.UpdateCheckIntervalDays;
                 var daysSinceLast = (DateTime.Now - _lastUpdateCheck).TotalDays;
 
-                if ((updInterval == 0)
-                    || ((updInterval > 0) && (daysSinceLast >= updInterval)))
+                if ((updIntervalDays == 0)
+                    || ((updIntervalDays > 0) && (daysSinceLast >= updIntervalDays)))
                 {
                     var version = Assembly.GetExecutingAssembly().GetName().Version;
                     var isUpdated = await Model.Helpers.Utility.UpdateCheckWithRetriesAsync(version, this.Size);
@@ -1128,11 +1128,13 @@ namespace MediaCenter.LyricsFinder
 
                     _lastUpdateCheck = DateTime.Now;
                     LyricsFinderData.MainData.LastUpdateCheck = _lastUpdateCheck;
+                    await LyricsFinderData.SaveAsync();
                 }
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again
+                // UpdateCheckTimer.Start();
             }
-            catch //  (Exception ex)
+            catch // (Exception ex)
             {
                 // We ignore this exception for now
                 // ErrorReport(SharedComponents.Utility.GetActualAsyncMethodName(), ex);

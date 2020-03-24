@@ -147,7 +147,6 @@ namespace MediaCenter.LyricsFinder
 
             if (isSearch)
             {
-                // Cursor.Current = Cursors.WaitCursor;
                 location.Offset(-Size.Width + 10, 0);
                 ArtistTextBox.ReadOnly = true;
                 AlbumTextBox.ReadOnly = true;
@@ -171,7 +170,7 @@ namespace MediaCenter.LyricsFinder
             }
             else
             {
-                location.Offset(-Size.Width - 10, -Convert.ToInt32(Size.Height / 2));
+                // location.Offset(-Size.Width - 10, -Convert.ToInt32(Size.Height / 2));
                 ArtistTextBox.ReadOnly = false;
                 AlbumTextBox.ReadOnly = false;
                 TrackTextBox.ReadOnly = false;
@@ -275,7 +274,7 @@ namespace MediaCenter.LyricsFinder
                 }
                 else
                 {
-                    Result = MessageBox.Show(this, question, "Lyric changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    Result = MessageBox.Show(this, question, "Lyric changed", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
                     switch (Result)
                     {
@@ -305,7 +304,7 @@ namespace MediaCenter.LyricsFinder
                 _callback(this);
 
                 LyricsFinderData.MainData.LyricFormSize = Size;
-                LyricsFinderData.SaveAsync();
+                await LyricsFinderData.SaveAsync();
             }
             catch (Exception ex)
             {
@@ -1077,12 +1076,11 @@ namespace MediaCenter.LyricsFinder
 
             var ret = false;
 
-            if (LyricTextBox.SelectionStart < LyricTextBox.Text.Length - findText.Length - 1)
+            if (LyricTextBox.SelectionStart <= LyricTextBox.Text.Length - findText.Length)
             {
                 var startIdx = LyricTextBox.SelectionStart;
-                var foundIdx = (isNext)
-                    ? LyricTextBox.Text.IndexOf(findText, startIdx + 1, StringComparison.InvariantCultureIgnoreCase)
-                    : LyricTextBox.Text.IndexOf(findText, startIdx, StringComparison.InvariantCultureIgnoreCase);
+                var nextStartIdx = startIdx + ((LyricTextBox.SelectionLength > 0) ? LyricTextBox.SelectionLength : 1);
+                var foundIdx = LyricTextBox.Text.IndexOf(findText, (isNext ? nextStartIdx : startIdx), StringComparison.InvariantCultureIgnoreCase);
 
                 if (foundIdx >= startIdx)
                 {
@@ -1093,7 +1091,9 @@ namespace MediaCenter.LyricsFinder
                     }
                     else
                     {
-                        LyricTextBox.Text = LyricTextBox.Text.Remove(foundIdx, findText.Length).Insert(foundIdx, replaceText);
+                        var newText = LyricTextBox.Text.Remove(foundIdx, findText.Length).Insert(foundIdx, replaceText);
+
+                        LyricTextBox.Text = newText;
                         LyricTextBox.SelectionStart = foundIdx;
                         LyricTextBox.SelectionLength = replaceText.Length;
                     }

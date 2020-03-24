@@ -298,7 +298,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <summary>
         /// Saves this instance.
         /// </summary>
-        public virtual async void SaveAsync()
+        public virtual async Task SaveAsync()
         {
             // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
             await _semaphoreSlim.WaitAsync();

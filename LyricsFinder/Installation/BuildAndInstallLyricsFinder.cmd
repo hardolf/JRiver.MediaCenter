@@ -15,8 +15,12 @@ echo %_cmd%...
 %_cmd%
 rem set _exit_code=%errorlevel%
 
+:prompt
 echo.
-pause
+echo Wait for the build completion before answering the next question...
+echo.
+set /P _yesno=Install LyricsFinder (YN)? [Y] || Set _yesno=y
+if /i "%_yesno%" equ "n" goto end
 echo.
 Output\Setup.exe
 

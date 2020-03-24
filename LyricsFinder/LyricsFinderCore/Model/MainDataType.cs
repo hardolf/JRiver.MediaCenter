@@ -54,6 +54,15 @@ namespace MediaCenter.LyricsFinder.Model
         public DateTime LastUpdateCheck { get; set; }
 
         /// <summary>
+        /// Gets or sets the lyric form location.
+        /// </summary>
+        /// <value>
+        /// The lyric form location.
+        /// </value>
+        [XmlElement]
+        public Point LyricFormLocation { get; set; }
+
+        /// <summary>
         /// Gets or sets the size of the lyric form.
         /// </summary>
         /// <value>

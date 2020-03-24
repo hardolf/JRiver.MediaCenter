@@ -122,7 +122,7 @@ namespace MediaCenter.LyricsFinder
                             _lyricsFinderData.MainData.UpdateCheckIntervalDays = (int)UpdateCheckIntervalDaysUpDown.Value;
                             _lyricsFinderData.MainData.SerialServiceRequestsDuringAutomaticSearch = SerialServiceRequestsDuringAutomaticSearchCheckBox.Checked;
 
-                            _lyricsFinderData.SaveAsync();
+                            await _lyricsFinderData.SaveAsync();
                         }
                         catch (Exception ex)
                         {

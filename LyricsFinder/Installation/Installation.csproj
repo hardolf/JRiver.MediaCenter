@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="BuildAndInstallLyricsFinder.cmd" />
     <None Include="BuildRelease.cmd" />
     <None Include="BuildRelease.subroutine.cmd" />
     <None Include="Elevate.cmd" />

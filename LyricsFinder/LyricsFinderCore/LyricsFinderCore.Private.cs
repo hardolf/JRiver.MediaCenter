@@ -402,7 +402,7 @@ namespace MediaCenter.LyricsFinder
                     if (result == DialogResult.Yes)
                     {
                         LyricsFinderData.IsSaveOk = true;
-                        LyricsFinderData.SaveAsync();
+                        await LyricsFinderData.SaveAsync();
                     }
                     else
                         LyricsFinderData.IsSaveOk = false;
@@ -423,7 +423,7 @@ namespace MediaCenter.LyricsFinder
                     await service.RefreshServiceSettingsAsync();
                 }
 
-                LyricsFinderData.SaveAsync();
+                await LyricsFinderData.SaveAsync();
             }
             catch (Exception ex)
             {
@@ -790,7 +790,7 @@ namespace MediaCenter.LyricsFinder
 
             try
             {
-                LyricsFinderData.SaveAsync();
+                await LyricsFinderData.SaveAsync();
 
                 // Iterate the displayed rows and save each row, if it is found or manually edited
                 for (int i = 0; i < MainGridView.Rows.Count; i++)
@@ -1003,11 +1003,28 @@ namespace MediaCenter.LyricsFinder
                 throw new ArgumentException($"Column {colIdx} is not a DataGridViewTextBoxCell.");
 
             var location = new Point(MousePosition.X, MousePosition.Y);
+            var savedLocation = LyricsFinderData.MainData.LyricFormLocation;
             var size = LyricsFinderData.MainData.LyricFormSize;
+            var startPosition = (isAutoOpen) ? FormStartPosition.Manual : FormStartPosition.CenterParent;
+
+            if ((savedLocation.X > 0) && (savedLocation.Y > 0)
+                && (savedLocation.X < Screen.PrimaryScreen.WorkingArea.Width - 10)
+                && (savedLocation.Y < Screen.PrimaryScreen.WorkingArea.Height - 10))
+            {
+                // Use the saved form location
+                location = savedLocation;
+                startPosition = FormStartPosition.Manual;
+            }
+            else
+            {
+                // Use the mouse pointer location
+                LyricsFinderData.MainData.LyricFormLocation = location;
+                location.Offset(-size.Width - 10, -Convert.ToInt32(size.Height / 2));
+            }
 
             _lyricForm = new LyricForm(null, cell, location, size, ShowLyricsCallbackAsync, LyricsFinderData, this)
             {
-                StartPosition = (isAutoOpen) ? FormStartPosition.Manual : FormStartPosition.CenterParent
+                StartPosition = startPosition
             };
 
             if (isAutoOpen)
@@ -1025,6 +1042,8 @@ namespace MediaCenter.LyricsFinder
         /// <param name="lyricForm">The lyrics form.</param>
         private async void ShowLyricsCallbackAsync(LyricForm lyricForm)
         {
+            if (lyricForm is null) throw new ArgumentNullException(nameof(lyricForm));
+
             try
             {
                 SuspendLayout();
@@ -1041,6 +1060,10 @@ namespace MediaCenter.LyricsFinder
 
                     IsDataChanged = true;
                 }
+
+                LyricsFinderData.MainData.LyricFormLocation = lyricForm.Location;
+                LyricsFinderData.MainData.LyricFormSize = lyricForm.Size;
+                await LyricsFinderData.SaveAsync();
 
                 ShowMcPlayControl(this);
                 this.Focus();
@@ -1102,7 +1125,7 @@ namespace MediaCenter.LyricsFinder
         {
             try
             {
-                LyricsFinderData.SaveAsync();
+                await LyricsFinderData.SaveAsync();
             }
             catch (Exception ex)
             {

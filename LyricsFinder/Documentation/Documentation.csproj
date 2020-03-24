@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="GitHubDownloads.xlsm" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

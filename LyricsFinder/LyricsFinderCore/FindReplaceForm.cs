@@ -136,6 +136,8 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void OkButton_ClickAsync(object sender, EventArgs e)
         {
+            if (FindTextBox.Text.Length == 0) return;
+
             try
             {
                 do
@@ -235,10 +237,6 @@ namespace MediaCenter.LyricsFinder
 
             if (_isNext)
                 OkButton.PerformClick();
-
-            // Prevent getting the selected text as the first match
-            if (!selectedText.IsNullOrEmptyTrimmed())
-                _isNext = true;
         }
 
     }
