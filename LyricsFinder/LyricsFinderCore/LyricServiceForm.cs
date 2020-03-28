@@ -29,6 +29,7 @@ namespace MediaCenter.LyricsFinder.Model
 
         private string _initialText = string.Empty;
 
+        private readonly LyricsFinderCore _lyricsFinderCore = null;
         private readonly LyricsFinderDataType _lyricsFinderData = null;
 
         /// <summary>
@@ -51,12 +52,12 @@ namespace MediaCenter.LyricsFinder.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="LyricServiceForm" /> class.
         /// </summary>
-        /// <param name="lyricsFinderData">The lyrics finder data.</param>
+        /// <param name="lyricsFinderCore">The lyrics finder core.</param>
         /// <param name="callback">The callback.</param>
         /// <exception cref="ArgumentNullException">callback
         /// or
         /// lyricsFinderData</exception>
-        public LyricServiceForm(LyricsFinderDataType lyricsFinderData, Action<LyricServiceForm> callback)
+        public LyricServiceForm(LyricsFinderCore lyricsFinderCore, Action<LyricServiceForm> callback)
             : this()
         {
             var dgv = LyricServiceListDataGridView;
@@ -65,21 +66,22 @@ namespace MediaCenter.LyricsFinder.Model
 
             // Fill the datagrid
             _isListReady = false;
-            _lyricsFinderData = lyricsFinderData ?? throw new ArgumentNullException(nameof(lyricsFinderData));
+            _lyricsFinderCore = lyricsFinderCore ?? throw new ArgumentNullException(nameof(lyricsFinderCore));
+            _lyricsFinderData = lyricsFinderCore.LyricsFinderData ?? throw new ArgumentNullException(nameof(lyricsFinderCore));
 
             foreach (var service in _lyricsFinderData.LyricServices)
             {
                 var value = service.DisplayProperties.GetPropertyValue("DailyQuota", true);
                 var dailyQuota = (value == null) ? "-" : value.ToString();
 
-                value = service.DisplayProperties.GetPropertyValue("QuotaResetTime", true);
-                var quotaResetTimeString = (value is ServiceDateTimeWithZone quotaResetTime)
-                    ? quotaResetTime.ClientLocalTime.ToString(CultureInfo.InvariantCulture)
-                    : "-";
+                value = service.DisplayProperties.GetPropertyValue("QuotaResetTimeClient", true);
+                var quotaResetTimeString = (value is null)
+                    ? "-"
+                    : value;
 
                 if (service.IsImplemented)
                 {
-                    dgv.Rows.Add(service.IsActive, service.Credit.ServiceName, service.RequestCountToday, dailyQuota, quotaResetTimeString);
+                    dgv.Rows.Add(service.IsActive, service.Credit.ServiceName, dailyQuota, service.RequestCountToday, service.RequestCountTotal, service.HitCountToday, service.HitCountTotal, quotaResetTimeString);
                     dgv.Rows[dgv.Rows.Count - 1].Cells[1].ToolTipText = service.Comment;
                 }
             }
@@ -95,6 +97,8 @@ namespace MediaCenter.LyricsFinder.Model
             }
 
             Height = height;
+
+            ShowDetails();
         }
 
 
@@ -671,6 +675,33 @@ namespace MediaCenter.LyricsFinder.Model
 
             _initialText = tlp.GetAllControlText();
             _isListReady = true;
+
+            CenterFormInParent();
+        }
+
+
+        private void CenterFormInParent()
+        {
+            var wa = Screen.PrimaryScreen.WorkingArea;
+            var location = _lyricsFinderCore.PointToScreen(_lyricsFinderCore.Location);
+
+            // Calculate the parent's center point
+            location.Offset(_lyricsFinderCore.Width / 2, _lyricsFinderCore.Height / 2);
+
+            // Calculate this form's location, so that it has the same center point as the parent
+            location.Offset(-Width / 2, -Height / 2);
+
+            // Adjust for out-of-screen-bounds form location
+            if (location.X < wa.Left)
+                location.X = wa.Left;
+            if (location.Y < wa.Top)
+                location.Y = wa.Top;
+            if (location.X + Width > wa.Right)
+                location.X = wa.Right - Width;
+            if (location.Y + Height > wa.Bottom)
+                location.Y = wa.Bottom - Height;
+
+            Location = location;
         }
 
     }

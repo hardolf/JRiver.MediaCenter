@@ -452,7 +452,7 @@ namespace MediaCenter.SharedComponents
             }
             catch (HttpRequestException ex)
             {
-                throw new HttpRequestException($"\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".", ex);
+                throw new HttpRequestException($"\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl}\".", ex);
             }
 
             return ret;
@@ -489,7 +489,7 @@ namespace MediaCenter.SharedComponents
             }
             catch (HttpRequestException ex)
             {
-                throw new HttpRequestException($"\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".", ex);
+                throw new HttpRequestException($"\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl}\".", ex);
             }
 
             return ret;
@@ -762,7 +762,7 @@ namespace MediaCenter.SharedComponents
                 {
                     if (ret[i] != ' ')
                     {
-                        ret[i] = isNextUpper ? char.ToUpper(ret[i], ci) : char.ToLower(ret[i], ci);
+                        ret[i] = isNextUpper ? char.ToUpper(ret[i], ci) : ret[i];
                         isNextUpper = false;
                     }
                 }
@@ -837,7 +837,7 @@ namespace MediaCenter.SharedComponents
 
             // Remove the last line-end if the input string does not end with a line-end
             if (!input.EndsWith(Environment.NewLine, StringComparison.InvariantCultureIgnoreCase))
-                ret.Length = ret.Length - Environment.NewLine.Length;
+                ret.Length -= Environment.NewLine.Length;
 
             return ret.ToString();
         }

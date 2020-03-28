@@ -55,7 +55,6 @@
             this.ArtistLabel = new System.Windows.Forms.Label();
             this.AlbumLabel = new System.Windows.Forms.Label();
             this.TrackLabel = new System.Windows.Forms.Label();
-            this.LyricTextBox = new MediaCenter.LyricsFinder.SpellBox();
             this.LyricElementHost = new System.Windows.Forms.Integration.ElementHost();
             this.LyricFormMenuStrip = new System.Windows.Forms.MenuStrip();
             this.EditMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,11 +84,13 @@
             this.ToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsSeparator0 = new System.Windows.Forms.ToolStripSeparator();
-            this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.ToolsPlayJumpAheadLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsPlayJumpBackLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditRemoveDoubleLineEndingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.LyricTextBox = new MediaCenter.LyricsFinder.SpellBox();
+            this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).BeginInit();
             this.LyricFormToolStripContainer.BottomToolStripPanel.SuspendLayout();
             this.LyricFormToolStripContainer.ContentPanel.SuspendLayout();
@@ -318,27 +319,6 @@
             this.TrackLabel.TabIndex = 4;
             this.TrackLabel.Text = "Track Title";
             // 
-            // LyricTextBox
-            // 
-            this.LyricTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LyricTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.LyricTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.LyricTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.LyricTextBox.Location = new System.Drawing.Point(4, 112);
-            this.LyricTextBox.Multiline = true;
-            this.LyricTextBox.Name = "LyricTextBox";
-            this.LyricTextBox.ParentForm = this;
-            this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.LyricTextBox.SelectedText = "";
-            this.LyricTextBox.SelectionStart = 0;
-            this.LyricTextBox.Size = new System.Drawing.Size(377, 326);
-            this.LyricTextBox.SpellCheckEnabled = false;
-            this.LyricTextBox.TabIndex = 1;
-            this.LyricTextBox.KeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.LyricTextBox_KeyDownAsync);
-            this.LyricTextBox.Child = new System.Windows.Controls.TextBox();
-            // 
             // LyricElementHost
             // 
             this.LyricElementHost.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -386,6 +366,7 @@
             this.EditUpperCaseMenuItem,
             this.EditSentenceCaseMenuItem,
             this.EditSeparator3,
+            this.EditRemoveDoubleLineEndingsMenuItem,
             this.EditTrimMenuItem,
             this.EditSeparator4,
             this.EditToggleSpellCheckMenuItem,
@@ -587,23 +568,6 @@
             this.ToolsSeparator0.Name = "ToolsSeparator0";
             this.ToolsSeparator0.Size = new System.Drawing.Size(237, 6);
             // 
-            // ToolsPlayStartStopButton
-            // 
-            this.ToolsPlayStartStopButton.AutoSize = false;
-            this.ToolsPlayStartStopButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ToolsPlayStartStopButton.Clicked = false;
-            this.ToolsPlayStartStopButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ToolsPlayStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStart")));
-            this.ToolsPlayStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStop")));
-            this.ToolsPlayStartStopButton.ImageTransparentColor = System.Drawing.SystemColors.Control;
-            this.ToolsPlayStartStopButton.IsRunning = false;
-            this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
-            this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(76, 20);
-            this.ToolsPlayStartStopButton.Text = "Start play";
-            this.ToolsPlayStartStopButton.TextStart = "Start play";
-            this.ToolsPlayStartStopButton.TextStop = "Stop play";
-            this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item (Ctrl+P)";
-            // 
             // ToolsPlayJumpAheadLargeMenuItem
             // 
             this.ToolsPlayJumpAheadLargeMenuItem.Name = "ToolsPlayJumpAheadLargeMenuItem";
@@ -632,9 +596,54 @@
             // 
             this.HelpHelpMenuItem.Name = "HelpHelpMenuItem";
             this.HelpHelpMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.HelpHelpMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.HelpHelpMenuItem.Size = new System.Drawing.Size(118, 22);
             this.HelpHelpMenuItem.Text = "&Help";
             this.HelpHelpMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // EditRemoveDoubleLineEndingsMenuItem
+            // 
+            this.EditRemoveDoubleLineEndingsMenuItem.Name = "EditRemoveDoubleLineEndingsMenuItem";
+            this.EditRemoveDoubleLineEndingsMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.EditRemoveDoubleLineEndingsMenuItem.Text = "Remove &double line endings";
+            this.EditRemoveDoubleLineEndingsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // LyricTextBox
+            // 
+            this.LyricTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LyricTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.LyricTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.LyricTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.LyricTextBox.Location = new System.Drawing.Point(4, 112);
+            this.LyricTextBox.Multiline = true;
+            this.LyricTextBox.Name = "LyricTextBox";
+            this.LyricTextBox.ParentForm = this;
+            this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.LyricTextBox.SelectedText = "";
+            this.LyricTextBox.SelectionStart = 0;
+            this.LyricTextBox.Size = new System.Drawing.Size(377, 326);
+            this.LyricTextBox.SpellCheckEnabled = false;
+            this.LyricTextBox.TabIndex = 1;
+            this.LyricTextBox.KeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.LyricTextBox_KeyDownAsync);
+            this.LyricTextBox.Child = new System.Windows.Controls.TextBox();
+            // 
+            // ToolsPlayStartStopButton
+            // 
+            this.ToolsPlayStartStopButton.AutoSize = false;
+            this.ToolsPlayStartStopButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.ToolsPlayStartStopButton.Clicked = false;
+            this.ToolsPlayStartStopButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ToolsPlayStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStart")));
+            this.ToolsPlayStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStop")));
+            this.ToolsPlayStartStopButton.ImageTransparentColor = System.Drawing.SystemColors.Control;
+            this.ToolsPlayStartStopButton.IsRunning = false;
+            this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
+            this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(76, 20);
+            this.ToolsPlayStartStopButton.Text = "Start play";
+            this.ToolsPlayStartStopButton.TextStart = "Start play";
+            this.ToolsPlayStartStopButton.TextStop = "Stop play";
+            this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item (Ctrl+P)";
             // 
             // LyricForm
             // 
@@ -731,5 +740,6 @@
         private System.Windows.Forms.ToolStripMenuItem EditFindReplaceNextMenuItem;
         private System.Windows.Forms.StatusStrip LyricFormFoundStatusStrip;
         private System.Windows.Forms.ToolStripStatusLabel LyricFormFoundStatusLabel;
+        private System.Windows.Forms.ToolStripMenuItem EditRemoveDoubleLineEndingsMenuItem;
     }
 }

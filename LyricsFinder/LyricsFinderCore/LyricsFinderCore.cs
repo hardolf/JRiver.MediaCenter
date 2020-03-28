@@ -837,10 +837,8 @@ namespace MediaCenter.LyricsFinder
                             break;
 
                         case nameof(ToolsLyricServicesMenuItem):
-                            using (var lyricsServiceForm = new LyricServiceForm(LyricsFinderData, ShowServicesCallbackAsync))
-                            {
+                            using (var lyricsServiceForm = new LyricServiceForm(this, ShowServicesCallbackAsync))
                                 lyricsServiceForm.ShowDialog(this);
-                            }
                             break;
 
                         case nameof(ToolsOptionsMenuItem):

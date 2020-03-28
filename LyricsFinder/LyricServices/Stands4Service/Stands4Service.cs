@@ -378,7 +378,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="LyricsQuotaExceededException">Lyric service ... is exceeding its quota...</exception>
         /// <remarks>
         /// Do NOT call the base routine!
-        /// It would throw another exception!
+        /// It would throw a generic exception instead of the one in this routine!
         /// </remarks>
         protected override void QuotaError(McMplItem mcItem = null, bool isGetAll = false)
         {

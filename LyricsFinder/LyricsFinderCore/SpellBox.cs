@@ -477,7 +477,9 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         public virtual void ScrollToCaret()
         {
-            _textBox.ScrollToHome();
+            var idx = _textBox.GetLineIndexFromCharacterIndex(_textBox.CaretIndex);
+
+            _textBox.ScrollToLine(idx);
         }
 
 
@@ -531,6 +533,10 @@ namespace MediaCenter.LyricsFinder
 
                 case SelectionOperation.ProperCase:
                     SelectedText = selText.ToProperCase(ci);
+                    break;
+
+                case SelectionOperation.RemoveDoubleLineEndings:
+                    SelectedText = selText.Replace(Environment.NewLine + Environment.NewLine, Environment.NewLine);
                     break;
 
                 case SelectionOperation.SentenceCase:
@@ -729,6 +735,7 @@ namespace MediaCenter.LyricsFinder
         LowerCase,
         Paste,
         ProperCase,
+        RemoveDoubleLineEndings,
         SentenceCase,
         TitleCase,
         Trim,

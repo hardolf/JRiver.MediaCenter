@@ -6,10 +6,11 @@ setlocal
 set _my_dir=%~dp0
 set _my_name=%~n0
 set _exit_code=0
-set _cmd=call Elevate.cmd BuildRelease.subroutine.cmd
+set _out_file=BuildRelease.txt
 pushd "%_my_dir%"
 
-:run
+:build
+set _cmd=call BuildRelease.cmd
 echo.
 echo %_cmd%...
 %_cmd%
@@ -17,16 +18,37 @@ rem set _exit_code=%errorlevel%
 
 :prompt
 echo.
-echo Wait for the build completion before answering the next question...
+echo Waiting for the build completion before installation...
+
+:wait
+sleep 1
+if exist %_out_file% goto :wait
+
 echo.
 set /P _yesno=Install LyricsFinder (YN)? [Y] || Set _yesno=y
-if /i "%_yesno%" equ "n" goto end
+if /i "%_yesno:~0,1%" equ "n" goto end
+
+:install
+set _cmd=Output\Setup.exe
 echo.
-Output\Setup.exe
+echo %_cmd%...
+%_cmd%
+
+if errorlevel 1 goto :error
+echo.
+echo LyricsFinder installation succeeded, closing...
+goto :end
+
+:error
+echo.
+echo LyricsFinder installation FAILED!
+echo.
+pause
+goto :end
 
 :end
 rem endlocal is not used
-rem echo.
+echo.
 rem if %_exit_code% equ 0 (
 rem     echo %_my_name% succeeded.
 rem ) else (

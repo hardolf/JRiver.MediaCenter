@@ -760,6 +760,11 @@ namespace MediaCenter.LyricsFinder
                                     txt.SetSelectionText(SelectionOperation.ProperCase);
                                 break;
 
+                            case nameof(EditRemoveDoubleLineEndingsMenuItem):
+                                if (DoTextOperationQuestion(true))
+                                    txt.SetSelectionText(SelectionOperation.RemoveDoubleLineEndings);
+                                break;
+
                             case nameof(EditReplaceMenuItem):
                                 FindReplace(false);
                                 break;
@@ -1067,10 +1072,13 @@ namespace MediaCenter.LyricsFinder
         /// <param name="isNext">if set to <c>true</c> this call is a next call; else the first call.</param>
         /// <param name="findText">The find text.</param>
         /// <param name="replaceText">The replace text.</param>
-        /// <returns><c>true</c> if the <c>findText</c> was found; else <c>false</c>.</returns>
+        /// <param name="isAll">if set to <c>true</c> all occurrencies are replaced; else only the first/next.</param>
+        /// <returns>
+        ///   <c>true</c> if the <c>findText</c> was found and <c>isAll</c> is <c>false</c>; else <c>false</c>.
+        /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         /// <exception cref="ArgumentNullException">findText</exception>
-        internal bool FindReplaceAction(bool isNext, string findText, string replaceText = null)
+        internal bool FindReplaceAction(bool isNext, string findText, string replaceText = null, bool isAll = false)
         {
             if (findText.IsNullOrEmptyTrimmed()) throw new ArgumentOutOfRangeException($"{nameof(findText)} must have a value.");
 
@@ -1091,14 +1099,17 @@ namespace MediaCenter.LyricsFinder
                     }
                     else
                     {
-                        var newText = LyricTextBox.Text.Remove(foundIdx, findText.Length).Insert(foundIdx, replaceText);
+                        var newText = (isAll)
+                            ? LyricTextBox.Text.Replace(findText, replaceText)
+                            : LyricTextBox.Text.Remove(foundIdx, findText.Length).Insert(foundIdx, replaceText);
 
                         LyricTextBox.Text = newText;
                         LyricTextBox.SelectionStart = foundIdx;
                         LyricTextBox.SelectionLength = replaceText.Length;
                     }
 
-                    ret = true;
+                    LyricTextBox.ScrollToCaret();
+                    ret = !isAll;
                 }
             }
 

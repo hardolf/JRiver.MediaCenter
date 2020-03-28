@@ -137,27 +137,28 @@ namespace MediaCenter.LyricsFinder
         private async void OkButton_ClickAsync(object sender, EventArgs e)
         {
             if (FindTextBox.Text.Length == 0) return;
+            if (!Visible) return;
 
             try
             {
-                do
-                {
-                    // Do the find or replace operation in the parent form
-                    OwnerForm.FindReplaceAction(_isNext, FindTextBox.Text, (_isFind) ? null : ReplaceTextBox.Text);
+                var isAll = (sender == ReplaceAllButton);
+                var replaceText = (_isFind) ? null : ReplaceTextBox.Text;
 
-                    // Ensure that the found text is highlighted in the parent form - and that this FindReplaceForm regains focus
-                    OwnerForm.Focus();
-                    Focus();
+                // Do the find or replace operation in the parent form
+                OwnerForm.FindReplaceAction(_isNext, FindTextBox.Text, replaceText, isAll);
 
-                    // From now on, we do repeat searches
-                    _isNext = true;
+                // Ensure that the found text is highlighted in the parent form - and that this FindReplaceForm regains focus
+                OwnerForm.Focus();
+                Focus();
 
-                    OkButton.Text = "Next";
+                // From now on, we do repeat searches
+                _isNext = true;
 
-                    FindReplaceToolTip.SetToolTip(OkButton, (_isFind)
-                        ? "Find next (F3)"
-                        : "Find and replace next (F3)");
-                } while (Visible && (sender == ReplaceAllButton));
+                OkButton.Text = "Next";
+
+                FindReplaceToolTip.SetToolTip(OkButton, (_isFind)
+                    ? "Find next (F3)"
+                    : "Find and replace next (F3)");
 
                 if (OwnerForm.CanFocus)
                     OwnerForm.Focus();
