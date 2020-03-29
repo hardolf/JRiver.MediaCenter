@@ -378,7 +378,7 @@ namespace MediaCenter.LyricsFinder
                 await Logging.LogAsync(_progressPercentage, "Loading local data from XML...", true);
                 try
                 {
-                    // Load previously saved services
+                    // Load previously saved services along with the main data
                     LyricsFinderData = LyricsFinderDataType.Load(dataFile);
                     LyricsFinderData.IsSaveOk = true;
                 }

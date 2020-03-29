@@ -169,6 +169,16 @@ namespace MediaCenter.LyricsFinder.Model
         [XmlElement]
         public bool SerialServiceRequestsDuringAutomaticSearch { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether strict search only is to be used.
+        /// In a strict search, both artist and song name must mach; else a match on song name is sufficient.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if strict search only is to be used; otherwise, <c>false</c>.
+        /// </value>
+        [XmlElement]
+        public bool StrictSearchOnly { get; set; }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainDataType"/> class.

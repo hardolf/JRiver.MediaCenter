@@ -29,13 +29,16 @@ namespace MediaCenter.LyricsFinder.Model
 
         private string _initialText = string.Empty;
 
-        private readonly LyricsFinderCore _lyricsFinderCore = null;
+
         private readonly LyricsFinderDataType _lyricsFinderData = null;
 
         /// <summary>
         /// The callback function.
         /// </summary>
         private readonly Action<LyricServiceForm> _callback;
+
+
+        public LyricsFinderCore OwnerLyricsFinderCore { get; set; }
 
 
         /// <summary>
@@ -52,12 +55,12 @@ namespace MediaCenter.LyricsFinder.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="LyricServiceForm" /> class.
         /// </summary>
-        /// <param name="lyricsFinderCore">The lyrics finder core.</param>
+        /// <param name="ownerLyricsFinderCore">The owner lyrics finder core.</param>
         /// <param name="callback">The callback.</param>
         /// <exception cref="ArgumentNullException">callback
         /// or
-        /// lyricsFinderData</exception>
-        public LyricServiceForm(LyricsFinderCore lyricsFinderCore, Action<LyricServiceForm> callback)
+        /// ownerLyricsFinderCore</exception>
+        public LyricServiceForm(LyricsFinderCore ownerLyricsFinderCore, Action<LyricServiceForm> callback)
             : this()
         {
             var dgv = LyricServiceListDataGridView;
@@ -66,8 +69,8 @@ namespace MediaCenter.LyricsFinder.Model
 
             // Fill the datagrid
             _isListReady = false;
-            _lyricsFinderCore = lyricsFinderCore ?? throw new ArgumentNullException(nameof(lyricsFinderCore));
-            _lyricsFinderData = lyricsFinderCore.LyricsFinderData ?? throw new ArgumentNullException(nameof(lyricsFinderCore));
+            OwnerLyricsFinderCore = ownerLyricsFinderCore ?? throw new ArgumentNullException(nameof(ownerLyricsFinderCore));
+            _lyricsFinderData = ownerLyricsFinderCore.LyricsFinderData ?? throw new ArgumentNullException(nameof(ownerLyricsFinderCore));
 
             foreach (var service in _lyricsFinderData.LyricServices)
             {
@@ -683,10 +686,10 @@ namespace MediaCenter.LyricsFinder.Model
         private void CenterFormInParent()
         {
             var wa = Screen.PrimaryScreen.WorkingArea;
-            var location = _lyricsFinderCore.PointToScreen(_lyricsFinderCore.Location);
+            var location = OwnerLyricsFinderCore.PointToScreen(OwnerLyricsFinderCore.Location);
 
             // Calculate the parent's center point
-            location.Offset(_lyricsFinderCore.Width / 2, _lyricsFinderCore.Height / 2);
+            location.Offset(OwnerLyricsFinderCore.Width / 2, OwnerLyricsFinderCore.Height / 2);
 
             // Calculate this form's location, so that it has the same center point as the parent
             location.Offset(-Width / 2, -Height / 2);

@@ -18,6 +18,7 @@
             {
                 components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -30,17 +31,25 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricServiceForm));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.LyricServiceMainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.LyricServiceListPanel = new System.Windows.Forms.Panel();
             this.LyricServiceListContainer = new System.Windows.Forms.ToolStripContainer();
             this.LyricServiceListDataGridView = new System.Windows.Forms.DataGridView();
+            this.Active = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Service = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RequestsMaximum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RequestsToday = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RequestsTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HitsToday = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HitsTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.QuotaResetTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LyricServiceListRightToolbar = new System.Windows.Forms.ToolStrip();
             this.MoveUpButton = new System.Windows.Forms.ToolStripButton();
             this.MoveDownButton = new System.Windows.Forms.ToolStripButton();
@@ -51,14 +60,6 @@
             this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
             this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
             this.LyricServiceFormToolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.Active = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Service = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RequestsMaximum = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RequestsToday = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RequestsTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.HitsToday = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.HitsTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.QuotaResetTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LyricServiceMainTableLayoutPanel.SuspendLayout();
             this.LyricServiceListPanel.SuspendLayout();
             this.LyricServiceListContainer.ContentPanel.SuspendLayout();
@@ -111,6 +112,7 @@
             // 
             // LyricServiceListContainer.RightToolStripPanel
             // 
+            this.LyricServiceListContainer.RightToolStripPanel.BackColor = System.Drawing.SystemColors.Control;
             this.LyricServiceListContainer.RightToolStripPanel.Controls.Add(this.LyricServiceListRightToolbar);
             this.LyricServiceListContainer.Size = new System.Drawing.Size(678, 174);
             this.LyricServiceListContainer.TabIndex = 5;
@@ -146,6 +148,109 @@
             this.LyricServiceListDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LyricServiceListDataGridView_CellClickAsync);
             this.LyricServiceListDataGridView.RowValidating += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.LyricServiceListDataGridView_RowValidatingAsync);
             this.LyricServiceListDataGridView.SelectionChanged += new System.EventHandler(this.LyricServiceListDataGridView_SelectionChangedAsync);
+            // 
+            // Active
+            // 
+            this.Active.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Active.HeaderText = "Active";
+            this.Active.Name = "Active";
+            this.Active.ReadOnly = true;
+            this.Active.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Active.ToolTipText = "Check if this lyrics service should be used during searhes";
+            this.Active.Width = 40;
+            // 
+            // Service
+            // 
+            this.Service.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.Service.DefaultCellStyle = dataGridViewCellStyle7;
+            this.Service.HeaderText = "Service name";
+            this.Service.MinimumWidth = 150;
+            this.Service.Name = "Service";
+            this.Service.ReadOnly = true;
+            this.Service.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Service.ToolTipText = "Lyrics service name";
+            // 
+            // RequestsMaximum
+            // 
+            this.RequestsMaximum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle8.Format = "N0";
+            this.RequestsMaximum.DefaultCellStyle = dataGridViewCellStyle8;
+            this.RequestsMaximum.HeaderText = "Quota";
+            this.RequestsMaximum.MinimumWidth = 50;
+            this.RequestsMaximum.Name = "RequestsMaximum";
+            this.RequestsMaximum.ReadOnly = true;
+            this.RequestsMaximum.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.RequestsMaximum.ToolTipText = "Maximum allowed searches today to this service";
+            this.RequestsMaximum.Width = 50;
+            // 
+            // RequestsToday
+            // 
+            this.RequestsToday.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle9.Format = "N0";
+            dataGridViewCellStyle9.NullValue = null;
+            this.RequestsToday.DefaultCellStyle = dataGridViewCellStyle9;
+            this.RequestsToday.HeaderText = "Req. today";
+            this.RequestsToday.MinimumWidth = 65;
+            this.RequestsToday.Name = "RequestsToday";
+            this.RequestsToday.ReadOnly = true;
+            this.RequestsToday.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.RequestsToday.ToolTipText = "Search count today to this service";
+            this.RequestsToday.Width = 65;
+            // 
+            // RequestsTotal
+            // 
+            this.RequestsTotal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle10.Format = "N0";
+            this.RequestsTotal.DefaultCellStyle = dataGridViewCellStyle10;
+            this.RequestsTotal.HeaderText = "Req. total";
+            this.RequestsTotal.MinimumWidth = 65;
+            this.RequestsTotal.Name = "RequestsTotal";
+            this.RequestsTotal.ReadOnly = true;
+            this.RequestsTotal.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.RequestsTotal.ToolTipText = "Total number of requests";
+            this.RequestsTotal.Width = 65;
+            // 
+            // HitsToday
+            // 
+            this.HitsToday.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle11.Format = "N0";
+            this.HitsToday.DefaultCellStyle = dataGridViewCellStyle11;
+            this.HitsToday.HeaderText = "Hits today";
+            this.HitsToday.MinimumWidth = 60;
+            this.HitsToday.Name = "HitsToday";
+            this.HitsToday.ReadOnly = true;
+            this.HitsToday.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.HitsToday.ToolTipText = "Number of successful search results after midnight and until now";
+            this.HitsToday.Width = 60;
+            // 
+            // HitsTotal
+            // 
+            this.HitsTotal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle12.Format = "N0";
+            this.HitsTotal.DefaultCellStyle = dataGridViewCellStyle12;
+            this.HitsTotal.HeaderText = "Hits total";
+            this.HitsTotal.MinimumWidth = 60;
+            this.HitsTotal.Name = "HitsTotal";
+            this.HitsTotal.ReadOnly = true;
+            this.HitsTotal.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.HitsTotal.ToolTipText = "Total number of successful search results ";
+            this.HitsTotal.Width = 60;
+            // 
+            // QuotaResetTime
+            // 
+            this.QuotaResetTime.HeaderText = "Next quota reset time";
+            this.QuotaResetTime.MinimumWidth = 125;
+            this.QuotaResetTime.Name = "QuotaResetTime";
+            this.QuotaResetTime.ReadOnly = true;
+            this.QuotaResetTime.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.QuotaResetTime.ToolTipText = "Local time (client) of next quota reset";
+            this.QuotaResetTime.Width = 125;
             // 
             // LyricServiceListRightToolbar
             // 
@@ -238,109 +343,6 @@
             this.LyricServiceFormToolTip.AutoPopDelay = 15000;
             this.LyricServiceFormToolTip.InitialDelay = 500;
             this.LyricServiceFormToolTip.ReshowDelay = 100;
-            // 
-            // Active
-            // 
-            this.Active.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Active.HeaderText = "Active";
-            this.Active.Name = "Active";
-            this.Active.ReadOnly = true;
-            this.Active.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Active.ToolTipText = "Check if this lyrics service should be used during searhes";
-            this.Active.Width = 40;
-            // 
-            // Service
-            // 
-            this.Service.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.Service.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Service.HeaderText = "Service name";
-            this.Service.MinimumWidth = 150;
-            this.Service.Name = "Service";
-            this.Service.ReadOnly = true;
-            this.Service.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Service.ToolTipText = "Lyrics service name";
-            // 
-            // RequestsMaximum
-            // 
-            this.RequestsMaximum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle2.Format = "N0";
-            this.RequestsMaximum.DefaultCellStyle = dataGridViewCellStyle2;
-            this.RequestsMaximum.HeaderText = "Quota";
-            this.RequestsMaximum.MinimumWidth = 50;
-            this.RequestsMaximum.Name = "RequestsMaximum";
-            this.RequestsMaximum.ReadOnly = true;
-            this.RequestsMaximum.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.RequestsMaximum.ToolTipText = "Maximum allowed searches today to this service";
-            this.RequestsMaximum.Width = 50;
-            // 
-            // RequestsToday
-            // 
-            this.RequestsToday.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle3.Format = "N0";
-            dataGridViewCellStyle3.NullValue = null;
-            this.RequestsToday.DefaultCellStyle = dataGridViewCellStyle3;
-            this.RequestsToday.HeaderText = "Req. today";
-            this.RequestsToday.MinimumWidth = 65;
-            this.RequestsToday.Name = "RequestsToday";
-            this.RequestsToday.ReadOnly = true;
-            this.RequestsToday.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.RequestsToday.ToolTipText = "Search count today to this service";
-            this.RequestsToday.Width = 65;
-            // 
-            // RequestsTotal
-            // 
-            this.RequestsTotal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle4.Format = "N0";
-            this.RequestsTotal.DefaultCellStyle = dataGridViewCellStyle4;
-            this.RequestsTotal.HeaderText = "Req. total";
-            this.RequestsTotal.MinimumWidth = 65;
-            this.RequestsTotal.Name = "RequestsTotal";
-            this.RequestsTotal.ReadOnly = true;
-            this.RequestsTotal.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.RequestsTotal.ToolTipText = "Total number of requests";
-            this.RequestsTotal.Width = 65;
-            // 
-            // HitsToday
-            // 
-            this.HitsToday.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle5.Format = "N0";
-            this.HitsToday.DefaultCellStyle = dataGridViewCellStyle5;
-            this.HitsToday.HeaderText = "Hits today";
-            this.HitsToday.MinimumWidth = 60;
-            this.HitsToday.Name = "HitsToday";
-            this.HitsToday.ReadOnly = true;
-            this.HitsToday.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.HitsToday.ToolTipText = "Number of successful search results after midnight and until now";
-            this.HitsToday.Width = 60;
-            // 
-            // HitsTotal
-            // 
-            this.HitsTotal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle6.Format = "N0";
-            this.HitsTotal.DefaultCellStyle = dataGridViewCellStyle6;
-            this.HitsTotal.HeaderText = "Hits total";
-            this.HitsTotal.MinimumWidth = 60;
-            this.HitsTotal.Name = "HitsTotal";
-            this.HitsTotal.ReadOnly = true;
-            this.HitsTotal.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.HitsTotal.ToolTipText = "Total number of successful search results ";
-            this.HitsTotal.Width = 60;
-            // 
-            // QuotaResetTime
-            // 
-            this.QuotaResetTime.HeaderText = "Next quota reset time";
-            this.QuotaResetTime.MinimumWidth = 125;
-            this.QuotaResetTime.Name = "QuotaResetTime";
-            this.QuotaResetTime.ReadOnly = true;
-            this.QuotaResetTime.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.QuotaResetTime.ToolTipText = "Local time (client) of next quota reset";
-            this.QuotaResetTime.Width = 125;
             // 
             // LyricServiceForm
             // 

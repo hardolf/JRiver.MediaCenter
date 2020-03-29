@@ -129,14 +129,14 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             try
             {
                 DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, "Service time zone",
-                    "The display name for the lyric server time zone's standard time. See the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
+                    "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
             }
             catch (TimeZoneNotFoundException ex)
             {
                 errMsg = $"{ex.Message} Please set the proper time zone name, e.g. \"{defTz}\".";
                 QuotaResetTime = new ServiceDateTimeWithZone(DateTime.UtcNow, TimeZoneInfo.Utc);
                 DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, "Service time zone",
-                    "The display name for the lyric server time zone's standard time. See the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
+                    "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
             }
 
             try
@@ -150,7 +150,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 errMsg = $"{ex.Message}.";
                 QuotaResetTime = new ServiceDateTimeWithZone(DateTime.UtcNow, TimeZoneInfo.Utc);
                 DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, "Service time zone",
-                    "The display name for the lyric server time zone's standard time. See the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
+                    "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
             }
 
             DisplayProperties.Add("QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture), "Next quota reset local time, this machine");
@@ -352,8 +352,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     await ExtractAllLyricTextsAsync(item, results, cancellationToken, isGetAll, true).ConfigureAwait(false);
 
                     // If not found or if we want all possible results, we next try a more lax test without the album
-                    if (IsActive &&
-                        (isGetAll || (LyricResult != LyricsResultEnum.Found)))
+                    if (IsActive && !LyricsFinderData.MainData.StrictSearchOnly
+                        && (isGetAll || (LyricResult != LyricsResultEnum.Found)))
                         await ExtractAllLyricTextsAsync(item, results, cancellationToken, isGetAll, false).ConfigureAwait(false);
                 }
             }

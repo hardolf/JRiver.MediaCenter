@@ -121,6 +121,7 @@ namespace MediaCenter.LyricsFinder
                             _lyricsFinderData.MainData.NoLyricsSearchFilter = NoLyricsSearchFilterTextBox.Text;
                             _lyricsFinderData.MainData.UpdateCheckIntervalDays = (int)UpdateCheckIntervalDaysUpDown.Value;
                             _lyricsFinderData.MainData.SerialServiceRequestsDuringAutomaticSearch = SerialServiceRequestsDuringAutomaticSearchCheckBox.Checked;
+                            _lyricsFinderData.MainData.StrictSearchOnly = StrictSearchOnlyCheckBox.Checked;
 
                             await _lyricsFinderData.SaveAsync();
                         }
@@ -167,12 +168,38 @@ namespace MediaCenter.LyricsFinder
                 NoLyricsSearchFilterTextBox.Text = _lyricsFinderData.MainData.NoLyricsSearchFilter;
                 UpdateCheckIntervalDaysUpDown.Value = _lyricsFinderData.MainData.UpdateCheckIntervalDays;
                 SerialServiceRequestsDuringAutomaticSearchCheckBox.Checked = _lyricsFinderData.MainData.SerialServiceRequestsDuringAutomaticSearch;
+                StrictSearchOnlyCheckBox.Checked = _lyricsFinderData.MainData.StrictSearchOnly;
+
+                // Set the labels' tooltips the same as the tooltips of the controls to the right of the labels.
+                // This is of secondary importance, so we ignore errors here.
+                try
+                {
+                    System.Collections.IList list = OptionLayoutPanel.Controls;
+
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        var ctl = list[i];
+
+                        if (ctl is Label lbl)
+                        {
+                            var nextCtl = list[i + 1];
+
+                            if (nextCtl is Control valueCtl)
+                                OptionToolTip.SetToolTip(lbl, OptionToolTip.GetToolTip(valueCtl));
+                        }
+                    }
+                }
+                catch
+                {
+                    // I don't care
+                }
 
                 // Select the top TextBox and minimize the selected text
                 McAccessKeyTextBox.Select();
                 McAccessKeyTextBox.SelectionLength = 0;
                 McAccessKeyTextBox.SelectionStart = 0;
 
+                // Save the initial sum of control values for later change detection
                 _initialText = OptionLayoutPanel.GetAllControlText();
             }
             catch (Exception ex)

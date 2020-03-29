@@ -58,6 +58,8 @@
             this.DelayMilliSecondsBetweenSearchesUpDown = new System.Windows.Forms.NumericUpDown();
             this.SerialServiceRequestsDuringAutomaticSearchLabel = new System.Windows.Forms.Label();
             this.SerialServiceRequestsDuringAutomaticSearchCheckBox = new System.Windows.Forms.CheckBox();
+            this.StrictSearchOnlyLabel = new System.Windows.Forms.Label();
+            this.StrictSearchOnlyCheckBox = new System.Windows.Forms.CheckBox();
             this.OptionToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.OptionPanel.SuspendLayout();
             this.OptionLayoutPanel.SuspendLayout();
@@ -74,7 +76,7 @@
             this.OptionPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.OptionPanel.Location = new System.Drawing.Point(0, 0);
             this.OptionPanel.Name = "OptionPanel";
-            this.OptionPanel.Size = new System.Drawing.Size(549, 401);
+            this.OptionPanel.Size = new System.Drawing.Size(549, 435);
             this.OptionPanel.TabIndex = 0;
             // 
             // OptionLayoutPanel
@@ -83,36 +85,38 @@
             this.OptionLayoutPanel.ColumnCount = 2;
             this.OptionLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.OptionLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.OptionLayoutPanel.Controls.Add(this.NoLyricsSearchFilterLabel, 0, 10);
             this.OptionLayoutPanel.Controls.Add(this.HeaderTextBox, 0, 0);
             this.OptionLayoutPanel.Controls.Add(this.McAccessKeyLabel, 0, 1);
-            this.OptionLayoutPanel.Controls.Add(this.McWsUsernameLabel, 0, 2);
-            this.OptionLayoutPanel.Controls.Add(this.McWsPassword, 0, 3);
-            this.OptionLayoutPanel.Controls.Add(this.McWsLabel, 0, 4);
             this.OptionLayoutPanel.Controls.Add(this.McAccessKeyTextBox, 1, 1);
+            this.OptionLayoutPanel.Controls.Add(this.McWsUsernameLabel, 0, 2);
             this.OptionLayoutPanel.Controls.Add(this.McWsUsernameTextBox, 1, 2);
+            this.OptionLayoutPanel.Controls.Add(this.McWsPassword, 0, 3);
             this.OptionLayoutPanel.Controls.Add(this.McWsPasswordTextBox, 1, 3);
+            this.OptionLayoutPanel.Controls.Add(this.McWsLabel, 0, 4);
             this.OptionLayoutPanel.Controls.Add(this.McWsUrlTextBox, 1, 4);
-            this.OptionLayoutPanel.Controls.Add(this.UpdateCheckIntervalDaysUpDown, 1, 7);
-            this.OptionLayoutPanel.Controls.Add(this.LastUpdateCheckTextBox, 1, 9);
-            this.OptionLayoutPanel.Controls.Add(this.NoLyricsSearchFilterTextBox, 1, 10);
-            this.OptionLayoutPanel.Controls.Add(this.MouseMoveOpenLyricsFormCheckBox, 1, 11);
-            this.OptionLayoutPanel.Controls.Add(this.MaxMcWsConnectAttemptsUpDown, 1, 5);
-            this.OptionLayoutPanel.Controls.Add(this.CloseButton, 1, 13);
-            this.OptionLayoutPanel.Controls.Add(this.MaxQueueLengthUpDown, 1, 6);
-            this.OptionLayoutPanel.Controls.Add(this.MaxQueueLengthLabel, 0, 6);
-            this.OptionLayoutPanel.Controls.Add(this.MouseMoveOpenLyricsFormLabel, 0, 11);
-            this.OptionLayoutPanel.Controls.Add(this.LastUpdateCheckLabel, 0, 9);
-            this.OptionLayoutPanel.Controls.Add(this.UpdateCheckIntervalDaysLabel, 0, 7);
             this.OptionLayoutPanel.Controls.Add(this.MaxMcWsConnectAttemptsLabel, 0, 5);
+            this.OptionLayoutPanel.Controls.Add(this.MaxMcWsConnectAttemptsUpDown, 1, 5);
+            this.OptionLayoutPanel.Controls.Add(this.MaxQueueLengthLabel, 0, 6);
+            this.OptionLayoutPanel.Controls.Add(this.MaxQueueLengthUpDown, 1, 6);
+            this.OptionLayoutPanel.Controls.Add(this.UpdateCheckIntervalDaysLabel, 0, 7);
+            this.OptionLayoutPanel.Controls.Add(this.UpdateCheckIntervalDaysUpDown, 1, 7);
             this.OptionLayoutPanel.Controls.Add(this.DelayMilliSecondsBetweenSearchesLabel, 0, 8);
             this.OptionLayoutPanel.Controls.Add(this.DelayMilliSecondsBetweenSearchesUpDown, 1, 8);
+            this.OptionLayoutPanel.Controls.Add(this.LastUpdateCheckLabel, 0, 9);
+            this.OptionLayoutPanel.Controls.Add(this.LastUpdateCheckTextBox, 1, 9);
+            this.OptionLayoutPanel.Controls.Add(this.NoLyricsSearchFilterLabel, 0, 10);
+            this.OptionLayoutPanel.Controls.Add(this.NoLyricsSearchFilterTextBox, 1, 10);
+            this.OptionLayoutPanel.Controls.Add(this.MouseMoveOpenLyricsFormLabel, 0, 11);
+            this.OptionLayoutPanel.Controls.Add(this.MouseMoveOpenLyricsFormCheckBox, 1, 11);
             this.OptionLayoutPanel.Controls.Add(this.SerialServiceRequestsDuringAutomaticSearchLabel, 0, 12);
             this.OptionLayoutPanel.Controls.Add(this.SerialServiceRequestsDuringAutomaticSearchCheckBox, 1, 12);
+            this.OptionLayoutPanel.Controls.Add(this.StrictSearchOnlyLabel, 0, 13);
+            this.OptionLayoutPanel.Controls.Add(this.StrictSearchOnlyCheckBox, 1, 13);
+            this.OptionLayoutPanel.Controls.Add(this.CloseButton, 1, 14);
             this.OptionLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.OptionLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.OptionLayoutPanel.Name = "OptionLayoutPanel";
-            this.OptionLayoutPanel.RowCount = 14;
+            this.OptionLayoutPanel.RowCount = 15;
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
@@ -126,8 +130,9 @@
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.OptionLayoutPanel.Size = new System.Drawing.Size(549, 401);
+            this.OptionLayoutPanel.Size = new System.Drawing.Size(549, 435);
             this.OptionLayoutPanel.TabIndex = 0;
             // 
             // NoLyricsSearchFilterLabel
@@ -135,7 +140,7 @@
             this.NoLyricsSearchFilterLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.NoLyricsSearchFilterLabel.AutoSize = true;
-            this.NoLyricsSearchFilterLabel.Location = new System.Drawing.Point(3, 285);
+            this.NoLyricsSearchFilterLabel.Location = new System.Drawing.Point(3, 291);
             this.NoLyricsSearchFilterLabel.Name = "NoLyricsSearchFilterLabel";
             this.NoLyricsSearchFilterLabel.Size = new System.Drawing.Size(104, 25);
             this.NoLyricsSearchFilterLabel.TabIndex = 19;
@@ -151,7 +156,7 @@
             this.HeaderTextBox.Multiline = true;
             this.HeaderTextBox.Name = "HeaderTextBox";
             this.HeaderTextBox.ReadOnly = true;
-            this.HeaderTextBox.Size = new System.Drawing.Size(543, 54);
+            this.HeaderTextBox.Size = new System.Drawing.Size(543, 60);
             this.HeaderTextBox.TabIndex = 0;
             this.HeaderTextBox.TabStop = false;
             this.HeaderTextBox.Text = "Options";
@@ -162,7 +167,7 @@
             this.McAccessKeyLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.McAccessKeyLabel.AutoSize = true;
-            this.McAccessKeyLabel.Location = new System.Drawing.Point(3, 60);
+            this.McAccessKeyLabel.Location = new System.Drawing.Point(3, 66);
             this.McAccessKeyLabel.Name = "McAccessKeyLabel";
             this.McAccessKeyLabel.Size = new System.Drawing.Size(63, 25);
             this.McAccessKeyLabel.TabIndex = 1;
@@ -174,7 +179,7 @@
             this.McWsUsernameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.McWsUsernameLabel.AutoSize = true;
-            this.McWsUsernameLabel.Location = new System.Drawing.Point(3, 85);
+            this.McWsUsernameLabel.Location = new System.Drawing.Point(3, 91);
             this.McWsUsernameLabel.Name = "McWsUsernameLabel";
             this.McWsUsernameLabel.Size = new System.Drawing.Size(126, 25);
             this.McWsUsernameLabel.TabIndex = 3;
@@ -186,7 +191,7 @@
             this.McWsPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.McWsPassword.AutoSize = true;
-            this.McWsPassword.Location = new System.Drawing.Point(3, 110);
+            this.McWsPassword.Location = new System.Drawing.Point(3, 116);
             this.McWsPassword.Name = "McWsPassword";
             this.McWsPassword.Size = new System.Drawing.Size(124, 25);
             this.McWsPassword.TabIndex = 5;
@@ -198,7 +203,7 @@
             this.McWsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.McWsLabel.AutoSize = true;
-            this.McWsLabel.Location = new System.Drawing.Point(3, 135);
+            this.McWsLabel.Location = new System.Drawing.Point(3, 141);
             this.McWsLabel.Name = "McWsLabel";
             this.McWsLabel.Size = new System.Drawing.Size(137, 25);
             this.McWsLabel.TabIndex = 7;
@@ -207,7 +212,7 @@
             // 
             // McAccessKeyTextBox
             // 
-            this.McAccessKeyTextBox.Location = new System.Drawing.Point(251, 63);
+            this.McAccessKeyTextBox.Location = new System.Drawing.Point(251, 69);
             this.McAccessKeyTextBox.Name = "McAccessKeyTextBox";
             this.McAccessKeyTextBox.Size = new System.Drawing.Size(150, 20);
             this.McAccessKeyTextBox.TabIndex = 2;
@@ -216,7 +221,7 @@
             // 
             // McWsUsernameTextBox
             // 
-            this.McWsUsernameTextBox.Location = new System.Drawing.Point(251, 88);
+            this.McWsUsernameTextBox.Location = new System.Drawing.Point(251, 94);
             this.McWsUsernameTextBox.Name = "McWsUsernameTextBox";
             this.McWsUsernameTextBox.Size = new System.Drawing.Size(150, 20);
             this.McWsUsernameTextBox.TabIndex = 4;
@@ -225,7 +230,7 @@
             // 
             // McWsPasswordTextBox
             // 
-            this.McWsPasswordTextBox.Location = new System.Drawing.Point(251, 113);
+            this.McWsPasswordTextBox.Location = new System.Drawing.Point(251, 119);
             this.McWsPasswordTextBox.Name = "McWsPasswordTextBox";
             this.McWsPasswordTextBox.Size = new System.Drawing.Size(150, 20);
             this.McWsPasswordTextBox.TabIndex = 6;
@@ -234,7 +239,7 @@
             // 
             // McWsUrlTextBox
             // 
-            this.McWsUrlTextBox.Location = new System.Drawing.Point(251, 138);
+            this.McWsUrlTextBox.Location = new System.Drawing.Point(251, 144);
             this.McWsUrlTextBox.Name = "McWsUrlTextBox";
             this.McWsUrlTextBox.Size = new System.Drawing.Size(289, 20);
             this.McWsUrlTextBox.TabIndex = 8;
@@ -243,7 +248,7 @@
             // 
             // UpdateCheckIntervalDaysUpDown
             // 
-            this.UpdateCheckIntervalDaysUpDown.Location = new System.Drawing.Point(251, 213);
+            this.UpdateCheckIntervalDaysUpDown.Location = new System.Drawing.Point(251, 219);
             this.UpdateCheckIntervalDaysUpDown.Minimum = new decimal(new int[] {
             1,
             0,
@@ -257,7 +262,7 @@
             // 
             // LastUpdateCheckTextBox
             // 
-            this.LastUpdateCheckTextBox.Location = new System.Drawing.Point(251, 263);
+            this.LastUpdateCheckTextBox.Location = new System.Drawing.Point(251, 269);
             this.LastUpdateCheckTextBox.Name = "LastUpdateCheckTextBox";
             this.LastUpdateCheckTextBox.ReadOnly = true;
             this.LastUpdateCheckTextBox.Size = new System.Drawing.Size(150, 20);
@@ -267,7 +272,7 @@
             // 
             // NoLyricsSearchFilterTextBox
             // 
-            this.NoLyricsSearchFilterTextBox.Location = new System.Drawing.Point(251, 288);
+            this.NoLyricsSearchFilterTextBox.Location = new System.Drawing.Point(251, 294);
             this.NoLyricsSearchFilterTextBox.Name = "NoLyricsSearchFilterTextBox";
             this.NoLyricsSearchFilterTextBox.Size = new System.Drawing.Size(289, 20);
             this.NoLyricsSearchFilterTextBox.TabIndex = 20;
@@ -279,7 +284,7 @@
             this.MouseMoveOpenLyricsFormCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.MouseMoveOpenLyricsFormCheckBox.AutoSize = true;
-            this.MouseMoveOpenLyricsFormCheckBox.Location = new System.Drawing.Point(251, 313);
+            this.MouseMoveOpenLyricsFormCheckBox.Location = new System.Drawing.Point(251, 319);
             this.MouseMoveOpenLyricsFormCheckBox.Name = "MouseMoveOpenLyricsFormCheckBox";
             this.MouseMoveOpenLyricsFormCheckBox.Size = new System.Drawing.Size(15, 19);
             this.MouseMoveOpenLyricsFormCheckBox.TabIndex = 22;
@@ -289,7 +294,7 @@
             // 
             // MaxMcWsConnectAttemptsUpDown
             // 
-            this.MaxMcWsConnectAttemptsUpDown.Location = new System.Drawing.Point(251, 163);
+            this.MaxMcWsConnectAttemptsUpDown.Location = new System.Drawing.Point(251, 169);
             this.MaxMcWsConnectAttemptsUpDown.Minimum = new decimal(new int[] {
             1,
             0,
@@ -309,18 +314,18 @@
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(467, 371);
+            this.CloseButton.Location = new System.Drawing.Point(467, 405);
             this.CloseButton.Margin = new System.Windows.Forms.Padding(7, 3, 7, 7);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
-            this.CloseButton.TabIndex = 25;
+            this.CloseButton.TabIndex = 27;
             this.CloseButton.Text = "&Close (Esc)";
             this.CloseButton.UseVisualStyleBackColor = true;
             this.CloseButton.Click += new System.EventHandler(this.CloseButton_ClickAsync);
             // 
             // MaxQueueLengthUpDown
             // 
-            this.MaxQueueLengthUpDown.Location = new System.Drawing.Point(251, 188);
+            this.MaxQueueLengthUpDown.Location = new System.Drawing.Point(251, 194);
             this.MaxQueueLengthUpDown.Minimum = new decimal(new int[] {
             1,
             0,
@@ -343,7 +348,7 @@
             this.MaxQueueLengthLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.MaxQueueLengthLabel.AutoSize = true;
-            this.MaxQueueLengthLabel.Location = new System.Drawing.Point(3, 185);
+            this.MaxQueueLengthLabel.Location = new System.Drawing.Point(3, 191);
             this.MaxQueueLengthLabel.Name = "MaxQueueLengthLabel";
             this.MaxQueueLengthLabel.Size = new System.Drawing.Size(116, 25);
             this.MaxQueueLengthLabel.TabIndex = 11;
@@ -355,7 +360,7 @@
             this.MouseMoveOpenLyricsFormLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.MouseMoveOpenLyricsFormLabel.AutoSize = true;
-            this.MouseMoveOpenLyricsFormLabel.Location = new System.Drawing.Point(3, 310);
+            this.MouseMoveOpenLyricsFormLabel.Location = new System.Drawing.Point(3, 316);
             this.MouseMoveOpenLyricsFormLabel.Name = "MouseMoveOpenLyricsFormLabel";
             this.MouseMoveOpenLyricsFormLabel.Size = new System.Drawing.Size(147, 25);
             this.MouseMoveOpenLyricsFormLabel.TabIndex = 21;
@@ -367,7 +372,7 @@
             this.LastUpdateCheckLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.LastUpdateCheckLabel.AutoSize = true;
-            this.LastUpdateCheckLabel.Location = new System.Drawing.Point(3, 260);
+            this.LastUpdateCheckLabel.Location = new System.Drawing.Point(3, 266);
             this.LastUpdateCheckLabel.Name = "LastUpdateCheckLabel";
             this.LastUpdateCheckLabel.Size = new System.Drawing.Size(96, 25);
             this.LastUpdateCheckLabel.TabIndex = 17;
@@ -379,7 +384,7 @@
             this.UpdateCheckIntervalDaysLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.UpdateCheckIntervalDaysLabel.AutoSize = true;
-            this.UpdateCheckIntervalDaysLabel.Location = new System.Drawing.Point(3, 210);
+            this.UpdateCheckIntervalDaysLabel.Location = new System.Drawing.Point(3, 216);
             this.UpdateCheckIntervalDaysLabel.Name = "UpdateCheckIntervalDaysLabel";
             this.UpdateCheckIntervalDaysLabel.Size = new System.Drawing.Size(148, 25);
             this.UpdateCheckIntervalDaysLabel.TabIndex = 13;
@@ -391,7 +396,7 @@
             this.MaxMcWsConnectAttemptsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.MaxMcWsConnectAttemptsLabel.AutoSize = true;
-            this.MaxMcWsConnectAttemptsLabel.Location = new System.Drawing.Point(3, 160);
+            this.MaxMcWsConnectAttemptsLabel.Location = new System.Drawing.Point(3, 166);
             this.MaxMcWsConnectAttemptsLabel.Name = "MaxMcWsConnectAttemptsLabel";
             this.MaxMcWsConnectAttemptsLabel.Size = new System.Drawing.Size(150, 25);
             this.MaxMcWsConnectAttemptsLabel.TabIndex = 9;
@@ -403,7 +408,7 @@
             this.DelayMilliSecondsBetweenSearchesLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.DelayMilliSecondsBetweenSearchesLabel.AutoSize = true;
-            this.DelayMilliSecondsBetweenSearchesLabel.Location = new System.Drawing.Point(3, 235);
+            this.DelayMilliSecondsBetweenSearchesLabel.Location = new System.Drawing.Point(3, 241);
             this.DelayMilliSecondsBetweenSearchesLabel.Name = "DelayMilliSecondsBetweenSearchesLabel";
             this.DelayMilliSecondsBetweenSearchesLabel.Size = new System.Drawing.Size(124, 25);
             this.DelayMilliSecondsBetweenSearchesLabel.TabIndex = 15;
@@ -412,7 +417,7 @@
             // 
             // DelayMilliSecondsBetweenSearchesUpDown
             // 
-            this.DelayMilliSecondsBetweenSearchesUpDown.Location = new System.Drawing.Point(251, 238);
+            this.DelayMilliSecondsBetweenSearchesUpDown.Location = new System.Drawing.Point(251, 244);
             this.DelayMilliSecondsBetweenSearchesUpDown.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -428,7 +433,7 @@
             this.SerialServiceRequestsDuringAutomaticSearchLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.SerialServiceRequestsDuringAutomaticSearchLabel.AutoSize = true;
-            this.SerialServiceRequestsDuringAutomaticSearchLabel.Location = new System.Drawing.Point(3, 335);
+            this.SerialServiceRequestsDuringAutomaticSearchLabel.Location = new System.Drawing.Point(3, 341);
             this.SerialServiceRequestsDuringAutomaticSearchLabel.Name = "SerialServiceRequestsDuringAutomaticSearchLabel";
             this.SerialServiceRequestsDuringAutomaticSearchLabel.Size = new System.Drawing.Size(242, 25);
             this.SerialServiceRequestsDuringAutomaticSearchLabel.TabIndex = 23;
@@ -440,12 +445,37 @@
             this.SerialServiceRequestsDuringAutomaticSearchCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.SerialServiceRequestsDuringAutomaticSearchCheckBox.AutoSize = true;
-            this.SerialServiceRequestsDuringAutomaticSearchCheckBox.Location = new System.Drawing.Point(251, 338);
+            this.SerialServiceRequestsDuringAutomaticSearchCheckBox.Location = new System.Drawing.Point(251, 344);
             this.SerialServiceRequestsDuringAutomaticSearchCheckBox.Name = "SerialServiceRequestsDuringAutomaticSearchCheckBox";
             this.SerialServiceRequestsDuringAutomaticSearchCheckBox.Size = new System.Drawing.Size(15, 19);
             this.SerialServiceRequestsDuringAutomaticSearchCheckBox.TabIndex = 24;
             this.OptionToolTip.SetToolTip(this.SerialServiceRequestsDuringAutomaticSearchCheckBox, resources.GetString("SerialServiceRequestsDuringAutomaticSearchCheckBox.ToolTip"));
             this.SerialServiceRequestsDuringAutomaticSearchCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // StrictSearchOnlyLabel
+            // 
+            this.StrictSearchOnlyLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.StrictSearchOnlyLabel.AutoSize = true;
+            this.StrictSearchOnlyLabel.Location = new System.Drawing.Point(3, 366);
+            this.StrictSearchOnlyLabel.Name = "StrictSearchOnlyLabel";
+            this.StrictSearchOnlyLabel.Size = new System.Drawing.Size(88, 25);
+            this.StrictSearchOnlyLabel.TabIndex = 25;
+            this.StrictSearchOnlyLabel.Text = "Strict search only";
+            this.StrictSearchOnlyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // StrictSearchOnlyCheckBox
+            // 
+            this.StrictSearchOnlyCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.StrictSearchOnlyCheckBox.AutoSize = true;
+            this.StrictSearchOnlyCheckBox.Location = new System.Drawing.Point(251, 369);
+            this.StrictSearchOnlyCheckBox.Name = "StrictSearchOnlyCheckBox";
+            this.StrictSearchOnlyCheckBox.Size = new System.Drawing.Size(15, 19);
+            this.StrictSearchOnlyCheckBox.TabIndex = 26;
+            this.OptionToolTip.SetToolTip(this.StrictSearchOnlyCheckBox, "In a strict search, both artist and song name must mach; \r\nelse a match on song n" +
+        "ame is sufficient");
+            this.StrictSearchOnlyCheckBox.UseVisualStyleBackColor = true;
             // 
             // OptionToolTip
             // 
@@ -460,7 +490,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.CancelButton = this.CloseButton;
-            this.ClientSize = new System.Drawing.Size(549, 401);
+            this.ClientSize = new System.Drawing.Size(549, 435);
             this.Controls.Add(this.OptionPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -518,5 +548,7 @@
         private System.Windows.Forms.NumericUpDown DelayMilliSecondsBetweenSearchesUpDown;
         private System.Windows.Forms.Label SerialServiceRequestsDuringAutomaticSearchLabel;
         private System.Windows.Forms.CheckBox SerialServiceRequestsDuringAutomaticSearchCheckBox;
+        private System.Windows.Forms.Label StrictSearchOnlyLabel;
+        private System.Windows.Forms.CheckBox StrictSearchOnlyCheckBox;
     }
 }

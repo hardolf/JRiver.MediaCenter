@@ -723,6 +723,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             Credit.ValidateDisplayProperties();
 
+            // Test initialization
             dps.Add(nameof(Comment), Comment);
             dps.Add(nameof(RequestCountToday), RequestCountToday, null, RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
             dps.Add(nameof(HitCountToday), HitCountToday, null, HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));

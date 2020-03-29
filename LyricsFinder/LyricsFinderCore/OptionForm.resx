@@ -120,12 +120,6 @@
   <metadata name="OptionToolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="NoLyricsSearchFilterTextBox.ToolTip" xml:space="preserve">
-    <value>A comma or semicolon separated list of strings.
-If an existing lyric is found that matches one of the strings,
-it is overwritten, no matter how the state is of the 
-[Overwrite existing lyrics] button.</value>
-  </data>
   <data name="DelayMilliSecondsBetweenSearchesUpDown.ToolTip" xml:space="preserve">
     <value>Delay milliseconds between searches.
 Can be used as a countermeasure 
@@ -133,6 +127,12 @@ against service banning of your IP address.
 Half of the specified value is randomized, 
 e.g. if you enter 2000 (2 seconds), the actual
 delay varies between 1 and 3 seconds.</value>
+  </data>
+  <data name="NoLyricsSearchFilterTextBox.ToolTip" xml:space="preserve">
+    <value>A comma or semicolon separated list of strings.
+If an existing lyric is found that matches one of the strings,
+it is overwritten, no matter how the state is of the 
+[Overwrite existing lyrics] button.</value>
   </data>
   <data name="SerialServiceRequestsDuringAutomaticSearchCheckBox.ToolTip" xml:space="preserve">
     <value>This is typically checked when service requests 
