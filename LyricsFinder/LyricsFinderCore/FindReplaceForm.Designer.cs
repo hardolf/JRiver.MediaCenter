@@ -43,6 +43,7 @@
             // 
             // FindReplaceTableLayoutPanel
             // 
+            this.FindReplaceTableLayoutPanel.AutoSize = true;
             this.FindReplaceTableLayoutPanel.ColumnCount = 4;
             this.FindReplaceTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.FindReplaceTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
@@ -62,7 +63,7 @@
             this.FindReplaceTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.FindReplaceTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.FindReplaceTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.FindReplaceTableLayoutPanel.Size = new System.Drawing.Size(334, 81);
+            this.FindReplaceTableLayoutPanel.Size = new System.Drawing.Size(334, 83);
             this.FindReplaceTableLayoutPanel.TabIndex = 0;
             // 
             // ReplaceTextBox
@@ -80,7 +81,7 @@
             // OkButton
             // 
             this.OkButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OkButton.Location = new System.Drawing.Point(170, 55);
+            this.OkButton.Location = new System.Drawing.Point(170, 57);
             this.OkButton.Name = "OkButton";
             this.OkButton.Size = new System.Drawing.Size(75, 23);
             this.OkButton.TabIndex = 5;
@@ -93,7 +94,7 @@
             // 
             this.CancelFormButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CancelFormButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelFormButton.Location = new System.Drawing.Point(256, 55);
+            this.CancelFormButton.Location = new System.Drawing.Point(256, 57);
             this.CancelFormButton.Name = "CancelFormButton";
             this.CancelFormButton.Size = new System.Drawing.Size(75, 23);
             this.CancelFormButton.TabIndex = 6;
@@ -141,7 +142,7 @@
             // ReplaceAllButton
             // 
             this.ReplaceAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ReplaceAllButton.Location = new System.Drawing.Point(86, 55);
+            this.ReplaceAllButton.Location = new System.Drawing.Point(86, 57);
             this.ReplaceAllButton.Name = "ReplaceAllButton";
             this.ReplaceAllButton.Size = new System.Drawing.Size(75, 23);
             this.ReplaceAllButton.TabIndex = 4;
@@ -155,21 +156,28 @@
             this.AcceptButton = this.OkButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.CancelButton = this.CancelFormButton;
-            this.ClientSize = new System.Drawing.Size(334, 81);
+            this.ClientSize = new System.Drawing.Size(334, 83);
+            this.ControlBox = false;
             this.Controls.Add(this.FindReplaceTableLayoutPanel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.KeyPreview = true;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FindReplaceForm";
+            this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Find/Replace Form";
+            this.Text = "Find/Replace";
             this.Activated += new System.EventHandler(this.FindReplaceForm_ActivatedAsync);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FindReplaceForm_KeyDownAsync);
             this.MouseEnter += new System.EventHandler(this.FindReplaceForm_MouseEnterAsync);
             this.FindReplaceTableLayoutPanel.ResumeLayout(false);
             this.FindReplaceTableLayoutPanel.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 

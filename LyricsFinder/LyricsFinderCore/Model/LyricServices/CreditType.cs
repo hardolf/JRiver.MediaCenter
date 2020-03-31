@@ -192,12 +192,30 @@ namespace MediaCenter.LyricsFinder.Model
         {
             DisplayProperties.Clear();
 
-            DisplayProperties.Add(nameof(ServiceName), ServiceName, "Name", isEditAllowed: true);
-            DisplayProperties.Add(nameof(Company), Company, isEditAllowed: true);
-            DisplayProperties.Add(nameof(CreditUrl), CreditUrl, "Company Website", isEditAllowed: true);
-            DisplayProperties.Add(nameof(Copyright), Copyright, "Copyright text", isEditAllowed: true);
-            DisplayProperties.Add(nameof(CreditTextFormat), CreditTextFormat, "Credit text format", isEditAllowed: true);
-            DisplayProperties.Add(nameof(ServiceUrl), ServiceUrl, "Service URL", isEditAllowed: true);
+            DisplayProperties.Add(nameof(ServiceName), ServiceName, 
+                "Lyric service name", "Lyric service name used in LyricsFinder logs and messages. \r\n"
+                + "Credit text format placeholder: ServiceName", 
+                true);
+            DisplayProperties.Add(nameof(Company), Company, 
+                "Company", "Name of the lyric service company. \r\n"
+                + "Credit text format placeholder: Company", 
+                true);
+            DisplayProperties.Add(nameof(CreditUrl), CreditUrl, 
+                "Company Website", "Lyric service company website. \r\n"
+                + "Credit text format placeholder: CreditUrl", 
+                true);
+            DisplayProperties.Add(nameof(Copyright), Copyright, 
+                "Copyright text", "General lyric service company copyright notice. \r\n"
+                + "Credit text format placeholder: Copyright", 
+                true);
+            DisplayProperties.Add(nameof(ServiceUrl), ServiceUrl, 
+                "Service URL", "Lyric service web URL for the requsts. \r\n"
+                + "Credit text format placeholder: ServiceUrl", 
+                true);
+            DisplayProperties.Add(nameof(CreditTextFormat), CreditTextFormat, 
+                "Credit text format", "The format string with value placeholders to put at the end of each found lyric text. \r\n"
+                + "Valid placeholder names are: Date, ServiceName, Company, Copyright, CreditUrl, ServiceUrl", 
+                true);
         }
 
 

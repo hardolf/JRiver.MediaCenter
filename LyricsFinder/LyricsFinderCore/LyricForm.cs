@@ -1073,16 +1073,11 @@ namespace MediaCenter.LyricsFinder
         /// <param name="findText">The find text.</param>
         /// <param name="replaceText">The replace text.</param>
         /// <param name="isAll">if set to <c>true</c> all occurrencies are replaced; else only the first/next.</param>
-        /// <returns>
-        ///   <c>true</c> if the <c>findText</c> was found and <c>isAll</c> is <c>false</c>; else <c>false</c>.
-        /// </returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         /// <exception cref="ArgumentNullException">findText</exception>
-        internal bool FindReplaceAction(bool isNext, string findText, string replaceText = null, bool isAll = false)
+        internal void FindReplaceAction(bool isNext, string findText, string replaceText = null, bool isAll = false)
         {
             if (findText.IsNullOrEmptyTrimmed()) throw new ArgumentOutOfRangeException($"{nameof(findText)} must have a value.");
-
-            var ret = false;
 
             if (LyricTextBox.SelectionStart <= LyricTextBox.Text.Length - findText.Length)
             {
@@ -1094,29 +1089,42 @@ namespace MediaCenter.LyricsFinder
                 {
                     if (replaceText == null)
                     {
+                        // Find operation
                         LyricTextBox.SelectionStart = foundIdx;
                         LyricTextBox.SelectionLength = findText.Length;
                     }
                     else
                     {
-                        var newText = (isAll)
-                            ? LyricTextBox.Text.Replace(findText, replaceText)
-                            : LyricTextBox.Text.Remove(foundIdx, findText.Length).Insert(foundIdx, replaceText);
+                        // Find/replace operation
+                        var newText = LyricTextBox.Text.Remove(foundIdx, findText.Length).Insert(foundIdx, replaceText);
 
                         LyricTextBox.Text = newText;
                         LyricTextBox.SelectionStart = foundIdx;
                         LyricTextBox.SelectionLength = replaceText.Length;
+
+                        if (isAll)
+                        {
+                            var foundAllIdx = LyricTextBox.Text.IndexOf(findText, foundIdx + replaceText.Length, StringComparison.InvariantCultureIgnoreCase);
+
+                            while (foundAllIdx >= 0)
+                            {
+                                newText = LyricTextBox.Text.Remove(foundAllIdx, findText.Length).Insert(foundAllIdx, replaceText);
+
+                                LyricTextBox.Text = newText;
+                                LyricTextBox.SelectionStart = foundAllIdx;
+                                LyricTextBox.SelectionLength = replaceText.Length;
+
+                                foundAllIdx = LyricTextBox.Text.IndexOf(findText, foundAllIdx + replaceText.Length, StringComparison.InvariantCultureIgnoreCase);
+                            }
+                        }
                     }
 
                     LyricTextBox.ScrollToCaret();
-                    ret = !isAll;
                 }
             }
 
-            if (!ret)
+            if (isAll)
                 FindOrReplaceForm.Hide();
-
-            return ret;
         }
 
 

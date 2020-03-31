@@ -124,36 +124,38 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             DisplayProperties.Add(nameof(Token), Token, null, isEditAllowed: true);
             DisplayProperties.Add(nameof(UserId), UserId, "User ID", isEditAllowed: true);
-            DisplayProperties.Add(nameof(DailyQuota), DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture), "Daily number of requests", null, true, 0);
+            DisplayProperties.Add(nameof(DailyQuota), DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture), 
+                "Max. daily number of requests", "The quota for maximum daily number of requests to the lyric service", true, 0);
 
             try
             {
-                DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, "Service time zone",
-                    "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
+                DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, 
+                    "Service time zone", "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
             }
             catch (TimeZoneNotFoundException ex)
             {
                 errMsg = $"{ex.Message} Please set the proper time zone name, e.g. \"{defTz}\".";
                 QuotaResetTime = new ServiceDateTimeWithZone(DateTime.UtcNow, TimeZoneInfo.Utc);
-                DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, "Service time zone",
-                    "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
+                DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, 
+                    "Service time zone", "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
             }
 
             try
             {
                 DisplayProperties.Add("QuotaResetTimeService", "QuotaResetTime", "ServiceLocalTime", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture),
-                    "Next quota reset local time, service", null, true,
+                    "Next quota reset local time, service", "The next quota reset, local time for the lyric service", true,
                     DateTime.Now.ToLocalTime().AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture));
             }
             catch (TimeZoneNotFoundException ex)
             {
                 errMsg = $"{ex.Message}.";
                 QuotaResetTime = new ServiceDateTimeWithZone(DateTime.UtcNow, TimeZoneInfo.Utc);
-                DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, "Service time zone",
-                    "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
+                DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, 
+                    "Service time zone", "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
             }
 
-            DisplayProperties.Add("QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture), "Next quota reset local time, this machine");
+            DisplayProperties.Add("QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture), 
+                "Next quota reset local time, this client", "The next quota reset, local time for the client machine", false);
 
             if (!errMsg.IsNullOrEmptyTrimmed())
                 throw new Exception(errMsg);

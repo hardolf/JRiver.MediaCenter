@@ -154,7 +154,7 @@ namespace MediaCenter.LyricsFinder.Model
 
             txtValue.AutoSize = true;
             txtValue.BorderStyle = (isEditAllowed) ? BorderStyle.FixedSingle : BorderStyle.None;
-            txtValue.MinimumSize = new Size(200, 20);
+            txtValue.MinimumSize = new Size(250, 20);
             txtValue.Multiline = true;
             txtValue.Name = $"ValueTextbox{rowIdx}";
             txtValue.ReadOnly = !isEditAllowed;
@@ -167,12 +167,15 @@ namespace MediaCenter.LyricsFinder.Model
             toolTip = (toolTip ?? string.Empty).Trim().TrimEnd('.');
 
             if (!toolTip.IsNullOrEmptyTrimmed())
+            {
+                LyricServiceFormToolTip.SetToolTip(lblCaption, toolTip);
                 LyricServiceFormToolTip.SetToolTip(txtValue, toolTip);
+            }
 
             //if (isEditAllowed)
             //    LyricServiceFormToolTip.SetToolTip(txtValue, $"{toolTip}. You can edit the value".TrimStart('.', ' '));
 
-            txtValue.AutoSizeTextBox();
+            txtValue.AutoSizeTextBox(new Padding(0, 0, 50, 0));
             txtValue.Text = value; // Do this after the text box resize to remove the space from above
 
             tlp.Controls.Add(lblPropertyName, 0, rowIdx);
@@ -609,72 +612,78 @@ namespace MediaCenter.LyricsFinder.Model
             _isListReady = false;
             tlp.SuspendLayout();
 
-            service = GetSelectedService(out serviceIdx);
-
-            if (service == null)
-                return;
-
-            // Clear the detail rows except the first
-            tlp.Controls.Clear();
-            tlp.RowStyles.Clear();
-            tlp.RowCount = 0;
-
-            if (isChecked == null)
-                isChecked = service.IsActive;
-
-            foreach (var dp in service.Credit.DisplayProperties)
+            try
             {
-                FillRow(dp.Key, dp.Value.Caption, dp.Value.Value?.ToString() ?? string.Empty, dp.Value.IsEditAllowed, dp.Value.ToolTips);
+                service = GetSelectedService(out serviceIdx);
+
+                if (service == null)
+                    return;
+
+                // Clear the detail rows except the first
+                tlp.Controls.Clear();
+                tlp.RowStyles.Clear();
+                tlp.RowCount = 0;
+
+                if (isChecked == null)
+                    isChecked = service.IsActive;
+
+                foreach (var dp in service.Credit.DisplayProperties)
+                {
+                    FillRow(dp.Key, dp.Value.Caption, dp.Value.Value?.ToString() ?? string.Empty, dp.Value.IsEditAllowed, dp.Value.ToolTips);
+                }
+
+                foreach (var dp in service.DisplayProperties)
+                {
+                    FillRow(dp.Key, dp.Value.Caption, dp.Value.Value?.ToString() ?? string.Empty, dp.Value.IsEditAllowed, dp.Value.ToolTips);
+                }
+
+                tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+                tlp.RowCount++;
+
+                var btnClose = new Button
+                {
+                    Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
+                    Margin = new Padding(3, 15, 3, 3),
+                    Name = "CloseButton",
+                    TabStop = true,
+                    Text = "&Close (Esc)",
+                };
+
+                btnClose.Click += CloseButton_ClickAsync;
+                LyricServiceFormToolTip.SetToolTip(btnClose, "Close the window (Esc)");
+
+                tlp.Controls.Add(btnClose, 2, tlp.RowCount - 1);
+
+                AcceptButton = btnClose;
+                CancelButton = btnClose;
+
+                // Enable or disable the move-buttons and do auto-scroll
+                MoveDownButton.Enabled = false;
+                MoveUpButton.Enabled = false;
+
+                if (dgv.RowCount > 0)
+                {
+                    if (row.Index < dgv.RowCount - 1)
+                        MoveDownButton.Enabled = true;
+
+                    if (row.Index > 0)
+                        MoveUpButton.Enabled = true;
+
+                    if (row.Index < dgv.FirstDisplayedScrollingRowIndex)
+                        dgv.FirstDisplayedScrollingRowIndex--;
+
+                    if (row.Index > dgv.FirstDisplayedScrollingRowIndex + dgv.DisplayedRowCount(false) - 1)
+                        dgv.FirstDisplayedScrollingRowIndex++;
+                }
+
+                // Finished the layout
+                tlp.Select();
+                Refresh();
             }
-
-            foreach (var dp in service.DisplayProperties)
+            finally
             {
-                FillRow(dp.Key, dp.Value.Caption, dp.Value.Value?.ToString() ?? string.Empty, dp.Value.IsEditAllowed, dp.Value.ToolTips);
+                tlp.ResumeLayout(true);
             }
-
-            tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            tlp.RowCount++;
-
-            var btnClose = new Button
-            {
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
-                Margin = new Padding(3, 15, 3, 3),
-                Name = "CloseButton",
-                TabStop = true,
-                Text = "&Close (Esc)",
-            };
-
-            btnClose.Click += CloseButton_ClickAsync;
-            LyricServiceFormToolTip.SetToolTip(btnClose, "Close the window (Esc)");
-
-            tlp.Controls.Add(btnClose, 2, tlp.RowCount - 1);
-
-            AcceptButton = btnClose;
-            CancelButton = btnClose;
-
-            // Enable or disable the move-buttons and do auto-scroll
-            MoveDownButton.Enabled = false;
-            MoveUpButton.Enabled = false;
-
-            if (dgv.RowCount > 0)
-            {
-                if (row.Index < dgv.RowCount - 1)
-                    MoveDownButton.Enabled = true;
-
-                if (row.Index > 0)
-                    MoveUpButton.Enabled = true;
-
-                if (row.Index < dgv.FirstDisplayedScrollingRowIndex)
-                    dgv.FirstDisplayedScrollingRowIndex--;
-
-                if (row.Index > dgv.FirstDisplayedScrollingRowIndex + dgv.DisplayedRowCount(false) - 1)
-                    dgv.FirstDisplayedScrollingRowIndex++;
-            }
-
-            // Finished the layout
-            tlp.Select();
-            Refresh();
-            tlp.ResumeLayout(true);
 
             _initialText = tlp.GetAllControlText();
             _isListReady = true;

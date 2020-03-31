@@ -182,7 +182,7 @@
             this.RequestsMaximum.Name = "RequestsMaximum";
             this.RequestsMaximum.ReadOnly = true;
             this.RequestsMaximum.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.RequestsMaximum.ToolTipText = "Maximum allowed searches today to this service";
+            this.RequestsMaximum.ToolTipText = "Maximum allowed quota for this service";
             this.RequestsMaximum.Width = 50;
             // 
             // RequestsToday
@@ -291,15 +291,15 @@
             this.LyricServiceDetailsTableLayoutPanel.AutoSize = true;
             this.LyricServiceDetailsTableLayoutPanel.ColumnCount = 3;
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 0F));
-            this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
+            this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 190F));
             this.LyricServiceDetailsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.LyricServiceDetailsTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 218);
+            this.LyricServiceDetailsTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LyricServiceDetailsTableLayoutPanel.Location = new System.Drawing.Point(3, 183);
             this.LyricServiceDetailsTableLayoutPanel.Name = "LyricServiceDetailsTableLayoutPanel";
             this.LyricServiceDetailsTableLayoutPanel.Padding = new System.Windows.Forms.Padding(7);
             this.LyricServiceDetailsTableLayoutPanel.RowCount = 1;
             this.LyricServiceDetailsTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.LyricServiceDetailsTableLayoutPanel.Size = new System.Drawing.Size(678, 14);
+            this.LyricServiceDetailsTableLayoutPanel.Size = new System.Drawing.Size(678, 49);
             this.LyricServiceDetailsTableLayoutPanel.TabIndex = 0;
             // 
             // BottomToolStripPanel

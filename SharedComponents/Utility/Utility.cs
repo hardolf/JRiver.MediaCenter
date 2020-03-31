@@ -52,19 +52,25 @@ namespace MediaCenter.SharedComponents
         /// Make the TextBox fit its contents.
         /// </summary>
         /// <param name="control">The text box.</param>
+        /// <param name="padding">The padding.</param>
+        /// <exception cref="ArgumentNullException">control</exception>
         /// <remarks>
-        /// Source: http://csharphelper.com/blog/2018/02/resize-a-textbox-to-fit-its-text-in-c/ 
+        /// Source: http://csharphelper.com/blog/2018/02/resize-a-textbox-to-fit-its-text-in-c/
         /// </remarks>
-        public static void AutoSizeTextBox(this Control control)
+        public static void AutoSizeTextBox(this Control control, Padding? padding = null)
         {
             if (control == null) throw new ArgumentNullException(nameof(control));
 
             const int x_margin = 0;
             const int y_margin = 2;
 
+            if (!padding.HasValue)
+                padding = Padding.Empty;
+
             Size size = TextRenderer.MeasureText(control.Text, control.Font);
 
-            control.ClientSize = new Size(size.Width + x_margin, size.Height + y_margin);
+            control.ClientSize = new Size(size.Width + x_margin + padding.Value.Left + padding.Value.Right, 
+                size.Height + y_margin + padding.Value.Top + padding.Value.Bottom);
         }
 
 
@@ -698,12 +704,15 @@ namespace MediaCenter.SharedComponents
         /// Converts input string to a string without double spaces and with no more than 2 consecutive line endings.
         /// </summary>
         /// <param name="input">The input string.</param>
-        /// <returns>Normalized input string.</returns>
+        /// <returns>
+        /// Normalized input string.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">input</exception>
         public static string ToNormalizedString(this string input)
         {
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            var ret = new StringBuilder(input.Trim());
+            var ret = new StringBuilder(input.Trim(' ', '\t'));
 
             ret.Replace("  ", " ");
             ret.Replace("\r\n\r\n\r\n", "\r\n\r\n");
@@ -751,22 +760,10 @@ namespace MediaCenter.SharedComponents
             if (input == null) throw new ArgumentNullException(nameof(input));
 
             var ci = cultureInfo ?? CultureInfo.CurrentCulture;
-            var isNextUpper = true; // Start with upper case
-            var ret = new StringBuilder(input.ToNormalizedString());
+            var ret = new StringBuilder(input.ToNormalizedString().ToLower(ci));
 
-            for (var i = 0; i < ret.Length; i++)
-            {
-                if ((new[] { '\r', '\n', '.' }).Contains(ret[i]))
-                    isNextUpper = true;
-                else
-                {
-                    if (ret[i] != ' ')
-                    {
-                        ret[i] = isNextUpper ? char.ToUpper(ret[i], ci) : ret[i];
-                        isNextUpper = false;
-                    }
-                }
-            }
+            if (ret.Length > 0)
+                ret[0] = char.ToUpper(ret[0], ci);
 
             return ret.ToString();
         }

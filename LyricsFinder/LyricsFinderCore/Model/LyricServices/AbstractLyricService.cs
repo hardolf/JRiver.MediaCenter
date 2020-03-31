@@ -321,11 +321,21 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             Credit.CreateDisplayProperties();
 
-            DisplayProperties.Add(nameof(Comment), Comment, "Service comment", isEditAllowed: true);
-            DisplayProperties.Add(nameof(RequestCountToday), RequestCountToday, "Requests, today", RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            DisplayProperties.Add(nameof(HitCountToday), HitCountToday, "Hits, today", HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            DisplayProperties.Add(nameof(RequestCountTotal), RequestCountTotal, "Requests, total", RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            DisplayProperties.Add(nameof(HitCountTotal), HitCountTotal, "Hits, total", HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            DisplayProperties.Add(nameof(Comment), Comment, 
+                "Service comment", "Special comments for the lyric service", 
+                true);
+            DisplayProperties.Add(nameof(RequestCountToday), RequestCountToday, 
+                "Requests, today", "Number of requests to the lyric service since midnight (local client time)", 
+                false, RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            DisplayProperties.Add(nameof(HitCountToday), HitCountToday, 
+                "Hits, today", "Number of successful results (hits) from the lyric service since midnight (local client time)",
+                false, HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            DisplayProperties.Add(nameof(RequestCountTotal), RequestCountTotal, 
+                "Requests, total", "Total number of requests to the lyric service since the creation of the local client datafile",
+                false, RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            DisplayProperties.Add(nameof(HitCountTotal), HitCountTotal, 
+                "Hits, total", "Total number of successful results (hits) from the lyric service since the creation of the local client datafile",
+                false, HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
         }
 
 
