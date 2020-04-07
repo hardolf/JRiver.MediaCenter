@@ -305,6 +305,11 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             ret = (DailyQuota > 0) && (RequestCountToday > DailyQuota);
 
+            // For now, we will not return the calculation result.
+            // Instead we let the lyric service tell us in its response, when the quota has been exceeded.
+            // Look for "<ERROR>DAILY USAGE EXCEEDED</ERROR>" in the ProcessAsync method.
+            ret = false;
+
             return ret;
         }
 

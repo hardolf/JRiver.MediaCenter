@@ -140,8 +140,6 @@ namespace MediaCenter.LyricsFinder
             if (size != null)
                 Size = size.Value;
 
-            SharedComponents.Utility.EnableOrDisableToolStripMenuItems(HelpMenuItem, true);
-
             // Create a pseudo MC playlist item for the search
             var row = lyricCell.OwningRow;
 
@@ -158,8 +156,6 @@ namespace MediaCenter.LyricsFinder
                 LyricFormTrackBar.Select();
                 SearchButton.Enabled = false;
                 SearchButton.Visible = false;
-                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, false);
-                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(ToolsMenuItem, false);
 
                 _mcItem = new McMplItem
                 {
@@ -181,8 +177,6 @@ namespace MediaCenter.LyricsFinder
                 LyricFormTrackBar.Visible = false;
                 SearchButton.Enabled = true;
                 SearchButton.Visible = true;
-                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, true);
-                SharedComponents.Utility.EnableOrDisableToolStripMenuItems(ToolsMenuItem, true);
 
                 _mcItem = new McMplItem
                 {
@@ -362,7 +356,10 @@ namespace MediaCenter.LyricsFinder
                     case Keys.P:
                         if (e.Control)
                         {
-                            ToolsPlayStartStopButton.PerformClick();
+                            if (_isSearch && (OwnerForm is LyricForm ownerForm))
+                                ownerForm.ToolsPlayStartStopButton.PerformClick();
+                            else
+                                ToolsPlayStartStopButton.PerformClick();
                             e.Handled = true;
                         }
                         break;
@@ -661,10 +658,6 @@ namespace MediaCenter.LyricsFinder
                             case nameof(EditMenuItem):
                                 break;
 
-                            case nameof(EditSelectAllMenuItem):
-                                txt.SelectAll();
-                                break;
-
                             case nameof(EditCopyMenuItem):
                                 txt.Copy();
                                 break;
@@ -695,6 +688,10 @@ namespace MediaCenter.LyricsFinder
                                 //txt.ClearUndo(); // Clear the undo buffer to prevent last action from being redone 
                                 break;
 
+                            case nameof(EditSelectAllMenuItem):
+                                txt.SelectAll();
+                                break;
+
                             case nameof(EditTrimMenuItem):
                                 txt.Text = txt.Text.Trim();
                                 break;
@@ -718,10 +715,6 @@ namespace MediaCenter.LyricsFinder
                         switch (menuName)
                         {
                             case nameof(EditMenuItem):
-                                break;
-
-                            case nameof(EditSelectAllMenuItem):
-                                txt.SelectAll();
                                 break;
 
                             case nameof(EditCopyMenuItem):
@@ -769,18 +762,22 @@ namespace MediaCenter.LyricsFinder
                                 FindReplace(false);
                                 break;
 
+                            case nameof(EditSelectAllMenuItem):
+                                txt.SelectAll();
+                                break;
+
                             case nameof(EditSentenceCaseMenuItem):
                                 if (DoTextOperationQuestion(true))
                                     txt.SetSelectionText(SelectionOperation.SentenceCase);
                                 break;
 
-                            case nameof(EditToggleSpellCheckMenuItem):
-                                SetOrToggleSpellCheck();
-                                break;
-
                             case nameof(EditTitleCaseMenuItem):
                                 if (DoTextOperationQuestion(true))
                                     txt.SetSelectionText(SelectionOperation.TitleCase);
+                                break;
+
+                            case nameof(EditToggleSpellCheckMenuItem):
+                                SetOrToggleSpellCheck();
                                 break;
 
                             case nameof(EditTrimMenuItem):
@@ -1249,21 +1246,19 @@ namespace MediaCenter.LyricsFinder
         {
             var focusedControl = SharedComponents.Utility.GetFocusedControl(this);
 
-            SharedComponents.Utility.EnableOrDisableToolStripItems(true,
-                EditCopyMenuItem, EditCutMenuItem, EditDeleteMenuItem, EditPasteMenuItem, EditSelectAllMenuItem,
-                EditUndoMenuItem, EditRedoMenuItem);
+            SharedComponents.Utility.EnableOrDisableToolStripMenuItems(EditMenuItem, !_isSearch);
+            SharedComponents.Utility.EnableOrDisableToolStripMenuItems(HelpMenuItem, true);
+            SharedComponents.Utility.EnableOrDisableToolStripMenuItems(ToolsMenuItem, !_isSearch);
 
             SharedComponents.Utility.EnableOrDisableToolStripItems((focusedControl is SpellBox),
-                EditFindMenuItem, EditFindReplaceNextMenuItem, EditReplaceMenuItem,
-                EditSpellCheckLanguageMenuItem, EditToggleSpellCheckMenuItem,
-                EditLowerCaseMenuItem, EditProperCaseMenuItem, EditSentenceCaseMenuItem,
-                EditTitleCaseMenuItem, EditTrimMenuItem, EditRedoMenuItem, EditUpperCaseMenuItem);
+                EditRedoMenuItem, 
+                EditFindMenuItem, EditReplaceMenuItem, EditFindReplaceNextMenuItem,
+                EditProperCaseMenuItem, EditSentenceCaseMenuItem, EditTitleCaseMenuItem, EditLowerCaseMenuItem, EditUpperCaseMenuItem,
+                EditRemoveDoubleLineEndingsMenuItem, EditTrimMenuItem,
+                EditToggleSpellCheckMenuItem, EditSpellCheckLanguageMenuItem);
 
-            SharedComponents.Utility.EnableOrDisableToolStripItems(!_isSearch,
-                ToolsPlayJumpAheadLargeMenuItem, ToolsPlayJumpBackLargeMenuItem);
-
-            ToolsPlayJumpAheadLargeMenuItem.ShowShortcutKeys = !(focusedControl is SpellBox);
-            ToolsPlayJumpBackLargeMenuItem.ShowShortcutKeys = !(focusedControl is SpellBox);
+            ToolsPlayJumpAheadLargeMenuItem.ShowShortcutKeys = !_isSearch && !(focusedControl is SpellBox);
+            ToolsPlayJumpBackLargeMenuItem.ShowShortcutKeys = !_isSearch && !(focusedControl is SpellBox);
         }
 
 

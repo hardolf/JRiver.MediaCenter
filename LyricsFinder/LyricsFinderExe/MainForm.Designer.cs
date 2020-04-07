@@ -70,7 +70,7 @@ namespace MediaCenter.LyricsFinder
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(75, 23);
             this.ExitButton.TabIndex = 0;
-            this.ExitButton.Text = "Exit";
+            this.ExitButton.Text = "Exit (Esc)";
             this.MainToolTip.SetToolTip(this.ExitButton, "Exit the stand-alone LyricsFinder (Escape)");
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
