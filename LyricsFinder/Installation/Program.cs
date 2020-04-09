@@ -23,7 +23,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         static void Main()
         {
-            const string packageRootFolder = "LyricsFinder"; // For installation in plugins sub-folder, use "LyricsFinder"
+            const string packageRootFolder = ""; // "LyricsFinder"; // For installation in plugins sub-folder, use "LyricsFinder"
 
             // Get the version
             var assy = Assembly.GetExecutingAssembly();
