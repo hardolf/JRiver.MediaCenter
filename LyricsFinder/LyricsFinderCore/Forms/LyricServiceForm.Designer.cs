@@ -1,4 +1,4 @@
-﻿namespace MediaCenter.LyricsFinder.Model
+﻿namespace MediaCenter.LyricsFinder.Forms
 {
 
     partial class LyricServiceForm

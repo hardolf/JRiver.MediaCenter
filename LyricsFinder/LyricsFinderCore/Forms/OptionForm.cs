@@ -14,7 +14,7 @@ using MediaCenter.SharedComponents;
 using MediaCenter.LyricsFinder.Model;
 using MediaCenter.LyricsFinder.Model.Helpers;
 
-namespace MediaCenter.LyricsFinder
+namespace MediaCenter.LyricsFinder.Forms
 {
 
     /// <summary>

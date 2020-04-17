@@ -13,7 +13,7 @@ using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.SharedComponents;
 
 
-namespace MediaCenter.LyricsFinder
+namespace MediaCenter.LyricsFinder.Forms
 {
     /// <summary>
     /// Error form.

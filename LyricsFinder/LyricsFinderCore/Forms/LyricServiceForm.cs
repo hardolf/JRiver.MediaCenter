@@ -10,12 +10,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using MediaCenter.LyricsFinder.Model;
 using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.LyricServices;
 using MediaCenter.SharedComponents;
 
 
-namespace MediaCenter.LyricsFinder.Model
+namespace MediaCenter.LyricsFinder.Forms
 {
 
     /// <summary>
@@ -28,7 +29,6 @@ namespace MediaCenter.LyricsFinder.Model
         private bool _isListReady = false;
 
         private string _initialText = string.Empty;
-
 
         private readonly LyricsFinderDataType _lyricsFinderData = null;
 

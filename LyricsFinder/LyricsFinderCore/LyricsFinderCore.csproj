@@ -89,28 +89,28 @@
     <Compile Include="..\Installation\Properties\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AboutBox.cs">
+    <Compile Include="Forms\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AboutBox.Designer.cs">
+    <Compile Include="Forms\AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="BitmapForm.cs">
+    <Compile Include="Forms\BitmapForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="BitmapForm.Designer.cs">
+    <Compile Include="Forms\BitmapForm.Designer.cs">
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="FindReplaceForm.cs">
+    <Compile Include="Forms\FindReplaceForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FindReplaceForm.Designer.cs">
+    <Compile Include="Forms\FindReplaceForm.Designer.cs">
       <DependentUpon>FindReplaceForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="LyricServiceForm.cs">
+    <Compile Include="Forms\LyricServiceForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LyricServiceForm.Designer.cs">
+    <Compile Include="Forms\LyricServiceForm.Designer.cs">
       <DependentUpon>LyricServiceForm.cs</DependentUpon>
     </Compile>
     <Compile Include="McPlayControl.cs">
@@ -125,16 +125,16 @@
     <Compile Include="Model\LyricServices\ILyricService.cs" />
     <Compile Include="Model\LyricServices\LyricServiceExceptions.cs" />
     <Compile Include="Model\MainDataType.cs" />
-    <Compile Include="OptionForm.cs">
+    <Compile Include="Forms\OptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OptionForm.Designer.cs">
+    <Compile Include="Forms\OptionForm.Designer.cs">
       <DependentUpon>OptionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ErrorForm.cs">
+    <Compile Include="Forms\ErrorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ErrorForm.Designer.cs">
+    <Compile Include="Forms\ErrorForm.Designer.cs">
       <DependentUpon>ErrorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
@@ -150,10 +150,10 @@
     <Compile Include="LyricsFinderCore.Process.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="LyricForm.cs">
+    <Compile Include="Forms\LyricForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LyricForm.Designer.cs">
+    <Compile Include="Forms\LyricForm.Designer.cs">
       <DependentUpon>LyricForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\Helpers\AddinCustomConfigResolveHelper.cs" />
@@ -193,33 +193,33 @@
     </Content>
     <None Include="LyricsFinderCore.snk" />
     <None Include="packages.config" />
-    <EmbeddedResource Include="AboutBox.resx">
+    <EmbeddedResource Include="Forms\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="BitmapForm.resx">
+    <EmbeddedResource Include="Forms\BitmapForm.resx">
       <DependentUpon>BitmapForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FindReplaceForm.resx">
+    <EmbeddedResource Include="Forms\FindReplaceForm.resx">
       <DependentUpon>FindReplaceForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LyricServiceForm.resx">
+    <EmbeddedResource Include="Forms\LyricServiceForm.resx">
       <DependentUpon>LyricServiceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="McPlayControl.resx">
       <DependentUpon>McPlayControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OptionForm.resx">
+    <EmbeddedResource Include="Forms\OptionForm.resx">
       <DependentUpon>OptionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ErrorForm.resx">
+    <EmbeddedResource Include="Forms\ErrorForm.resx">
       <DependentUpon>ErrorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LyricsFinderCore.resx">
       <DependentUpon>LyricsFinderCore.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LyricForm.resx">
+    <EmbeddedResource Include="Forms\LyricForm.resx">
       <DependentUpon>LyricForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -25,8 +25,11 @@ sleep 1
 if exist %_out_file% goto :wait
 
 echo.
+:install_question
 set /P _yesno=Install LyricsFinder (YN)? [Y] || Set _yesno=y
-if /i "%_yesno:~0,1%" equ "n" goto end
+if /i "%_yesno:~0,1%" equ "n" goto :end
+if /i "%_yesno:~0,1%" equ "y" goto :install
+goto :install_question
 
 :install
 set _cmd=Output\Setup.exe

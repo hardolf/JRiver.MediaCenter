@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using MediaCenter.LyricsFinder.Forms;
 using MediaCenter.LyricsFinder.Model.LyricServices;
 
 
@@ -121,7 +122,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
             sb.AppendLine();
             sb.AppendLine($"Full exception details:");
-            sb.AppendLine($"{exception.ToString()}");
+            sb.AppendLine($"{exception}");
 
             await ShowErrorHandlerAsync(sb.ToString());
         }

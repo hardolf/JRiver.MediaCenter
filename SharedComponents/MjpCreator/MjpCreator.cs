@@ -165,7 +165,7 @@ namespace MediaCenter.SharedComponents
                     var destPathIni = $"{destPathLeft}.plugin1{destExt}";
                     var destPathXml = $"{destPathLeft}.plugin2{destExt}";
 
-                    var mjpCreator = MjpCreator.CreateMjpCreator(_argument.Name, _argument.Version, _argument.Url, _argument.SourceFileDirectories, _argument.ComRegisterFiles);
+                    var mjpCreator = CreateMjpCreator(_argument.Name, _argument.Version, _argument.Url, _argument.SourceFileDirectories, _argument.ComRegisterFiles);
 
                     var iniText = mjpCreator.Serialize(1);
                     var xmlText = mjpCreator.Serialize(2);

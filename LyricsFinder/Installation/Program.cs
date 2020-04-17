@@ -23,7 +23,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         static void Main()
         {
-            const string packageRootFolder = ""; // "LyricsFinder"; // For installation in plugins sub-folder, use "LyricsFinder"
+            const string packageRootFolder = "LyricsFinder"; // For installation in plugins sub-folder, use "LyricsFinder"
 
             // Get the version
             var assy = Assembly.GetExecutingAssembly();
@@ -31,7 +31,7 @@ namespace MediaCenter.LyricsFinder
             var versionText = string.Join(".", version.Major, version.Minor, version.Build);
 
             // Make the MJP files
-            MakeMcpFiles(assy, versionText);
+            MakeMjpFiles(assy, versionText, packageRootFolder);
 
             // Pack the release files
             PackageSetupFile(new[] { Path.GetFullPath(@"..\..\..\Documentation\Build")
@@ -43,12 +43,12 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
-        /// Makes the MCP files.
+        /// Makes the MJP files.
         /// </summary>
         /// <param name="assembly">The assy.</param>
         /// <param name="versionText">The version text.</param>
         /// <exception cref="System.Exception">MjpCreator failed creating MJP files.</exception>
-        private static void MakeMcpFiles(Assembly assembly, string versionText, string packageRootFolder = "")
+        private static void MakeMjpFiles(Assembly assembly, string versionText, string packageRootFolder = "")
         {
             if (assembly is null) throw new ArgumentNullException(nameof(assembly));
 

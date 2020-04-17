@@ -1,4 +1,4 @@
-﻿namespace MediaCenter.LyricsFinder
+﻿namespace MediaCenter.LyricsFinder.Forms
 {
     partial class OptionForm
     {

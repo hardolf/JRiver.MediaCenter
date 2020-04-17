@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace MediaCenter.LyricsFinder
+namespace MediaCenter.LyricsFinder.Forms
 {
 
     /// <summary>

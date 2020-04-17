@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using MediaCenter;
+using MediaCenter.LyricsFinder.Forms;
 using MediaCenter.LyricsFinder.Model;
 using MediaCenter.LyricsFinder.Model.Helpers;
 using MediaCenter.LyricsFinder.Model.LyricServices;

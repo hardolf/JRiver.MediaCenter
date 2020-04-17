@@ -19,7 +19,7 @@ using MediaCenter.McWs;
 using MediaCenter.SharedComponents;
 
 
-namespace MediaCenter.LyricsFinder
+namespace MediaCenter.LyricsFinder.Forms
 {
 
     /// <summary>
