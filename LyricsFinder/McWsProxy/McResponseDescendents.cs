@@ -128,6 +128,7 @@ namespace MediaCenter.McWs
     }
 
 
+
     /// <summary>
     /// JRiver MediaCenter REST Web service response type for the Info command.
     /// </summary>

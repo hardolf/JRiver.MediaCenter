@@ -381,16 +381,28 @@ namespace MediaCenter.LyricsFinder
                 var colIdx = (int)GridColumnEnum.Lyrics;
                 var rowIdx = rows[0].Index;
 
-                if (e.ClickedItem == ContextEditMenuItem)
-                    ShowLyrics(colIdx, rowIdx);
-                else if (e.ClickedItem == ContextPlayPauseMenuItem)
+                switch (e.ClickedItem.Name)
                 {
-                    await PlayOrPauseAsync();
+                    case nameof(ContextEditMenuItem):
+                        ShowLyrics(colIdx, rowIdx);
+                        break;
 
-                    ToolsPlayStartStopButton.SetRunningState(!ToolsPlayStartStopButton.IsRunning);
+                    case nameof(ContextPlayPauseMenuItem):
+                        await PlayOrPauseAsync();
+                        ToolsPlayStartStopButton.SetRunningState(!ToolsPlayStartStopButton.IsRunning);
+                        break;
+
+                    case nameof(ContextPlayStopMenuItem):
+                        ToolsPlayStartStopButton.Stop();
+                        break;
+
+                    case nameof(ContextItemInfoMenuItem):
+                        ShowItemInfo();
+                        break;
+
+                    default:
+                        throw new Exception($"Unknown context menu item \"{e.ClickedItem.Text}\".");
                 }
-                else if (e.ClickedItem == ContextPlayStopMenuItem)
-                    ToolsPlayStartStopButton.Stop();
             }
             catch (Exception ex)
             {
@@ -865,6 +877,10 @@ namespace MediaCenter.LyricsFinder
 
                         case nameof(ToolsShowLogMenuItem):
                             Logging.ShowLogDir();
+                            break;
+
+                        case nameof(ToolsItemInfoMenuItem):
+                            ShowItemInfo();
                             break;
 
                         case nameof(ToolsTestMenuItem):

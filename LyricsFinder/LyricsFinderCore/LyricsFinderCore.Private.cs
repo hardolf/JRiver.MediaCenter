@@ -808,7 +808,7 @@ namespace MediaCenter.LyricsFinder
                     // We only save items if they are found or manually edited
                     if ((statusTxt.ToLyricResultEnum() & (LyricsResultEnum.Found | LyricsResultEnum.ManuallyEdited)) != 0) // If status is one of those enum values
                     {
-                        var rsp = await McRestService.SetInfo(key, "Lyrics", lyrics);
+                        var rsp = await McRestService.SetInfoAsync(key, "Lyrics", lyrics);
 
                         if (!rsp.IsOk)
                             throw new Exception($"Saving item to Media Center failed for index {i} with key {key}.");
@@ -1163,6 +1163,21 @@ namespace MediaCenter.LyricsFinder
                         ShowShortcuts(isDisplayed, menuItem);
                     }
                 }
+            }
+        }
+
+
+        /// <summary>
+        /// Shows the information for the currently selected item.
+        /// </summary>
+        internal void ShowItemInfo()
+        {
+            if (_playingIndex < 0)
+                return;
+
+            using (var frm = new ItemInfoForm(this))
+            {
+                frm.ShowDialog();
             }
         }
 

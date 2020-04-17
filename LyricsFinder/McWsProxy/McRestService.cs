@@ -133,6 +133,14 @@ namespace MediaCenter.McWs
                     sb.Append($"/File/{command}?Token={McWsToken}&File={key}&FileType=Key&Type=Thumbnail&ThumbnailSize=Large&Format=jpg");
                     break;
 
+                case McCommandEnum.GetInfo:
+                    sb.Append($"/File/{command}?Token={McWsToken}&Action=MPL&File={value}");
+                    break;
+
+                case McCommandEnum.GetInfoFull:
+                    sb.Append($"/File/GetInfo?Token={McWsToken}&Action=MPL&Fields=Calculated&File={value}");
+                    break;
+
                 case McCommandEnum.Info:
                 case McCommandEnum.PlayPause:
                 case McCommandEnum.Stop:
@@ -247,6 +255,25 @@ namespace MediaCenter.McWs
             var requestUrl = CreateRequestUrl(McCommandEnum.GetImage, key);
             var rsp = await Utility.HttpGetImageAsync(requestUrl).ConfigureAwait(false);
             var ret = new McGetImageResponse(rsp);
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Get the playback info.
+        /// </summary>
+        /// <param name="fileKey">The file key.</param>
+        /// <param name="includeCalculated">if set to <c>true</c> include calculated fields; else do not.</param>
+        /// <returns>
+        ///   <see cref="McInfoResponse" /> object.
+        /// </returns>
+        public static async Task<McMplResponse> GetInfoAsync(string fileKey, bool includeCalculated = false)
+        {
+            var cmd = (includeCalculated) ? McCommandEnum.GetInfoFull : McCommandEnum.GetInfo;
+            var requestUrl = CreateRequestUrl(cmd, value: fileKey);
+            var rsp = await Utility.HttpGetStringAsync(requestUrl).ConfigureAwait(false);
+            var ret = await McMplResponse.CreateMcMplResponseAsync(rsp).ConfigureAwait(false);
 
             return ret;
         }
@@ -448,7 +475,7 @@ namespace MediaCenter.McWs
         /// <returns>
         ///   <see cref="McSetInfoResponse" /> object.
         /// </returns>
-        public static async Task<McSetInfoResponse> SetInfo(int key, string field, string value)
+        public static async Task<McSetInfoResponse> SetInfoAsync(int key, string field, string value)
         {
             // For som reason, the MediaCenter is not satisfied with the token alone...
             var user = McWsUserName;

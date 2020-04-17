@@ -19,6 +19,8 @@ namespace MediaCenter.McWs
         Alive,
         Authenticate,
         GetImage,
+        GetInfo,
+        GetInfoFull,
         Info,
         PlayByIndex,
         PlayByKey,

@@ -69,7 +69,7 @@ namespace MediaCenter.SharedComponents
 
             Size size = TextRenderer.MeasureText(control.Text, control.Font);
 
-            control.ClientSize = new Size(size.Width + x_margin + padding.Value.Left + padding.Value.Right, 
+            control.ClientSize = new Size(size.Width + x_margin + padding.Value.Left + padding.Value.Right,
                 size.Height + y_margin + padding.Value.Top + padding.Value.Bottom);
         }
 
@@ -582,6 +582,60 @@ namespace MediaCenter.SharedComponents
             this string text)
         {
             return string.IsNullOrEmpty(text?.Trim());
+        }
+
+
+        /// <summary>
+        /// Determines whether the specified form is completely on screen.
+        /// </summary>
+        /// <param name="form">The form.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified form is completely on screen; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsOnScreenAll(this Form form)
+        {
+            if (form is null) throw new ArgumentNullException(nameof(form));
+
+            Screen[] screens = Screen.AllScreens;
+
+            foreach (Screen screen in screens)
+            {
+                Rectangle formRectangle = new Rectangle(form.Left, form.Top, form.Width, form.Height);
+
+                if (screen.WorkingArea.Contains(formRectangle))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Determines whether the top left point of the specified form is on screen.
+        /// </summary>
+        /// <param name="form">The form.</param>
+        /// <returns>
+        ///   <c>true</c> if the top left point of the specified form is on screen; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsOnScreenTopLeft(this Form form)
+        {
+            if (form is null) throw new ArgumentNullException(nameof(form));
+
+            Screen[] screens = Screen.AllScreens;
+
+            foreach (Screen screen in screens)
+            {
+                Point formTopLeft = new Point(form.Left, form.Top);
+
+                if (screen.WorkingArea.Contains(formTopLeft))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 

@@ -23,6 +23,7 @@ namespace MediaCenter.LyricsFinder.Model
     public class MainDataType
     {
 
+        private Size _itemInfoFormSize;
         private Size _lyricFormSize;
 
 
@@ -148,15 +149,6 @@ namespace MediaCenter.LyricsFinder.Model
         public string NoLyricsSearchFilter { get; set; }
 
         /// <summary>
-        /// Gets or sets the update check interval days.
-        /// </summary>
-        /// <value>
-        /// The update check interval days (default: 0, i.e. at each Media Center start).
-        /// </value>
-        [XmlElement]
-        public int UpdateCheckIntervalDays { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether service requests should be sent in sequence during automatic search.
         /// </summary>
         /// <value>
@@ -178,6 +170,37 @@ namespace MediaCenter.LyricsFinder.Model
         /// </value>
         [XmlElement]
         public bool StrictSearchOnly { get; set; }
+
+        /// <summary>
+        /// Gets or sets the item information form location.
+        /// </summary>
+        /// <value>
+        /// The item information form location.
+        /// </value>
+        [XmlElement]
+        public Point ItemInfoFormLocation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of the item information form.
+        /// </summary>
+        /// <value>
+        /// The size of the item information form.
+        /// </value>
+        [XmlElement]
+        public Size ItemInfoFormSize
+        {
+            get => (_itemInfoFormSize.Height == 0 || _itemInfoFormSize.Width == 0) ? new Size(500, 800) : _itemInfoFormSize;
+            set => _itemInfoFormSize = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the update check interval days.
+        /// </summary>
+        /// <value>
+        /// The update check interval days (default: 0, i.e. at each Media Center start).
+        /// </value>
+        [XmlElement]
+        public int UpdateCheckIntervalDays { get; set; }
 
 
         /// <summary>
