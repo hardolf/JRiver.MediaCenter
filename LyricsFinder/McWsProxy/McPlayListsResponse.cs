@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -33,7 +34,7 @@ namespace MediaCenter.McWs
         /// The items.
         /// </value>
         [XmlIgnore]
-        public virtual Dictionary<string, McPlayListType> Items { get; } = new Dictionary<string, McPlayListType>();
+        public virtual Dictionary<string, McPlayListType> PlayLists { get; } = new Dictionary<string, McPlayListType>();
 
         [XmlAttribute("Status")]
         public string Status
@@ -124,7 +125,7 @@ namespace MediaCenter.McWs
                 };
 
                 if (!type.Equals("GROUP", StringComparison.InvariantCultureIgnoreCase))
-                    ret.Items.Add(id, item);
+                    ret.PlayLists.Add(id, item);
             }
 
             return ret;
@@ -145,15 +146,15 @@ namespace MediaCenter.McWs
             var rsp = obj as McPlayListsResponse;
             var ret = (rsp != null) &&
                 (IsOk == rsp.IsOk) &&
-                (Items.Count == rsp.Items.Count) &&
+                (PlayLists.Count == rsp.PlayLists.Count) &&
                 (Status == rsp.Status);
 
             if (ret && (rsp != null))
             {
-                for (int i = 0; i < rsp.Items.Count; i++)
+                for (int i = 0; i < rsp.PlayLists.Count; i++)
                 {
-                    if (Items.ElementAt(i).Key.Equals(rsp.Items.ElementAt(i).Key, StringComparison.InvariantCultureIgnoreCase)
-                        && Items.ElementAt(i).Value.Equals(rsp.Items.ElementAt(i).Value))
+                    if (PlayLists.ElementAt(i).Key.Equals(rsp.PlayLists.ElementAt(i).Key, StringComparison.InvariantCultureIgnoreCase)
+                        && PlayLists.ElementAt(i).Value.Equals(rsp.PlayLists.ElementAt(i).Value))
                         continue;
                 }
             }
@@ -173,10 +174,34 @@ namespace MediaCenter.McWs
             var hashCode = 1337987077;
 
             hashCode = hashCode * -1521134295 + IsOk.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<Dictionary<string, McPlayListType>>.Default.GetHashCode(Items);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Dictionary<string, McPlayListType>>.Default.GetHashCode(PlayLists);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Status);
 
             return hashCode;
+        }
+
+
+        /// <summary>
+        /// Gets the items playlists.
+        /// </summary>
+        /// <param name="items">The items.</param>
+        /// <param name="playListTypes">The filters, playlist types to exclude.</param>
+        /// <returns>
+        /// Sorted dictionary with item keys as keys and sorted dictionaries of the items' playlists as values.
+        /// </returns>
+        public async Task<Dictionary<int, Dictionary<int, string>>> GetItemsPlaylistsAsync(Dictionary<int, McMplItem> items, params string[] playListTypes)
+        {
+            var cnt = 0;
+            var ret = new Dictionary<int, Dictionary<int, string>>();
+            var playLists = PlayLists.Where(p => playListTypes.Any(f => p.Value.Type.Equals(f, StringComparison.InvariantCultureIgnoreCase)));
+
+            foreach (var kvp in playLists)
+            {
+                cnt++;
+                await kvp.Value.GetItemPlaylistsAsync(ret, items).ConfigureAwait(false);
+            }
+
+            return ret;
         }
 
     }
@@ -202,6 +227,9 @@ namespace MediaCenter.McWs
 
         [XmlElement]
         public string Type { get; set; }
+
+        [XmlIgnore]
+        public List<int> ItemKeys { get; } = new List<int>();
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 
@@ -268,6 +296,41 @@ namespace MediaCenter.McWs
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Type);
 
             return hashCode;
+        }
+
+
+        /// <summary>
+        /// Gets the item playlists.
+        /// </summary>
+        /// <param name="itemsPlaylists">The items' playlists.</param>
+        /// <param name="currentItems">The items.</param>
+        /// <exception cref="ArgumentNullException">itemsPlaylists</exception>
+        public async Task GetItemPlaylistsAsync(Dictionary<int, Dictionary<int, string>> itemsPlaylists, Dictionary<int, McMplItem> currentItems)
+        {
+            if (itemsPlaylists is null) throw new ArgumentNullException(nameof(itemsPlaylists));
+            if (currentItems is null) throw new ArgumentNullException(nameof(currentItems));
+
+            var cnt = 0;
+            var playlistId = int.Parse(Id, CultureInfo.InvariantCulture);
+            var rsp = await McRestService.GetPlaylistFilesAsync(int.Parse(Id, CultureInfo.InvariantCulture)).ConfigureAwait(false);
+            var items = rsp.Items.Where(i => currentItems.Any(c => c.Key == i.Key));
+
+            foreach (var item in items)
+            {
+                cnt++;
+
+                if (itemsPlaylists.TryGetValue(item.Key, out var itemList))
+                    itemList.Add(playlistId, Name);
+                else
+                {
+                    itemList = new Dictionary<int, string>
+                    {
+                        { playlistId, Name }
+                    };
+
+                    itemsPlaylists.Add(item.Key, itemList);
+                }
+            }
         }
 
     }

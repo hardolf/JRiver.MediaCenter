@@ -72,6 +72,7 @@
             this.MainDataGridView.MultiSelect = false;
             this.MainDataGridView.Name = "MainDataGridView";
             this.MainDataGridView.ReadOnly = true;
+            this.MainDataGridView.RowHeadersVisible = false;
             this.MainDataGridView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.MainDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.MainDataGridView.Size = new System.Drawing.Size(360, 508);
@@ -103,6 +104,7 @@
             this.CalculatedColumn.Name = "CalculatedColumn";
             this.CalculatedColumn.ReadOnly = true;
             this.CalculatedColumn.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.CalculatedColumn.ToolTipText = "An asterix (*) in this column indicates a calculated field";
             this.CalculatedColumn.Width = 35;
             // 
             // ItemNameColumn
@@ -111,8 +113,9 @@
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
             this.ItemNameColumn.DefaultCellStyle = dataGridViewCellStyle2;
             this.ItemNameColumn.HeaderText = "Name";
-            this.ItemNameColumn.Name = "TagNameColumn";
+            this.ItemNameColumn.Name = "ItemNameColumn";
             this.ItemNameColumn.ReadOnly = true;
+            this.ItemNameColumn.ToolTipText = "Field name";
             this.ItemNameColumn.Width = 60;
             // 
             // ItemValueColumn
@@ -121,8 +124,9 @@
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
             this.ItemValueColumn.DefaultCellStyle = dataGridViewCellStyle3;
             this.ItemValueColumn.HeaderText = "Value";
-            this.ItemValueColumn.Name = "TagValueColumn";
+            this.ItemValueColumn.Name = "ItemValueColumn";
             this.ItemValueColumn.ReadOnly = true;
+            this.ItemValueColumn.ToolTipText = "Field value";
             // 
             // ItemInfoForm
             // 

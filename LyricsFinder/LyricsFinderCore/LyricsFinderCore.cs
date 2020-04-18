@@ -15,6 +15,7 @@ Modified: 2019.07.01 by Hardolf.
 
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
@@ -118,6 +119,8 @@ namespace MediaCenter.LyricsFinder
         {
             get => _playingIndex >= 0;
         }
+
+        internal Dictionary<int, Dictionary<int, string>> ItemsPlayLists { get; private set; } = null;
 
         /// <summary>
         /// Gets the Media Center play control.
@@ -974,6 +977,38 @@ namespace MediaCenter.LyricsFinder
             }
 
             await SetPlayingImagesAndMenusAsync();
+        }
+
+
+        /// <summary>
+        /// Handles the Tick event of the ReadyTimer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void ReadyTimer_TickAsync(object sender, EventArgs e)
+        {
+            try
+            {
+                ReadyTimer.Stop();
+
+                if (_isDesignTime) return;
+
+                // Preload the Media Center playlists.
+                await LoadPlaylistMenusAsync();
+
+                // Load the items' playlists.
+                // This is a long-running operation!
+                ItemsPlayLists?.Clear();
+                ItemsPlayLists = null;
+                ItemsPlayLists = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(_currentLyricsFinderPlaylist.Items, "Playlist");
+
+                // We only use this timer once in each session, when the check is successful, so no need to start it again
+                // ReadyTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
         }
 
 

@@ -609,6 +609,7 @@ namespace MediaCenter.LyricsFinder
                     ret = await McRestService.GetPlayNowListAsync();
 
                 await StatusMessageAsync($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.", true, true);
+                ReadyTimer.Start();
             }
             finally
             {
@@ -679,7 +680,7 @@ namespace MediaCenter.LyricsFinder
             if (!list.IsOk)
                 throw new Exception("Unknown error finding Media Center playlists.");
 
-            if (list.Items.Count == 0)
+            if (list.PlayLists.Count == 0)
                 throw new Exception("Empty list of playlists returned from Media Center.");
 
             if (_currentUnsortedMcPlaylistsResponse?.Equals(list) ?? false)
@@ -690,7 +691,7 @@ namespace MediaCenter.LyricsFinder
             // Sort the playlists by path
             _currentSortedMcPlaylists.Clear();
 
-            foreach (var item in list.Items)
+            foreach (var item in list.PlayLists)
             {
                 var playlist = item.Value;
 
@@ -1175,7 +1176,7 @@ namespace MediaCenter.LyricsFinder
             if (_playingIndex < 0)
                 return;
 
-            using (var frm = new ItemInfoForm(this))
+            using (var frm = new ItemInfoForm(this, _selectedKey))
             {
                 frm.ShowDialog();
             }

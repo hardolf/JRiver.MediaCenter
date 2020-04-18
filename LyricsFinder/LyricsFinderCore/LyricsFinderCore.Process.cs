@@ -84,7 +84,6 @@ namespace MediaCenter.LyricsFinder
                     try
                     {
                         Authentication = await McRestService.GetAuthenticationAsync();
-
                         _isConnectedToMc = true;
                         await StatusMessageAsync($"Connected successfully to the MCWS after {cnt} attempt(s).", true, true);
                     }
@@ -210,14 +209,13 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="isReconnect">if set to <c>true</c> reconnect to MediaCenter; else do not.</param>
         /// <param name="menuItemName">Name of the menu item.</param>
-        /// <returns></returns>
         private async Task ReloadPlaylistAsync(bool isReconnect = false, string menuItemName = null)
         {
             var msg = "connecting to the Media Center and/or loading the playlist";
 
             try
             {
-                EnableOrDisableToolStripItems(false, FileMenuItem, ToolsPlayStartStopButton, ToolsSearchAllStartStopButton, SearchAllStartStopButton
+                EnableOrDisableToolStripItems(false, FileMenuItem, ToolsItemInfoMenuItem, ToolsPlayStartStopButton, ToolsSearchAllStartStopButton, SearchAllStartStopButton
                     , ToolsPlayJumpAheadLargeMenuItem, ToolsPlayJumpAheadSmallMenuItem, ToolsPlayJumpBackLargeMenuItem, ToolsPlayJumpBackSmallMenuItem);
 
                 if (IsDataChanged)
@@ -257,7 +255,7 @@ namespace MediaCenter.LyricsFinder
             catch (Exception ex)
             {
                 EnableOrDisableToolStripItems(true);
-                EnableOrDisableToolStripItems(false, FileSelectPlaylistMenuItem, FileSaveMenuItem, ToolsPlayStartStopButton, ToolsSearchAllStartStopButton, SearchAllStartStopButton
+                EnableOrDisableToolStripItems(false, FileSelectPlaylistMenuItem, FileSaveMenuItem, ToolsItemInfoMenuItem, ToolsPlayStartStopButton, ToolsSearchAllStartStopButton, SearchAllStartStopButton
                     , ToolsPlayJumpAheadLargeMenuItem, ToolsPlayJumpAheadSmallMenuItem, ToolsPlayJumpBackLargeMenuItem, ToolsPlayJumpBackSmallMenuItem);
 
                 await StatusMessageAsync($"Error {msg}.", true, true);

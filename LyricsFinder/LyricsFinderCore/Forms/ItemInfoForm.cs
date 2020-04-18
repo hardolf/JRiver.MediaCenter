@@ -26,6 +26,8 @@ namespace MediaCenter.LyricsFinder.Forms
     public partial class ItemInfoForm : Form
     {
 
+        private readonly int _mcItemKey = -1;
+
         private readonly Dictionary<string, string> _itemFields = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _itemFieldsFull = new Dictionary<string, string>();
 
@@ -54,10 +56,12 @@ namespace MediaCenter.LyricsFinder.Forms
         /// Initializes a new instance of the <see cref="ItemInfoForm" /> class.
         /// </summary>
         /// <param name="lyricsFinderCore">The lyrics finder core.</param>
-        public ItemInfoForm(LyricsFinderCore lyricsFinderCore)
+        /// <param name="mcItemKey">The Media Center item key.</param>
+        public ItemInfoForm(LyricsFinderCore lyricsFinderCore, int mcItemKey)
             : this()
         {
             LyricsFinderCore = lyricsFinderCore;
+            _mcItemKey = mcItemKey;
         }
 
 
@@ -144,16 +148,12 @@ namespace MediaCenter.LyricsFinder.Forms
 
                 Refresh();
 
-                var mcInfo = await McRestService.InfoAsync();
-
-                Text = mcInfo.Name;
-
                 // Populate the 2 item field dictionaries
                 for (int i = 0; i < 2; i++)
                 {
                     var mcMplInfo = (i == 0) 
-                        ? await McRestService.GetInfoAsync(mcInfo.FileKey, false)
-                        : await McRestService.GetInfoAsync(mcInfo.FileKey, true);
+                        ? await McRestService.GetInfoAsync(_mcItemKey.ToString(CultureInfo.InvariantCulture), false)
+                        : await McRestService.GetInfoAsync(_mcItemKey.ToString(CultureInfo.InvariantCulture), true);
 
                     foreach (var item in mcMplInfo.Items)
                     {
@@ -169,6 +169,9 @@ namespace MediaCenter.LyricsFinder.Forms
                         }
                     }
                 }
+
+                if (_itemFields.TryGetValue("Name", out var text))
+                    Text = text;
 
                 FillData();
             }
@@ -192,15 +195,43 @@ namespace MediaCenter.LyricsFinder.Forms
             var fields = (IncludeCalculatedCheckBox.Checked) ? _itemFieldsFull : _itemFields;
             var sortCol = dgv.SortedColumn;
             var sortOrder = dgv.SortOrder;
+            var id = -1;
 
             dgv.Rows.Clear();
 
+            // Populate the data grid
             foreach (var fld in fields)
             {
                 var calc = (_itemFields.ContainsKey(fld.Key)) ? string.Empty : "*";
 
                 dgv.Rows.Add(calc, fld.Key, fld.Value);
+
+                if (fld.Key.Equals("Key", StringComparison.InvariantCultureIgnoreCase))
+                    id = int.Parse(fld.Value, CultureInfo.InvariantCulture);
             }
+
+            // Add the item's playlist
+            var playListsText = "<Not collected yet, try again later...>";
+
+            if (LyricsFinderCore.ItemsPlayLists != null)
+            {
+                if (LyricsFinderCore.ItemsPlayLists.TryGetValue(id, out var playLists))
+                {
+                    playListsText = string.Empty;
+
+                    foreach (var playList in playLists.OrderBy(p => p.Value))
+                    {
+                        if (!playListsText.IsNullOrEmptyTrimmed())
+                            playListsText += ", ";
+
+                        playListsText += playList.Value;
+                    }
+                }
+            }
+
+            dgv.Rows.Add("*", "PlayLists", playListsText);
+
+            dgv.Columns[0].Visible = IncludeCalculatedCheckBox.Checked;
 
             // Restore the previous sorting, if necessary
             if ((sortCol != null) && (sortOrder != SortOrder.None))
