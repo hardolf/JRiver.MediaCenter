@@ -184,22 +184,25 @@ namespace MediaCenter.McWs
         /// <summary>
         /// Gets the items playlists.
         /// </summary>
-        /// <param name="items">The items.</param>
+        /// <param name="currentItemIds">The items.</param>
         /// <param name="playListTypes">The filters, playlist types to exclude.</param>
         /// <returns>
         /// Sorted dictionary with item keys as keys and sorted dictionaries of the items' playlists as values.
         /// </returns>
-        public async Task<Dictionary<int, Dictionary<int, string>>> GetItemsPlaylistsAsync(Dictionary<int, McMplItem> items, params string[] playListTypes)
+        public async Task<Dictionary<int, List<int>>> GetItemsPlaylistsAsync(List<int> currentItemIds, params string[] playListTypes)
         {
-            var cnt = 0;
-            var ret = new Dictionary<int, Dictionary<int, string>>();
+            var ret = new Dictionary<int, List<int>>();
             var playLists = PlayLists.Where(p => playListTypes.Any(f => p.Value.Type.Equals(f, StringComparison.InvariantCultureIgnoreCase)));
+            var tasks = new List<Task>();
 
+            // Create all the tasks
             foreach (var kvp in playLists)
             {
-                cnt++;
-                await kvp.Value.GetItemPlaylistsAsync(ret, items).ConfigureAwait(false);
+                tasks.Add(kvp.Value.GetItemPlaylistsAsync(ret, currentItemIds));
             }
+
+            // Run the tasks in parallel
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             return ret;
         }
@@ -300,35 +303,32 @@ namespace MediaCenter.McWs
 
 
         /// <summary>
-        /// Gets the item playlists.
+        /// Gets the items' playlist IDs.
         /// </summary>
-        /// <param name="itemsPlaylists">The items' playlists.</param>
-        /// <param name="currentItems">The items.</param>
+        /// <param name="itemsPlaylists">The items' playlist IDs.</param>
+        /// <param name="currentItemIds">The current items in LyricsFinder.</param>
         /// <exception cref="ArgumentNullException">itemsPlaylists</exception>
-        public async Task GetItemPlaylistsAsync(Dictionary<int, Dictionary<int, string>> itemsPlaylists, Dictionary<int, McMplItem> currentItems)
+        public async Task GetItemPlaylistsAsync(Dictionary<int, List<int>> itemsPlaylists, List<int> currentItemIds)
         {
             if (itemsPlaylists is null) throw new ArgumentNullException(nameof(itemsPlaylists));
-            if (currentItems is null) throw new ArgumentNullException(nameof(currentItems));
+            if (currentItemIds is null) throw new ArgumentNullException(nameof(currentItemIds));
 
-            var cnt = 0;
             var playlistId = int.Parse(Id, CultureInfo.InvariantCulture);
             var rsp = await McRestService.GetPlaylistFilesAsync(int.Parse(Id, CultureInfo.InvariantCulture)).ConfigureAwait(false);
-            var items = rsp.Items.Where(i => currentItems.Any(c => c.Key == i.Key));
+            var mcPlayListFileItems = rsp.Items.Where(i => currentItemIds.Any(c => c == i.Key));
 
-            foreach (var item in items)
+            foreach (var mcFileItem in mcPlayListFileItems)
             {
-                cnt++;
-
-                if (itemsPlaylists.TryGetValue(item.Key, out var itemList))
-                    itemList.Add(playlistId, Name);
+                if (itemsPlaylists.TryGetValue(mcFileItem.Key, out var itemList))
+                    itemList.Add(playlistId);
                 else
                 {
-                    itemList = new Dictionary<int, string>
+                    itemList = new List<int>
                     {
-                        { playlistId, Name }
+                        { playlistId }
                     };
 
-                    itemsPlaylists.Add(item.Key, itemList);
+                    itemsPlaylists.Add(mcFileItem.Key, itemList);
                 }
             }
         }

@@ -829,6 +829,10 @@ namespace MediaCenter.LyricsFinder.Forms
                             SearchButton.PerformClick();
                             break;
 
+                        case nameof(ToolsItemInfoMenuItem):
+                            LyricsFinderCore.ShowItemInfo();
+                            break;
+
                         case nameof(ToolsPlayJumpAheadLargeMenuItem):
                             await LyricsFinderCore?.McPlayControl?.JumpAsync(false, true);
                             break;

@@ -85,12 +85,14 @@
             this.EditSpellCheckLanguageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToolsSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolsSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.ToolsPlayJumpAheadLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsPlayJumpBackLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsSeparator0 = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolsItemInfoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).BeginInit();
             this.LyricFormToolStripContainer.BottomToolStripPanel.SuspendLayout();
             this.LyricFormToolStripContainer.ContentPanel.SuspendLayout();
@@ -576,6 +578,8 @@
             this.ToolsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolsSearchMenuItem,
             this.ToolsSeparator0,
+            this.ToolsItemInfoMenuItem,
+            this.ToolsSeparator1,
             this.ToolsPlayStartStopButton,
             this.ToolsPlayJumpAheadLargeMenuItem,
             this.ToolsPlayJumpBackLargeMenuItem});
@@ -591,10 +595,10 @@
             this.ToolsSearchMenuItem.Text = "&Search";
             this.ToolsSearchMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
-            // ToolsSeparator0
+            // ToolsSeparator1
             // 
-            this.ToolsSeparator0.Name = "ToolsSeparator0";
-            this.ToolsSeparator0.Size = new System.Drawing.Size(237, 6);
+            this.ToolsSeparator1.Name = "ToolsSeparator1";
+            this.ToolsSeparator1.Size = new System.Drawing.Size(237, 6);
             // 
             // ToolsPlayStartStopButton
             // 
@@ -644,6 +648,19 @@
             this.HelpHelpMenuItem.Size = new System.Drawing.Size(118, 22);
             this.HelpHelpMenuItem.Text = "&Help";
             this.HelpHelpMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // ToolsSeparator0
+            // 
+            this.ToolsSeparator0.Name = "ToolsSeparator0";
+            this.ToolsSeparator0.Size = new System.Drawing.Size(237, 6);
+            // 
+            // ToolsItemInfoMenuItem
+            // 
+            this.ToolsItemInfoMenuItem.Name = "ToolsItemInfoMenuItem";
+            this.ToolsItemInfoMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.I)));
+            this.ToolsItemInfoMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.ToolsItemInfoMenuItem.Text = "Item information";
+            this.ToolsItemInfoMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // LyricForm
             // 
@@ -729,7 +746,7 @@
         private System.Windows.Forms.Integration.ElementHost LyricElementHost;
         private SpellBox LyricTextBox;
         private System.Windows.Forms.ToolStripMenuItem EditSpellCheckLanguageMenuItem;
-        private System.Windows.Forms.ToolStripSeparator ToolsSeparator0;
+        private System.Windows.Forms.ToolStripSeparator ToolsSeparator1;
         private System.Windows.Forms.ToolStripMenuItem EditRedoMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ToolsPlayJumpAheadLargeMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ToolsPlayJumpBackLargeMenuItem;
@@ -741,5 +758,7 @@
         private System.Windows.Forms.ToolStripStatusLabel LyricFormFoundStatusLabel;
         private System.Windows.Forms.ToolStripMenuItem EditRemoveDoubleLineEndingsMenuItem;
         internal StartStopToolStripButton ToolsPlayStartStopButton;
+        private System.Windows.Forms.ToolStripSeparator ToolsSeparator0;
+        private System.Windows.Forms.ToolStripMenuItem ToolsItemInfoMenuItem;
     }
 }

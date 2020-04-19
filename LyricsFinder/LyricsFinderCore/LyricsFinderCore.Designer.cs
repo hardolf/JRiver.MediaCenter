@@ -28,7 +28,7 @@ namespace MediaCenter.LyricsFinder
                 try { if (_lyricForm != null) _lyricForm.Close(); } catch { /* Ignore */ }
                 try { if (McPlayControl != null) McPlayControl.Dispose(); } catch { /* Ignore */ }
                 try { if (_noLyricsSearchList != null) _noLyricsSearchList.Clear(); } catch { /* Ignore */ }
-                try { if (_currentSortedMcPlaylists != null) _currentSortedMcPlaylists.Clear(); } catch { /* Ignore */ }
+                try { if (CurrentSortedMcPlaylists != null) CurrentSortedMcPlaylists.Clear(); } catch { /* Ignore */ }
                 try { if (_cancellationTokenSource != null) _cancellationTokenSource.Dispose(); } catch { /* Ignore */ }
                 try { if (_emptyCoverImage != null) _emptyCoverImage.Dispose(); } catch { /* Ignore */ }
                 try { if (_emptyPlayPauseImage != null) _emptyPlayPauseImage.Dispose(); } catch { /* Ignore */ }

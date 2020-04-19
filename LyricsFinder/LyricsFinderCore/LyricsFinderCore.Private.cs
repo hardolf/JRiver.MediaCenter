@@ -61,7 +61,6 @@ namespace MediaCenter.LyricsFinder
         private BitmapForm _bitmapForm = null;
         private LyricForm _lyricForm = null;
         private readonly List<string> _noLyricsSearchList = new List<string>();
-        private readonly SortedDictionary<string, McPlayListType> _currentSortedMcPlaylists = new SortedDictionary<string, McPlayListType>();
         private McPlayListsResponse _currentUnsortedMcPlaylistsResponse = null;
         private McMplResponse _currentLyricsFinderPlaylist = null;
         private McMplResponse _currentMcPlaylist = null;
@@ -215,7 +214,9 @@ namespace MediaCenter.LyricsFinder
                 _emptyPlayPauseImage.MakeTransparent();
 
                 // Create the row and make it's height equal to the width of the bitmap img
-                row.CreateCells(dgv, _emptyPlayPauseImage, idx, ++idx, value.Key, coverImage, WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
+                row.CreateCells(dgv, _emptyPlayPauseImage, idx, ++idx, value.Key, coverImage, 
+                    WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), 
+                    WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
                 row.Height = dgv.Columns[(int)GridColumnEnum.Cover].Width;
 
                 dgv.Rows.Add(row);
@@ -689,13 +690,13 @@ namespace MediaCenter.LyricsFinder
                 _currentUnsortedMcPlaylistsResponse = list;
 
             // Sort the playlists by path
-            _currentSortedMcPlaylists.Clear();
+            CurrentSortedMcPlaylists.Clear();
 
             foreach (var item in list.PlayLists)
             {
                 var playlist = item.Value;
 
-                _currentSortedMcPlaylists.Add(playlist.SortKey, playlist);
+                CurrentSortedMcPlaylists.Add(playlist.SortKey, playlist);
             }
 
             // Populate the dropdown menus
@@ -711,9 +712,9 @@ namespace MediaCenter.LyricsFinder
             menuItem.Click += MenuItem_ClickAsync;
             FileSelectPlaylistMenuItem.DropDownItems.Add(menuItem);
 
-            for (int i = 0; i < _currentSortedMcPlaylists.Count; i++)
+            for (int i = 0; i < CurrentSortedMcPlaylists.Count; i++)
             {
-                var currItem = _currentSortedMcPlaylists.ElementAt(i);
+                var currItem = CurrentSortedMcPlaylists.ElementAt(i);
                 var currId = currItem.Value.Id;
                 var currPath = currItem.Value.Path;
                 var currNodes = currPath.Split('\\', '/').ToList();
@@ -1211,9 +1212,11 @@ namespace MediaCenter.LyricsFinder
         /// <param name="message">The message.</param>
         /// <param name="includeProgress">if set to <c>true</c> [include progress].</param>
         /// <param name="includeLogging">if set to <c>true</c> [include logging].</param>
-        private async Task StatusMessageAsync(string message, bool includeProgress = false, bool includeLogging = false)
+        /// <param name="showSeconds">The seconds to show the message before the previous message is shown again. Permanently: 0 or negative.</param>
+        private async Task StatusMessageAsync(string message, bool includeProgress = false, bool includeLogging = false, int showSeconds = 0)
         {
             var msg1 = message?.Trim() ?? string.Empty;
+            var oldMsg = MainStatusLabel.Text;
 
             if (msg1.Length > 0)
             {
@@ -1233,6 +1236,13 @@ namespace MediaCenter.LyricsFinder
                 MainProgressBar.Value = _progressPercentage;
 
             MainStatusStrip.Update();
+
+            if (showSeconds > 0)
+            {
+                await Task.Delay(showSeconds * 1000);
+                MainStatusLabel.Text = oldMsg;
+                MainStatusStrip.Update();
+            }
         }
 
     }

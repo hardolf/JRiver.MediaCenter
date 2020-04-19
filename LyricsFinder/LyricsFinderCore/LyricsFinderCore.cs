@@ -59,6 +59,14 @@ namespace MediaCenter.LyricsFinder
         private McAuthenticationResponse Authentication { get; set; }
 
         /// <summary>
+        /// Gets the current sorted Media Center playlists.
+        /// </summary>
+        /// <value>
+        /// The current sorted Media Center playlists.
+        /// </value>
+        internal SortedDictionary<string, McPlayListType> CurrentSortedMcPlaylists { get; private set; } = new SortedDictionary<string, McPlayListType>();
+
+        /// <summary>
         /// Gets or sets the data directory.
         /// </summary>
         /// <value>
@@ -120,13 +128,19 @@ namespace MediaCenter.LyricsFinder
             get => _playingIndex >= 0;
         }
 
-        internal Dictionary<int, Dictionary<int, string>> ItemsPlayLists { get; private set; } = null;
+        /// <summary>
+        /// Gets the current items' playlists.
+        /// </summary>
+        /// <value>
+        /// The current items' playlists.
+        /// </value>
+        internal Dictionary<int, List<int>> ItemsPlayListIds { get; private set; } = null;
 
         /// <summary>
         /// Gets the Media Center play control.
         /// </summary>
         /// <value>
-        /// The mc play control.
+        /// The Media Center play control.
         /// </value>
         internal McPlayControl McPlayControl { get; private set; }
 
@@ -987,6 +1001,8 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void ReadyTimer_TickAsync(object sender, EventArgs e)
         {
+            var begin = DateTime.Now;
+
             try
             {
                 ReadyTimer.Stop();
@@ -996,11 +1012,13 @@ namespace MediaCenter.LyricsFinder
                 // Preload the Media Center playlists.
                 await LoadPlaylistMenusAsync();
 
-                // Load the items' playlists.
+                var currentPlayListItemIds = new List<int>(_currentLyricsFinderPlaylist.Items.Keys);
+
+                // Load the items' playlist IDs.
                 // This is a long-running operation!
-                ItemsPlayLists?.Clear();
-                ItemsPlayLists = null;
-                ItemsPlayLists = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(_currentLyricsFinderPlaylist.Items, "Playlist");
+                ItemsPlayListIds?.Clear();
+                ItemsPlayListIds = null;
+                ItemsPlayListIds = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(currentPlayListItemIds, "Playlist");
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again
                 // ReadyTimer.Start();
@@ -1008,6 +1026,12 @@ namespace MediaCenter.LyricsFinder
             catch (Exception ex)
             {
                 await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+            finally
+            {
+                var duration = DateTime.Now - begin;
+
+                await StatusMessageAsync($"Collected playlists for the current items in {duration:m\\:ss}.", true, true, 10);
             }
         }
 

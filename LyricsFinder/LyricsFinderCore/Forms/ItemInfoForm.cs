@@ -26,6 +26,8 @@ namespace MediaCenter.LyricsFinder.Forms
     public partial class ItemInfoForm : Form
     {
 
+        const string _emptyPlayListCollection = "<Not collected yet, try again later...>";
+
         private readonly int _mcItemKey = -1;
 
         private readonly Dictionary<string, string> _itemFields = new Dictionary<string, string>();
@@ -151,7 +153,7 @@ namespace MediaCenter.LyricsFinder.Forms
                 // Populate the 2 item field dictionaries
                 for (int i = 0; i < 2; i++)
                 {
-                    var mcMplInfo = (i == 0) 
+                    var mcMplInfo = (i == 0)
                         ? await McRestService.GetInfoAsync(_mcItemKey.ToString(CultureInfo.InvariantCulture), false)
                         : await McRestService.GetInfoAsync(_mcItemKey.ToString(CultureInfo.InvariantCulture), true);
 
@@ -174,6 +176,30 @@ namespace MediaCenter.LyricsFinder.Forms
                     Text = text;
 
                 FillData();
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the CellFormatting event of the MainDataGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewCellFormattingEventArgs"/> instance containing the event data.</param>
+        private async void MainDataGridView_CellFormattingAsync(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            try
+            {
+                if ((e.ColumnIndex == MainDataGridView.Columns[nameof(ItemValueColumn)].Index)
+                    && e.Value.ToString().Equals(_emptyPlayListCollection, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var cell = MainDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                    cell.ToolTipText = "The collection of the playlists for the current items in LyricsFinder may take a couple of minutes.";
+                }
             }
             catch (Exception ex)
             {
@@ -211,32 +237,44 @@ namespace MediaCenter.LyricsFinder.Forms
             }
 
             // Add the item's playlist
-            var playListsText = "<Not collected yet, try again later...>";
+            var playListsText = string.Empty;
 
-            if (LyricsFinderCore.ItemsPlayLists != null)
+            if ((LyricsFinderCore.ItemsPlayListIds != null)
+                && (LyricsFinderCore.ItemsPlayListIds.TryGetValue(id, out var playListIds)))
             {
-                if (LyricsFinderCore.ItemsPlayLists.TryGetValue(id, out var playLists))
+                // Create a new list of playlist names
+                var playLists = new Dictionary<int, string>();
+
+                foreach (var playListId in playListIds)
                 {
-                    playListsText = string.Empty;
+                    var playList = LyricsFinderCore.CurrentSortedMcPlaylists.Values
+                        .Where(p => p.Id == playListId.ToString(CultureInfo.InvariantCulture))
+                        .FirstOrDefault();
 
-                    foreach (var playList in playLists.OrderBy(p => p.Value))
-                    {
-                        if (!playListsText.IsNullOrEmptyTrimmed())
-                            playListsText += ", ";
+                    playLists.Add(playListId, playList?.Name ?? "?");
+                }
 
-                        playListsText += playList.Value;
-                    }
+                // Join the item's playlist names
+                foreach (var playList in playLists.OrderBy(p => p.Value))
+                {
+                    if (!playListsText.IsNullOrEmptyTrimmed())
+                        playListsText += ", ";
+
+                    playListsText += playList.Value;
                 }
             }
+            else
+                playListsText = _emptyPlayListCollection;
 
             dgv.Rows.Add("*", "PlayLists", playListsText);
-
             dgv.Columns[0].Visible = IncludeCalculatedCheckBox.Checked;
 
             // Restore the previous sorting, if necessary
             if ((sortCol != null) && (sortOrder != SortOrder.None))
             {
-                dgv.Sort(sortCol, (sortOrder == SortOrder.Ascending) ? ListSortDirection.Ascending : ListSortDirection.Descending);
+                dgv.Sort(sortCol, (sortOrder == SortOrder.Ascending)
+                    ? ListSortDirection.Ascending
+                    : ListSortDirection.Descending);
             }
         }
 

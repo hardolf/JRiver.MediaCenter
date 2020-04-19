@@ -34,11 +34,11 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.CloseButton = new System.Windows.Forms.Button();
             this.MainDataGridView = new System.Windows.Forms.DataGridView();
-            this.MainBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.IncludeCalculatedCheckBox = new System.Windows.Forms.CheckBox();
             this.CalculatedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ItemNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ItemValueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MainBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.IncludeCalculatedCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.MainDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -77,22 +77,7 @@
             this.MainDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.MainDataGridView.Size = new System.Drawing.Size(360, 508);
             this.MainDataGridView.TabIndex = 0;
-            // 
-            // MainBindingSource
-            // 
-            this.MainBindingSource.AllowNew = false;
-            // 
-            // IncludeCalculatedCheckBox
-            // 
-            this.IncludeCalculatedCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.IncludeCalculatedCheckBox.AutoSize = true;
-            this.IncludeCalculatedCheckBox.Location = new System.Drawing.Point(12, 532);
-            this.IncludeCalculatedCheckBox.Name = "IncludeCalculatedCheckBox";
-            this.IncludeCalculatedCheckBox.Size = new System.Drawing.Size(140, 17);
-            this.IncludeCalculatedCheckBox.TabIndex = 2;
-            this.IncludeCalculatedCheckBox.Text = "Include calculated fields";
-            this.IncludeCalculatedCheckBox.UseVisualStyleBackColor = true;
-            this.IncludeCalculatedCheckBox.CheckedChanged += new System.EventHandler(this.IncludeCalculatedCheckBox_CheckedChangedAsync);
+            this.MainDataGridView.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.MainDataGridView_CellFormattingAsync);
             // 
             // CalculatedColumn
             // 
@@ -127,6 +112,22 @@
             this.ItemValueColumn.Name = "ItemValueColumn";
             this.ItemValueColumn.ReadOnly = true;
             this.ItemValueColumn.ToolTipText = "Field value";
+            // 
+            // MainBindingSource
+            // 
+            this.MainBindingSource.AllowNew = false;
+            // 
+            // IncludeCalculatedCheckBox
+            // 
+            this.IncludeCalculatedCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.IncludeCalculatedCheckBox.AutoSize = true;
+            this.IncludeCalculatedCheckBox.Location = new System.Drawing.Point(12, 532);
+            this.IncludeCalculatedCheckBox.Name = "IncludeCalculatedCheckBox";
+            this.IncludeCalculatedCheckBox.Size = new System.Drawing.Size(140, 17);
+            this.IncludeCalculatedCheckBox.TabIndex = 2;
+            this.IncludeCalculatedCheckBox.Text = "Include calculated fields";
+            this.IncludeCalculatedCheckBox.UseVisualStyleBackColor = true;
+            this.IncludeCalculatedCheckBox.CheckedChanged += new System.EventHandler(this.IncludeCalculatedCheckBox_CheckedChangedAsync);
             // 
             // ItemInfoForm
             // 
