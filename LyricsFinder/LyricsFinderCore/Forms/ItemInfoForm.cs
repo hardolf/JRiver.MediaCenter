@@ -236,7 +236,7 @@ namespace MediaCenter.LyricsFinder.Forms
                     id = int.Parse(fld.Value, CultureInfo.InvariantCulture);
             }
 
-            // Add the item's playlist
+            // Add the item's playlists text
             var playListsText = string.Empty;
 
             if ((LyricsFinderCore.ItemsPlayListIds != null)

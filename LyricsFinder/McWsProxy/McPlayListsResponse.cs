@@ -184,16 +184,25 @@ namespace MediaCenter.McWs
         /// <summary>
         /// Gets the items playlists.
         /// </summary>
-        /// <param name="currentItemIds">The items.</param>
-        /// <param name="playListTypes">The filters, playlist types to exclude.</param>
+        /// <param name="currentItemIds">The Media Center items currently in LyricsFinder.</param>
+        /// <param name="playListTypes">Playlist types to include.</param>
+        /// <param name="playListPathFilters">Any playlist paths to exclude. Only part of the path needs to be specified.</param>
         /// <returns>
         /// Sorted dictionary with item keys as keys and sorted dictionaries of the items' playlists as values.
         /// </returns>
-        public async Task<Dictionary<int, List<int>>> GetItemsPlaylistsAsync(List<int> currentItemIds, params string[] playListTypes)
+        public async Task<Dictionary<int, List<int>>> GetItemsPlaylistsAsync(List<int> currentItemIds, IEnumerable<string> playListTypes = null, IEnumerable<string> playListPathFilters = null)
         {
             var ret = new Dictionary<int, List<int>>();
-            var playLists = PlayLists.Where(p => playListTypes.Any(f => p.Value.Type.Equals(f, StringComparison.InvariantCultureIgnoreCase)));
+            var playLists = PlayLists.Where(p => true); // All playlists, subject to later filtering
             var tasks = new List<Task>();
+
+            // Filter by allowed playlist types
+            if (playListTypes != null)
+                playLists = playLists.Where(p => playListTypes.Any(f => p.Value.Type.Equals(f, StringComparison.InvariantCultureIgnoreCase)));
+
+            // Filter by disallowed playlist path segments
+            if (playListPathFilters != null)
+                playLists = playLists.Where(p => !playListPathFilters.Any(f => p.Value.Path.ToUpperInvariant().Contains(f.ToUpperInvariant())));
 
             // Create all the tasks
             foreach (var kvp in playLists)

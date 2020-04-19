@@ -1018,7 +1018,7 @@ namespace MediaCenter.LyricsFinder
                 // This is a long-running operation!
                 ItemsPlayListIds?.Clear();
                 ItemsPlayListIds = null;
-                ItemsPlayListIds = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(currentPlayListItemIds, "Playlist");
+                ItemsPlayListIds = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(currentPlayListItemIds, new[] { "Playlist" }, new[] { "Recent Playing Now" });
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again
                 // ReadyTimer.Start();
