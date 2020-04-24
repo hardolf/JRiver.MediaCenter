@@ -31,7 +31,9 @@ namespace MediaCenter.LyricsFinder
             var versionText = string.Join(".", version.Major, version.Minor, version.Build);
 
             // Make the MJP files
-            MakeMjpFiles(assy, versionText, packageRootFolder);
+            // We do not use MJP files from v1.3.1 since they have never worked in Media Center,
+            // mainly because MC uses RegSvr32 for registering COM objects, while .NET COM callable objects need to use RegAsm.
+            // MakeMjpFiles(assy, versionText, packageRootFolder);
 
             // Pack the release files
             PackageSetupFile(new[] { Path.GetFullPath(@"..\..\..\Documentation\Build")
@@ -67,7 +69,7 @@ namespace MediaCenter.LyricsFinder
                 "-url", $"https://github.com/hardolf/JRiver.MediaCenter/releases/download/v{versionText}/LyricsFinderFiles.{versionText}.zip",
                 "-dd", $@"{instDir}\Release",
                 //"-sd", $@"{instDir}\Build\Plugin;{instDir}\Build\Standalone;{instDir}\Build\LyricServices",
-                "-com", $@"{packageRootFolder}LyricsFinderPlugin.dll;{packageRootFolder}LyricsFinderCore.dll"
+                "-com", $@"{packageRootFolder}LyricsFinderCore.dll;{packageRootFolder}LyricsFinderPlugin.dll"
             };
 
             if (0 != MjpCreator.MjpCreatorExecute(args.ToArray()))

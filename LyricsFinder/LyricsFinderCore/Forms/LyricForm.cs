@@ -1254,6 +1254,9 @@ namespace MediaCenter.LyricsFinder.Forms
             SharedComponents.Utility.EnableOrDisableToolStripMenuItems(HelpMenuItem, true);
             SharedComponents.Utility.EnableOrDisableToolStripMenuItems(ToolsMenuItem, !_isSearch);
 
+            // Allowed menu items in search form
+            SharedComponents.Utility.EnableOrDisableToolStripMenuItems(ToolsItemInfoMenuItem, true);
+
             SharedComponents.Utility.EnableOrDisableToolStripItems((focusedControl is SpellBox),
                 EditRedoMenuItem, 
                 EditFindMenuItem, EditReplaceMenuItem, EditFindReplaceNextMenuItem,

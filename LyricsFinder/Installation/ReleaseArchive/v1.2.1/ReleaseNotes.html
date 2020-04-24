@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>ReleaseNotes</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+        div {
+            border-style: solid;
+            border-color: silver;
+            border-width: 1px;
+            margin: 10px 5px 5px 10px;
+            padding: 5px 5px 5px 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Release notes for Hardolf extensions to the JRiver Media Center</h1>
+
+    <h2>Table of Contents</h2>
+
+    <div>
+        <ul style="font-weight: bolder; line-height: 150%;">
+            <li><a href="#LyricsFinder">LyricsFinder</a></li>
+            <li><a href="#TrackInfoVisualization">Track info visualization</a></li>
+            <li><a href="#VersionHistory">Version history</a></li>
+        </ul>
+    </div>
+
+
+    <h2 id="LyricsFinder">LyricsFinder</h2>
+
+    <p>
+        The LyricsFinder looks for lyrics in public lyric web services.
+        Lookup is done for all - or just one at a time - of the current songs in the "Playing Now" list in the JRiver Media Center.<br />
+        The LyricsFinder can be used as a standalone program and/or as a plug-in for the JRiver Media Center.<br />
+        The found lyrics are saved in the songs' tags.
+    </p>
+
+    <p>Visit the project repository on GitHub: <a href="https://github.com/hardolf/JRiver.MediaCenter" target="_blank">https://github.com/hardolf/JRiver.MediaCenter</a> (LyricsFinder.sln and LyricsFinder subfolder)</p>
+    <p>Wiki with user manual: <a href="https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/wiki/LyricsFinder</a></p>
+    <p>Bug reports: <a href="https://github.com/hardolf/JRiver.MediaCenter/projects/3" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/projects/3</a></p>
+    <p>Download area with source code and binaries: <a href="https://github.com/hardolf/JRiver.MediaCenter/releases" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/releases</a></p>
+
+    <h3>Installation</h3>
+
+    <p>Before the installation, you must make a couple of decisions:</p>
+    <ul>
+        <li>Full or custom installation? i.e. plug-in, standalone and documentation - or just some of them?</li>
+        <li>If more than one JRiver Media Center is installed, which one should have the plug-in? (like in "Highlander": "There can be only one")</li>
+    </ul>
+
+    <p>Follow these steps:</p>
+    <ol>
+        <li>Go to the release site mentioned above</li>
+        <li>Get the newest release files to your own local folder</li>
+        <li>Unpack the setup ZIP file</li>
+        <li>Look in the ReadMe.txt file</li>
+        <li>If installing he plug-in, the JRiver Media Center should not be running</li>
+        <li>Run the Setup.exe file</li>
+    </ol>
+
+
+    <h2 id="TrackInfoVisualization">Track info visualization</h2>
+
+    <p>
+        The CoverDetailsLyrics track info is a simple track info page for the "Playing Now" view in JRiver Media Center.<br />
+        It displays - as the name maybe implies - Cover, Details and Lyrics of the song currently being played.
+    </p>
+    <p>
+        Visit the project repository on GitHub: <a href="https://github.com/hardolf/JRiver.MediaCenter" target="_blank">https://github.com/hardolf/JRiver.MediaCenter</a> (Visualizations/Track info/CoverDetailsLyrics/)
+    </p>
+    <p>Wiki with user manual: <a href="https://github.com/hardolf/JRiver.MediaCenter/wiki/Track-Info-Visualizations" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/wiki/Track-Info-Visualizations</a></p>
+    <p>Bug reports: <a href="https://github.com/hardolf/JRiver.MediaCenter/projects/3" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/projects/3</a></p>
+    <p>Download area: <a href="https://github.com/hardolf/JRiver.MediaCenter/tree/master/Visualizations/Track%20info/CoverDetailsLyrics" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/tree/master/Visualizations/Track%20info/CoverDetailsLyrics</a></p>
+
+    <h3>Installation</h3>
+
+    <p>Follow these steps:</p>
+    <ol>
+        <li>Get the files in the above mentioned GitHub repository folder "CoverDetailsLyrics"</li>
+        <li>Copy the files to a new folder in your JRiver Media Center program folder, e.g. "C:\Program Files (x86)\J River\Media Center 24\Visualizations\Track Info\CoverDetailsLyrics\" (you decide the last folder name)</li>
+        <li>Play a tune...That's it!</li>
+    </ol>
+
+
+    <h1 id="VersionHistory">Version history</h1>
+
+    <p>The version history outlines the releases since the first version of the LyricsFinder for JRiver Media Center.</p>
+    <p>The versioning system used is:</p>
+    <ul>
+        <li>The first number is used for interface breaking changes.</li>
+        <li>The second number is used for feature changes.</li>
+        <li>The third number is used for bug fixes.</li>
+    </ul>
+
+    <div>
+        <h2>LyricsFinder version 1.2.1</h2>
+
+        <p>July 2019. Bug fix update.</p>
+        <p>Changes:</p>
+        <ul>
+            <li>Added a sequence number column</li>
+            <li>Pressing Ctrl+A in the lyric form will now select all text</li>
+            <li>Fixed Save playlist does not work</li>
+            <li>Fixed Automatic search will duplicate lyrics on subsequent items</li>
+            <li>Fixed ChartLyrics request and hit counters are not incremented</li>
+            <li>Fixed Wrong count when canceling automatic search</li>
+            <li>Fixed Pressing [Enter] or dbl.click another item than the one playing stops playing instead of starting play on the new item</li>
+        </ul>
+    </div>
+
+    <div>
+        <h2>LyricsFinder version 1.2</h2>
+
+        <p>July 2019. Feature update, major code overhaul.</p>
+        <p>Changes:</p>
+        <ul>
+            <li>AZLyrics lyric service added, best suited to manual searches, otherwise risk of temporary IP address banning</li>
+            <li>Much faster automatic and manual search with multiple active services, featuring concurrent searching and configurable queuing</li>
+            <li>Any Media Center playlist can now be selected for finding lyrics, even while other items on the Playing Now list are being played</li>
+            <li>The Media Center Playing Now list is replaced with the current LyricsFinder list when playing from the latter</li>
+            <li>Options and lyric services can now be modified from GUI via the menus</li>
+            <li>The old private configuration files are copied to the central "lyricsFinder.xml" file and deletion of the obsolete files is offered.</li>
+            <li>Separate Plugin and Standalone log files and log4net configuration files</li>
+            <li>Improved playing features from LyricsFinder</li>
+            <li>Configurable automatic version update check added</li>
+        </ul>
+        <p>Lyric services in this version:</p>
+        <ul>
+            <li>Apiseeds Lyrics API - <a href="https://apiseeds.com" target="_blank">https://apiseeds.com</a></li>
+            <li>AZLyrics - <a href="https://www.azlyrics.com" target="_blank">https://www.azlyrics.com</a></li>
+            <li>Chart Lyrics - <a href="http://www.chartlyrics.com" target="_blank">http://www.chartlyrics.com</a></li>
+            <li>Musixmatch - <a href="https://www.musixmatch.com" target="_blank">https://www.musixmatch.com</a></li>
+            <li>STANDS4 Network Lyrics.com - <a href="https://www.lyrics.com" target="_blank">https://www.lyrics.com</a></li>
+        </ul>
+    </div>
+
+    <div>
+        <h2>LyricsFinder version 1.1</h2>
+
+        <p>June 2019. Feature update:</p>
+        <ul>
+            <li>Private configuration files are now moved to data directory (%USERPROFILE%\Documents\LyricsFinder\)</li>
+            <li>Configuration of connection to Media Center is now done in GUI</li>
+            <li>Configuration of lyric services is now done in GUI</li>
+            <li>Added context menu and improved menu choices</li>
+            <li>Version update check added</li>
+        </ul>
+    </div>
+
+    <div>
+        <h2>LyricsFinder version 1.0</h2>
+
+        <p>June 2019. This is the first release.</p>
+        <p>Lyric services in this version:</p>
+        <ul>
+            <li>Apiseeds Lyrics API - <a href="https://apiseeds.com" target="_blank">https://apiseeds.com</a></li>
+            <li>Chart Lyrics - <a href="http://www.chartlyrics.com" target="_blank">http://www.chartlyrics.com</a></li>
+            <li>Musixmatch - <a href="https://www.musixmatch.com" target="_blank">https://www.musixmatch.com</a></li>
+            <li>STANDS4 Network Lyrics.com - <a href="https://www.lyrics.com" target="_blank">https://www.lyrics.com</a></li>
+        </ul>
+    </div>
+
+    <div>
+        <h2>CoverDetailsLyrics track info version 1.0</h2>
+
+        <p>June 2019. This is the first release.</p>
+        <p>Download: <a href="https://github.com/hardolf/JRiver.MediaCenter/tree/master/Visualizations/Track%20info/CoverDetailsLyrics" target="_blank">https://github.com/hardolf/JRiver.MediaCenter/tree/master/Visualizations/Track%20info/CoverDetailsLyrics</a></p>
+    </div>
+
+</body>
+
+</html>

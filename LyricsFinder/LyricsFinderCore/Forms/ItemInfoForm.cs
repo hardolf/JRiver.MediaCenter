@@ -223,20 +223,15 @@ namespace MediaCenter.LyricsFinder.Forms
             var sortOrder = dgv.SortOrder;
             var id = -1;
 
+            if (fields.TryGetValue("Key", out var idTxt))
+                id = int.Parse(idTxt, CultureInfo.InvariantCulture);
+            else
+                id = -1;
+
             dgv.Rows.Clear();
 
             // Populate the data grid
-            foreach (var fld in fields)
-            {
-                var calc = (_itemFields.ContainsKey(fld.Key)) ? string.Empty : "*";
-
-                dgv.Rows.Add(calc, fld.Key, fld.Value);
-
-                if (fld.Key.Equals("Key", StringComparison.InvariantCultureIgnoreCase))
-                    id = int.Parse(fld.Value, CultureInfo.InvariantCulture);
-            }
-
-            // Add the item's playlists text
+            // First, add the item's playlists text
             var playListsText = string.Empty;
 
             if ((LyricsFinderCore.ItemsPlayListIds != null)
@@ -267,14 +262,40 @@ namespace MediaCenter.LyricsFinder.Forms
                 playListsText = _emptyPlayListCollection;
 
             dgv.Rows.Add("*", "PlayLists", playListsText);
-            dgv.Columns[0].Visible = IncludeCalculatedCheckBox.Checked;
 
-            // Restore the previous sorting, if necessary
-            if ((sortCol != null) && (sortOrder != SortOrder.None))
+            // Now, add the remaining properties
+            foreach (var fld in fields)
             {
-                dgv.Sort(sortCol, (sortOrder == SortOrder.Ascending)
-                    ? ListSortDirection.Ascending
-                    : ListSortDirection.Descending);
+                var calc = (_itemFields.ContainsKey(fld.Key)) ? string.Empty : "*";
+
+                dgv.Rows.Add(calc, fld.Key, fld.Value);
+            }
+
+            dgv.Columns[0].Visible = true; // IncludeCalculatedCheckBox.Checked;
+
+            // Sorting
+            if ((sortCol is null) || (sortOrder == SortOrder.None))
+            {
+                // First sort after form opening
+                // Special handling to get the playlists on top from start
+                // and the remaining columns sorted by name
+
+                // Sort by name first
+                sortCol = dgv.Columns[1];
+                sortOrder = SortOrder.Ascending;
+
+                dgv.Sort(sortCol, (sortOrder == SortOrder.Ascending) ? ListSortDirection.Ascending : ListSortDirection.Descending);
+
+                // Now sort by the Calc column
+                sortCol = dgv.Columns[0];
+                sortOrder = SortOrder.Descending;
+
+                dgv.Sort(sortCol, (sortOrder == SortOrder.Ascending) ? ListSortDirection.Ascending : ListSortDirection.Descending);
+            }
+            else
+            {
+                // Restore the previous sorting
+                dgv.Sort(sortCol, (sortOrder == SortOrder.Ascending) ? ListSortDirection.Ascending : ListSortDirection.Descending);
             }
         }
 

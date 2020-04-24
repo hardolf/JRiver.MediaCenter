@@ -1174,7 +1174,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         internal void ShowItemInfo()
         {
-            if (_playingIndex < 0)
+            if (_selectedKey < 0)
                 return;
 
             using (var frm = new ItemInfoForm(this, _selectedKey))

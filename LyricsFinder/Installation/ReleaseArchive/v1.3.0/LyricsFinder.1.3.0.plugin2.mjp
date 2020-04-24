@@ -1,0 +1,30 @@
+<?xml version="1.0" standalone="yes" ?>
+<MJPF version="2.0">
+  <Package>
+    <Name>LyricsFinder</Name>
+    <Action>UNZIPDIR|SAVE_DIR_STRUCT</Action>
+    <URL>https://github.com/hardolf/JRiver.MediaCenter/releases/download/v1.3.0/LyricsFinderFiles.1.3.0.zip</URL>
+    <Version>1.3.0</Version>
+    <HasActions>1</HasActions>
+  </Package>
+  <Actions>
+    <FileEntry>
+      <File>*.*</File>
+      <Action>
+        <Command>COPY_PLUGINDIR</Command>
+      </Action>
+    </FileEntry>
+    <FileEntry>
+      <File>LyricsFinderPlugin.dll</File>
+      <Action>
+        <Command>REGISTER</Command>
+      </Action>
+    </FileEntry>
+    <FileEntry>
+      <File>LyricsFinderCore.dll</File>
+      <Action>
+        <Command>REGISTER</Command>
+      </Action>
+    </FileEntry>
+  </Actions>
+</MJPF>
