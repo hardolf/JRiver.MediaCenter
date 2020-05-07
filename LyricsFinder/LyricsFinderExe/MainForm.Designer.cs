@@ -59,13 +59,13 @@ namespace MediaCenter.LyricsFinder
             this.TablePanel.RowCount = 2;
             this.TablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.TablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
-            this.TablePanel.Size = new System.Drawing.Size(987, 661);
+            this.TablePanel.Size = new System.Drawing.Size(984, 661);
             this.TablePanel.TabIndex = 0;
             // 
             // ExitButton
             // 
             this.ExitButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.ExitButton.Location = new System.Drawing.Point(903, 628);
+            this.ExitButton.Location = new System.Drawing.Point(900, 628);
             this.ExitButton.Margin = new System.Windows.Forms.Padding(5);
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(75, 23);
@@ -78,7 +78,7 @@ namespace MediaCenter.LyricsFinder
             // RotButton
             // 
             this.RotButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.RotButton.Location = new System.Drawing.Point(793, 628);
+            this.RotButton.Location = new System.Drawing.Point(790, 628);
             this.RotButton.Margin = new System.Windows.Forms.Padding(5);
             this.RotButton.Name = "RotButton";
             this.RotButton.Size = new System.Drawing.Size(100, 24);
@@ -99,7 +99,7 @@ namespace MediaCenter.LyricsFinder
             this.LyricsFinderCore.Location = new System.Drawing.Point(3, 3);
             this.LyricsFinderCore.MinimumSize = new System.Drawing.Size(770, 200);
             this.LyricsFinderCore.Name = "LyricsFinderCore";
-            this.LyricsFinderCore.Size = new System.Drawing.Size(981, 617);
+            this.LyricsFinderCore.Size = new System.Drawing.Size(978, 617);
             this.LyricsFinderCore.TabIndex = 1;
             // 
             // MainToolTip
@@ -116,7 +116,7 @@ namespace MediaCenter.LyricsFinder
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.CancelButton = this.ExitButton;
-            this.ClientSize = new System.Drawing.Size(987, 661);
+            this.ClientSize = new System.Drawing.Size(984, 661);
             this.Controls.Add(this.TablePanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(750, 300);

@@ -22,8 +22,17 @@ namespace MediaCenter.LyricsFinder
     public partial class MainForm : Form
     {
 
+        /***********************************/
+        /******* Private class-wide   ******/
+        /***** constants and variables *****/
+        /***********************************/
+
         private readonly bool _isDesignTime = false;
 
+
+        /************************/
+        /***** Constructors *****/
+        /************************/
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MainForm"/> class.
@@ -40,23 +49,12 @@ namespace MediaCenter.LyricsFinder
             InitializeComponent();
 
             _isDesignTime = (LicenseManager.UsageMode == LicenseUsageMode.Designtime);
-
-            LoadFormSettings();
         }
 
 
-        /// <summary>
-        /// Error handler.
-        /// </summary>
-        /// <param name="ex">The exeption.</param>
-        private void ErrorHandler(Exception ex)
-        {
-            var msg = $"A Fatal error occurred:\n"
-                + $"{ex}";
-
-            MessageBox.Show(msg, "Fatal error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
+        /*********************/
+        /***** Delegates *****/
+        /*********************/
 
         /// <summary>
         /// Handles the Click event of the ExitButton control.
@@ -73,74 +71,6 @@ namespace MediaCenter.LyricsFinder
             {
                 ErrorHandler(ex);
             }
-        }
-
-
-        /// <summary>
-        /// Loads the form settings.
-        /// </summary>
-        private void LoadFormSettings()
-        {
-            if (_isDesignTime) return;
-
-            var rect = new Rectangle(Properties.Settings.Default.MainFormLocation, Properties.Settings.Default.MainFormSize);
-
-            if (Screen.PrimaryScreen.Bounds.Contains(rect)
-              && (rect.Height >= MinimumSize.Height)
-              && (rect.Width >= MinimumSize.Width))
-            {
-                // Place the form like the last time
-                Location = rect.Location;
-                Size = rect.Size;
-            }
-            else
-            {
-                // The last time the form was placed (in part) outside the screen, so reset it at minimum size and center-screen
-                Size = MinimumSize;
-
-                var horOffset = (int)((Screen.PrimaryScreen.Bounds.Width / 2) - (0.5 * Width));
-                var vertOffset = (int)((Screen.PrimaryScreen.Bounds.Height / 2) - (0.5 * Height));
-
-                Location = new Point(horOffset, vertOffset);
-
-                SaveFormSettings();
-
-                Properties.Settings.Default.Reload();
-            }
-
-            RotButton.Enabled = Properties.Settings.Default.ShowRotButton;
-            RotButton.Visible = Properties.Settings.Default.ShowRotButton;
-        }
-
-
-        /// <summary>
-        /// Saves the form settings.
-        /// </summary>
-        private void SaveFormSettings()
-        {
-            if (_isDesignTime) return;
-
-            if (Screen.PrimaryScreen.Bounds.Contains(Bounds))
-            {
-                Properties.Settings.Default.MainFormLocation = Location;
-                Properties.Settings.Default.MainFormSize = Size;
-            }
-
-            Properties.Settings.Default.Save();
-        }
-
-
-        /// <summary>
-        /// Handles the Load event of the MainForm control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            var assy = Assembly.GetExecutingAssembly();
-            var ver = assy.GetName().Version;
-
-            Text = $"{Text} v{ver}";
         }
 
 
@@ -184,6 +114,25 @@ namespace MediaCenter.LyricsFinder
         }
 
 
+        /// <summary>
+        /// Handles the Load event of the MainForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            if (_isDesignTime) return;
+
+            try
+            {
+                LoadFormSettings();
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler(ex);
+            }
+        }
+
 
         /// <summary>
         /// Handles the Shown event of the MainForm control.
@@ -225,6 +174,80 @@ namespace MediaCenter.LyricsFinder
             {
                 ErrorHandler(ex);
             }
+        }
+
+
+        /**************************/
+        /***** Misc. routines *****/
+        /**************************/
+
+        /// <summary>
+        /// Error handler.
+        /// </summary>
+        /// <param name="ex">The exeption.</param>
+        private void ErrorHandler(Exception ex)
+        {
+            var msg = $"A Fatal error occurred:\r\n{ex}";
+
+            MessageBox.Show(msg, "Fatal error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+
+        /// <summary>
+        /// Loads the form settings.
+        /// </summary>
+        private void LoadFormSettings()
+        {
+            if (_isDesignTime) return;
+
+            var assy = Assembly.GetExecutingAssembly();
+            var ver = assy.GetName().Version;
+            var activeWorkingArea = Screen.FromControl(this).WorkingArea;
+            var rect1 = new Rectangle(Properties.Settings.Default.MainFormLocation, Properties.Settings.Default.MainFormSize);
+            var rect2 = rect1;
+            var offset = 5;
+
+            rect2.Location.Offset(offset, offset);
+
+            if (activeWorkingArea.Contains(rect1.Location)
+                && activeWorkingArea.Contains(rect2.Location)
+                && (rect1.Height >= MinimumSize.Height)
+                && (rect1.Width >= MinimumSize.Width))
+            {
+                // Place the form like the last time
+                Location = rect1.Location;
+                Size = rect1.Size;
+            }
+            else
+            {
+                // The last time the form was placed (in part) outside the screen, so reset the size and center on screen
+                // Size = MinimumSize;
+
+                var horOffset = (int)((activeWorkingArea.Width / 2) - (0.5 * Width));
+                var vertOffset = (int)((activeWorkingArea.Height / 2) - (0.5 * Height));
+
+                Location = new Point(horOffset, vertOffset);
+
+                SaveFormSettings();
+
+                Properties.Settings.Default.Reload();
+            }
+
+            RotButton.Visible = Properties.Settings.Default.ShowRotButton;
+            Text = $"{Text} v{ver}";
+        }
+
+
+        /// <summary>
+        /// Saves the form settings.
+        /// </summary>
+        private void SaveFormSettings()
+        {
+            if (_isDesignTime) return;
+
+            Properties.Settings.Default.MainFormLocation = Location;
+            Properties.Settings.Default.MainFormSize = Size;
+            Properties.Settings.Default.Save();
         }
 
     }

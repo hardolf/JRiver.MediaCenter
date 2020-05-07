@@ -31,7 +31,7 @@ namespace MediaCenter.LyricsFinder
     {
 
         /***********************************/
-        /***** Private assembly-wide   *****/
+        /******* Private class-wide   ******/
         /***** constants and variables *****/
         /***********************************/
 

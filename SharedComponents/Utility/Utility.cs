@@ -814,12 +814,28 @@ namespace MediaCenter.SharedComponents
             if (input == null) throw new ArgumentNullException(nameof(input));
 
             var ci = cultureInfo ?? CultureInfo.CurrentCulture;
-            var ret = new StringBuilder(input.ToNormalizedString().ToLower(ci));
+            var ret = input.ToNormalizedString();
+            var lines = ret.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
-            if (ret.Length > 0)
-                ret[0] = char.ToUpper(ret[0], ci);
+            // Transform the lines
+            for (var i = 0; i < lines.Length; i++)
+            {
+                var tmp = lines[i];
 
-            return ret.ToString();
+                if (tmp.IsNullOrEmptyTrimmed()) continue;
+
+                if (tmp.Length > 1)
+                    tmp = tmp[0].ToString(ci).ToUpper(ci) + tmp.Substring(1).ToLower(ci);
+                else
+                    tmp = tmp.ToUpper(ci);
+
+                lines[i] = tmp;
+            }
+
+            // Assemble the complete text
+            ret = string.Join(Environment.NewLine, lines);
+
+            return ret;
         }
 
 

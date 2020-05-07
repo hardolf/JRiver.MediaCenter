@@ -30,7 +30,7 @@ namespace MediaCenter.LyricsFinder.Forms
     {
 
         /***********************************/
-        /***** Private assembly-wide   *****/
+        /******* Private class-wide   ******/
         /***** constants and variables *****/
         /***********************************/
 
