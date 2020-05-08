@@ -23,6 +23,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using MediaCenter.SharedComponents;
+
 
 namespace MediaCenter.LyricsFinder
 {
@@ -71,18 +73,18 @@ namespace MediaCenter.LyricsFinder
             {
                 // StatusLog(ex);
 
-                message += $" \r\n"
-                    + $"{indent}{exception.Message} \r\n\r\n"
-                    + $"The failure occurred in class object {exception.Source} \r\n"
-                    + $"when calling Method {exception.TargetSite}.\r\n";
+                message += " " + Constants.NewLine
+                    + $"{indent}{exception.Message} " + Constants.DoubleNewLine
+                    + $"The failure occurred in class object {exception.Source} " + Constants.NewLine
+                    + $"when calling Method {exception.TargetSite}." + Constants.NewLine;
 
                 if (exception.InnerException != null)
-                    message += " \r\n"
-                        + $"Inner exception: \r\n"
-                        + $"{indent}{exception.InnerException} \r\n";
+                    message += " " + Constants.NewLine
+                        + $"Inner exception: " + Constants.NewLine
+                        + $"{indent}{exception.InnerException} " + Constants.NewLine;
 
-                message += " \r\n"
-                    + $"Stack trace: \r\n"
+                message += " " + Constants.NewLine
+                    + $"Stack trace: " + Constants.NewLine
                     + $"{exception.StackTrace}";
 
                 MessageBox.Show(message, "Fatal plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);

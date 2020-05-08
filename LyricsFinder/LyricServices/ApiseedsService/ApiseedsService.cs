@@ -132,7 +132,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
                 var lyricText = (string)searchDyn.result.track.text;
                 var copyright = searchDyn.result.copyright;
-                var copyrightText = SharedComponents.Utility.JoinTrimmedStrings(".\r\n", (string)copyright.notice, (string)copyright.artist, (string)copyright.text) + ".";
+                var copyrightText = SharedComponents.Utility.JoinTrimmedStrings("." + Constants.NewLine, (string)copyright.notice, (string)copyright.artist, (string)copyright.text) + ".";
 
                 await AddFoundLyric(lyricText, null, null, copyrightText).ConfigureAwait(false);
             }

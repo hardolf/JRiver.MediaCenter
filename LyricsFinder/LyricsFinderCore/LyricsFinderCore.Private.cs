@@ -984,6 +984,21 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Shows the information for the currently selected item.
+        /// </summary>
+        internal void ShowItemInfo()
+        {
+            if (_selectedKey < 0)
+                return;
+
+            using (var frm = new ItemInfoForm(this, _selectedKey))
+            {
+                frm.ShowDialog();
+            }
+        }
+
+
+        /// <summary>
         /// Shows the lyrics form.
         /// </summary>
         /// <param name="colIdx">Index of the col.</param>
@@ -1005,30 +1020,13 @@ namespace MediaCenter.LyricsFinder
             if (!(row.Cells[colIdx] is DataGridViewTextBoxCell cell))
                 throw new ArgumentException($"Column {colIdx} is not a DataGridViewTextBoxCell.");
 
-            var location = new Point(MousePosition.X, MousePosition.Y);
-            var savedLocation = LyricsFinderData.MainData.LyricFormLocation;
+            var location = (isAutoOpen) ? new Point(MousePosition.X, MousePosition.Y) : LyricsFinderData.MainData.LyricFormLocation;
             var size = LyricsFinderData.MainData.LyricFormSize;
-            var startPosition = (isAutoOpen) ? FormStartPosition.Manual : FormStartPosition.CenterParent;
 
-            if ((savedLocation.X > 0) && (savedLocation.Y > 0)
-                && (savedLocation.X < Screen.PrimaryScreen.WorkingArea.Width - 10)
-                && (savedLocation.Y < Screen.PrimaryScreen.WorkingArea.Height - 10))
-            {
-                // Use the saved form location
-                location = savedLocation;
-                startPosition = FormStartPosition.Manual;
-            }
-            else
-            {
-                // Use the mouse pointer location
-                LyricsFinderData.MainData.LyricFormLocation = location;
+            if (isAutoOpen)
                 location.Offset(-size.Width - 10, -Convert.ToInt32(size.Height / 2));
-            }
 
-            _lyricForm = new LyricForm(null, cell, location, size, ShowLyricsCallbackAsync, LyricsFinderData, this)
-            {
-                StartPosition = startPosition
-            };
+            _lyricForm = new LyricForm(null, cell, location, size, ShowLyricsCallbackAsync, LyricsFinderData, this);
 
             if (isAutoOpen)
                 _lyricForm.Show(this);
@@ -1165,21 +1163,6 @@ namespace MediaCenter.LyricsFinder
                         ShowShortcuts(isDisplayed, menuItem);
                     }
                 }
-            }
-        }
-
-
-        /// <summary>
-        /// Shows the information for the currently selected item.
-        /// </summary>
-        internal void ShowItemInfo()
-        {
-            if (_selectedKey < 0)
-                return;
-
-            using (var frm = new ItemInfoForm(this, _selectedKey))
-            {
-                frm.ShowDialog();
             }
         }
 

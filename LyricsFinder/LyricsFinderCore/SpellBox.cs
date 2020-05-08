@@ -535,8 +535,8 @@ namespace MediaCenter.LyricsFinder
                     SelectedText = selText.ToProperCase(ci);
                     break;
 
-                case SelectionOperation.RemoveDoubleLineEndings:
-                    SelectedText = selText.Replace(Environment.NewLine + Environment.NewLine, Environment.NewLine);
+                case SelectionOperation.RemoveExcessSpacesAndLineEndings:
+                    SelectedText = selText.ToNormalizedString();
                     break;
 
                 case SelectionOperation.SentenceCase:
@@ -735,7 +735,7 @@ namespace MediaCenter.LyricsFinder
         LowerCase,
         Paste,
         ProperCase,
-        RemoveDoubleLineEndings,
+        RemoveExcessSpacesAndLineEndings,
         SentenceCase,
         TitleCase,
         Trim,

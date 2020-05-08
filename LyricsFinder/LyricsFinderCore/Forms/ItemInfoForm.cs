@@ -116,6 +116,7 @@ namespace MediaCenter.LyricsFinder.Forms
         {
             try
             {
+                LyricsFinderCore.LyricsFinderData.MainData.ItemInfoFormShowCalculatedProperties = IncludeCalculatedCheckBox.Checked;
                 LyricsFinderCore.LyricsFinderData.MainData.ItemInfoFormLocation = Location;
                 LyricsFinderCore.LyricsFinderData.MainData.ItemInfoFormSize = Size;
                 await LyricsFinderCore.LyricsFinderData.SaveAsync();
@@ -136,19 +137,9 @@ namespace MediaCenter.LyricsFinder.Forms
         {
             try
             {
-                Location = LyricsFinderCore.LyricsFinderData.MainData.ItemInfoFormLocation;
-                Size = LyricsFinderCore.LyricsFinderData.MainData.ItemInfoFormSize;
+                this.SetFormLocationAndSize(LyricsFinderCore.LyricsFinderData.MainData.ItemInfoFormLocation, LyricsFinderCore.LyricsFinderData.MainData.ItemInfoFormSize);
 
-                // Check if the form is visible on screen
-                if (this.IsOnScreenTopLeft())
-                    StartPosition = FormStartPosition.Manual;
-                else
-                {
-                    StartPosition = FormStartPosition.CenterParent;
-                    Size = MinimumSize;
-                }
-
-                Refresh();
+                IncludeCalculatedCheckBox.Checked = LyricsFinderCore.LyricsFinderData.MainData.ItemInfoFormShowCalculatedProperties;
 
                 // Populate the 2 item field dictionaries
                 for (int i = 0; i < 2; i++)
@@ -286,11 +277,14 @@ namespace MediaCenter.LyricsFinder.Forms
 
                 dgv.Sort(sortCol, (sortOrder == SortOrder.Ascending) ? ListSortDirection.Ascending : ListSortDirection.Descending);
 
-                // Now sort by the Calc column
-                sortCol = dgv.Columns[0];
-                sortOrder = SortOrder.Descending;
+                // Now sort by the Calc column, if calculated properties are not shown
+                if (!IncludeCalculatedCheckBox.Checked)
+                {
+                    sortCol = dgv.Columns[0];
+                    sortOrder = SortOrder.Descending;
 
-                dgv.Sort(sortCol, (sortOrder == SortOrder.Ascending) ? ListSortDirection.Ascending : ListSortDirection.Descending);
+                    dgv.Sort(sortCol, (sortOrder == SortOrder.Ascending) ? ListSortDirection.Ascending : ListSortDirection.Descending);
+                }
             }
             else
             {

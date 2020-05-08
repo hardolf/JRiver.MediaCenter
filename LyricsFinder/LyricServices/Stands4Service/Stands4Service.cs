@@ -130,14 +130,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             try
             {
                 DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, 
-                    "Service time zone", "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
+                    "Service time zone", "The display name for the lyric server time zone's standard time. " + Constants.NewLine +
+                    "See the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
             }
             catch (TimeZoneNotFoundException ex)
             {
                 errMsg = $"{ex.Message} Please set the proper time zone name, e.g. \"{defTz}\".";
                 QuotaResetTime = new ServiceDateTimeWithZone(DateTime.UtcNow, TimeZoneInfo.Utc);
                 DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, 
-                    "Service time zone", "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
+                    "Service time zone", "The display name for the lyric server time zone's standard time. " + Constants.NewLine +
+                    "See the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
             }
 
             try
@@ -151,7 +153,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 errMsg = $"{ex.Message}.";
                 QuotaResetTime = new ServiceDateTimeWithZone(DateTime.UtcNow, TimeZoneInfo.Utc);
                 DisplayProperties.Add("QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, 
-                    "Service time zone", "The display name for the lyric server time zone's standard time. \r\nSee the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
+                    "Service time zone", "The display name for the lyric server time zone's standard time. " + Constants.NewLine +
+                    "See the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
             }
 
             DisplayProperties.Add("QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture), 
@@ -245,7 +248,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             // (<pre id="lyric-body-text" class="lyric-body" dir="ltr" data-lang="en">)(.*)(</pre>)
 
             // Convert linefeeds and Reduce the input to the lyrics between the "pre" tags
-            var input = html.Replace("\r\n", "¤").Replace("\r", "¤").Replace("\n", "¤");
+            var input = html.Replace(Constants.NewLine, "¤").Replace("\r", "¤").Replace("\n", "¤");
             var idx1 = input.IndexOf("<pre", StringComparison.InvariantCultureIgnoreCase);
             var idx2 = input.IndexOf("</pre", StringComparison.InvariantCultureIgnoreCase);
 
@@ -271,7 +274,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             output = rgx.Replace(input, replacement);
 
             // Convert linefeeds back to the result
-            ret = output.Replace("¤", "\r\n");
+            ret = output.Replace("¤", Constants.NewLine);
 
             // If found, add the found lyric to the list
             if (!ret.IsNullOrEmptyTrimmed())
@@ -391,10 +394,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             IsActive = false;
 
-            throw new LyricsQuotaExceededException("\r\n"
-                + $"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day. \r\n"
-                + "The service is now disabled in LyricsFinder. \r\n"
-                + "Check the service daily request count in the lyric service form. \r\n"
+            throw new LyricsQuotaExceededException(Constants.NewLine
+                + $"Lyric service \"{Credit.ServiceName}\" is exceeding the daily limit of {DailyQuota} requests per day. " + Constants.NewLine
+                + "The service is now disabled in LyricsFinder. " + Constants.NewLine
+                + "Check the service daily request count in the lyric service form. " + Constants.NewLine
                 + "No more requests will be sent to this service until corrected.",
                 isGetAll, Credit, mcItem);
         }

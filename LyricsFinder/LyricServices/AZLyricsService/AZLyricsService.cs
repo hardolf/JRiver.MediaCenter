@@ -268,10 +268,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 {
                     IsActive = false;
 
-                    throw new LyricServiceIpBannedException("\r\n"
-                            + $"Lyric service \"{Credit.ServiceName}\" experienced a \"{exx.Message}\" error. \r\n"
-                            + "This is possibly a temporary ban of your IP address and the service is now disabled in LyricsFinder. \r\n"
-                            + "No more requests will be sent to this service until corrected. \r\n"
+                    throw new LyricServiceIpBannedException(Constants.NewLine
+                            + $"Lyric service \"{Credit.ServiceName}\" experienced a \"{exx.Message}\" error. " + Constants.NewLine
+                            + "This is possibly a temporary ban of your IP address and the service is now disabled in LyricsFinder. " + Constants.NewLine
+                            + "No more requests will be sent to this service until corrected. " + Constants.NewLine
                             + "You could try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.", 
                             isGetAll, Credit, mcItem, ex);
                 }
@@ -303,10 +303,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 IsActive = false;
 
-                throw new LyricServiceIpBanWarningException("\r\n"
-                        + $"Lyric service \"{Credit.ServiceName}\" is in danger of a ban of your IP address. \r\n"
-                        + "The service is now disabled in LyricsFinder. \r\n"
-                        + "No more requests will be sent to this service until corrected. \r\n"
+                throw new LyricServiceIpBanWarningException(Constants.NewLine
+                        + $"Lyric service \"{Credit.ServiceName}\" is in danger of a ban of your IP address. " + Constants.NewLine
+                        + "The service is now disabled in LyricsFinder. " + Constants.NewLine
+                        + "No more requests will be sent to this service until corrected. " + Constants.NewLine
                         + "You should try the AZLyrics site in a browser (https://azlyrics.com/) and tick the checkbox telling the site that you are no robot.",
                         isGetAll, Credit, mcItem);
             }

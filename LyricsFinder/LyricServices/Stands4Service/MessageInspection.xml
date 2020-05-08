@@ -244,23 +244,5 @@
             <param name="fileRetentionTimeSpan">The file retention time span.</param>
             <param name="filePath">The file path.</param>
         </member>
-        <member name="T:MediaCenter.SharedComponents.Utility">
-            <summary>
-            Utility type.
-            </summary>
-            <remarks>
-            <para>The <c>IsNullOrEmptyTrimmed</c> method here is a duplicate of the one in the <see cref="T:MediaCenter.SharedComponents.Utility"/> assembly.</para>
-            <para>We have it here too because we otherwise would have to copy the <see cref="T:MediaCenter.SharedComponents.Utility"/> assembly to the JRiver MediaCenter program folder.</para>
-            </remarks>
-        </member>
-        <member name="M:MediaCenter.SharedComponents.Utility.IsNullOrEmptyTrimmed(System.String)">
-            <summary>
-            Determines whether the text is null or empty when trimmed.
-            </summary>
-            <param name="text">The text.</param>
-            <returns>
-              <c>true</c> if the text is null or empty when trimmed; otherwise, <c>false</c>.
-            </returns>
-        </member>
     </members>
 </doc>

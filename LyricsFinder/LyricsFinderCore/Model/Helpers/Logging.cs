@@ -77,7 +77,7 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
 
             var msg = message ?? string.Empty;
 
-            msg += " " + exception.Message + Environment.NewLine;
+            msg += " " + exception.Message + Constants.NewLine;
             msg = msg.TrimStart();
 
             if (progressPercentage >= 0)

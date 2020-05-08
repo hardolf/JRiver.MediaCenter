@@ -734,6 +734,43 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Sets the location and size of the target form.
+        /// </summary>
+        /// <param name="targetForm">The target form.</param>
+        /// <param name="preferredLocation">The preferred location.</param>
+        /// <param name="preferredSize">The preferred size.</param>
+        public static void SetFormLocationAndSize(this Form targetForm, Point preferredLocation, Size preferredSize)
+        {
+            var activeWorkingArea = Screen.FromControl(targetForm).WorkingArea;
+            var rect1 = new Rectangle(preferredLocation, preferredSize);
+            var rect2 = rect1;
+            var offset = 5;
+
+            rect2.Location.Offset(offset, offset);
+
+            if (activeWorkingArea.Contains(rect1.Location)
+                && activeWorkingArea.Contains(rect2.Location)
+                && (rect1.Height >= targetForm.MinimumSize.Height)
+                && (rect1.Width >= targetForm.MinimumSize.Width))
+            {
+                // Place the form like the last time
+                targetForm.Location = rect1.Location;
+                targetForm.Size = rect1.Size;
+            }
+            else
+            {
+                // The last time the form was placed (in part) outside the screen, so reset the size and center on screen
+                // targetForm.Size = targetForm.MinimumSize;
+
+                var horOffset = (int)((activeWorkingArea.Width / 2) - (0.5 * targetForm.Width));
+                var vertOffset = (int)((activeWorkingArea.Height / 2) - (0.5 * targetForm.Height));
+
+                targetForm.Location = new Point(horOffset, vertOffset);
+            }
+        }
+
+
+        /// <summary>
         /// Counts all of the string's lines.
         /// </summary>
         /// <param name="input">The input.</param>
@@ -769,9 +806,9 @@ namespace MediaCenter.SharedComponents
             var ret = new StringBuilder(input.Trim(' ', '\t'));
 
             ret.Replace("  ", " ");
-            ret.Replace("\r\n\r\n\r\n", "\r\n\r\n");
-            ret.Replace("\n\n\n", "\r\n\r\n");
-            ret.Replace("\n\n", "\r\n\r\n");
+            ret.Replace(Constants.TripleNewLine, Constants.DoubleNewLine);
+            ret.Replace("\n\n\n", Constants.DoubleNewLine);
+            ret.Replace("\n\n", Constants.DoubleNewLine);
 
             return ret.ToString();
         }
@@ -815,7 +852,7 @@ namespace MediaCenter.SharedComponents
 
             var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var ret = input.ToNormalizedString();
-            var lines = ret.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            var lines = ret.Split(new[] { Constants.NewLine }, StringSplitOptions.None);
 
             // Transform the lines
             for (var i = 0; i < lines.Length; i++)
@@ -833,7 +870,7 @@ namespace MediaCenter.SharedComponents
             }
 
             // Assemble the complete text
-            ret = string.Join(Environment.NewLine, lines);
+            ret = string.Join(Constants.NewLine, lines);
 
             return ret;
         }
@@ -854,7 +891,7 @@ namespace MediaCenter.SharedComponents
 
             var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var ret = input.ToNormalizedString();
-            var lines = ret.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            var lines = ret.Split(new[] { Constants.NewLine }, StringSplitOptions.None);
 
             // Transform the lines
             for (var i = 0; i < lines.Length; i++)
@@ -875,7 +912,7 @@ namespace MediaCenter.SharedComponents
             }
 
             // Assemble the complete text
-            ret = string.Join(Environment.NewLine, lines);
+            ret = string.Join(Constants.NewLine, lines);
 
             return ret;
         }
@@ -903,8 +940,8 @@ namespace MediaCenter.SharedComponents
             }
 
             // Remove the last line-end if the input string does not end with a line-end
-            if (!input.EndsWith(Environment.NewLine, StringComparison.InvariantCultureIgnoreCase))
-                ret.Length -= Environment.NewLine.Length;
+            if (!input.EndsWith(Constants.NewLine, StringComparison.InvariantCultureIgnoreCase))
+                ret.Length -= Constants.NewLine.Length;
 
             return ret.ToString();
         }

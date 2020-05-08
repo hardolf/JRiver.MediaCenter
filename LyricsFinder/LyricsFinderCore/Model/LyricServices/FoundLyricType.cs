@@ -122,9 +122,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 ret.Replace("{LyricUrl}", LyricUrl?.ToString() ?? string.Empty);
                 ret.Replace("{TrackingUrl}", TrackingUrl?.ToString() ?? string.Empty);
-                ret.Replace(Environment.NewLine + Environment.NewLine, Environment.NewLine);
 
-                return ret.ToString();
+                return ret.ToString().ToNormalizedString();
             }
             set { _lyricCreditText = value?.Trim().LfToCrLf() ?? string.Empty; }
         }

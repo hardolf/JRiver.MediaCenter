@@ -26,9 +26,9 @@ namespace MediaCenter.LyricsFinder.Forms
 
         private readonly string _title = "Options";
 
-        private readonly string _headerText = " Set the LyricsFinder options here.\r\n"
-            + " Enable the LyricsFinder to connect with the Media Center by setting the connection options.\r\n"
-            + " You can find the values in the Media Center (Tools menu > Options > Media Network).\r\n"
+        private readonly string _headerText = " Set the LyricsFinder options here." + Constants.NewLine
+            + " Enable the LyricsFinder to connect with the Media Center by setting the connection options." + Constants.NewLine
+            + " You can find the values in the Media Center (Tools menu > Options > Media Network)." + Constants.NewLine
             + " Also, ensure that the Media Network service is enabled.";
 
         private string _initialText = string.Empty;
@@ -127,7 +127,7 @@ namespace MediaCenter.LyricsFinder.Forms
                         }
                         catch (Exception ex)
                         {
-                            await ErrorHandling.ShowErrorHandlerAsync(this, $"Options failed to save, look at the error details and try again: \r\n{ex}");
+                            await ErrorHandling.ShowErrorHandlerAsync(this, $"Options failed to save, look at the error details and try again: {Constants.NewLine}{ex}");
                             e.Cancel = true;
                         }
                         break;

@@ -493,7 +493,7 @@ namespace MediaCenter.LyricsFinder
                 if (txt.IsNullOrEmptyTrimmed()) return;
 
                 if (txt.StringLineCount() > _maxLyricToolTipLines)
-                    txt = txt.TruncateStringLines(_maxLyricToolTipLines).Trim() + Environment.NewLine + "...";
+                    txt = txt.TruncateStringLines(_maxLyricToolTipLines).Trim() + Constants.NewLine + "...";
 
                 cell.ToolTipText = txt;
             }
@@ -938,7 +938,7 @@ namespace MediaCenter.LyricsFinder
                     _progressPercentage = 0;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     StatusLogAsync("LyricsFinder for JRiver Media Center closed.");
-                    StatusLogAsync(_logHeader + Environment.NewLine);
+                    StatusLogAsync(_logHeader + Constants.NewLine);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
                     Dispose(true);

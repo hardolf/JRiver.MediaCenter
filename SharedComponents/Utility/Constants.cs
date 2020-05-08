@@ -8,10 +8,13 @@ namespace MediaCenter.SharedComponents
 {
     public static class Constants
     {
+        public static readonly string NewLine = Environment.NewLine;
+        public static readonly string DoubleNewLine = NewLine + NewLine;
+        public static readonly string TripleNewLine = NewLine + NewLine + NewLine;
+
         public static readonly string DateFormat = "yyyy.MM.dd";
         public static readonly string IntegerFormat = "###,###,##0";
         public static readonly string TimeFormat = "HH:mm:ss";
-
         public static readonly string DateTimeFormat = $"{DateFormat} - {TimeFormat}";
     }
 

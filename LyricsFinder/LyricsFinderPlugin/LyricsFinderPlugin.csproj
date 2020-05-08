@@ -75,6 +75,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SharedComponents\Utility\Utility.csproj">
+      <Project>{EF9766A5-0C6D-425F-BE2D-3CD51A6720D2}</Project>
+      <Name>Utility</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LyricsFinderCore\LyricsFinderCore.csproj">
       <Project>{d91da58c-6415-43ef-b177-7ba28ace7e01}</Project>
       <Name>LyricsFinderCore</Name>

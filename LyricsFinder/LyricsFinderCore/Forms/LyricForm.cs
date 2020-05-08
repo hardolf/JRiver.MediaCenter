@@ -463,6 +463,8 @@ namespace MediaCenter.LyricsFinder.Forms
 
             try
             {
+                this.SetFormLocationAndSize(Location, Size);
+
                 BringToFront();
 
                 if (_isSearch)
@@ -753,9 +755,9 @@ namespace MediaCenter.LyricsFinder.Forms
                                     txt.SetSelectionText(SelectionOperation.ProperCase);
                                 break;
 
-                            case nameof(EditRemoveDoubleLineEndingsMenuItem):
+                            case nameof(EditRemoveExcessSpacesAndLineEndingsMenuItem):
                                 if (DoTextOperationQuestion(true))
-                                    txt.SetSelectionText(SelectionOperation.RemoveDoubleLineEndings);
+                                    txt.SetSelectionText(SelectionOperation.RemoveExcessSpacesAndLineEndings);
                                 break;
 
                             case nameof(EditReplaceMenuItem):
@@ -1043,7 +1045,7 @@ namespace MediaCenter.LyricsFinder.Forms
 
             if (!ret && isAllTextAsked)
             {
-                ret = (DialogResult.Yes == MessageBox.Show(this, "No text is selected.\r\n"
+                ret = (DialogResult.Yes == MessageBox.Show(this, "No text is selected." + Constants.NewLine
                     + "Do you want to do this on all text?"
                     , "No text is selected", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2));
 
@@ -1261,7 +1263,7 @@ namespace MediaCenter.LyricsFinder.Forms
                 EditRedoMenuItem, 
                 EditFindMenuItem, EditReplaceMenuItem, EditFindReplaceNextMenuItem,
                 EditProperCaseMenuItem, EditSentenceCaseMenuItem, EditTitleCaseMenuItem, EditLowerCaseMenuItem, EditUpperCaseMenuItem,
-                EditRemoveDoubleLineEndingsMenuItem, EditTrimMenuItem,
+                EditRemoveExcessSpacesAndLineEndingsMenuItem, EditTrimMenuItem,
                 EditToggleSpellCheckMenuItem, EditSpellCheckLanguageMenuItem);
 
             ToolsPlayJumpAheadLargeMenuItem.ShowShortcutKeys = !_isSearch && !(focusedControl is SpellBox);

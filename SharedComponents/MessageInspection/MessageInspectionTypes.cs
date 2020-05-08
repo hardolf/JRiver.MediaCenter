@@ -705,40 +705,13 @@ namespace MediaCenter.SharedComponents
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Fejl i CleanupFiles:\r\n{ex}");
+                    Console.WriteLine($"Fejl i CleanupFiles: {Constants.NewLine}{ex}");
 
                     if (EventLog.SourceExists("Application"))
                         EventLog.WriteEntry("Application", ex.Message, EventLogEntryType.Warning);
                 }
             }
 
-        }
-
-    }
-
-
-
-    /// <summary>
-    /// Utility type.
-    /// </summary>
-    /// <remarks>
-    /// <para>The <c>IsNullOrEmptyTrimmed</c> method here is a duplicate of the one in the <see cref="Utility"/> assembly.</para>
-    /// <para>We have it here too because we otherwise would have to copy the <see cref="Utility"/> assembly to the JRiver MediaCenter program folder.</para>
-    /// </remarks>
-    internal static class Utility
-    {
-
-        /// <summary>
-        /// Determines whether the text is null or empty when trimmed.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <returns>
-        ///   <c>true</c> if the text is null or empty when trimmed; otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsNullOrEmptyTrimmed(
-            this string text)
-        {
-            return string.IsNullOrEmpty(text?.Trim());
         }
 
     }

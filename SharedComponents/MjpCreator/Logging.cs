@@ -140,7 +140,7 @@ namespace MediaCenter.SharedComponents
             if (method is null) throw new ArgumentNullException(nameof(method));
             if (ex is null) throw new ArgumentNullException(nameof(ex));
 
-            var msg = $"Error in {method.Name}: {optionalMessage}" + Environment.NewLine + ex;
+            var msg = $"Error in {method.Name}: {optionalMessage}" + Constants.NewLine + ex;
 
             Console.WriteLine(msg);
         }

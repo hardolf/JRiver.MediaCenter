@@ -203,7 +203,7 @@ namespace MediaCenter.SharedComponents
             catch (Exception ex)
             {
                 isOk = false;
-                fatalErrorText += Environment.NewLine + ex.ToString();
+                fatalErrorText += Constants.NewLine + ex.ToString();
                 Logging.DivideLog();
                 Logging.LogError(MethodBase.GetCurrentMethod(), ex, fatalErrorText);
             }

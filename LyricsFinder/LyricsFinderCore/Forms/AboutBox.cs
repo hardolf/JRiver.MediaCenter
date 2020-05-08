@@ -25,10 +25,10 @@ namespace MediaCenter.LyricsFinder.Forms
         private readonly Assembly _assembly = null;
         private readonly Size _maxWindowSize;
 
-        private readonly string _extraDescription = "\r\nThe LyricsFinder looks for lyrics in public lyric web services.\r\n"
-            + "\r\nLookup is done for all - or just one at a time - of the current songs in the \"Playing Now\" list in the JRiver Media Center.\r\n"
-            + "\r\nThe LyricsFinder can be used as a standalone program and/or as a plug-in for the JRiver Media Center.\r\n"
-            + "\r\nThe found lyrics are saved in the songs' tags.";
+        private readonly string _extraDescription = Constants.NewLine + "The LyricsFinder looks for lyrics in public lyric web services." + Constants.DoubleNewLine
+            + "Lookup is done for all - or just one at a time - of the current songs in the \"Playing Now\" list in the JRiver Media Center." + Constants.DoubleNewLine
+            + "The LyricsFinder can be used as a standalone program and/or as a plug-in for the JRiver Media Center." + Constants.DoubleNewLine
+            + "The found lyrics are saved in the songs' tags.";
 
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace MediaCenter.LyricsFinder.Forms
                 CopyrightLabel.Text = AssemblyCopyright;
                 CompanyNameLabel.Text = AssemblyCompany;
                 BuildDateLabel.Text = $"Build date {AssemblyBuildDate}";
-                DescriptionTextBox.Text = AssemblyDescription + Environment.NewLine + _extraDescription;
+                DescriptionTextBox.Text = AssemblyDescription + Constants.NewLine + _extraDescription;
             }
             catch (Exception ex)
             {

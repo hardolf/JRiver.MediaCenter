@@ -369,7 +369,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error creating the service client\r\n\r\nAssembly location: {assemblyLocation}\r\nConfiguration file path: {config?.FilePath}\r\nEndpoint configuration name: {configName}.\r\n\r\n", ex);
+                var msg = $"Error creating the service client " + Constants.DoubleNewLine
+                    + $"Assembly location: {assemblyLocation} " + Constants.NewLine
+                    + $"Configuration file path: {config?.FilePath} " + Constants.NewLine
+                    + $"Endpoint configuration name: {configName}." + Constants.DoubleNewLine;
+
+                throw new Exception(msg, ex);
             }
         }
 
@@ -611,10 +616,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         {
             IsActive = false;
 
-            throw new LyricsQuotaExceededException("\r\n"
-                + $"Lyric service \"{Credit.ServiceName}\" is exceeding its quota. \r\n"
-                + "The service is now disabled in LyricsFinder. \r\n"
-                + "Check the service in the lyric service form. \r\n"
+            throw new LyricsQuotaExceededException(Constants.NewLine
+                + $"Lyric service \"{Credit.ServiceName}\" is exceeding its quota. " + Constants.NewLine
+                + "The service is now disabled in LyricsFinder. " + Constants.NewLine
+                + "Check the service in the lyric service form. " + Constants.NewLine
                 + "No more requests will be sent to this service until corrected.",
                 isGetAll, Credit, mcItem);
         }

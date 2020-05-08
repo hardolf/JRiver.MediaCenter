@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.Helpers;
@@ -35,6 +36,37 @@ namespace MediaCenter.LyricsFinder.Model
         /// </value>
         [XmlElement]
         public int DelayMilliSecondsBetweenSearches { get; set; }
+
+        /// <summary>
+        /// Gets or sets the item information form location.
+        /// </summary>
+        /// <value>
+        /// The item information form location.
+        /// </value>
+        [XmlElement]
+        public Point ItemInfoFormLocation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of the item information form.
+        /// </summary>
+        /// <value>
+        /// The size of the item information form.
+        /// </value>
+        [XmlElement]
+        public Size ItemInfoFormSize
+        {
+            get => (_itemInfoFormSize.Height == 0 || _itemInfoFormSize.Width == 0) ? new Size(500, 800) : _itemInfoFormSize;
+            set => _itemInfoFormSize = value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the calculated properties are shown from start on the item information form.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the calculated properties are shown from start on the item information form; otherwise, <c>false</c>.
+        /// </value>
+        [XmlElement]
+        public bool ItemInfoFormShowCalculatedProperties { get; set; }
 
         /// <summary>
         /// Gets or sets the last Media Center status check.
@@ -170,28 +202,6 @@ namespace MediaCenter.LyricsFinder.Model
         /// </value>
         [XmlElement]
         public bool StrictSearchOnly { get; set; }
-
-        /// <summary>
-        /// Gets or sets the item information form location.
-        /// </summary>
-        /// <value>
-        /// The item information form location.
-        /// </value>
-        [XmlElement]
-        public Point ItemInfoFormLocation { get; set; }
-
-        /// <summary>
-        /// Gets or sets the size of the item information form.
-        /// </summary>
-        /// <value>
-        /// The size of the item information form.
-        /// </value>
-        [XmlElement]
-        public Size ItemInfoFormSize
-        {
-            get => (_itemInfoFormSize.Height == 0 || _itemInfoFormSize.Width == 0) ? new Size(500, 800) : _itemInfoFormSize;
-            set => _itemInfoFormSize = value;
-        }
 
         /// <summary>
         /// Gets or sets the update check interval days.

@@ -220,7 +220,7 @@ namespace MediaCenter.LyricsFinder
 
                 if (IsDataChanged)
                 {
-                    var result = MessageBox.Show("Data is changed and the changes will be lost if you continue.\r\n"
+                    var result = MessageBox.Show("Data is changed and the changes will be lost if you continue." + Constants.NewLine
                         + "Do you want to continue anyway?"
                         , "Data changed", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 

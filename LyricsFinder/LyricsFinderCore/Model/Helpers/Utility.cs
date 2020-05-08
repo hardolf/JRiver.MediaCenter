@@ -250,12 +250,12 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             string msg;
 
             if (ret)
-                msg = $"LyricsFinder v{currentVersion} is the latest release.\r\n"
+                msg = $"LyricsFinder v{currentVersion} is the latest release." + Constants.NewLine
                     + "No update is necessary.";
             else
-                msg = $"LyricsFinder v{currentVersion} is not the latest release.\r\n"
-                    + $"An update to v{latestVersion} is available.\r\n\r\n"
-                    + $"You can visit the download site here:\r\n\r\n"
+                msg = $"LyricsFinder v{currentVersion} is not the latest release." + Constants.NewLine
+                    + $"An update to v{latestVersion} is available." + Constants.DoubleNewLine
+                    + $"You can visit the download site here:" + Constants.DoubleNewLine
                     + $"{urlString}";
 
             await ErrorForm.ShowAsync(null, "Update information", msg, maxWindowSize);
