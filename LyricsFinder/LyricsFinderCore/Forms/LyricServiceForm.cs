@@ -26,6 +26,11 @@ namespace MediaCenter.LyricsFinder.Forms
     internal partial class LyricServiceForm : Form
     {
 
+        /***********************************/
+        /******* Private class-wide   ******/
+        /***** constants and variables *****/
+        /***********************************/
+
         private bool _isListReady = false;
 
         private string _initialText = string.Empty;
@@ -38,8 +43,16 @@ namespace MediaCenter.LyricsFinder.Forms
         private readonly Action<LyricServiceForm> _callback;
 
 
+        /**********************/
+        /***** Properties *****/
+        /**********************/
+
         public LyricsFinderCore OwnerLyricsFinderCore { get; set; }
 
+
+        /************************/
+        /***** Constructors *****/
+        /************************/
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LyricServiceForm"/> class.
@@ -63,47 +76,17 @@ namespace MediaCenter.LyricsFinder.Forms
         public LyricServiceForm(LyricsFinderCore ownerLyricsFinderCore, Action<LyricServiceForm> callback)
             : this()
         {
-            var dgv = LyricServiceListDataGridView;
-
             _callback = callback ?? throw new ArgumentNullException(nameof(callback));
 
-            // Fill the datagrid
             _isListReady = false;
             OwnerLyricsFinderCore = ownerLyricsFinderCore ?? throw new ArgumentNullException(nameof(ownerLyricsFinderCore));
             _lyricsFinderData = ownerLyricsFinderCore.LyricsFinderData ?? throw new ArgumentNullException(nameof(ownerLyricsFinderCore));
-
-            foreach (var service in _lyricsFinderData.LyricServices)
-            {
-                var value = service.DisplayProperties.GetPropertyValue("DailyQuota", true);
-                var dailyQuota = (value == null) ? "-" : value.ToString();
-
-                value = service.DisplayProperties.GetPropertyValue("QuotaResetTimeClient", true);
-                var quotaResetTimeString = (value is null)
-                    ? "-"
-                    : value;
-
-                if (service.IsImplemented)
-                {
-                    dgv.Rows.Add(service.IsActive, service.Credit.ServiceName, dailyQuota, service.RequestCountToday, service.RequestCountTotal, service.HitCountToday, service.HitCountTotal, quotaResetTimeString);
-                    dgv.Rows[dgv.Rows.Count - 1].Cells[1].ToolTipText = service.Comment;
-                }
-            }
-
-            _isListReady = true;
-
-            // Adjust the form height
-            var height = 65;
-
-            foreach (DataGridViewRow dr in dgv.Rows)
-            {
-                height += dr.Height;
-            }
-
-            Height = height;
-
-            ShowDetails();
         }
 
+
+        /*********************/
+        /***** Delegates *****/
+        /*********************/
 
         /// <summary>
         /// Handles the Click event of the CloseButton control.
@@ -120,161 +103,6 @@ namespace MediaCenter.LyricsFinder.Forms
             {
                 await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
             }
-        }
-
-
-        /// <summary>
-        /// Fills the row.
-        /// </summary>
-        /// <param name="propertyName">Name of the property.</param>
-        /// <param name="caption">The caption.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="isEditAllowed">if set to <c>true</c> value edit is allowed; else it is read-only.</param>
-        /// <param name="toolTip">The tooltip.</param>
-        private void FillRow(string propertyName, string caption, string value, bool isEditAllowed = false, string toolTip = "")
-        {
-            var tlp = LyricServiceDetailsTableLayoutPanel;
-
-            tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            tlp.RowCount++;
-
-            var rowIdx = tlp.RowCount - 1;
-            var lblPropertyName = new Label();
-            var lblCaption = new Label();
-            var txtValue = new TextBox();
-
-            lblPropertyName.AutoSize = true;
-            lblPropertyName.Name = $"PropertyNameLabel{rowIdx}";
-            lblPropertyName.Text = propertyName ?? string.Empty;
-            lblPropertyName.Visible = false;
-
-            lblCaption.AutoSize = true;
-            lblCaption.Name = $"CaptionLabel{rowIdx}";
-            lblCaption.Text = caption;
-
-            txtValue.AutoSize = true;
-            txtValue.BorderStyle = (isEditAllowed) ? BorderStyle.FixedSingle : BorderStyle.None;
-            txtValue.MinimumSize = new Size(250, 20);
-            txtValue.Multiline = true;
-            txtValue.Name = $"ValueTextbox{rowIdx}";
-            txtValue.ReadOnly = !isEditAllowed;
-            txtValue.ScrollBars = ScrollBars.None;
-            txtValue.TabIndex = rowIdx;
-            txtValue.TabStop = true;
-            txtValue.WordWrap = true;
-            txtValue.Text = (value.IsNullOrEmptyTrimmed()) ? " " : value; // Set to space if empty value, so that the text box resize will work
-
-            toolTip = (toolTip ?? string.Empty).Trim().TrimEnd('.');
-
-            if (!toolTip.IsNullOrEmptyTrimmed())
-            {
-                LyricServiceFormToolTip.SetToolTip(lblCaption, toolTip);
-                LyricServiceFormToolTip.SetToolTip(txtValue, toolTip);
-            }
-
-            //if (isEditAllowed)
-            //    LyricServiceFormToolTip.SetToolTip(txtValue, $"{toolTip}. You can edit the value".TrimStart('.', ' '));
-
-            txtValue.AutoSizeTextBox(new Padding(0, 0, 50, 0));
-            txtValue.Text = value; // Do this after the text box resize to remove the space from above
-
-            tlp.Controls.Add(lblPropertyName, 0, rowIdx);
-            tlp.Controls.Add(lblCaption, 1, rowIdx);
-            tlp.Controls.Add(txtValue, 2, rowIdx);
-
-            tlp.RowStyles.Clear();
-            tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-
-            if (tlp.Controls.Count > 0)
-                tlp.Controls[0].Select();
-        }
-
-
-        /// <summary>
-        /// Gets the service.
-        /// </summary>
-        /// <returns>The selected service object.</returns>
-        private AbstractLyricService GetSelectedService(out int selectedIndex)
-        {
-            AbstractLyricService ret = null;
-            var dgv = LyricServiceListDataGridView;
-
-            selectedIndex = -1;
-
-            if ((dgv.SelectedRows == null) || (dgv.SelectedRows.Count == 0)) return ret;
-
-            var row = dgv.SelectedRows[0];
-            var tmp = row.Cells[1].Value;
-
-            if (tmp == null)
-                return ret;
-
-            var serviceName = tmp.ToString();
-
-            for (int i = 0; i < _lyricsFinderData.LyricServices.Count; i++)
-            {
-                var service = _lyricsFinderData.LyricServices[i];
-
-                if (service.Credit.ServiceName.Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    ret = service;
-                    selectedIndex = i;
-                    break;
-                }
-            }
-
-            return ret;
-        }
-
-
-        /// <summary>
-        /// Validates the details panel and determines whether data is changed.
-        /// If they are, the user is asked whether to save, and if so, save the data.
-        /// </summary>
-        /// <returns>
-        ///   <c>true</c> if the row change should be canceled; otherwise, <c>false</c>.
-        /// </returns>
-        private async Task<bool> IsValidateCancelAsync()
-        {
-            if (!_isListReady) return false;
-
-            var newText = LyricServiceDetailsTableLayoutPanel.GetAllControlText();
-            var question = "Do you want to use the new values?";
-            var result = DialogResult.No;
-            var ret = false;
-
-            if (newText != _initialText)
-                result = MessageBox.Show(this, question, "Values are changed", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-
-            switch (result)
-            {
-                case DialogResult.Cancel:
-                    ret = true;
-                    break;
-
-                case DialogResult.No:
-                    ret = false;
-                    break;
-
-                case DialogResult.Yes:
-                    // Save the changes
-                    try
-                    {
-                        SaveSelectedService();
-                    }
-                    catch (Exception ex)
-                    {
-                        await ErrorHandling.ShowErrorHandlerAsync(ex.Message);
-                        _initialText = string.Empty; // Force a save request
-                        ret = true;
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-
-            return ret;
         }
 
 
@@ -369,6 +197,54 @@ namespace MediaCenter.LyricsFinder.Forms
                 }
 
                 _callback(this);
+            }
+            catch (Exception ex)
+            {
+                await ErrorHandling.ShowAndLogErrorHandlerAsync($"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event.", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the LoadAsync event of the LyricServiceForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private async void LyricServiceForm_LoadAsync(object sender, EventArgs e)
+        {
+            var dgv = LyricServiceListDataGridView;
+
+            // Fill the datagrid
+            try
+            {
+                foreach (var service in _lyricsFinderData.LyricServices)
+                {
+                    var value = service.DisplayProperties.GetPropertyValue("DailyQuota", true);
+                    var dailyQuota = (value == null) ? "-" : value.ToString();
+
+                    value = service.DisplayProperties.GetPropertyValue("QuotaResetTimeClient", true);
+                    var quotaResetTimeString = (value is null) ? "-" : value;
+
+                    if (service.IsImplemented)
+                    {
+                        dgv.Rows.Add(service.IsActive, service.Credit.ServiceName, dailyQuota, service.RequestCountToday, service.RequestCountTotal, service.HitCountToday, service.HitCountTotal, quotaResetTimeString);
+                        dgv.Rows[dgv.Rows.Count - 1].Cells[1].ToolTipText = service.Comment;
+                    }
+                }
+
+                _isListReady = true;
+
+                // Adjust the form height
+                var height = 65;
+
+                foreach (DataGridViewRow dr in dgv.Rows)
+                {
+                    height += dr.Height;
+                }
+
+                Height = height;
+
+                ShowDetails();
             }
             catch (Exception ex)
             {
@@ -553,6 +429,190 @@ namespace MediaCenter.LyricsFinder.Forms
         }
 
 
+        /**************************/
+        /***** Misc. routines *****/
+        /**************************/
+
+        private void CenterFormInParent()
+        {
+            var wa = Screen.PrimaryScreen.WorkingArea;
+            var location = OwnerLyricsFinderCore.PointToScreen(OwnerLyricsFinderCore.Location);
+
+            // Calculate the parent's center point
+            location.Offset(OwnerLyricsFinderCore.Width / 2, OwnerLyricsFinderCore.Height / 2);
+
+            // Calculate this form's location, so that it has the same center point as the parent
+            location.Offset(-Width / 2, -Height / 2);
+
+            // Adjust for out-of-screen-bounds form location
+            if (location.X < wa.Left)
+                location.X = wa.Left;
+            if (location.Y < wa.Top)
+                location.Y = wa.Top;
+            if (location.X + Width > wa.Right)
+                location.X = wa.Right - Width;
+            if (location.Y + Height > wa.Bottom)
+                location.Y = wa.Bottom - Height;
+
+            Location = location;
+        }
+
+
+        /// <summary>
+        /// Fills the row.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="caption">The caption.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="isEditAllowed">if set to <c>true</c> value edit is allowed; else it is read-only.</param>
+        /// <param name="toolTip">The tooltip.</param>
+        private void FillRow(string propertyName, string caption, string value, bool isEditAllowed = false, string toolTip = "")
+        {
+            var tlp = LyricServiceDetailsTableLayoutPanel;
+
+            tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            tlp.RowCount++;
+
+            var rowIdx = tlp.RowCount - 1;
+            var lblPropertyName = new Label();
+            var lblCaption = new Label();
+            var txtValue = new TextBox();
+
+            lblPropertyName.AutoSize = true;
+            lblPropertyName.Name = $"PropertyNameLabel{rowIdx}";
+            lblPropertyName.Text = propertyName ?? string.Empty;
+            lblPropertyName.Visible = false;
+
+            lblCaption.AutoSize = true;
+            lblCaption.Name = $"CaptionLabel{rowIdx}";
+            lblCaption.Text = caption;
+
+            txtValue.AutoSize = true;
+            txtValue.BorderStyle = (isEditAllowed) ? BorderStyle.FixedSingle : BorderStyle.None;
+            txtValue.MinimumSize = new Size(250, 20);
+            txtValue.Multiline = true;
+            txtValue.Name = $"ValueTextbox{rowIdx}";
+            txtValue.ReadOnly = !isEditAllowed;
+            txtValue.ScrollBars = ScrollBars.None;
+            txtValue.TabIndex = rowIdx;
+            txtValue.TabStop = true;
+            txtValue.WordWrap = true;
+            txtValue.Text = (value.IsNullOrEmptyTrimmed()) ? " " : value; // Set to space if empty value, so that the text box resize will work
+
+            toolTip = (toolTip ?? string.Empty).Trim().TrimEnd('.');
+
+            if (!toolTip.IsNullOrEmptyTrimmed())
+            {
+                LyricServiceFormToolTip.SetToolTip(lblCaption, toolTip);
+                LyricServiceFormToolTip.SetToolTip(txtValue, toolTip);
+            }
+
+            //if (isEditAllowed)
+            //    LyricServiceFormToolTip.SetToolTip(txtValue, $"{toolTip}. You can edit the value".TrimStart('.', ' '));
+
+            txtValue.AutoSizeTextBox(new Padding(0, 0, 50, 0));
+            txtValue.Text = value; // Do this after the text box resize to remove the space from above
+
+            tlp.Controls.Add(lblPropertyName, 0, rowIdx);
+            tlp.Controls.Add(lblCaption, 1, rowIdx);
+            tlp.Controls.Add(txtValue, 2, rowIdx);
+
+            tlp.RowStyles.Clear();
+            tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+            if (tlp.Controls.Count > 0)
+                tlp.Controls[0].Select();
+        }
+
+
+        /// <summary>
+        /// Gets the service.
+        /// </summary>
+        /// <returns>The selected service object.</returns>
+        private AbstractLyricService GetSelectedService(out int selectedIndex)
+        {
+            AbstractLyricService ret = null;
+            var dgv = LyricServiceListDataGridView;
+
+            selectedIndex = -1;
+
+            if ((dgv.SelectedRows == null) || (dgv.SelectedRows.Count == 0)) return ret;
+
+            var row = dgv.SelectedRows[0];
+            var tmp = row.Cells[1].Value;
+
+            if (tmp == null)
+                return ret;
+
+            var serviceName = tmp.ToString();
+
+            for (int i = 0; i < _lyricsFinderData.LyricServices.Count; i++)
+            {
+                var service = _lyricsFinderData.LyricServices[i];
+
+                if (service.Credit.ServiceName.Equals(serviceName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ret = service;
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Validates the details panel and determines whether data is changed.
+        /// If they are, the user is asked whether to save, and if so, save the data.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if the row change should be canceled; otherwise, <c>false</c>.
+        /// </returns>
+        private async Task<bool> IsValidateCancelAsync()
+        {
+            if (!_isListReady) return false;
+
+            var newText = LyricServiceDetailsTableLayoutPanel.GetAllControlText();
+            var question = "Do you want to use the new values?";
+            var result = DialogResult.No;
+            var ret = false;
+
+            if (newText != _initialText)
+                result = MessageBox.Show(this, question, "Values are changed", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+            switch (result)
+            {
+                case DialogResult.Cancel:
+                    ret = true;
+                    break;
+
+                case DialogResult.No:
+                    ret = false;
+                    break;
+
+                case DialogResult.Yes:
+                    // Save the changes
+                    try
+                    {
+                        SaveSelectedService();
+                    }
+                    catch (Exception ex)
+                    {
+                        await ErrorHandling.ShowErrorHandlerAsync(ex.Message);
+                        _initialText = string.Empty; // Force a save request
+                        ret = true;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+            return ret;
+        }
+
+
         /// <summary>
         /// Saves the selected service.
         /// </summary>
@@ -689,31 +749,6 @@ namespace MediaCenter.LyricsFinder.Forms
             _isListReady = true;
 
             CenterFormInParent();
-        }
-
-
-        private void CenterFormInParent()
-        {
-            var wa = Screen.PrimaryScreen.WorkingArea;
-            var location = OwnerLyricsFinderCore.PointToScreen(OwnerLyricsFinderCore.Location);
-
-            // Calculate the parent's center point
-            location.Offset(OwnerLyricsFinderCore.Width / 2, OwnerLyricsFinderCore.Height / 2);
-
-            // Calculate this form's location, so that it has the same center point as the parent
-            location.Offset(-Width / 2, -Height / 2);
-
-            // Adjust for out-of-screen-bounds form location
-            if (location.X < wa.Left)
-                location.X = wa.Left;
-            if (location.Y < wa.Top)
-                location.Y = wa.Top;
-            if (location.X + Width > wa.Right)
-                location.X = wa.Right - Width;
-            if (location.Y + Height > wa.Bottom)
-                location.Y = wa.Bottom - Height;
-
-            Location = location;
         }
 
     }

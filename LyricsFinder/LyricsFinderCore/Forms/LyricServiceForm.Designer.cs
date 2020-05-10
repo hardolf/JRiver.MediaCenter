@@ -31,12 +31,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricServiceForm));
             this.LyricServiceMainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.LyricServiceListPanel = new System.Windows.Forms.Panel();
@@ -162,8 +162,8 @@
             // Service
             // 
             this.Service.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.Service.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.Service.DefaultCellStyle = dataGridViewCellStyle1;
             this.Service.HeaderText = "Service name";
             this.Service.MinimumWidth = 150;
             this.Service.Name = "Service";
@@ -174,9 +174,9 @@
             // RequestsMaximum
             // 
             this.RequestsMaximum.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle8.Format = "N0";
-            this.RequestsMaximum.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle2.Format = "N0";
+            this.RequestsMaximum.DefaultCellStyle = dataGridViewCellStyle2;
             this.RequestsMaximum.HeaderText = "Quota";
             this.RequestsMaximum.MinimumWidth = 50;
             this.RequestsMaximum.Name = "RequestsMaximum";
@@ -188,10 +188,10 @@
             // RequestsToday
             // 
             this.RequestsToday.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle9.Format = "N0";
-            dataGridViewCellStyle9.NullValue = null;
-            this.RequestsToday.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle3.Format = "N0";
+            dataGridViewCellStyle3.NullValue = null;
+            this.RequestsToday.DefaultCellStyle = dataGridViewCellStyle3;
             this.RequestsToday.HeaderText = "Req. today";
             this.RequestsToday.MinimumWidth = 65;
             this.RequestsToday.Name = "RequestsToday";
@@ -203,9 +203,9 @@
             // RequestsTotal
             // 
             this.RequestsTotal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle10.Format = "N0";
-            this.RequestsTotal.DefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle4.Format = "N0";
+            this.RequestsTotal.DefaultCellStyle = dataGridViewCellStyle4;
             this.RequestsTotal.HeaderText = "Req. total";
             this.RequestsTotal.MinimumWidth = 65;
             this.RequestsTotal.Name = "RequestsTotal";
@@ -217,9 +217,9 @@
             // HitsToday
             // 
             this.HitsToday.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle11.Format = "N0";
-            this.HitsToday.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle5.Format = "N0";
+            this.HitsToday.DefaultCellStyle = dataGridViewCellStyle5;
             this.HitsToday.HeaderText = "Hits today";
             this.HitsToday.MinimumWidth = 60;
             this.HitsToday.Name = "HitsToday";
@@ -231,9 +231,9 @@
             // HitsTotal
             // 
             this.HitsTotal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle12.Format = "N0";
-            this.HitsTotal.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle6.Format = "N0";
+            this.HitsTotal.DefaultCellStyle = dataGridViewCellStyle6;
             this.HitsTotal.HeaderText = "Hits total";
             this.HitsTotal.MinimumWidth = 60;
             this.HitsTotal.Name = "HitsTotal";
@@ -364,6 +364,7 @@
             this.Text = "Lyric Services";
             this.TransparencyKey = System.Drawing.Color.Teal;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LyricServiceForm_FormClosingAsync);
+            this.Load += new System.EventHandler(this.LyricServiceForm_LoadAsync);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LyricServiceForm_KeyDownAsync);
             this.LyricServiceMainTableLayoutPanel.ResumeLayout(false);
             this.LyricServiceMainTableLayoutPanel.PerformLayout();

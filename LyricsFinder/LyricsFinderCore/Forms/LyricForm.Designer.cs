@@ -543,7 +543,7 @@
             // 
             this.EditRemoveExcessSpacesAndLineEndingsMenuItem.Name = "EditRemoveExcessSpacesAndLineEndingsMenuItem";
             this.EditRemoveExcessSpacesAndLineEndingsMenuItem.Size = new System.Drawing.Size(282, 22);
-            this.EditRemoveExcessSpacesAndLineEndingsMenuItem.Text = "Remove excess spaces and line &endings";
+            this.EditRemoveExcessSpacesAndLineEndingsMenuItem.Text = "Remove &excess spaces and line endings";
             this.EditRemoveExcessSpacesAndLineEndingsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditTrimMenuItem

@@ -324,18 +324,14 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             DisplayProperties.Add(nameof(Comment), Comment, 
                 "Service comment", "Special comments for the lyric service", 
                 true);
-            DisplayProperties.Add(nameof(RequestCountToday), RequestCountToday, 
-                "Requests, today", "Number of requests to the lyric service since midnight (local client time)", 
-                false, RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            DisplayProperties.Add(nameof(HitCountToday), HitCountToday, 
-                "Hits, today", "Number of successful results (hits) from the lyric service since midnight (local client time)",
-                false, HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            DisplayProperties.Add(nameof(RequestCountTotal), RequestCountTotal, 
-                "Requests, total", "Total number of requests to the lyric service since the creation of the local client datafile",
-                false, RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            DisplayProperties.Add(nameof(HitCountTotal), HitCountTotal, 
-                "Hits, total", "Total number of successful results (hits) from the lyric service since the creation of the local client datafile",
-                false, HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            DisplayProperties.Add(nameof(RequestCountToday), RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture), 
+                "Requests, today", "Number of requests to the lyric service since midnight (local client time)", false);
+            DisplayProperties.Add(nameof(HitCountToday), HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture), 
+                "Hits, today", "Number of successful results (hits) from the lyric service since midnight (local client time)", false);
+            DisplayProperties.Add(nameof(RequestCountTotal), RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture), 
+                "Requests, total", "Total number of requests to the lyric service since the creation of the local client datafile", false);
+            DisplayProperties.Add(nameof(HitCountTotal), HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture), 
+                "Hits, total", "Total number of successful results (hits) from the lyric service since the creation of the local client datafile", false);
         }
 
 
@@ -740,10 +736,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             // Test initialization
             dps.Add(nameof(Comment), Comment);
-            dps.Add(nameof(RequestCountToday), RequestCountToday, null, RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            dps.Add(nameof(HitCountToday), HitCountToday, null, HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            dps.Add(nameof(RequestCountTotal), RequestCountTotal, null, RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
-            dps.Add(nameof(HitCountTotal), HitCountTotal, null, HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture));
+            dps.Add(nameof(RequestCountToday), RequestCountToday, null, RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture));
+            dps.Add(nameof(HitCountToday), HitCountToday, null, HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture));
+            dps.Add(nameof(RequestCountTotal), RequestCountTotal, null, RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture));
+            dps.Add(nameof(HitCountTotal), HitCountTotal, null, HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture));
         }
 
     }

@@ -253,8 +253,8 @@ namespace MediaCenter.LyricsFinder.Forms
                 }
 
                 var question = (_isSearch)
-                    ? "Selected lyric is different from the old lyric\nDo you want to use the new selected lyric?"
-                    : "Lyric is changed\nDo you want to use the new lyric?";
+                    ? "Selected lyric is different from the old lyric" + Constants.NewLine + "Do you want to use the new selected lyric?"
+                    : "Lyric is changed" + Constants.NewLine + "Do you want to use the new lyric?";
 
                 if (_finalLyric == _initLyric)
                 {

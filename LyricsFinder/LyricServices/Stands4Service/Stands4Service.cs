@@ -124,7 +124,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             DisplayProperties.Add(nameof(Token), Token, null, isEditAllowed: true);
             DisplayProperties.Add(nameof(UserId), UserId, "User ID", isEditAllowed: true);
-            DisplayProperties.Add(nameof(DailyQuota), DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture), 
+            DisplayProperties.Add(nameof(DailyQuota), DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture), 
                 "Max. daily number of requests", "The quota for maximum daily number of requests to the lyric service", true, 0);
 
             try
@@ -144,9 +144,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             try
             {
-                DisplayProperties.Add("QuotaResetTimeService", "QuotaResetTime", "ServiceLocalTime", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture),
+                DisplayProperties.Add("QuotaResetTimeService", "QuotaResetTime", "ServiceLocalTime", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.CurrentCulture),
                     "Next quota reset local time, service", "The next quota reset, local time for the lyric service", true,
-                    DateTime.Now.ToLocalTime().AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture));
+                    DateTime.Now.ToLocalTime().AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.CurrentCulture));
             }
             catch (TimeZoneNotFoundException ex)
             {
@@ -157,7 +157,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     "See the Name column on https://en.wikipedia.org/wiki/List_of_time_zone_abbreviations", true, defTz);
             }
 
-            DisplayProperties.Add("QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture), 
+            DisplayProperties.Add("QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.CurrentCulture), 
                 "Next quota reset local time, this client", "The next quota reset, local time for the client machine", false);
 
             if (!errMsg.IsNullOrEmptyTrimmed())
@@ -414,7 +414,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 var quotaResetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue(Settings, "QuotaResetTimeZone"));
 
-                QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Parse(ServiceSettingsValue(Settings, "QuotaResetTime"), CultureInfo.InvariantCulture), quotaResetTimeZone);
+                QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Parse(ServiceSettingsValue(Settings, "QuotaResetTime"), CultureInfo.CurrentCulture), quotaResetTimeZone);
             }
 
             CreateDisplayProperties();
@@ -433,12 +433,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 { nameof(Token), Token },
                 { nameof(UserId), UserId },
-                { nameof(DailyQuota), DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.InvariantCulture) },
+                { nameof(DailyQuota), DailyQuota.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture) },
 
                 { "QuotaResetTimeZone", "QuotaResetTime", "TimeZoneId", QuotaResetTime.ServiceTimeZone.StandardName, null },
 
-                { "QuotaResetTimeService", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture) },
-                { "QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.InvariantCulture) }
+                { "QuotaResetTimeService", QuotaResetTime.ServiceLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.CurrentCulture) },
+                { "QuotaResetTimeClient", QuotaResetTime.ClientLocalTime.AddDays(1).ToString(Constants.DateTimeFormat, CultureInfo.CurrentCulture) }
             };
         }
 

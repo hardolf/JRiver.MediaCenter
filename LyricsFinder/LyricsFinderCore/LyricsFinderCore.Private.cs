@@ -397,8 +397,11 @@ namespace MediaCenter.LyricsFinder
                     await ErrorHandling.ErrorLogAsync("Failed to load the lyric services, ask if we should initialize a new set of services.", ex);
                     LyricsFinderData = new LyricsFinderDataType(dataFile);
 
-                    var result = MessageBox.Show(this, $"LyricsFinder data file \n\"{dataFile}\" \nwas found but could not be loaded, error: \n"
-                        + $"\"{ex.Message}\" \nWill you initialize and save a new set of services?",
+                    var result = MessageBox.Show(this, $"LyricsFinder data file " + Constants.NewLine 
+                        + "\"{dataFile}\"" + Constants.NewLine
+                        + "was found but could not be loaded, error: " + Constants.NewLine
+                        + $"\"{ex.Message}\"" + Constants.NewLine 
+                        + "Will you initialize and save a new set of services?",
                         "LyricsFinder datafile not found", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 
                     if (result == DialogResult.Yes)

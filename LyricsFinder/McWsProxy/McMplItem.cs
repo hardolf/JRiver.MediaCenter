@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -146,6 +147,28 @@ namespace MediaCenter.McWs
         [XmlIgnore]
         public virtual Dictionary<string, string> Fields { get; }
 
+        /// <summary>
+        /// Gets the date fields.
+        /// </summary>
+        /// <value>
+        /// The date fields.
+        /// </value>
+        [XmlIgnore]
+        public static IEnumerable<string> DateFields { get; } = new string[] { "Date" };
+
+        /// <summary>
+        /// Gets the date/time fields.
+        /// </summary>
+        /// <value>
+        /// The date/time fields.
+        /// </value>
+        [XmlIgnore]
+        public static IEnumerable<string> DateTimeFields { get; } = new string[] { "Date Created", "Date First Rated", "Date Imported",
+                "Date Last Opened", "Date Modified", "Date Tagged", "Last Played", "Last Skipped" };
+
+        [XmlIgnore]
+        public static IEnumerable<string> NoFormatFields { get; } = new string[] { "Date (readable)", "Date (year)" };
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="McMplResponse" /> class.
@@ -286,6 +309,62 @@ namespace MediaCenter.McWs
             }
 
             return ret;
+        }
+
+
+        /// <summary>
+        /// Fields to string.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// String representation of the field value.
+        /// </returns>
+        public static string FieldToString(string key, string value)
+        {
+            if (key is null) throw new ArgumentNullException(nameof(key));
+            if (value is null) throw new ArgumentNullException(nameof(value));
+
+            var ret = value;
+
+            if (!long.TryParse(ret, out var longVal)) longVal = -1;
+
+            if (DateFields.Contains(key, StringComparer.InvariantCultureIgnoreCase))
+            {
+                if (longVal > 0)
+                    ret = DateTime.FromOADate(longVal).Year.ToString(CultureInfo.InvariantCulture);
+            }
+            else if (DateTimeFields.Contains(key, StringComparer.InvariantCultureIgnoreCase))
+            {
+                if (longVal > 0)
+                {
+                    var dt = Constants.MediaCenterZeroUtcDate.AddSeconds(longVal).ToLocalTime();
+
+                    ret = dt.ToString(Constants.DateTimeFormat, CultureInfo.CurrentCulture);
+                }
+            }
+            else if (!NoFormatFields.Contains(key, StringComparer.InvariantCultureIgnoreCase))
+            {
+                if (long.TryParse(ret, out var tmp))
+                    ret = tmp.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture); 
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Field to string.
+        /// </summary>
+        /// <param name="key">The field key.</param>
+        /// <returns>
+        /// String representation of the field value.
+        /// </returns>
+        public string FieldToString(string key)
+        {
+            if (!Fields.TryGetValue(key, out var ret)) ret = string.Empty;
+
+            return FieldToString(key, ret);
         }
 
 

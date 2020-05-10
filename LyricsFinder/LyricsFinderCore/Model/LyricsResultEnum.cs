@@ -49,11 +49,11 @@ namespace MediaCenter.LyricsFinder.Model
             // Convert CamelCase to normal sentence, e.g. "Camel case"
             for (int i = 0; i < ret.Length; i++)
             {
-                var tst = ret[i].ToString(CultureInfo.InvariantCulture).ToUpperInvariant()[0];
+                var tst = ret[i].ToString(CultureInfo.CurrentCulture).ToUpperInvariant()[0];
 
                 if ((i > 0) && (ret[i] == tst))
                 {
-                    ret[i] = ret[i].ToString(CultureInfo.InvariantCulture).ToLowerInvariant()[0];
+                    ret[i] = ret[i].ToString(CultureInfo.CurrentCulture).ToLowerInvariant()[0];
                     ret.Insert(i, ' ');
                 }
             }

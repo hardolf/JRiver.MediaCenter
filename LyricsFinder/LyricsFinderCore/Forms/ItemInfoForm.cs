@@ -148,17 +148,17 @@ namespace MediaCenter.LyricsFinder.Forms
                         ? await McRestService.GetInfoAsync(_mcItemKey.ToString(CultureInfo.InvariantCulture), false)
                         : await McRestService.GetInfoAsync(_mcItemKey.ToString(CultureInfo.InvariantCulture), true);
 
-                    foreach (var item in mcMplInfo.Items)
+                    foreach (var itemkvp in mcMplInfo.Items)
                     {
-                        foreach (var fld in item.Value.Fields)
+                        foreach (var fldKvp in itemkvp.Value.Fields)
                         {
-                            var value = fld.Value;
+                            var value = fldKvp.Value;
                             var valueText = value?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
 
                             if (i == 0)
-                                _itemFields.Add(fld.Key, valueText);
+                                _itemFields.Add(fldKvp.Key, valueText);
                             else
-                                _itemFieldsFull.Add(fld.Key, valueText);
+                                _itemFieldsFull.Add(fldKvp.Key, valueText);
                         }
                     }
                 }
@@ -255,11 +255,11 @@ namespace MediaCenter.LyricsFinder.Forms
             dgv.Rows.Add("*", "PlayLists", playListsText);
 
             // Now, add the remaining properties
-            foreach (var fld in fields)
+            foreach (var fldKvp in fields)
             {
-                var calc = (_itemFields.ContainsKey(fld.Key)) ? string.Empty : "*";
+                var calc = (_itemFields.ContainsKey(fldKvp.Key)) ? string.Empty : "*";
 
-                dgv.Rows.Add(calc, fld.Key, fld.Value);
+                dgv.Rows.Add(calc, fldKvp.Key, McMplItem.FieldToString(fldKvp.Key, fldKvp.Value));
             }
 
             dgv.Columns[0].Visible = true; // IncludeCalculatedCheckBox.Checked;

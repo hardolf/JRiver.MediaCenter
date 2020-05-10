@@ -154,7 +154,7 @@ namespace MediaCenter.LyricsFinder.Model
 
             CreditDate = DateTime.Now;
             CreditTextFormat = sb.ToString();
-            DateFormat = "yyyy.MM.dd";
+            DateFormat = Constants.DateFormat;
         }
 
 
@@ -232,7 +232,7 @@ namespace MediaCenter.LyricsFinder.Model
             CreditDate = DateTime.Now;
 
             ret.Replace("{Company}", Company);
-            ret.Replace("{Date}", CreditDate.ToString(DateFormat, CultureInfo.InvariantCulture));
+            ret.Replace("{Date}", CreditDate.ToString(DateFormat, CultureInfo.CurrentCulture));
             ret.Replace("{ServiceName}", ServiceName);
             ret.Replace("{CreditUrl}", CreditUrl?.ToString() ?? string.Empty);
             ret.Replace("{ServiceUrl}", ServiceUrl?.ToString() ?? string.Empty);
