@@ -320,7 +320,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
-        /// <param name="item">The item.</param>
+        /// <param name="mcItem">The current Media Center item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
@@ -333,24 +333,24 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="LyricServiceBaseException"></exception>
         /// <exception cref="NullReferenceException">Response is null</exception>
         /// <exception cref="Exception">\"{Credit.ServiceName}\" call failed: \"{ex.Message}\". Request: \"{req.RequestUri.ToString()}\".</exception>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
             var credit = Credit as CreditType;
-            var ub = new UriBuilder($"{Credit.ServiceUrl}?uid={UserId}&tokenid={Token}&term={item.Name}");
+            var ub = new UriBuilder($"{Credit.ServiceUrl}?uid={UserId}&tokenid={Token}&term={mcItem.Name}");
             var txt = string.Empty;
 
             try
             {
-                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
+                await base.ProcessAsync(mcItem, cancellationToken).ConfigureAwait(false); // Result: not found
 
                 // Do the request
                 txt = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
                 // Quota exceeded?
                 if (txt.ToUpperInvariant().Contains("<ERROR>DAILY USAGE EXCEEDED</ERROR>"))
-                    QuotaError(item, isGetAll);
+                    QuotaError(mcItem, isGetAll);
 
                 // Deserialize the returned JSON
                 var results = txt.XmlDeserializeFromString<StandsResultListType>();
@@ -359,21 +359,25 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 if (results != null)
                 {
                     // First we try a rigorous test
-                    await ExtractAllLyricTextsAsync(item, results, cancellationToken, isGetAll, true).ConfigureAwait(false);
+                    await ExtractAllLyricTextsAsync(mcItem, results, cancellationToken, isGetAll, true).ConfigureAwait(false);
 
                     // If not found or if we want all possible results, we next try a more lax test without the album
                     if (IsActive && !LyricsFinderData.MainData.StrictSearchOnly
                         && (isGetAll || (LyricResult != LyricsResultEnum.Found)))
-                        await ExtractAllLyricTextsAsync(item, results, cancellationToken, isGetAll, false).ConfigureAwait(false);
+                        await ExtractAllLyricTextsAsync(mcItem, results, cancellationToken, isGetAll, false).ConfigureAwait(false);
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed for: " +
+                    Constants.NewLine + $"\"{mcItem.Artist}\" - \"{mcItem.Album}\" - \"{mcItem.Name}\".",
+                    isGetAll, Credit, mcItem, ub.Uri, ex);
             }
             catch (Exception ex)
             {
-                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
+                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed for: " +
+                    Constants.NewLine + $"\"{mcItem.Artist}\" - \"{mcItem.Album}\" - \"{mcItem.Name}\".",
+                    isGetAll, Credit, mcItem, ex);
             }
 
             return this;
@@ -383,7 +387,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Sets the IsActive property to <c>false</c> and throws a quota error.
         /// </summary>
-        /// <param name="mcItem">The item.</param>
+        /// <param name="mcItem">The current Media Center item.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <exception cref="LyricsQuotaExceededException">Lyric service ... is exceeding its quota...</exception>
         /// <remarks>

@@ -323,8 +323,8 @@ namespace MediaCenter.LyricsFinder
                     : "failed";
 
                 _progressPercentage = Convert.ToInt32(100 * processedCount / _currentLyricsFinderPlaylist.Items.Count);
-                await StatusMessageAsync($"Finding lyrics for the current playlist {result} with {searchItemIndices.Count} items searched, "
-                    + $"{foundItemIndices.Count} lyrics found and {processedCount} items processed."
+                await StatusMessageAsync($"Finding lyrics for the current playlist {result} with {processedCount} items processed, {searchItemIndices.Count} items searched "
+                    + $"and {foundItemIndices.Count} lyrics found."
                     , true, true);
             }
         }
@@ -400,7 +400,7 @@ namespace MediaCenter.LyricsFinder
 
                     // Do we need to search this item?
                     if ((oldStatus == LyricsResultEnum.NotProcessedYet)
-                        && (OverwriteMenuItem.Checked || oldLyric.IsNullOrEmptyTrimmed() || oldLyric.Contains(_noLyricsSearchList)))
+                        && (OverwriteExistingLyricsMenuItem.Checked || oldLyric.IsNullOrEmptyTrimmed() || oldLyric.Contains(_noLyricsSearchList)))
                     {
                         statusCell.Value = $"{LyricsResultEnum.Processing.ResultText()}...";
 
@@ -465,7 +465,7 @@ namespace MediaCenter.LyricsFinder
                         if (lyricExceptions.Any())
                             throw new Exception("A lyric service failed.", lyricExceptions.First());
                     }
-                    else if (!OverwriteMenuItem.Checked
+                    else if (!OverwriteExistingLyricsMenuItem.Checked
                         && !oldLyric.IsNullOrEmptyTrimmed())
                         statusCell.Value = LyricsResultEnum.SkippedOldLyrics.ResultText();
                 }

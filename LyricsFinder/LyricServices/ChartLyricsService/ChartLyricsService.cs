@@ -69,7 +69,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
-        /// <param name="item">The item.</param>
+        /// <param name="mcItem">The current Media Center item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">If set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
@@ -79,9 +79,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="LyricServiceCommunicationException"></exception>
         /// <exception cref="LyricServiceBaseException"></exception>
         /// <exception cref="System.ArgumentNullException">item</exception>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
             apiv1Soap client = null;
             var msg = string.Empty;
@@ -89,7 +89,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             try
             {
-                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
+                await base.ProcessAsync(mcItem, cancellationToken).ConfigureAwait(false); // Result: not found
 
                 msg = "CreateServiceClient";
                 client = CreateServiceClient<apiv1Soap>("apiv1Soap");
@@ -102,7 +102,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
                 try
                 {
-                    rsp1 = client.SearchLyric(item.Artist, item.Name);
+                    rsp1 = client.SearchLyric(mcItem.Artist, mcItem.Name);
                 }
                 finally
                 {
@@ -141,7 +141,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
             catch (HttpRequestException ex)
             {
-                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed on {msg}.", isGetAll, Credit, item, ub.Uri, ex);
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed on {msg} for: " +
+                    Constants.NewLine + $"\"{mcItem.Artist}\" - \"{mcItem.Album}\" - \"{mcItem.Name}\".",
+                    isGetAll, Credit, mcItem, ub.Uri, ex);
             }
             catch (Exception ex)
             {
@@ -152,7 +154,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 }
                 catch { /* I don't care */ }
 
-                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed on {msg}.", isGetAll, Credit, item, ex);
+                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed on {msg} for: " +
+                    Constants.NewLine + $"\"{mcItem.Artist}\" - \"{mcItem.Album}\" - \"{mcItem.Name}\".",
+                    isGetAll, Credit, mcItem, ex);
             }
 
             return this;

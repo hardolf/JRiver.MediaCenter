@@ -166,6 +166,15 @@ namespace MediaCenter.McWs
         public static IEnumerable<string> DateTimeFields { get; } = new string[] { "Date Created", "Date First Rated", "Date Imported",
                 "Date Last Opened", "Date Modified", "Date Tagged", "Last Played", "Last Skipped" };
 
+        /// <summary>
+        /// Gets the duration fields.
+        /// </summary>
+        /// <value>
+        /// The duration fields.
+        /// </value>
+        [XmlIgnore]
+        public static IEnumerable<string> DurationFields { get; } = new string[] { "Duration" };
+
         [XmlIgnore]
         public static IEnumerable<string> NoFormatFields { get; } = new string[] { "Date (readable)", "Date (year)" };
 
@@ -327,6 +336,7 @@ namespace MediaCenter.McWs
 
             var ret = value;
 
+            if (!double.TryParse(ret, out var dblVal)) dblVal = -1;
             if (!long.TryParse(ret, out var longVal)) longVal = -1;
 
             if (DateFields.Contains(key, StringComparer.InvariantCultureIgnoreCase))
@@ -341,6 +351,16 @@ namespace MediaCenter.McWs
                     var dt = Constants.MediaCenterZeroUtcDate.AddSeconds(longVal).ToLocalTime();
 
                     ret = dt.ToString(Constants.DateTimeFormat, CultureInfo.CurrentCulture);
+                }
+            }
+            else if (DurationFields.Contains(key, StringComparer.InvariantCultureIgnoreCase))
+            {
+                if (dblVal > 0)
+                {
+                    var ts = TimeSpan.FromSeconds(dblVal);
+                    var format = (ts.Hours > 0) ? Constants.TimeSpanFormatLong : Constants.TimeSpanFormatShort;
+
+                    ret = ts.ToString(format, CultureInfo.CurrentCulture);
                 }
             }
             else if (!NoFormatFields.Contains(key, StringComparer.InvariantCultureIgnoreCase))

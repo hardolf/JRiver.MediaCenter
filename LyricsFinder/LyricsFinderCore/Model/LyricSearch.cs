@@ -61,6 +61,8 @@ namespace MediaCenter.LyricsFinder.Model
                     var serviceClone = service.Clone() as AbstractLyricService ?? throw new Exception($"Error cloning service {service.Credit.ServiceName}.");
                     var task = serviceClone.ProcessAsyncWrapper(mcItem, cancellationToken, isGetAll);
 
+                    await serviceClone.ResetTotalCountersAsync();
+
                     services.Add(service);
                     ret.Add(serviceClone);
                     tasks.Add(task);
@@ -120,8 +122,8 @@ namespace MediaCenter.LyricsFinder.Model
                         var service = services[i];
                         var serviceClone = ret[i];
 
-                        await service.IncrementRequestCountersAsync(serviceClone.RequestCountTotal - service.RequestCountTotal);
-                        await service.IncrementHitCountersAsync(serviceClone.HitCountTotal - service.HitCountTotal);
+                        await service.IncrementRequestCountersAsync(serviceClone.RequestCountTotal);
+                        await service.IncrementHitCountersAsync(serviceClone.HitCountTotal);
                         service.IsActive = serviceClone.IsActive;
                     }
 

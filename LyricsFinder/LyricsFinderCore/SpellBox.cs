@@ -509,6 +509,8 @@ namespace MediaCenter.LyricsFinder
             if (selLength < 1)
                 SelectionLength = 1;
 
+            selText = selText.ToNormalizedLineEndings();
+
             switch (selectionOperation)
             {
                 case SelectionOperation.Copy:
@@ -533,6 +535,10 @@ namespace MediaCenter.LyricsFinder
 
                 case SelectionOperation.ProperCase:
                     SelectedText = selText.ToProperCase(ci);
+                    break;
+
+                case SelectionOperation.RemoveDoubleLineEndings:
+                    SelectedText = selText.ToSingleLineEndings();
                     break;
 
                 case SelectionOperation.RemoveExcessSpacesAndLineEndings:
@@ -735,6 +741,7 @@ namespace MediaCenter.LyricsFinder
         LowerCase,
         Paste,
         ProperCase,
+        RemoveDoubleLineEndings,
         RemoveExcessSpacesAndLineEndings,
         SentenceCase,
         TitleCase,

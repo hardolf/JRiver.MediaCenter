@@ -109,6 +109,7 @@ namespace MediaCenter.McWs
         private static Uri CreateRequestUrl(McCommandEnum command, int key = -1, string field = null, string value = null)
         {
             var sb = new StringBuilder(McWsUrl);
+            UriBuilder ret;
 
             if ((sb[sb.Length - 1] == '\\')
                 || (sb[sb.Length - 1] == '/'))
@@ -194,7 +195,14 @@ namespace MediaCenter.McWs
                     throw new NotImplementedException($"CreateRequestUrl for command \"{command}\" is not implemented.");
             }
 
-            var ret = new UriBuilder(sb.ToString());
+            try
+            {
+                ret = new UriBuilder(sb.ToString());
+            }
+            catch (UriFormatException ex)
+            {
+                throw new UriFormatException($"{ex.Message}, URI: {sb}", ex);
+            }
 
             return ret.Uri;
         }

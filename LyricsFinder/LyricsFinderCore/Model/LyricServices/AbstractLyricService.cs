@@ -539,7 +539,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
-        /// <param name="mcItem">The item.</param>
+        /// <param name="mcItem">The current Media Center item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
@@ -567,7 +567,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Processes the specified MediaCenter item, wrapper for ProcessAsync.
         /// </summary>
-        /// <param name="mcItem">The item.</param>
+        /// <param name="mcItem">The current Media Center item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
@@ -605,7 +605,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Sets the IsActive property to <c>false</c> and throws a quota error.
         /// </summary>
-        /// <param name="mcItem">The item.</param>
+        /// <param name="mcItem">The current Media Center item.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <exception cref="LyricsQuotaExceededException">Lyric service ... is exceeding its quota...</exception>
         protected virtual void QuotaError(McMplItem mcItem = null, bool isGetAll = false)
@@ -682,6 +682,28 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             {
                 HitCountToday = 0;
                 RequestCountToday = 0;
+
+                CreateDisplayProperties();
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
+        }
+
+
+        /// <summary>
+        /// Resets the total counters.
+        /// </summary>
+        public virtual async Task ResetTotalCountersAsync()
+        {
+            // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+            await _semaphoreSlim.WaitAsync();
+
+            try
+            {
+                HitCountTotal = 0;
+                RequestCountTotal = 0;
 
                 CreateDisplayProperties();
             }

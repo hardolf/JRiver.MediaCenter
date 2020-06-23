@@ -334,7 +334,12 @@ namespace MediaCenter.LyricsFinder.Forms
                     case Keys.Escape:
                         _cancellationTokenSource.Cancel();
                         e.Handled = true;
-                        Close();
+                        if (FindOrReplaceForm.Visible)
+                            FindOrReplaceForm.Hide();
+                        else if (_searchForm?.Visible ?? false)
+                            _searchForm.Close();
+                        else
+                            Close();
                         break;
 
                     case Keys.Home:
@@ -459,12 +464,12 @@ namespace MediaCenter.LyricsFinder.Forms
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void LyricForm_LoadAsync(object sender, EventArgs e)
         {
-            string msg;
+            var msg = string.Empty;
 
             try
             {
+                msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
                 this.SetFormLocationAndSize(Location, Size);
-
                 BringToFront();
 
                 if (_isSearch)
@@ -472,7 +477,6 @@ namespace MediaCenter.LyricsFinder.Forms
                     UseWaitCursor = true;
                     LyricTextBox.UseWaitCursor = true;
                     LyricFormStatusLabel.Text = "Searching...";
-                    msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
 
                     // LyricFormTimer.Start();
                     try
@@ -500,7 +504,6 @@ namespace MediaCenter.LyricsFinder.Forms
             }
             catch (Exception ex)
             {
-                msg = $"Error in {SharedComponents.Utility.GetActualAsyncMethodName()} event. ";
                 await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync(msg, ex);
                 Close();
             }
@@ -714,6 +717,11 @@ namespace MediaCenter.LyricsFinder.Forms
                     {
                         var txt = LyricTextBox;
 
+                        // Store the state
+                        var isRestoreOk = true;
+                        var selectionLength = txt.SelectionLength;
+                        var selectionStart = txt.SelectionStart;
+
                         switch (menuName)
                         {
                             case nameof(EditMenuItem):
@@ -733,10 +741,12 @@ namespace MediaCenter.LyricsFinder.Forms
 
                             case nameof(EditFindMenuItem):
                                 FindReplace(true);
+                                isRestoreOk = false;
                                 break;
 
                             case nameof(EditFindReplaceNextMenuItem):
                                 FindReplace(null);
+                                isRestoreOk = false;
                                 break;
 
                             case nameof(EditLowerCaseMenuItem):
@@ -753,6 +763,11 @@ namespace MediaCenter.LyricsFinder.Forms
                             case nameof(EditProperCaseMenuItem):
                                 if (DoTextOperationQuestion(true))
                                     txt.SetSelectionText(SelectionOperation.ProperCase);
+                                break;
+
+                            case nameof(EditRemoveDoubleLineEndingsMenuItem):
+                                if (DoTextOperationQuestion(true))
+                                    txt.SetSelectionText(SelectionOperation.RemoveDoubleLineEndings);
                                 break;
 
                             case nameof(EditRemoveExcessSpacesAndLineEndingsMenuItem):
@@ -804,6 +819,13 @@ namespace MediaCenter.LyricsFinder.Forms
 
                             default:
                                 throw new Exception($"Unknown menu item: \"{menuName}\".");
+                        }
+
+                        // Restore the state
+                        if (isRestoreOk)
+                        {
+                            txt.SelectionStart = selectionStart;
+                            txt.SelectionLength = selectionLength;
                         }
                     }
                 }
@@ -1047,7 +1069,7 @@ namespace MediaCenter.LyricsFinder.Forms
             {
                 ret = (DialogResult.Yes == MessageBox.Show(this, "No text is selected." + Constants.NewLine
                     + "Do you want to do this on all text?"
-                    , "No text is selected", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2));
+                    , "No text is selected", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1));
 
                 if (ret)
                     LyricTextBox.SelectAll();
@@ -1064,6 +1086,8 @@ namespace MediaCenter.LyricsFinder.Forms
         private void FindReplace(bool? isFind = null)
         {
             if (!LyricTextBox.Focused) return;
+            if ((isFind != null) && FindOrReplaceForm.Visible)
+                FindOrReplaceForm.Hide();
 
             FindOrReplaceForm.Show(this, isFind, LyricTextBox.SelectedText);
         }
@@ -1260,7 +1284,7 @@ namespace MediaCenter.LyricsFinder.Forms
             SharedComponents.Utility.EnableOrDisableToolStripMenuItems(ToolsItemInfoMenuItem, true);
 
             SharedComponents.Utility.EnableOrDisableToolStripItems((focusedControl is SpellBox),
-                EditRedoMenuItem, 
+                EditRedoMenuItem,
                 EditFindMenuItem, EditReplaceMenuItem, EditFindReplaceNextMenuItem,
                 EditProperCaseMenuItem, EditSentenceCaseMenuItem, EditTitleCaseMenuItem, EditLowerCaseMenuItem, EditUpperCaseMenuItem,
                 EditRemoveExcessSpacesAndLineEndingsMenuItem, EditTrimMenuItem,

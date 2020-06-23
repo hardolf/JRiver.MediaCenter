@@ -15,6 +15,8 @@ namespace MediaCenter.SharedComponents
         public static readonly string DateFormat = "yyyy.MM.dd";
         public static readonly string IntegerFormat = "###,###,##0";
         public static readonly string TimeFormat = "HH:mm:ss";
+        public static readonly string TimeSpanFormatLong = @"hh\:mm\:ss";
+        public static readonly string TimeSpanFormatShort = @"mm\:ss";
         public static readonly string DateTimeFormat = $"{DateFormat} - {TimeFormat}";
 
         public static readonly DateTime MediaCenterZeroUtcDate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

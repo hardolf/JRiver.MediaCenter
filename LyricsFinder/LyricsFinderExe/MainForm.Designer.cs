@@ -70,7 +70,7 @@ namespace MediaCenter.LyricsFinder
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(75, 23);
             this.ExitButton.TabIndex = 0;
-            this.ExitButton.Text = "Exit (Esc)";
+            this.ExitButton.Text = "Exit (Alt+F4)";
             this.MainToolTip.SetToolTip(this.ExitButton, "Exit the stand-alone LyricsFinder (Escape)");
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
@@ -78,6 +78,7 @@ namespace MediaCenter.LyricsFinder
             // RotButton
             // 
             this.RotButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.RotButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.RotButton.Location = new System.Drawing.Point(790, 628);
             this.RotButton.Margin = new System.Windows.Forms.Padding(5);
             this.RotButton.Name = "RotButton";
@@ -115,10 +116,10 @@ namespace MediaCenter.LyricsFinder
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.CancelButton = this.ExitButton;
             this.ClientSize = new System.Drawing.Size(984, 661);
             this.Controls.Add(this.TablePanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(750, 300);
             this.Name = "MainForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;

@@ -62,7 +62,6 @@ namespace MediaCenter.LyricsFinder
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricsFinderCore));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -71,12 +70,12 @@ namespace MediaCenter.LyricsFinder
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LyricsFinderCore));
             this.MainContainer = new System.Windows.Forms.ToolStripContainer();
             this.BottomMenu = new System.Windows.Forms.MenuStrip();
-            this.SearchAllStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.DataChangedTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.TestTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.OverwriteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.OverwriteExistingLyricsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainStatusStrip = new System.Windows.Forms.StatusStrip();
             this.MainStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.MainProgressBar = new System.Windows.Forms.ToolStripProgressBar();
@@ -101,8 +100,6 @@ namespace MediaCenter.LyricsFinder
             this.FileSepMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.FileExitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToolsSearchAllStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
-            this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.ToolsPlayJumpAheadSmallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsPlayJumpBackSmallMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsPlayJumpAheadLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -135,6 +132,9 @@ namespace MediaCenter.LyricsFinder
             this.McStatusTimer = new System.Windows.Forms.Timer(this.components);
             this.UpdateCheckTimer = new System.Windows.Forms.Timer(this.components);
             this.ReadyTimer = new System.Windows.Forms.Timer(this.components);
+            this.SearchAllStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
+            this.ToolsSearchAllStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
+            this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.MainContainer.BottomToolStripPanel.SuspendLayout();
             this.MainContainer.ContentPanel.SuspendLayout();
             this.MainContainer.TopToolStripPanel.SuspendLayout();
@@ -188,7 +188,7 @@ namespace MediaCenter.LyricsFinder
             this.SearchAllStartStopButton,
             this.DataChangedTextBox,
             this.TestTextBox,
-            this.OverwriteMenuItem});
+            this.OverwriteExistingLyricsMenuItem});
             this.BottomMenu.Location = new System.Drawing.Point(0, 0);
             this.BottomMenu.Name = "BottomMenu";
             this.BottomMenu.Padding = new System.Windows.Forms.Padding(10, 2, 10, 2);
@@ -196,24 +196,6 @@ namespace MediaCenter.LyricsFinder
             this.BottomMenu.Size = new System.Drawing.Size(770, 27);
             this.BottomMenu.TabIndex = 1;
             this.BottomMenu.Text = "menuStrip1";
-            // 
-            // SearchAllStartStopButton
-            // 
-            this.SearchAllStartStopButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.SearchAllStartStopButton.CheckOnClick = true;
-            this.SearchAllStartStopButton.Clicked = false;
-            this.SearchAllStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("SearchAllStartStopButton.Image")));
-            this.SearchAllStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("SearchAllStartStopButton.ImageStart")));
-            this.SearchAllStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("SearchAllStartStopButton.ImageStop")));
-            this.SearchAllStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SearchAllStartStopButton.IsRunning = false;
-            this.SearchAllStartStopButton.Margin = new System.Windows.Forms.Padding(2, 1, 4, 2);
-            this.SearchAllStartStopButton.Name = "SearchAllStartStopButton";
-            this.SearchAllStartStopButton.Size = new System.Drawing.Size(103, 20);
-            this.SearchAllStartStopButton.Text = "&Start search all";
-            this.SearchAllStartStopButton.TextStart = "&Start search all";
-            this.SearchAllStartStopButton.TextStop = "&Stop search all";
-            this.SearchAllStartStopButton.ToolTipText = "Start / stop finding all the lyrics for the current playlist (Alt+S)";
             // 
             // DataChangedTextBox
             // 
@@ -232,23 +214,22 @@ namespace MediaCenter.LyricsFinder
             // 
             // TestTextBox
             // 
-            this.TestTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.TestTextBox.Name = "TestTextBox";
             this.TestTextBox.Size = new System.Drawing.Size(100, 23);
             this.TestTextBox.Visible = false;
             // 
-            // OverwriteMenuItem
+            // OverwriteExistingLyricsMenuItem
             // 
-            this.OverwriteMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.OverwriteMenuItem.CheckOnClick = true;
-            this.OverwriteMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.OverwriteMenuItem.Name = "OverwriteMenuItem";
-            this.OverwriteMenuItem.ShortcutKeyDisplayString = "";
-            this.OverwriteMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-            this.OverwriteMenuItem.Size = new System.Drawing.Size(144, 23);
-            this.OverwriteMenuItem.Text = "Overwrite &existing lyrics";
-            this.OverwriteMenuItem.ToolTipText = "Should the operation overwrite existing lyrics? (Alt+E)";
-            this.OverwriteMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            this.OverwriteExistingLyricsMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.OverwriteExistingLyricsMenuItem.CheckOnClick = true;
+            this.OverwriteExistingLyricsMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.OverwriteExistingLyricsMenuItem.Name = "OverwriteExistingLyricsMenuItem";
+            this.OverwriteExistingLyricsMenuItem.ShortcutKeyDisplayString = "";
+            this.OverwriteExistingLyricsMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+            this.OverwriteExistingLyricsMenuItem.Size = new System.Drawing.Size(115, 23);
+            this.OverwriteExistingLyricsMenuItem.Text = "Skip &existing lyrics";
+            this.OverwriteExistingLyricsMenuItem.ToolTipText = "Should the search all operation overwrite existing lyrics? (Alt+E)";
+            this.OverwriteExistingLyricsMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // MainStatusStrip
             // 
@@ -529,36 +510,6 @@ namespace MediaCenter.LyricsFinder
             this.ToolsMenuItem.Size = new System.Drawing.Size(46, 20);
             this.ToolsMenuItem.Text = "&Tools";
             // 
-            // ToolsSearchAllStartStopButton
-            // 
-            this.ToolsSearchAllStartStopButton.Clicked = false;
-            this.ToolsSearchAllStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsSearchAllStartStopButton.Image")));
-            this.ToolsSearchAllStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsSearchAllStartStopButton.ImageStart")));
-            this.ToolsSearchAllStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsSearchAllStartStopButton.ImageStop")));
-            this.ToolsSearchAllStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolsSearchAllStartStopButton.IsRunning = false;
-            this.ToolsSearchAllStartStopButton.Name = "ToolsSearchAllStartStopButton";
-            this.ToolsSearchAllStartStopButton.Size = new System.Drawing.Size(103, 20);
-            this.ToolsSearchAllStartStopButton.Text = "&Stop search all";
-            this.ToolsSearchAllStartStopButton.TextStart = "&Start search all";
-            this.ToolsSearchAllStartStopButton.TextStop = "&Stop search all";
-            this.ToolsSearchAllStartStopButton.ToolTipText = "Start / stop finding all the lyrics for the current playlist";
-            // 
-            // ToolsPlayStartStopButton
-            // 
-            this.ToolsPlayStartStopButton.Clicked = false;
-            this.ToolsPlayStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsPlayStartStopButton.Image")));
-            this.ToolsPlayStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStart")));
-            this.ToolsPlayStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStop")));
-            this.ToolsPlayStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolsPlayStartStopButton.IsRunning = false;
-            this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
-            this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(76, 20);
-            this.ToolsPlayStartStopButton.Text = "Stop play";
-            this.ToolsPlayStartStopButton.TextStart = "Start play";
-            this.ToolsPlayStartStopButton.TextStop = "Stop play";
-            this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item in the current playlist (Ctrl+P)";
-            // 
             // ToolsPlayJumpAheadSmallMenuItem
             // 
             this.ToolsPlayJumpAheadSmallMenuItem.Name = "ToolsPlayJumpAheadSmallMenuItem";
@@ -732,7 +683,6 @@ namespace MediaCenter.LyricsFinder
             // TopSubMenuTextBox
             // 
             this.TopSubMenuTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TopSubMenuTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.TopSubMenuTextBox.Name = "TopSubMenuTextBox";
             this.TopSubMenuTextBox.ReadOnly = true;
             this.TopSubMenuTextBox.Size = new System.Drawing.Size(120, 20);
@@ -798,6 +748,54 @@ namespace MediaCenter.LyricsFinder
             // 
             this.ReadyTimer.Tick += new System.EventHandler(this.ReadyTimer_TickAsync);
             // 
+            // SearchAllStartStopButton
+            // 
+            this.SearchAllStartStopButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.SearchAllStartStopButton.CheckOnClick = true;
+            this.SearchAllStartStopButton.Clicked = false;
+            this.SearchAllStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("SearchAllStartStopButton.Image")));
+            this.SearchAllStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("SearchAllStartStopButton.ImageStart")));
+            this.SearchAllStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("SearchAllStartStopButton.ImageStop")));
+            this.SearchAllStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SearchAllStartStopButton.IsRunning = false;
+            this.SearchAllStartStopButton.Margin = new System.Windows.Forms.Padding(2, 1, 4, 2);
+            this.SearchAllStartStopButton.Name = "SearchAllStartStopButton";
+            this.SearchAllStartStopButton.Size = new System.Drawing.Size(103, 20);
+            this.SearchAllStartStopButton.Text = "Start search all";
+            this.SearchAllStartStopButton.TextStart = "Start search all";
+            this.SearchAllStartStopButton.TextStop = "Stop search all";
+            this.SearchAllStartStopButton.ToolTipText = "Start / stop finding all the lyrics for the current playlist";
+            // 
+            // ToolsSearchAllStartStopButton
+            // 
+            this.ToolsSearchAllStartStopButton.Clicked = false;
+            this.ToolsSearchAllStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsSearchAllStartStopButton.Image")));
+            this.ToolsSearchAllStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsSearchAllStartStopButton.ImageStart")));
+            this.ToolsSearchAllStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsSearchAllStartStopButton.ImageStop")));
+            this.ToolsSearchAllStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolsSearchAllStartStopButton.IsRunning = false;
+            this.ToolsSearchAllStartStopButton.Name = "ToolsSearchAllStartStopButton";
+            this.ToolsSearchAllStartStopButton.Size = new System.Drawing.Size(103, 20);
+            this.ToolsSearchAllStartStopButton.Text = "&Stop search all";
+            this.ToolsSearchAllStartStopButton.TextStart = "&Start search all";
+            this.ToolsSearchAllStartStopButton.TextStop = "&Stop search all";
+            this.ToolsSearchAllStartStopButton.ToolTipText = "Start / stop finding all the lyrics for the current playlist";
+            // 
+            // ToolsPlayStartStopButton
+            // 
+            this.ToolsPlayStartStopButton.Clicked = false;
+            this.ToolsPlayStartStopButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsPlayStartStopButton.Image")));
+            this.ToolsPlayStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStart")));
+            this.ToolsPlayStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStop")));
+            this.ToolsPlayStartStopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolsPlayStartStopButton.IsRunning = false;
+            this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
+            this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(76, 20);
+            this.ToolsPlayStartStopButton.Text = "Stop play";
+            this.ToolsPlayStartStopButton.TextStart = "Start play";
+            this.ToolsPlayStartStopButton.TextStop = "Stop play";
+            this.ToolsPlayStartStopButton.ToolTipText = "Start / stop play of the current item in the current playlist (Ctrl+P)";
+            // 
             // LyricsFinderCore
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -861,7 +859,7 @@ namespace MediaCenter.LyricsFinder
         private System.Windows.Forms.ToolStripMenuItem HelpAboutMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ToolsShowLogMenuItem;
         private System.Windows.Forms.ToolStripMenuItem FileReloadMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem OverwriteMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem OverwriteExistingLyricsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem HelpContentsMenuItem;
         private System.Windows.Forms.ToolStripSeparator HelpSepMenuItem1;
         private StartStopToolStripButton ToolsPlayStartStopButton;

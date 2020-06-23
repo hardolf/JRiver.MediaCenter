@@ -32,40 +32,42 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionForm));
             this.OptionPanel = new System.Windows.Forms.Panel();
             this.OptionLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.NoLyricsSearchFilterLabel = new System.Windows.Forms.Label();
             this.HeaderTextBox = new System.Windows.Forms.TextBox();
             this.McAccessKeyLabel = new System.Windows.Forms.Label();
-            this.McWsUsernameLabel = new System.Windows.Forms.Label();
-            this.McWsPassword = new System.Windows.Forms.Label();
-            this.McWsLabel = new System.Windows.Forms.Label();
             this.McAccessKeyTextBox = new System.Windows.Forms.TextBox();
+            this.McWsUsernameLabel = new System.Windows.Forms.Label();
             this.McWsUsernameTextBox = new System.Windows.Forms.TextBox();
+            this.McWsPassword = new System.Windows.Forms.Label();
             this.McWsPasswordTextBox = new System.Windows.Forms.TextBox();
+            this.McWsLabel = new System.Windows.Forms.Label();
             this.McWsUrlTextBox = new System.Windows.Forms.TextBox();
-            this.UpdateCheckIntervalDaysUpDown = new System.Windows.Forms.NumericUpDown();
-            this.LastUpdateCheckTextBox = new System.Windows.Forms.TextBox();
-            this.NoLyricsSearchFilterTextBox = new System.Windows.Forms.TextBox();
-            this.MouseMoveOpenLyricsFormCheckBox = new System.Windows.Forms.CheckBox();
-            this.MaxMcWsConnectAttemptsUpDown = new System.Windows.Forms.NumericUpDown();
-            this.CloseButton = new System.Windows.Forms.Button();
-            this.MaxQueueLengthUpDown = new System.Windows.Forms.NumericUpDown();
-            this.MaxQueueLengthLabel = new System.Windows.Forms.Label();
-            this.MouseMoveOpenLyricsFormLabel = new System.Windows.Forms.Label();
-            this.LastUpdateCheckLabel = new System.Windows.Forms.Label();
-            this.UpdateCheckIntervalDaysLabel = new System.Windows.Forms.Label();
             this.MaxMcWsConnectAttemptsLabel = new System.Windows.Forms.Label();
+            this.MaxMcWsConnectAttemptsUpDown = new System.Windows.Forms.NumericUpDown();
+            this.MaxQueueLengthLabel = new System.Windows.Forms.Label();
+            this.MaxQueueLengthUpDown = new System.Windows.Forms.NumericUpDown();
+            this.UpdateCheckIntervalDaysLabel = new System.Windows.Forms.Label();
+            this.UpdateCheckIntervalDaysUpDown = new System.Windows.Forms.NumericUpDown();
             this.DelayMilliSecondsBetweenSearchesLabel = new System.Windows.Forms.Label();
             this.DelayMilliSecondsBetweenSearchesUpDown = new System.Windows.Forms.NumericUpDown();
+            this.LastUpdateCheckLabel = new System.Windows.Forms.Label();
+            this.LastUpdateCheckTextBox = new System.Windows.Forms.TextBox();
+            this.NoLyricsSearchFilterLabel = new System.Windows.Forms.Label();
+            this.NoLyricsSearchFilterTextBox = new System.Windows.Forms.TextBox();
+            this.MouseMoveOpenLyricsFormLabel = new System.Windows.Forms.Label();
+            this.MouseMoveOpenLyricsFormCheckBox = new System.Windows.Forms.CheckBox();
             this.SerialServiceRequestsDuringAutomaticSearchLabel = new System.Windows.Forms.Label();
             this.SerialServiceRequestsDuringAutomaticSearchCheckBox = new System.Windows.Forms.CheckBox();
             this.StrictSearchOnlyLabel = new System.Windows.Forms.Label();
             this.StrictSearchOnlyCheckBox = new System.Windows.Forms.CheckBox();
+            this.CloseButton = new System.Windows.Forms.Button();
+            this.CollectPlaylistInfoOnMcReconnectLabel = new System.Windows.Forms.Label();
+            this.CollectPlaylistInfoOnMcReconnectCheckBox = new System.Windows.Forms.CheckBox();
             this.OptionToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.OptionPanel.SuspendLayout();
             this.OptionLayoutPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.UpdateCheckIntervalDaysUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxMcWsConnectAttemptsUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxQueueLengthUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.UpdateCheckIntervalDaysUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DelayMilliSecondsBetweenSearchesUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -76,7 +78,7 @@
             this.OptionPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.OptionPanel.Location = new System.Drawing.Point(0, 0);
             this.OptionPanel.Name = "OptionPanel";
-            this.OptionPanel.Size = new System.Drawing.Size(549, 435);
+            this.OptionPanel.Size = new System.Drawing.Size(549, 457);
             this.OptionPanel.TabIndex = 0;
             // 
             // OptionLayoutPanel
@@ -112,11 +114,13 @@
             this.OptionLayoutPanel.Controls.Add(this.SerialServiceRequestsDuringAutomaticSearchCheckBox, 1, 12);
             this.OptionLayoutPanel.Controls.Add(this.StrictSearchOnlyLabel, 0, 13);
             this.OptionLayoutPanel.Controls.Add(this.StrictSearchOnlyCheckBox, 1, 13);
-            this.OptionLayoutPanel.Controls.Add(this.CloseButton, 1, 14);
+            this.OptionLayoutPanel.Controls.Add(this.CloseButton, 1, 15);
+            this.OptionLayoutPanel.Controls.Add(this.CollectPlaylistInfoOnMcReconnectLabel, 0, 14);
+            this.OptionLayoutPanel.Controls.Add(this.CollectPlaylistInfoOnMcReconnectCheckBox, 1, 14);
             this.OptionLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.OptionLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.OptionLayoutPanel.Name = "OptionLayoutPanel";
-            this.OptionLayoutPanel.RowCount = 15;
+            this.OptionLayoutPanel.RowCount = 16;
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
@@ -131,21 +135,10 @@
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.OptionLayoutPanel.Size = new System.Drawing.Size(549, 435);
+            this.OptionLayoutPanel.Size = new System.Drawing.Size(549, 457);
             this.OptionLayoutPanel.TabIndex = 0;
-            // 
-            // NoLyricsSearchFilterLabel
-            // 
-            this.NoLyricsSearchFilterLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.NoLyricsSearchFilterLabel.AutoSize = true;
-            this.NoLyricsSearchFilterLabel.Location = new System.Drawing.Point(3, 291);
-            this.NoLyricsSearchFilterLabel.Name = "NoLyricsSearchFilterLabel";
-            this.NoLyricsSearchFilterLabel.Size = new System.Drawing.Size(104, 25);
-            this.NoLyricsSearchFilterLabel.TabIndex = 19;
-            this.NoLyricsSearchFilterLabel.Text = "No lyrics search filter";
-            this.NoLyricsSearchFilterLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // HeaderTextBox
             // 
@@ -174,6 +167,15 @@
             this.McAccessKeyLabel.Text = "Access Key";
             this.McAccessKeyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // McAccessKeyTextBox
+            // 
+            this.McAccessKeyTextBox.Location = new System.Drawing.Point(251, 69);
+            this.McAccessKeyTextBox.Name = "McAccessKeyTextBox";
+            this.McAccessKeyTextBox.Size = new System.Drawing.Size(150, 20);
+            this.McAccessKeyTextBox.TabIndex = 2;
+            this.OptionToolTip.SetToolTip(this.McAccessKeyTextBox, "Media Network Access Key from Media Center Options window > Media Network tab");
+            this.McAccessKeyTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.TextBox_ValidatingAsync);
+            // 
             // McWsUsernameLabel
             // 
             this.McWsUsernameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -185,6 +187,15 @@
             this.McWsUsernameLabel.TabIndex = 3;
             this.McWsUsernameLabel.Text = "Authentication Username";
             this.McWsUsernameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // McWsUsernameTextBox
+            // 
+            this.McWsUsernameTextBox.Location = new System.Drawing.Point(251, 94);
+            this.McWsUsernameTextBox.Name = "McWsUsernameTextBox";
+            this.McWsUsernameTextBox.Size = new System.Drawing.Size(150, 20);
+            this.McWsUsernameTextBox.TabIndex = 4;
+            this.OptionToolTip.SetToolTip(this.McWsUsernameTextBox, "Username from Media Center Options window > Media Network tab");
+            this.McWsUsernameTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.TextBox_ValidatingAsync);
             // 
             // McWsPassword
             // 
@@ -198,6 +209,15 @@
             this.McWsPassword.Text = "Authentication Password";
             this.McWsPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // McWsPasswordTextBox
+            // 
+            this.McWsPasswordTextBox.Location = new System.Drawing.Point(251, 119);
+            this.McWsPasswordTextBox.Name = "McWsPasswordTextBox";
+            this.McWsPasswordTextBox.Size = new System.Drawing.Size(150, 20);
+            this.McWsPasswordTextBox.TabIndex = 6;
+            this.OptionToolTip.SetToolTip(this.McWsPasswordTextBox, "Password from Media Center Options window > Media Network tab");
+            this.McWsPasswordTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.TextBox_ValidatingAsync);
+            // 
             // McWsLabel
             // 
             this.McWsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -210,33 +230,6 @@
             this.McWsLabel.Text = "Web Service (MCWS) URL";
             this.McWsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // McAccessKeyTextBox
-            // 
-            this.McAccessKeyTextBox.Location = new System.Drawing.Point(251, 69);
-            this.McAccessKeyTextBox.Name = "McAccessKeyTextBox";
-            this.McAccessKeyTextBox.Size = new System.Drawing.Size(150, 20);
-            this.McAccessKeyTextBox.TabIndex = 2;
-            this.OptionToolTip.SetToolTip(this.McAccessKeyTextBox, "Media Network Access Key from Media Center Options window > Media Network tab");
-            this.McAccessKeyTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.TextBox_ValidatingAsync);
-            // 
-            // McWsUsernameTextBox
-            // 
-            this.McWsUsernameTextBox.Location = new System.Drawing.Point(251, 94);
-            this.McWsUsernameTextBox.Name = "McWsUsernameTextBox";
-            this.McWsUsernameTextBox.Size = new System.Drawing.Size(150, 20);
-            this.McWsUsernameTextBox.TabIndex = 4;
-            this.OptionToolTip.SetToolTip(this.McWsUsernameTextBox, "Username from Media Center Options window > Media Network tab");
-            this.McWsUsernameTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.TextBox_ValidatingAsync);
-            // 
-            // McWsPasswordTextBox
-            // 
-            this.McWsPasswordTextBox.Location = new System.Drawing.Point(251, 119);
-            this.McWsPasswordTextBox.Name = "McWsPasswordTextBox";
-            this.McWsPasswordTextBox.Size = new System.Drawing.Size(150, 20);
-            this.McWsPasswordTextBox.TabIndex = 6;
-            this.OptionToolTip.SetToolTip(this.McWsPasswordTextBox, "Password from Media Center Options window > Media Network tab");
-            this.McWsPasswordTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.TextBox_ValidatingAsync);
-            // 
             // McWsUrlTextBox
             // 
             this.McWsUrlTextBox.Location = new System.Drawing.Point(251, 144);
@@ -246,51 +239,17 @@
             this.OptionToolTip.SetToolTip(this.McWsUrlTextBox, "MCWS web service URL from Media Center Options window > Media Network tab");
             this.McWsUrlTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.TextBox_ValidatingAsync);
             // 
-            // UpdateCheckIntervalDaysUpDown
+            // MaxMcWsConnectAttemptsLabel
             // 
-            this.UpdateCheckIntervalDaysUpDown.Location = new System.Drawing.Point(251, 219);
-            this.UpdateCheckIntervalDaysUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            -2147483648});
-            this.UpdateCheckIntervalDaysUpDown.Name = "UpdateCheckIntervalDaysUpDown";
-            this.UpdateCheckIntervalDaysUpDown.Size = new System.Drawing.Size(80, 20);
-            this.UpdateCheckIntervalDaysUpDown.TabIndex = 14;
-            this.OptionToolTip.SetToolTip(this.UpdateCheckIntervalDaysUpDown, "> 0: days between check for updates\r\n0: Check for updates each start\r\n< 0: disabl" +
-        "e check for updates\r\n");
-            // 
-            // LastUpdateCheckTextBox
-            // 
-            this.LastUpdateCheckTextBox.Location = new System.Drawing.Point(251, 269);
-            this.LastUpdateCheckTextBox.Name = "LastUpdateCheckTextBox";
-            this.LastUpdateCheckTextBox.ReadOnly = true;
-            this.LastUpdateCheckTextBox.Size = new System.Drawing.Size(150, 20);
-            this.LastUpdateCheckTextBox.TabIndex = 18;
-            this.LastUpdateCheckTextBox.TabStop = false;
-            this.OptionToolTip.SetToolTip(this.LastUpdateCheckTextBox, "Date of the last check for new updates");
-            // 
-            // NoLyricsSearchFilterTextBox
-            // 
-            this.NoLyricsSearchFilterTextBox.Location = new System.Drawing.Point(251, 294);
-            this.NoLyricsSearchFilterTextBox.Name = "NoLyricsSearchFilterTextBox";
-            this.NoLyricsSearchFilterTextBox.Size = new System.Drawing.Size(289, 20);
-            this.NoLyricsSearchFilterTextBox.TabIndex = 20;
-            this.OptionToolTip.SetToolTip(this.NoLyricsSearchFilterTextBox, resources.GetString("NoLyricsSearchFilterTextBox.ToolTip"));
-            this.NoLyricsSearchFilterTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.TextBox_ValidatingAsync);
-            // 
-            // MouseMoveOpenLyricsFormCheckBox
-            // 
-            this.MouseMoveOpenLyricsFormCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.MaxMcWsConnectAttemptsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.MouseMoveOpenLyricsFormCheckBox.AutoSize = true;
-            this.MouseMoveOpenLyricsFormCheckBox.Location = new System.Drawing.Point(251, 319);
-            this.MouseMoveOpenLyricsFormCheckBox.Name = "MouseMoveOpenLyricsFormCheckBox";
-            this.MouseMoveOpenLyricsFormCheckBox.Size = new System.Drawing.Size(15, 19);
-            this.MouseMoveOpenLyricsFormCheckBox.TabIndex = 22;
-            this.OptionToolTip.SetToolTip(this.MouseMoveOpenLyricsFormCheckBox, "Check if a mouse move in the lyrics column \r\nshould open the lyrics form automati" +
-        "cally");
-            this.MouseMoveOpenLyricsFormCheckBox.UseVisualStyleBackColor = true;
+            this.MaxMcWsConnectAttemptsLabel.AutoSize = true;
+            this.MaxMcWsConnectAttemptsLabel.Location = new System.Drawing.Point(3, 166);
+            this.MaxMcWsConnectAttemptsLabel.Name = "MaxMcWsConnectAttemptsLabel";
+            this.MaxMcWsConnectAttemptsLabel.Size = new System.Drawing.Size(150, 25);
+            this.MaxMcWsConnectAttemptsLabel.TabIndex = 9;
+            this.MaxMcWsConnectAttemptsLabel.Text = "Maximum connection attempts";
+            this.MaxMcWsConnectAttemptsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // MaxMcWsConnectAttemptsUpDown
             // 
@@ -310,18 +269,17 @@
             0,
             0});
             // 
-            // CloseButton
+            // MaxQueueLengthLabel
             // 
-            this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(467, 405);
-            this.CloseButton.Margin = new System.Windows.Forms.Padding(7, 3, 7, 7);
-            this.CloseButton.Name = "CloseButton";
-            this.CloseButton.Size = new System.Drawing.Size(75, 23);
-            this.CloseButton.TabIndex = 27;
-            this.CloseButton.Text = "&Close (Esc)";
-            this.CloseButton.UseVisualStyleBackColor = true;
-            this.CloseButton.Click += new System.EventHandler(this.CloseButton_ClickAsync);
+            this.MaxQueueLengthLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.MaxQueueLengthLabel.AutoSize = true;
+            this.MaxQueueLengthLabel.Location = new System.Drawing.Point(3, 191);
+            this.MaxQueueLengthLabel.Name = "MaxQueueLengthLabel";
+            this.MaxQueueLengthLabel.Size = new System.Drawing.Size(116, 25);
+            this.MaxQueueLengthLabel.TabIndex = 11;
+            this.MaxQueueLengthLabel.Text = "Maximum queue length";
+            this.MaxQueueLengthLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // MaxQueueLengthUpDown
             // 
@@ -343,42 +301,6 @@
             0,
             0});
             // 
-            // MaxQueueLengthLabel
-            // 
-            this.MaxQueueLengthLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.MaxQueueLengthLabel.AutoSize = true;
-            this.MaxQueueLengthLabel.Location = new System.Drawing.Point(3, 191);
-            this.MaxQueueLengthLabel.Name = "MaxQueueLengthLabel";
-            this.MaxQueueLengthLabel.Size = new System.Drawing.Size(116, 25);
-            this.MaxQueueLengthLabel.TabIndex = 11;
-            this.MaxQueueLengthLabel.Text = "Maximum queue length";
-            this.MaxQueueLengthLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // MouseMoveOpenLyricsFormLabel
-            // 
-            this.MouseMoveOpenLyricsFormLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.MouseMoveOpenLyricsFormLabel.AutoSize = true;
-            this.MouseMoveOpenLyricsFormLabel.Location = new System.Drawing.Point(3, 316);
-            this.MouseMoveOpenLyricsFormLabel.Name = "MouseMoveOpenLyricsFormLabel";
-            this.MouseMoveOpenLyricsFormLabel.Size = new System.Drawing.Size(147, 25);
-            this.MouseMoveOpenLyricsFormLabel.TabIndex = 21;
-            this.MouseMoveOpenLyricsFormLabel.Text = "Mouse move: open lyrics form";
-            this.MouseMoveOpenLyricsFormLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // LastUpdateCheckLabel
-            // 
-            this.LastUpdateCheckLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.LastUpdateCheckLabel.AutoSize = true;
-            this.LastUpdateCheckLabel.Location = new System.Drawing.Point(3, 266);
-            this.LastUpdateCheckLabel.Name = "LastUpdateCheckLabel";
-            this.LastUpdateCheckLabel.Size = new System.Drawing.Size(96, 25);
-            this.LastUpdateCheckLabel.TabIndex = 17;
-            this.LastUpdateCheckLabel.Text = "Last update check";
-            this.LastUpdateCheckLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // UpdateCheckIntervalDaysLabel
             // 
             this.UpdateCheckIntervalDaysLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -391,17 +313,19 @@
             this.UpdateCheckIntervalDaysLabel.Text = "Update check interval in days";
             this.UpdateCheckIntervalDaysLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // MaxMcWsConnectAttemptsLabel
+            // UpdateCheckIntervalDaysUpDown
             // 
-            this.MaxMcWsConnectAttemptsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.MaxMcWsConnectAttemptsLabel.AutoSize = true;
-            this.MaxMcWsConnectAttemptsLabel.Location = new System.Drawing.Point(3, 166);
-            this.MaxMcWsConnectAttemptsLabel.Name = "MaxMcWsConnectAttemptsLabel";
-            this.MaxMcWsConnectAttemptsLabel.Size = new System.Drawing.Size(150, 25);
-            this.MaxMcWsConnectAttemptsLabel.TabIndex = 9;
-            this.MaxMcWsConnectAttemptsLabel.Text = "Maximum connection attempts";
-            this.MaxMcWsConnectAttemptsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.UpdateCheckIntervalDaysUpDown.Location = new System.Drawing.Point(251, 219);
+            this.UpdateCheckIntervalDaysUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            -2147483648});
+            this.UpdateCheckIntervalDaysUpDown.Name = "UpdateCheckIntervalDaysUpDown";
+            this.UpdateCheckIntervalDaysUpDown.Size = new System.Drawing.Size(80, 20);
+            this.UpdateCheckIntervalDaysUpDown.TabIndex = 14;
+            this.OptionToolTip.SetToolTip(this.UpdateCheckIntervalDaysUpDown, "> 0: days between check for updates\r\n0: Check for updates each start\r\n< 0: disabl" +
+        "e check for updates\r\n");
             // 
             // DelayMilliSecondsBetweenSearchesLabel
             // 
@@ -427,6 +351,74 @@
             this.DelayMilliSecondsBetweenSearchesUpDown.Size = new System.Drawing.Size(80, 20);
             this.DelayMilliSecondsBetweenSearchesUpDown.TabIndex = 16;
             this.OptionToolTip.SetToolTip(this.DelayMilliSecondsBetweenSearchesUpDown, resources.GetString("DelayMilliSecondsBetweenSearchesUpDown.ToolTip"));
+            // 
+            // LastUpdateCheckLabel
+            // 
+            this.LastUpdateCheckLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.LastUpdateCheckLabel.AutoSize = true;
+            this.LastUpdateCheckLabel.Location = new System.Drawing.Point(3, 266);
+            this.LastUpdateCheckLabel.Name = "LastUpdateCheckLabel";
+            this.LastUpdateCheckLabel.Size = new System.Drawing.Size(96, 25);
+            this.LastUpdateCheckLabel.TabIndex = 17;
+            this.LastUpdateCheckLabel.Text = "Last update check";
+            this.LastUpdateCheckLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // LastUpdateCheckTextBox
+            // 
+            this.LastUpdateCheckTextBox.Location = new System.Drawing.Point(251, 269);
+            this.LastUpdateCheckTextBox.Name = "LastUpdateCheckTextBox";
+            this.LastUpdateCheckTextBox.ReadOnly = true;
+            this.LastUpdateCheckTextBox.Size = new System.Drawing.Size(150, 20);
+            this.LastUpdateCheckTextBox.TabIndex = 18;
+            this.LastUpdateCheckTextBox.TabStop = false;
+            this.OptionToolTip.SetToolTip(this.LastUpdateCheckTextBox, "Date of the last check for new updates");
+            // 
+            // NoLyricsSearchFilterLabel
+            // 
+            this.NoLyricsSearchFilterLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.NoLyricsSearchFilterLabel.AutoSize = true;
+            this.NoLyricsSearchFilterLabel.Location = new System.Drawing.Point(3, 291);
+            this.NoLyricsSearchFilterLabel.Name = "NoLyricsSearchFilterLabel";
+            this.NoLyricsSearchFilterLabel.Size = new System.Drawing.Size(104, 25);
+            this.NoLyricsSearchFilterLabel.TabIndex = 19;
+            this.NoLyricsSearchFilterLabel.Text = "No lyrics search filter";
+            this.NoLyricsSearchFilterLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // NoLyricsSearchFilterTextBox
+            // 
+            this.NoLyricsSearchFilterTextBox.Location = new System.Drawing.Point(251, 294);
+            this.NoLyricsSearchFilterTextBox.Name = "NoLyricsSearchFilterTextBox";
+            this.NoLyricsSearchFilterTextBox.Size = new System.Drawing.Size(289, 20);
+            this.NoLyricsSearchFilterTextBox.TabIndex = 20;
+            this.OptionToolTip.SetToolTip(this.NoLyricsSearchFilterTextBox, resources.GetString("NoLyricsSearchFilterTextBox.ToolTip"));
+            this.NoLyricsSearchFilterTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.TextBox_ValidatingAsync);
+            // 
+            // MouseMoveOpenLyricsFormLabel
+            // 
+            this.MouseMoveOpenLyricsFormLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.MouseMoveOpenLyricsFormLabel.AutoSize = true;
+            this.MouseMoveOpenLyricsFormLabel.Location = new System.Drawing.Point(3, 316);
+            this.MouseMoveOpenLyricsFormLabel.Name = "MouseMoveOpenLyricsFormLabel";
+            this.MouseMoveOpenLyricsFormLabel.Size = new System.Drawing.Size(147, 25);
+            this.MouseMoveOpenLyricsFormLabel.TabIndex = 21;
+            this.MouseMoveOpenLyricsFormLabel.Text = "Mouse move: open lyrics form";
+            this.MouseMoveOpenLyricsFormLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // MouseMoveOpenLyricsFormCheckBox
+            // 
+            this.MouseMoveOpenLyricsFormCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.MouseMoveOpenLyricsFormCheckBox.AutoSize = true;
+            this.MouseMoveOpenLyricsFormCheckBox.Location = new System.Drawing.Point(251, 319);
+            this.MouseMoveOpenLyricsFormCheckBox.Name = "MouseMoveOpenLyricsFormCheckBox";
+            this.MouseMoveOpenLyricsFormCheckBox.Size = new System.Drawing.Size(15, 19);
+            this.MouseMoveOpenLyricsFormCheckBox.TabIndex = 22;
+            this.OptionToolTip.SetToolTip(this.MouseMoveOpenLyricsFormCheckBox, "Check if a mouse move in the lyrics column \r\nshould open the lyrics form automati" +
+        "cally");
+            this.MouseMoveOpenLyricsFormCheckBox.UseVisualStyleBackColor = true;
             // 
             // SerialServiceRequestsDuringAutomaticSearchLabel
             // 
@@ -477,6 +469,44 @@
         "ame is sufficient");
             this.StrictSearchOnlyCheckBox.UseVisualStyleBackColor = true;
             // 
+            // CloseButton
+            // 
+            this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.CloseButton.Location = new System.Drawing.Point(467, 427);
+            this.CloseButton.Margin = new System.Windows.Forms.Padding(7, 3, 7, 7);
+            this.CloseButton.Name = "CloseButton";
+            this.CloseButton.Size = new System.Drawing.Size(75, 23);
+            this.CloseButton.TabIndex = 29;
+            this.CloseButton.Text = "&Close (Esc)";
+            this.CloseButton.UseVisualStyleBackColor = true;
+            this.CloseButton.Click += new System.EventHandler(this.CloseButton_ClickAsync);
+            // 
+            // CollectPlaylistInfoOnMcReconnectLabel
+            // 
+            this.CollectPlaylistInfoOnMcReconnectLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.CollectPlaylistInfoOnMcReconnectLabel.AutoSize = true;
+            this.CollectPlaylistInfoOnMcReconnectLabel.Location = new System.Drawing.Point(3, 391);
+            this.CollectPlaylistInfoOnMcReconnectLabel.Name = "CollectPlaylistInfoOnMcReconnectLabel";
+            this.CollectPlaylistInfoOnMcReconnectLabel.Size = new System.Drawing.Size(178, 25);
+            this.CollectPlaylistInfoOnMcReconnectLabel.TabIndex = 27;
+            this.CollectPlaylistInfoOnMcReconnectLabel.Text = "Collect playlist info on MC reconnect";
+            this.CollectPlaylistInfoOnMcReconnectLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // CollectPlaylistInfoOnMcReconnectCheckBox
+            // 
+            this.CollectPlaylistInfoOnMcReconnectCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.CollectPlaylistInfoOnMcReconnectCheckBox.AutoSize = true;
+            this.CollectPlaylistInfoOnMcReconnectCheckBox.Location = new System.Drawing.Point(251, 394);
+            this.CollectPlaylistInfoOnMcReconnectCheckBox.Name = "CollectPlaylistInfoOnMcReconnectCheckBox";
+            this.CollectPlaylistInfoOnMcReconnectCheckBox.Size = new System.Drawing.Size(15, 19);
+            this.CollectPlaylistInfoOnMcReconnectCheckBox.TabIndex = 28;
+            this.OptionToolTip.SetToolTip(this.CollectPlaylistInfoOnMcReconnectCheckBox, "In a strict search, both artist and song name must mach; \r\nelse a match on song n" +
+        "ame is sufficient");
+            this.CollectPlaylistInfoOnMcReconnectCheckBox.UseVisualStyleBackColor = true;
+            // 
             // OptionToolTip
             // 
             this.OptionToolTip.AutoPopDelay = 25000;
@@ -490,7 +520,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.CancelButton = this.CloseButton;
-            this.ClientSize = new System.Drawing.Size(549, 435);
+            this.ClientSize = new System.Drawing.Size(549, 457);
             this.Controls.Add(this.OptionPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -508,9 +538,9 @@
             this.OptionPanel.PerformLayout();
             this.OptionLayoutPanel.ResumeLayout(false);
             this.OptionLayoutPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.UpdateCheckIntervalDaysUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxMcWsConnectAttemptsUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MaxQueueLengthUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.UpdateCheckIntervalDaysUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DelayMilliSecondsBetweenSearchesUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -550,5 +580,7 @@
         private System.Windows.Forms.CheckBox SerialServiceRequestsDuringAutomaticSearchCheckBox;
         private System.Windows.Forms.Label StrictSearchOnlyLabel;
         private System.Windows.Forms.CheckBox StrictSearchOnlyCheckBox;
+        private System.Windows.Forms.Label CollectPlaylistInfoOnMcReconnectLabel;
+        private System.Windows.Forms.CheckBox CollectPlaylistInfoOnMcReconnectCheckBox;
     }
 }

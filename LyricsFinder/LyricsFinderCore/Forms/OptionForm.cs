@@ -109,6 +109,7 @@ namespace MediaCenter.LyricsFinder.Forms
                         try
                         {
                             // Save the data contents
+                            _lyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnect = CollectPlaylistInfoOnMcReconnectCheckBox.Checked;
                             _lyricsFinderData.MainData.DelayMilliSecondsBetweenSearches = (int)DelayMilliSecondsBetweenSearchesUpDown.Value;
                             // _lyricsFinderData.MainData.LastUpdateCheck = DateTime.Parse(LastUpdateCheckTextBox.Text, CultureInfo.InvariantCulture); // Readonly!
                             _lyricsFinderData.MainData.MaxQueueLength = (int)MaxQueueLengthUpDown.Value;
@@ -119,9 +120,9 @@ namespace MediaCenter.LyricsFinder.Forms
                             _lyricsFinderData.MainData.McWsUsername = McWsUsernameTextBox.Text;
                             _lyricsFinderData.MainData.MouseMoveOpenLyricsForm = MouseMoveOpenLyricsFormCheckBox.Checked;
                             _lyricsFinderData.MainData.NoLyricsSearchFilter = NoLyricsSearchFilterTextBox.Text;
-                            _lyricsFinderData.MainData.UpdateCheckIntervalDays = (int)UpdateCheckIntervalDaysUpDown.Value;
                             _lyricsFinderData.MainData.SerialServiceRequestsDuringAutomaticSearch = SerialServiceRequestsDuringAutomaticSearchCheckBox.Checked;
                             _lyricsFinderData.MainData.StrictSearchOnly = StrictSearchOnlyCheckBox.Checked;
+                            _lyricsFinderData.MainData.UpdateCheckIntervalDays = (int)UpdateCheckIntervalDaysUpDown.Value;
 
                             await _lyricsFinderData.SaveAsync();
                         }
@@ -156,6 +157,7 @@ namespace MediaCenter.LyricsFinder.Forms
                 HeaderTextBox.Text = _headerText;
 
                 // Set the data contents
+                CollectPlaylistInfoOnMcReconnectCheckBox.Checked = _lyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnect;
                 DelayMilliSecondsBetweenSearchesUpDown.Value = _lyricsFinderData.MainData.DelayMilliSecondsBetweenSearches;
                 LastUpdateCheckTextBox.Text = _lyricsFinderData.MainData.LastUpdateCheck.ToString(CultureInfo.CurrentCulture);
                 MaxQueueLengthUpDown.Value = _lyricsFinderData.MainData.MaxQueueLength;
@@ -166,9 +168,9 @@ namespace MediaCenter.LyricsFinder.Forms
                 McWsUsernameTextBox.Text = _lyricsFinderData.MainData.McWsUsername;
                 MouseMoveOpenLyricsFormCheckBox.Checked = _lyricsFinderData.MainData.MouseMoveOpenLyricsForm;
                 NoLyricsSearchFilterTextBox.Text = _lyricsFinderData.MainData.NoLyricsSearchFilter;
-                UpdateCheckIntervalDaysUpDown.Value = _lyricsFinderData.MainData.UpdateCheckIntervalDays;
                 SerialServiceRequestsDuringAutomaticSearchCheckBox.Checked = _lyricsFinderData.MainData.SerialServiceRequestsDuringAutomaticSearch;
                 StrictSearchOnlyCheckBox.Checked = _lyricsFinderData.MainData.StrictSearchOnly;
+                UpdateCheckIntervalDaysUpDown.Value = _lyricsFinderData.MainData.UpdateCheckIntervalDays;
 
                 // Set the labels' tooltips the same as the tooltips of the controls to the right of the labels.
                 // This is of secondary importance, so we ignore errors here.
@@ -224,9 +226,12 @@ namespace MediaCenter.LyricsFinder.Forms
             {
                 switch (ctlName)
                 {
+                    case nameof(CollectPlaylistInfoOnMcReconnectCheckBox):
                     case nameof(LastUpdateCheckTextBox):
                     case nameof(MouseMoveOpenLyricsFormCheckBox):
                     case nameof(NoLyricsSearchFilterTextBox):
+                    case nameof(SerialServiceRequestsDuringAutomaticSearchCheckBox):
+                    case nameof(StrictSearchOnlyCheckBox):
                         e.Cancel = false;
                         break;
 

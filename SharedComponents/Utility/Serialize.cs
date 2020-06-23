@@ -88,11 +88,14 @@ namespace MediaCenter.SharedComponents
 
             object ret;
 
-            using (var reader = new StreamReader(filePath, true))
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
-                var s = reader.ReadToEnd();
+                using (var reader = new StreamReader(stream, true))
+                {
+                    var s = reader.ReadToEnd();
 
-                ret = s.XmlDeserializeFromString(type, xmlElementEventHandler, replaceDictionary, knownTypes);
+                    ret = s.XmlDeserializeFromString(type, xmlElementEventHandler, replaceDictionary, knownTypes);
+                }
             }
 
             return ret;

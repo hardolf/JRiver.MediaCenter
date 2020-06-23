@@ -139,7 +139,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
-        /// <param name="item">The item.</param>
+        /// <param name="mcItem">The current Media Center item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
@@ -149,16 +149,16 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="LyricServiceCommunicationException"></exception>
         /// <exception cref="LyricServiceBaseException"></exception>
         /// <exception cref="System.ArgumentNullException">item</exception>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
             var json = string.Empty;
-            var ub = new UriBuilder($"{Credit.ServiceUrl}/track.search?apikey={Token}&q_artist={item.Artist}&q_track={item.Name}");
+            var ub = new UriBuilder($"{Credit.ServiceUrl}/track.search?apikey={Token}&q_artist={mcItem.Artist}&q_track={mcItem.Name}");
 
             try
             {
-                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
+                await base.ProcessAsync(mcItem, cancellationToken).ConfigureAwait(false); // Result: not found
 
                 // Example requests:
                 // http://api.musixmatch.com/ws/1.1/track.search?apikey=xxxxxxxxxxxxxxxxxxxxx&q_artist=Dire%20Straits&q_track=Lions
@@ -185,11 +185,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             }
             catch (HttpRequestException ex)
             {
-                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
+                throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed for: " +
+                    Constants.NewLine + $"\"{mcItem.Artist}\" - \"{mcItem.Album}\" - \"{mcItem.Name}\".",
+                    isGetAll, Credit, mcItem, ub.Uri, ex);
             }
             catch (Exception ex)
             {
-                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
+                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed for: " +
+                    Constants.NewLine + $"\"{mcItem.Artist}\" - \"{mcItem.Album}\" - \"{mcItem.Name}\".",
+                    isGetAll, Credit, mcItem, ex);
             }
 
             return this;

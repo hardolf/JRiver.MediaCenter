@@ -59,7 +59,7 @@ namespace MediaCenter.SharedComponents
         /// </remarks>
         public static void AutoSizeTextBox(this Control control, Padding? padding = null)
         {
-            if (control == null) throw new ArgumentNullException(nameof(control));
+            if (control is null) throw new ArgumentNullException(nameof(control));
 
             const int x_margin = 0;
             const int y_margin = 2;
@@ -89,12 +89,12 @@ namespace MediaCenter.SharedComponents
         /// </remarks>
         public static string CapitalizeWord(this string word, CultureInfo cultureInfo = null)
         {
-            if (word == null) throw new ArgumentNullException(nameof(word));
+            if (word is null) throw new ArgumentNullException(nameof(word));
 
             var ci = cultureInfo ?? CultureInfo.CurrentCulture;
-            var ret = word.Trim();
+            var ret = word;
 
-            if (ret.Contains(' ')) throw new ArgumentException($"The {nameof(word)} may not contain spaces: {word}.");
+            if (ret.Contains(' ')) throw new ArgumentException($"The {nameof(word)} may not contain spaces: \"{word}\".");
 
             if (ret.Length > 0)
                 ret = char.ToUpper(ret[0], ci) + ret.Substring(1);
@@ -118,12 +118,12 @@ namespace MediaCenter.SharedComponents
         /// </remarks>
         public static string CapitalizeWordTitle(this string word, CultureInfo cultureInfo = null)
         {
-            if (word == null) throw new ArgumentNullException(nameof(word));
+            if (word is null) throw new ArgumentNullException(nameof(word));
 
             var ci = cultureInfo ?? CultureInfo.CurrentCulture;
-            var ret = word.Trim();
+            var ret = word;
 
-            if (ret.Contains(' ')) throw new ArgumentException($"The {nameof(word)} may not contain spaces: {word}.");
+            if (ret.Contains(' ')) throw new ArgumentException($"The {nameof(word)} may not contain spaces: \"{word}\".");
             if (ret.Length > 3)
                 ret = ret.CapitalizeWord();
             else
@@ -245,7 +245,7 @@ namespace MediaCenter.SharedComponents
         /// </remarks>
         public static void EnableOrDisableToolStripMenuItems(ToolStripMenuItem parentMenu, bool isEnabled)
         {
-            if (parentMenu == null) throw new ArgumentNullException(nameof(parentMenu));
+            if (parentMenu is null) throw new ArgumentNullException(nameof(parentMenu));
 
             parentMenu.Enabled = isEnabled;
 
@@ -264,7 +264,7 @@ namespace MediaCenter.SharedComponents
         }
 
 
-        public static string GetActualAsyncMethodName([CallerMemberName]string name = null) => name;
+        public static string GetActualAsyncMethodName([CallerMemberName] string name = null) => name;
 
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace MediaCenter.SharedComponents
         /// <remarks>This routine can be used as a simple "serialization" function.</remarks>
         public static string GetAllControlText(this Control parentControl)
         {
-            if (parentControl == null) throw new ArgumentNullException(nameof(parentControl));
+            if (parentControl is null) throw new ArgumentNullException(nameof(parentControl));
 
             var ret = new StringBuilder();
 
@@ -327,7 +327,7 @@ namespace MediaCenter.SharedComponents
         /// <exception cref="ArgumentNullException">control</exception>
         public static Size GetControlTextSize(this Control control)
         {
-            if (control == null) throw new ArgumentNullException(nameof(control));
+            if (control is null) throw new ArgumentNullException(nameof(control));
 
             Size ret = TextRenderer.MeasureText(control.Text, control.Font);
 
@@ -351,7 +351,7 @@ namespace MediaCenter.SharedComponents
         /// </remarks>
         public static DateTime GetLinkerTime(this Assembly assembly, TimeZoneInfo target = null)
         {
-            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            if (assembly is null) throw new ArgumentNullException(nameof(assembly));
 
             const int c_PeHeaderOffset = 60;
             const int c_LinkerTimestampOffset = 8;
@@ -435,7 +435,7 @@ namespace MediaCenter.SharedComponents
         /// <exception cref="HttpRequestException">\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".</exception>
         public static async Task<Bitmap> HttpGetImageAsync(this Uri requestUrl, string userName = "", string password = "")
         {
-            if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
+            if (requestUrl is null) throw new ArgumentNullException(nameof(requestUrl));
 
             Bitmap ret = null;
             Stream st;
@@ -478,7 +478,7 @@ namespace MediaCenter.SharedComponents
         /// <exception cref="HttpRequestException">\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".</exception>
         public static async Task<string> HttpGetStringAsync(this Uri requestUrl, string userName = "", string password = "")
         {
-            if (requestUrl == null) throw new ArgumentNullException(nameof(requestUrl));
+            if (requestUrl is null) throw new ArgumentNullException(nameof(requestUrl));
 
             string ret;
 
@@ -666,7 +666,7 @@ namespace MediaCenter.SharedComponents
         /// <exception cref="ArgumentNullException">input</exception>
         public static string LfToCrLf(this string input)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input is null) throw new ArgumentNullException(nameof(input));
             if (input.IsNullOrEmptyTrimmed()) return input;
 
             var ret = new StringBuilder(input);
@@ -741,6 +741,8 @@ namespace MediaCenter.SharedComponents
         /// <param name="preferredSize">The preferred size.</param>
         public static void SetFormLocationAndSize(this Form targetForm, Point preferredLocation, Size preferredSize)
         {
+            if (targetForm is null) throw new ArgumentNullException(nameof(targetForm));
+
             var activeWorkingArea = Screen.FromControl(targetForm).WorkingArea;
             var rect1 = new Rectangle(preferredLocation, preferredSize);
             var rect2 = rect1;
@@ -792,6 +794,47 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Converts to to a string where single '\r' and '\n' are replaced by '\r\n'.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">input</exception>
+        public static string ToNormalizedLineEndings(this string input)
+        {
+            if (input is null) throw new ArgumentNullException(nameof(input));
+
+            input = input.Trim(' ', '\t');
+
+            var len = input.Length;
+            var ret = new StringBuilder();
+
+            for (int i = 0; i < len; i++)
+            {
+                var ch = input[i];
+
+                if ((ch == '\r') && (i < len - 1))
+                {
+                    if (input[i + 1] == '\n')
+                        ret.Append(ch);
+                    else
+                        ret.Append(Constants.NewLine);
+                }
+                else if ((ch == '\n') && (i > 0))
+                {
+                    if (input[i - 1] == '\r')
+                        ret.Append(ch);
+                    else
+                        ret.Append(Constants.NewLine);
+                }
+                else
+                    ret.Append(ch);
+            }
+
+            return ret.ToString();
+        }
+
+
+        /// <summary>
         /// Converts input string to a string without double spaces and with no more than 2 consecutive line endings.
         /// </summary>
         /// <param name="input">The input string.</param>
@@ -801,7 +844,7 @@ namespace MediaCenter.SharedComponents
         /// <exception cref="ArgumentNullException">input</exception>
         public static string ToNormalizedString(this string input)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input is null) throw new ArgumentNullException(nameof(input));
 
             var ret = new StringBuilder(input.Trim(' ', '\t'));
 
@@ -809,6 +852,8 @@ namespace MediaCenter.SharedComponents
             ret.Replace(Constants.TripleNewLine, Constants.DoubleNewLine);
             ret.Replace("\n\n\n", Constants.DoubleNewLine);
             ret.Replace("\n\n", Constants.DoubleNewLine);
+            ret.Replace("\r\r\r", Constants.DoubleNewLine);
+            ret.Replace("\r\r", Constants.DoubleNewLine);
 
             return ret.ToString();
         }
@@ -825,7 +870,7 @@ namespace MediaCenter.SharedComponents
         /// <exception cref="ArgumentNullException">input</exception>
         public static string ToProperCase(this string input, CultureInfo cultureInfo = null)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input is null) throw new ArgumentNullException(nameof(input));
 
             var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var ti = ci.TextInfo;
@@ -848,7 +893,7 @@ namespace MediaCenter.SharedComponents
         /// <exception cref="ArgumentNullException">input</exception>
         public static string ToSentenceCase(this string input, CultureInfo cultureInfo = null)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input is null) throw new ArgumentNullException(nameof(input));
 
             var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var ret = input.ToNormalizedString();
@@ -877,6 +922,24 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Converts to singlelineendings.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">input</exception>
+        public static string ToSingleLineEndings(this string input)
+        {
+            if (input is null) throw new ArgumentNullException(nameof(input));
+
+            var ret = new StringBuilder(input.ToNormalizedString());
+
+            ret.Replace(Constants.DoubleNewLine, Constants.NewLine);
+
+            return ret.ToString();
+        }
+
+
+        /// <summary>
         /// Converts input string to title case.
         /// </summary>
         /// <param name="input">The input string.</param>
@@ -887,7 +950,7 @@ namespace MediaCenter.SharedComponents
         /// <exception cref="ArgumentNullException">input</exception>
         public static string ToTitleCase(this string input, CultureInfo cultureInfo = null)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input is null) throw new ArgumentNullException(nameof(input));
 
             var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var ret = input.ToNormalizedString();

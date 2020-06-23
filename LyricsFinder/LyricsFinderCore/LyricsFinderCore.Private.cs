@@ -214,8 +214,8 @@ namespace MediaCenter.LyricsFinder
                 _emptyPlayPauseImage.MakeTransparent();
 
                 // Create the row and make it's height equal to the width of the bitmap img
-                row.CreateCells(dgv, _emptyPlayPauseImage, idx, ++idx, value.Key, coverImage, 
-                    WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album), 
+                row.CreateCells(dgv, _emptyPlayPauseImage, idx, ++idx, value.Key, coverImage,
+                    WebUtility.HtmlDecode(value.Artist), WebUtility.HtmlDecode(value.Album),
                     WebUtility.HtmlDecode(value.Name), value.Lyrics, initStatus);
                 row.Height = dgv.Columns[(int)GridColumnEnum.Cover].Width;
 
@@ -335,6 +335,7 @@ namespace MediaCenter.LyricsFinder
             var dataFile = string.Empty;
             var tmpFile = string.Empty;
 
+            // Logging
             try
             {
                 await Logging.LogAsync(_progressPercentage, "Preparing load of local data...", true);
@@ -361,6 +362,7 @@ namespace MediaCenter.LyricsFinder
                 await StatusMessageAsync("Warning");
             }
 
+            // Lyric services and the local data file
             try
             {
                 await Logging.LogAsync(_progressPercentage, $"Initializing dynamic lyric services...", true);
@@ -397,10 +399,10 @@ namespace MediaCenter.LyricsFinder
                     await ErrorHandling.ErrorLogAsync("Failed to load the lyric services, ask if we should initialize a new set of services.", ex);
                     LyricsFinderData = new LyricsFinderDataType(dataFile);
 
-                    var result = MessageBox.Show(this, $"LyricsFinder data file " + Constants.NewLine 
+                    var result = MessageBox.Show(this, $"LyricsFinder data file " + Constants.NewLine
                         + "\"{dataFile}\"" + Constants.NewLine
                         + "was found but could not be loaded, error: " + Constants.NewLine
-                        + $"\"{ex.Message}\"" + Constants.NewLine 
+                        + $"\"{ex.Message}\"" + Constants.NewLine
                         + "Will you initialize and save a new set of services?",
                         "LyricsFinder datafile not found", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
 
@@ -564,10 +566,6 @@ namespace MediaCenter.LyricsFinder
         {
             //Properties.Settings.Default.Reload();
             _lastUpdateCheck = LyricsFinderData.MainData.LastUpdateCheck;
-
-            // Ensure the default of not overwriting (i.e. skipping) existing lyrics
-            OverwriteMenuItem.Checked = false;
-            MenuItem_ClickAsync(OverwriteMenuItem, new EventArgs());
         }
 
 
@@ -780,7 +778,10 @@ namespace MediaCenter.LyricsFinder
                 var status = statusCell.Value.ToString().ToLyricResultEnum();
 
                 if ((status & (LyricsResultEnum.NotFound | LyricsResultEnum.Error | LyricsResultEnum.Canceled | LyricsResultEnum.SkippedOldLyrics)) != 0) // If status is one of those enum values
-                    statusCell.Value = LyricsResultEnum.NotProcessedYet.ResultText();
+                {
+                    if (OverwriteExistingLyricsMenuItem.Checked || (status != LyricsResultEnum.SkippedOldLyrics))
+                        statusCell.Value = LyricsResultEnum.NotProcessedYet.ResultText();
+                }
             }
         }
 
@@ -794,20 +795,23 @@ namespace MediaCenter.LyricsFinder
 
             await StatusMessageAsync("Saving changed data...");
 
+            var i = 0;
+            var key = 0;
+
             try
             {
                 await LyricsFinderData.SaveAsync();
 
-                // Iterate the displayed rows and save each row, if it is found or manually edited
-                for (int i = 0; i < MainGridView.Rows.Count; i++)
-                {
-                    var row = MainGridView.Rows[i] as DataGridViewRow;
 
+                // Iterate the displayed rows and save each row, if it is found or manually edited
+                for (i = 0; i < MainGridView.Rows.Count; i++)
+                {
+                    var row = MainGridView.Rows[i];
                     var keyTxt = row.Cells[(int)GridColumnEnum.Key].Value?.ToString();
                     var lyrics = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString();
                     var statusTxt = row.Cells[(int)GridColumnEnum.Status].Value?.ToString();
 
-                    if (!int.TryParse(keyTxt, out var key) || statusTxt.IsNullOrEmptyTrimmed())
+                    if (!int.TryParse(keyTxt, out key) || statusTxt.IsNullOrEmptyTrimmed())
                         throw new Exception($"Error parsing row {i} cell(s): keyTxt=\"{keyTxt}\", lyrics=\"{lyrics}\", status=\"{statusTxt}\".");
 
                     // We only save items if they are found or manually edited
@@ -817,6 +821,8 @@ namespace MediaCenter.LyricsFinder
 
                         if (!rsp.IsOk)
                             throw new Exception($"Saving item to Media Center failed for index {i} with key {key}.");
+
+                        row.Cells[(int)GridColumnEnum.Status].Value = LyricsResultEnum.Saved;
                     }
                 }
 
@@ -825,7 +831,7 @@ namespace MediaCenter.LyricsFinder
             }
             catch (Exception ex)
             {
-                var msg = $"Saving data failed: {ex.Message}";
+                var msg = $"Saving data failed for index {i} with key {key}: {ex.Message}";
 
                 await StatusMessageAsync(msg);
                 throw new Exception(msg, ex);
@@ -858,8 +864,6 @@ namespace MediaCenter.LyricsFinder
         /// <returns>Playing row index or -1 if nothing is playing.</returns>
         private async Task SetPlayingImagesAndMenusAsync()
         {
-            McStatusTimer.Stop();
-
             var rows = MainGridView.Rows;
             var selectedRows = MainGridView.SelectedRows;
 
@@ -947,8 +951,6 @@ namespace MediaCenter.LyricsFinder
                 _lyricForm?.SetPlayingState(false);
                 McPlayControl?.StopStat();
             }
-
-            McStatusTimer.Start();
         }
 
 
@@ -1106,15 +1108,15 @@ namespace MediaCenter.LyricsFinder
 
             if (owner is LyricsFinderCore)
                 PositionAndResizeMcPlayControl();
-            else if (owner is LyricForm)
-                ((LyricForm)owner).PositionAndResizeMcPlayControl();
+            else if (owner is LyricForm form)
+                form.PositionAndResizeMcPlayControl();
 
             McPlayControl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             owner.Controls.Add(McPlayControl);
 
             // _mcPlayControl.Show(owner);
-            McPlayControl.Visible = true;
+            McPlayControl.Visible = (McPlayControl.MaxItems > 0);
             McPlayControl.BringToFront();
 
             ResumeLayout();

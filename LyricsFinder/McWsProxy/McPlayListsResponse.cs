@@ -213,6 +213,8 @@ namespace MediaCenter.McWs
             // Run the tasks in parallel
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
+            GC.Collect();
+
             return ret;
         }
 
@@ -324,11 +326,13 @@ namespace MediaCenter.McWs
 
             var playlistId = int.Parse(Id, CultureInfo.InvariantCulture);
             var rsp = await McRestService.GetPlaylistFilesAsync(int.Parse(Id, CultureInfo.InvariantCulture)).ConfigureAwait(false);
-            var mcPlayListFileItems = rsp.Items.Where(i => currentItemIds.Any(c => c == i.Key));
+            var mcPlayListFileItemKeys = rsp.Items
+                .Where(i => currentItemIds.Any(c => c == i.Key))
+                .Select(kvp => kvp.Key);
 
-            foreach (var mcFileItem in mcPlayListFileItems)
+            foreach (var mcFileItemKey in mcPlayListFileItemKeys)
             {
-                if (itemsPlaylists.TryGetValue(mcFileItem.Key, out var itemList))
+                if (itemsPlaylists.TryGetValue(mcFileItemKey, out var itemList))
                     itemList.Add(playlistId);
                 else
                 {
@@ -337,9 +341,14 @@ namespace MediaCenter.McWs
                         { playlistId }
                     };
 
-                    itemsPlaylists.Add(mcFileItem.Key, itemList);
+                    itemsPlaylists.Add(mcFileItemKey, itemList);
                 }
             }
+
+            mcPlayListFileItemKeys = null;
+            rsp = null;
+
+            GC.Collect();
         }
 
     }

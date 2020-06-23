@@ -536,6 +536,8 @@ namespace MediaCenter.LyricsFinder
             TrackingLabel.Text = $"{posTxt} / {maxTxt} - {CurrentItems} of {MaxItems}";
             TrackingLabel.Left = McPositionTrackBar.Width / 2 - TrackingLabel.Width / 2;
             TrackingLabel.BringToFront();
+
+            Visible = (MaxItems > 0);
         }
 
 
@@ -550,6 +552,8 @@ namespace MediaCenter.LyricsFinder
 
             MaxSeconds = maxSeconds;
             MaxItems = maxItems;
+
+            Visible = (MaxItems > 0);
         }
 
 

@@ -109,6 +109,15 @@ namespace MediaCenter.LyricsFinder.Model
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether [colect playlist information on reconnect].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [colect playlist information on reconnect]; otherwise, <c>false</c>.
+        /// </value>
+        [XmlElement]
+        public bool CollectPlaylistInfoOnMcReconnect { get; set; }
+
+        /// <summary>
         /// Gets or sets the number of attempts to connect with the Media Center web service (MCWS) before showing an error.
         /// </summary>
         /// <value>

@@ -94,7 +94,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
-        /// <param name="item">The item.</param>
+        /// <param name="mcItem">The current Media Center item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
@@ -104,26 +104,26 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="LyricServiceCommunicationException"></exception>
         /// <exception cref="LyricServiceBaseException"></exception>
         /// <exception cref="System.ArgumentNullException">item</exception>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
             var json = string.Empty;
             UriBuilder ub = null;
 
             try
             {
-                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
+                await base.ProcessAsync(mcItem, cancellationToken).ConfigureAwait(false); // Result: not found
 
                 // Example GET request:
                 // https://orion.apiseeds.com/api/music/lyric/dire straits/brothers in arms?apikey=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-                var itemName = item.Name.Trim();
+                var itemName = mcItem.Name.Trim();
 
                 if (itemName.EndsWith("?", StringComparison.InvariantCultureIgnoreCase))
                     itemName = itemName.Substring(0, itemName.Length - 1);
 
-                ub = new UriBuilder($"{Credit.ServiceUrl}/{item.Artist}/{itemName}?apikey={Token}");
+                ub = new UriBuilder($"{Credit.ServiceUrl}/{mcItem.Artist}/{itemName}?apikey={Token}");
 
                 // First we search for the track
                 json = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
@@ -132,7 +132,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 var searchDyn = JsonConvert.DeserializeObject<dynamic>(json);
                 var lyricText = (string)searchDyn.result.track.text;
                 var copyright = searchDyn.result.copyright;
-                var copyrightText = SharedComponents.Utility.JoinTrimmedStrings("." + Constants.NewLine, (string)copyright.notice, (string)copyright.artist, (string)copyright.text) + ".";
+                var copyrightText = Utility.JoinTrimmedStrings("." + Constants.NewLine, (string)copyright.notice, (string)copyright.artist, (string)copyright.text) + ".";
 
                 await AddFoundLyric(lyricText, null, null, copyrightText).ConfigureAwait(false);
             }
@@ -142,11 +142,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 if (ex.Message.Contains("404"))
                     return this;
                 else
-                    throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed.", isGetAll, Credit, item, ub.Uri, ex);
+                    throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed for: " +
+                        Constants.NewLine + $"\"{mcItem.Artist}\" - \"{mcItem.Album}\" - \"{mcItem.Name}\".",
+                        isGetAll, Credit, mcItem, ub.Uri, ex);
             }
             catch (Exception ex)
             {
-                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
+                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed for: " +
+                    Constants.NewLine + $"\"{mcItem.Artist}\" - \"{mcItem.Album}\" - \"{mcItem.Name}\".",
+                    isGetAll, Credit, mcItem, ex);
             }
 
             return this;

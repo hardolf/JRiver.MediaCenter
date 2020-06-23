@@ -127,7 +127,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <summary>
         /// Processes the specified MediaCenter item.
         /// </summary>
-        /// <param name="item">The item.</param>
+        /// <param name="mcItem">The current Media Center item.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="isGetAll">if set to <c>true</c> get all search hits; else get the first one only.</param>
         /// <returns>
@@ -137,22 +137,22 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="LyricServiceCommunicationException"></exception>
         /// <exception cref="LyricServiceBaseException"></exception>
         /// <exception cref="System.ArgumentNullException">item</exception>
-        public override async Task<AbstractLyricService> ProcessAsync(McMplItem item, CancellationToken cancellationToken, bool isGetAll = false)
+        public override async Task<AbstractLyricService> ProcessAsync(McMplItem mcItem, CancellationToken cancellationToken, bool isGetAll = false)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
 
             var xmlText = string.Empty;
             UriBuilder ub = null;
 
             try
             {
-                await base.ProcessAsync(item, cancellationToken).ConfigureAwait(false); // Result: not found
+                await base.ProcessAsync(mcItem, cancellationToken).ConfigureAwait(false); // Result: not found
 
                 // Example GET request:
                 // OK: http://api.lololyrics.com/0.5/getLyric?artist=Pattern+J&track=Chromozome
                 // Not found: http://api.lololyrics.com/0.5/getLyric?artist=fakeartist&track=fakesong
 
-                var itemName = item.Name.Trim();
+                var itemName = mcItem.Name.Trim();
                 var uris = new List<Uri>();
                 var uriText = Credit.ServiceUrl.ToString();
 
@@ -163,10 +163,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                     uriText = uriText.Substring(0, uriText.Length - 1);
 
                 // First we search for the artist and track title
-                if (item.Artist.IsNullOrEmptyTrimmed())
+                if (mcItem.Artist.IsNullOrEmptyTrimmed())
                     ub = new UriBuilder($"{uriText}?track={itemName}");
                 else
-                    ub = new UriBuilder($"{uriText}?artist={item.Artist}&track={itemName}");
+                    ub = new UriBuilder($"{uriText}?artist={mcItem.Artist}&track={itemName}");
 
                 xmlText = await HttpGetStringAsync(ub.Uri).ConfigureAwait(false);
 
@@ -200,11 +200,15 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             catch (HttpRequestException ex)
             {
                 if (!ex.Message.Contains("404")) // Ignore HTTP error 404
-                    throw new LyricServiceBaseException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
+                    throw new LyricServiceCommunicationException($"{Credit.ServiceName} request failed for: " +
+                        Constants.NewLine + $"\"{mcItem.Artist}\" - \"{mcItem.Album}\" - \"{mcItem.Name}\".",
+                        isGetAll, Credit, mcItem, ub.Uri, ex);
             }
             catch (Exception ex)
             {
-                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed.", isGetAll, Credit, item, ex);
+                throw new LyricServiceBaseException($"{Credit.ServiceName} process failed for: " +
+                    Constants.NewLine + $"\"{mcItem.Artist}\" - \"{mcItem.Album}\" - \"{mcItem.Name}\".",
+                    isGetAll, Credit, mcItem, ex);
             }
 
             return this;

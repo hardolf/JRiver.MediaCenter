@@ -239,7 +239,13 @@ namespace MediaCenter.LyricsFinder
             {
                 if (_isDesignTime) return;
 
-                e.Handled = true;
+                if (e.Alt && (e.KeyCode == Keys.F4))
+                {
+                    e.Handled = false;
+                    return;
+                }
+                else
+                    e.Handled = true;
 
                 var dgv = MainGridView;
 
@@ -781,7 +787,6 @@ namespace MediaCenter.LyricsFinder
                 }
 
                 McStatusTimer.Interval = _mcStatusIntervalNormal;
-                McStatusTimer.Start();
             }
             catch (Exception ex)
             {
@@ -795,7 +800,12 @@ namespace MediaCenter.LyricsFinder
                 await BlankPlayStatusBitmapsAsync();
 
                 McStatusTimer.Interval = _mcStatusIntervalError;
+            }
+            finally
+            {
                 McStatusTimer.Start();
+
+                GC.Collect();
             }
         }
 
@@ -904,10 +914,10 @@ namespace MediaCenter.LyricsFinder
                             // MessageBox.Show($"{Properties.Settings.Default.McWebServiceUser}", "Menu item selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             break;
 
-                        case nameof(OverwriteMenuItem):
-                            OverwriteMenuItem.Text = (OverwriteMenuItem.Checked)
-                                ? "Overwrite existing lyrics"
-                                : "Skip existing lyrics";
+                        case nameof(OverwriteExistingLyricsMenuItem):
+                            OverwriteExistingLyricsMenuItem.Text = (OverwriteExistingLyricsMenuItem.Checked)
+                                ? "Overwrite &existing lyrics"
+                                : "Skip &existing lyrics";
                             break;
 
                         default:
@@ -1018,7 +1028,9 @@ namespace MediaCenter.LyricsFinder
                 // This is a long-running operation!
                 ItemsPlayListIds?.Clear();
                 ItemsPlayListIds = null;
-                ItemsPlayListIds = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(currentPlayListItemIds, new[] { "Playlist" }, new[] { "Recent Playing Now" });
+
+                if (LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnect)
+                    ItemsPlayListIds = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(currentPlayListItemIds, new[] { "Playlist" }, new[] { "Recent Playing Now" });
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again
                 // ReadyTimer.Start();
@@ -1031,7 +1043,8 @@ namespace MediaCenter.LyricsFinder
             {
                 var duration = DateTime.Now - begin;
 
-                await StatusMessageAsync($"Collected playlists for the current items in {duration:m\\:ss}.", true, true, 10);
+                if (LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnect)
+                    await StatusMessageAsync($"Collected playlists for the current items in {duration:m\\:ss}.", true, true, 10);
             }
         }
 
