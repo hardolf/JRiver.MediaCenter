@@ -109,13 +109,40 @@ namespace MediaCenter.LyricsFinder.Model
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [colect playlist information on reconnect].
+        /// Gets or sets a value indicating whether collecting playlist information should be done on reconnect in the plug-in.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if [colect playlist information on reconnect]; otherwise, <c>false</c>.
+        ///   <c>true</c> if collecting playlist information should be done on reconnect in the plug-in; otherwise, <c>false</c>.
         /// </value>
         [XmlElement]
-        public bool CollectPlaylistInfoOnMcReconnect { get; set; }
+        public bool CollectPlaylistInfoOnMcReconnectPlugin { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether collecting playlist information should be done on reconnect in the standalone.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if collecting playlist information should be done on reconnect in the standalone; otherwise, <c>false</c>.
+        /// </value>
+        [XmlElement]
+        public bool CollectPlaylistInfoOnMcReconnectStandalone { get; set; }
+
+        /// <summary>
+        /// Gets or sets the main grid column display sequence.
+        /// </summary>
+        /// <value>
+        /// The main grid column display sequence.
+        /// </value>
+        [XmlElement]
+        public string MainGridColumnDisplaySequence { get; set; }
+
+        /// <summary>
+        /// Gets or sets the main grid column widths.
+        /// </summary>
+        /// <value>
+        /// The main grid column widths.
+        /// </value>
+        [XmlElement]
+        public string MainGridColumnWidths { get; set; }
 
         /// <summary>
         /// Gets or sets the number of attempts to connect with the Media Center web service (MCWS) before showing an error.

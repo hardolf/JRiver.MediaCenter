@@ -1196,6 +1196,8 @@ namespace MediaCenter.LyricsFinder.Forms
             LyricsFinderCore.McPlayControl.Top = top;
             LyricsFinderCore.McPlayControl.Width = width;
             LyricsFinderCore.McPlayControl.Height = height;
+            LyricsFinderCore.McPlayControl.TabIndex = 2;
+            LyricsFinderCore.McPlayControl.TabStop = false;
         }
 
 

@@ -38,6 +38,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
 
+        /**********************/
+        /***** Properties *****/
+        /**********************/
+
         /// <summary>
         /// Gets or sets the lyric service comment.
         /// </summary>
@@ -102,22 +106,22 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual ReadOnlyCollection<FoundLyricType> FoundLyricList { get; }
 
         /// <summary>
-        /// Gets or sets the lyrics finder data.
+        /// Gets or sets the hit count today.
         /// </summary>
         /// <value>
-        /// The lyrics finder data.
+        /// The hit count today.
         /// </value>
-        [XmlIgnore]
-        public virtual LyricsFinderDataType LyricsFinderData { get; set; }
+        [XmlElement]
+        public virtual int HitCountToday { get; set; }
 
         /// <summary>
-        /// Gets or sets the lyric result. If set to <c>Found</c> increments the hit counters.
+        /// Gets or sets the hit count total.
         /// </summary>
         /// <value>
-        /// The lyric result.
+        /// The hit count total.
         /// </value>
-        [XmlIgnore]
-        public virtual LyricsResultEnum LyricResult { get; set; }
+        [XmlElement]
+        public virtual int HitCountTotal { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="AbstractLyricService"/> is active, i.e. should be part of the lyric search.
@@ -136,33 +140,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </value>
         [XmlIgnore]
         public virtual bool IsImplemented { get; set; }
-
-        /// <summary>
-        /// Gets or sets the settings.
-        /// </summary>
-        /// <value>
-        /// The settings.
-        /// </value>
-        [XmlIgnore]
-        protected virtual KeyValueConfigurationCollection Settings { get; private set; }
-
-        /// <summary>
-        /// Gets the result text.
-        /// </summary>
-        /// <returns>Result message for the status.</returns>
-        [XmlIgnore]
-        public virtual string LyricResultMessage
-        {
-            get
-            {
-                var ret = new StringBuilder(LyricResult.ResultText());
-
-                if (LyricResult == LyricsResultEnum.Found)
-                    ret.Append($" by service \"{Credit.ServiceName}\"");
-
-                return ret.ToString();
-            }
-        }
 
         /// <summary>
         /// Gets or sets the last request.
@@ -192,6 +169,42 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual DateTime LastSearchStop { get; set; }
 
         /// <summary>
+        /// Gets or sets the lyric result. If set to <c>Found</c> increments the hit counters.
+        /// </summary>
+        /// <value>
+        /// The lyric result.
+        /// </value>
+        [XmlIgnore]
+        public virtual LyricsResultEnum LyricResult { get; set; }
+
+        /// <summary>
+        /// Gets the result text.
+        /// </summary>
+        /// <returns>Result message for the status.</returns>
+        [XmlIgnore]
+        public virtual string LyricResultMessage
+        {
+            get
+            {
+                var ret = new StringBuilder(LyricResult.ResultText());
+
+                if (LyricResult == LyricsResultEnum.Found)
+                    ret.Append($" by service \"{Credit.ServiceName}\"");
+
+                return ret.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the lyrics finder data.
+        /// </summary>
+        /// <value>
+        /// The lyrics finder data.
+        /// </value>
+        [XmlIgnore]
+        public virtual LyricsFinderDataType LyricsFinderData { get; set; }
+
+        /// <summary>
         /// Gets or sets the request count today.
         /// </summary>
         /// <value>
@@ -199,15 +212,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </value>
         [XmlElement]
         public virtual int RequestCountToday { get; set; }
-
-        /// <summary>
-        /// Gets or sets the hit count today.
-        /// </summary>
-        /// <value>
-        /// The hit count today.
-        /// </value>
-        [XmlElement]
-        public virtual int HitCountToday { get; set; }
 
         /// <summary>
         /// Gets or sets the request count total.
@@ -219,14 +223,27 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         public virtual int RequestCountTotal { get; set; }
 
         /// <summary>
-        /// Gets or sets the hit count total.
+        /// Gets or sets the settings.
         /// </summary>
         /// <value>
-        /// The hit count total.
+        /// The settings.
+        /// </value>
+        [XmlIgnore]
+        protected virtual KeyValueConfigurationCollection Settings { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the timeout in milliseconds.
+        /// </summary>
+        /// <value>
+        /// The timeout milli seconds.
         /// </value>
         [XmlElement]
-        public virtual int HitCountTotal { get; set; }
+        public virtual int TimeoutMilliSeconds { get; set; } = 0; // Default: no timeout
 
+
+        /************************/
+        /***** Constructors *****/
+        /************************/
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AbstractLyricService"/> class.
@@ -268,6 +285,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             RequestCountTotal = source.RequestCountTotal;
         }
 
+
+        /*********************/
+        /****** Methods ******/
+        /*********************/
 
         /// <summary>
         /// Adds the found lyric.
@@ -321,57 +342,18 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             Credit.CreateDisplayProperties();
 
-            DisplayProperties.Add(nameof(Comment), Comment, 
-                "Service comment", "Special comments for the lyric service", 
-                true);
-            DisplayProperties.Add(nameof(RequestCountToday), RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture), 
+            DisplayProperties.Add(nameof(Comment), Comment,
+                "Service comment", "Special comments for the lyric service", true);
+            DisplayProperties.Add(nameof(TimeoutMilliSeconds), TimeoutMilliSeconds.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture),
+                "Timeout", "Lyric service call timeout in milliseconds, 0 or negative: no timeout", true);
+            DisplayProperties.Add(nameof(RequestCountToday), RequestCountToday.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture),
                 "Requests, today", "Number of requests to the lyric service since midnight (local client time)", false);
-            DisplayProperties.Add(nameof(HitCountToday), HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture), 
+            DisplayProperties.Add(nameof(HitCountToday), HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture),
                 "Hits, today", "Number of successful results (hits) from the lyric service since midnight (local client time)", false);
-            DisplayProperties.Add(nameof(RequestCountTotal), RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture), 
+            DisplayProperties.Add(nameof(RequestCountTotal), RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture),
                 "Requests, total", "Total number of requests to the lyric service since the creation of the local client datafile", false);
-            DisplayProperties.Add(nameof(HitCountTotal), HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture), 
+            DisplayProperties.Add(nameof(HitCountTotal), HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture),
                 "Hits, total", "Total number of successful results (hits) from the lyric service since the creation of the local client datafile", false);
-        }
-
-
-        /// <summary>
-        /// Creates the service client.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="configName">Name of the configuration.</param>
-        /// <returns>
-        /// Service client.
-        /// </returns>
-        /// <remarks>
-        /// Source inspired by: https://www.codeproject.com/Articles/1060520/Centralizing-WCF-Client-Configuration-in-a-Class-L
-        /// </remarks>
-        protected static T CreateServiceClient<T>(string configName)
-        {
-            var assemblyLocation = string.Empty;
-            Configuration config = null;
-            ConfigurationChannelFactory<T> channelFactory = null;
-            T ret;
-
-            try
-            {
-                assemblyLocation = Assembly.GetCallingAssembly().Location;
-                config = ConfigurationManager.OpenExeConfiguration(assemblyLocation);
-                channelFactory = new ConfigurationChannelFactory<T>(configName, config, null);
-
-                ret = channelFactory.CreateChannel();
-
-                return ret;
-            }
-            catch (Exception ex)
-            {
-                var msg = $"Error creating the service client " + Constants.DoubleNewLine
-                    + $"Assembly location: {assemblyLocation} " + Constants.NewLine
-                    + $"Configuration file path: {config?.FilePath} " + Constants.NewLine
-                    + $"Endpoint configuration name: {configName}." + Constants.DoubleNewLine;
-
-                throw new Exception(msg, ex);
-            }
         }
 
 
@@ -467,7 +449,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             try
             {
-                ret = await SharedComponents.Utility.HttpGetStringAsync(requestUri).ConfigureAwait(false);
+                ret = await SharedComponents.Utility.HttpGetStringAsync(requestUri, timeoutMilliSeconds: TimeoutMilliSeconds).ConfigureAwait(false);
             }
             finally
             {
@@ -762,6 +744,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             dps.Add(nameof(HitCountToday), HitCountToday, null, HitCountToday.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture));
             dps.Add(nameof(RequestCountTotal), RequestCountTotal, null, RequestCountTotal.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture));
             dps.Add(nameof(HitCountTotal), HitCountTotal, null, HitCountTotal.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture));
+            dps.Add(nameof(TimeoutMilliSeconds), TimeoutMilliSeconds, null, TimeoutMilliSeconds.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture));
         }
 
     }

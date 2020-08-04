@@ -38,8 +38,11 @@ namespace MediaCenter.LyricsFinder
         private const int _maxLyricToolTipLines = 40;
         private const int _mcStatusIntervalNormal = 300; // milliseconds
         private const int _mcStatusIntervalError = 5000; // milliseconds
+        private const int _exceptionLoggingWaitMilliSeconds = 1000;
 
-        const string _menuNameDelim = "_";
+        private const string _menuNameDelim = "_";
+        private const string _zeroErrorMessage = "The operation completed successfully";
+        private readonly string _exceptionLoggingTerminateMessage = "The application may have been terminated." + Constants.NewLine;
 
         private bool _isConnectedToMc = false;
         private readonly bool _isDesignTime = false;
@@ -124,6 +127,31 @@ namespace MediaCenter.LyricsFinder
 
                 if (c.Value != _emptyPlayPauseImage)
                     c.Value = _emptyPlayPauseImage;
+            }
+        }
+
+
+        /// <summary>
+        /// Clears the lyrics of a row.
+        /// </summary>
+        /// <param name="rowIdx">Index of the row.</param>
+        private void ClearLyrics(int rowIdx)
+        {
+            var dgv = MainGridView;
+
+            if ((rowIdx < 0) || (rowIdx > dgv.RowCount - 1)) return;
+
+            var row = dgv.Rows[rowIdx];
+            var lyrics = row.Cells[(int)GridColumnEnum.Lyrics].Value?.ToString() ?? string.Empty;
+
+            row.Selected = true;
+
+            if (!lyrics.IsNullOrEmptyTrimmed())
+            {
+                row.Cells[(int)GridColumnEnum.Lyrics].Value = string.Empty;
+                row.Cells[(int)GridColumnEnum.Status].Value = LyricsResultEnum.ManuallyEdited.ResultText();
+
+                IsDataChanged = true;
             }
         }
 
@@ -564,8 +592,39 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         private void LoadFormSettings()
         {
+            var ci = CultureInfo.CurrentCulture;
+            string seq;
+
             //Properties.Settings.Default.Reload();
             _lastUpdateCheck = LyricsFinderData.MainData.LastUpdateCheck;
+
+            // Restore the columns' widths
+            seq = LyricsFinderData.MainData.MainGridColumnWidths;
+
+            if (!seq.IsNullOrEmptyTrimmed())
+            {
+                var colDisplayWidths = seq.Split(',');
+
+                for (int i = 0; i < colDisplayWidths.Length; i++)
+                {
+                    if (int.TryParse(colDisplayWidths[i], NumberStyles.None, ci, out var width))
+                        MainGridView.Columns[i].Width = width;
+                }
+            }
+
+            // Restore the columns' display indices
+            seq = LyricsFinderData.MainData.MainGridColumnDisplaySequence;
+
+            if (!seq.IsNullOrEmptyTrimmed())
+            {
+                var colDisplayIndices = seq.Split(',');
+
+                for (int i = 0; i < colDisplayIndices.Length; i++)
+                {
+                    if (int.TryParse(colDisplayIndices[i], NumberStyles.None, ci, out var displayIndex))
+                        MainGridView.Columns[i].DisplayIndex = displayIndex;
+                }
+            }
         }
 
 
@@ -611,6 +670,8 @@ namespace MediaCenter.LyricsFinder
                     ret = await McRestService.GetPlayNowListAsync();
 
                 await StatusMessageAsync($"Connected to MediaCenter, the current playlist \"{ret.Name}\" has {ret.Items.Count} items.", true, true);
+
+                // Reload the list of playlist IDs
                 ReadyTimer.Start();
             }
             finally
@@ -822,7 +883,7 @@ namespace MediaCenter.LyricsFinder
                         if (!rsp.IsOk)
                             throw new Exception($"Saving item to Media Center failed for index {i} with key {key}.");
 
-                        row.Cells[(int)GridColumnEnum.Status].Value = LyricsResultEnum.Saved;
+                        row.Cells[(int)GridColumnEnum.Status].Value = LyricsResultEnum.Saved.ToString();
                     }
                 }
 

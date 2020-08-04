@@ -60,8 +60,10 @@
             this.StrictSearchOnlyLabel = new System.Windows.Forms.Label();
             this.StrictSearchOnlyCheckBox = new System.Windows.Forms.CheckBox();
             this.CloseButton = new System.Windows.Forms.Button();
-            this.CollectPlaylistInfoOnMcReconnectLabel = new System.Windows.Forms.Label();
-            this.CollectPlaylistInfoOnMcReconnectCheckBox = new System.Windows.Forms.CheckBox();
+            this.CollectPlaylistInfoOnMcReconnectPluginLabel = new System.Windows.Forms.Label();
+            this.CollectPlaylistInfoOnMcReconnectPlugingCheckBox = new System.Windows.Forms.CheckBox();
+            this.CollectPlaylistInfoOnMcReconnectStandaloneLabel = new System.Windows.Forms.Label();
+            this.CollectPlaylistInfoOnMcReconnectStandaloneCheckBox = new System.Windows.Forms.CheckBox();
             this.OptionToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.OptionPanel.SuspendLayout();
             this.OptionLayoutPanel.SuspendLayout();
@@ -78,7 +80,7 @@
             this.OptionPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.OptionPanel.Location = new System.Drawing.Point(0, 0);
             this.OptionPanel.Name = "OptionPanel";
-            this.OptionPanel.Size = new System.Drawing.Size(549, 457);
+            this.OptionPanel.Size = new System.Drawing.Size(549, 485);
             this.OptionPanel.TabIndex = 0;
             // 
             // OptionLayoutPanel
@@ -114,13 +116,15 @@
             this.OptionLayoutPanel.Controls.Add(this.SerialServiceRequestsDuringAutomaticSearchCheckBox, 1, 12);
             this.OptionLayoutPanel.Controls.Add(this.StrictSearchOnlyLabel, 0, 13);
             this.OptionLayoutPanel.Controls.Add(this.StrictSearchOnlyCheckBox, 1, 13);
-            this.OptionLayoutPanel.Controls.Add(this.CloseButton, 1, 15);
-            this.OptionLayoutPanel.Controls.Add(this.CollectPlaylistInfoOnMcReconnectLabel, 0, 14);
-            this.OptionLayoutPanel.Controls.Add(this.CollectPlaylistInfoOnMcReconnectCheckBox, 1, 14);
+            this.OptionLayoutPanel.Controls.Add(this.CloseButton, 1, 16);
+            this.OptionLayoutPanel.Controls.Add(this.CollectPlaylistInfoOnMcReconnectPluginLabel, 0, 14);
+            this.OptionLayoutPanel.Controls.Add(this.CollectPlaylistInfoOnMcReconnectPlugingCheckBox, 1, 14);
+            this.OptionLayoutPanel.Controls.Add(this.CollectPlaylistInfoOnMcReconnectStandaloneLabel, 0, 15);
+            this.OptionLayoutPanel.Controls.Add(this.CollectPlaylistInfoOnMcReconnectStandaloneCheckBox, 1, 15);
             this.OptionLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.OptionLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.OptionLayoutPanel.Name = "OptionLayoutPanel";
-            this.OptionLayoutPanel.RowCount = 16;
+            this.OptionLayoutPanel.RowCount = 17;
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
@@ -136,8 +140,9 @@
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.OptionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.OptionLayoutPanel.Size = new System.Drawing.Size(549, 457);
+            this.OptionLayoutPanel.Size = new System.Drawing.Size(549, 485);
             this.OptionLayoutPanel.TabIndex = 0;
             // 
             // HeaderTextBox
@@ -473,39 +478,62 @@
             // 
             this.CloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CloseButton.Location = new System.Drawing.Point(467, 427);
+            this.CloseButton.Location = new System.Drawing.Point(467, 455);
             this.CloseButton.Margin = new System.Windows.Forms.Padding(7, 3, 7, 7);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(75, 23);
-            this.CloseButton.TabIndex = 29;
+            this.CloseButton.TabIndex = 40;
             this.CloseButton.Text = "&Close (Esc)";
             this.CloseButton.UseVisualStyleBackColor = true;
             this.CloseButton.Click += new System.EventHandler(this.CloseButton_ClickAsync);
             // 
-            // CollectPlaylistInfoOnMcReconnectLabel
+            // CollectPlaylistInfoOnMcReconnectPluginLabel
             // 
-            this.CollectPlaylistInfoOnMcReconnectLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.CollectPlaylistInfoOnMcReconnectPluginLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.CollectPlaylistInfoOnMcReconnectLabel.AutoSize = true;
-            this.CollectPlaylistInfoOnMcReconnectLabel.Location = new System.Drawing.Point(3, 391);
-            this.CollectPlaylistInfoOnMcReconnectLabel.Name = "CollectPlaylistInfoOnMcReconnectLabel";
-            this.CollectPlaylistInfoOnMcReconnectLabel.Size = new System.Drawing.Size(178, 25);
-            this.CollectPlaylistInfoOnMcReconnectLabel.TabIndex = 27;
-            this.CollectPlaylistInfoOnMcReconnectLabel.Text = "Collect playlist info on MC reconnect";
-            this.CollectPlaylistInfoOnMcReconnectLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.CollectPlaylistInfoOnMcReconnectPluginLabel.AutoSize = true;
+            this.CollectPlaylistInfoOnMcReconnectPluginLabel.Location = new System.Drawing.Point(3, 391);
+            this.CollectPlaylistInfoOnMcReconnectPluginLabel.Name = "CollectPlaylistInfoOnMcReconnectPluginLabel";
+            this.CollectPlaylistInfoOnMcReconnectPluginLabel.Size = new System.Drawing.Size(215, 25);
+            this.CollectPlaylistInfoOnMcReconnectPluginLabel.TabIndex = 27;
+            this.CollectPlaylistInfoOnMcReconnectPluginLabel.Text = "Collect playlist info on MC reconnect, plug-in";
+            this.CollectPlaylistInfoOnMcReconnectPluginLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // CollectPlaylistInfoOnMcReconnectCheckBox
+            // CollectPlaylistInfoOnMcReconnectPlugingCheckBox
             // 
-            this.CollectPlaylistInfoOnMcReconnectCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.CollectPlaylistInfoOnMcReconnectPlugingCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.CollectPlaylistInfoOnMcReconnectCheckBox.AutoSize = true;
-            this.CollectPlaylistInfoOnMcReconnectCheckBox.Location = new System.Drawing.Point(251, 394);
-            this.CollectPlaylistInfoOnMcReconnectCheckBox.Name = "CollectPlaylistInfoOnMcReconnectCheckBox";
-            this.CollectPlaylistInfoOnMcReconnectCheckBox.Size = new System.Drawing.Size(15, 19);
-            this.CollectPlaylistInfoOnMcReconnectCheckBox.TabIndex = 28;
-            this.OptionToolTip.SetToolTip(this.CollectPlaylistInfoOnMcReconnectCheckBox, "In a strict search, both artist and song name must mach; \r\nelse a match on song n" +
-        "ame is sufficient");
-            this.CollectPlaylistInfoOnMcReconnectCheckBox.UseVisualStyleBackColor = true;
+            this.CollectPlaylistInfoOnMcReconnectPlugingCheckBox.AutoSize = true;
+            this.CollectPlaylistInfoOnMcReconnectPlugingCheckBox.Location = new System.Drawing.Point(251, 394);
+            this.CollectPlaylistInfoOnMcReconnectPlugingCheckBox.Name = "CollectPlaylistInfoOnMcReconnectPlugingCheckBox";
+            this.CollectPlaylistInfoOnMcReconnectPlugingCheckBox.Size = new System.Drawing.Size(15, 19);
+            this.CollectPlaylistInfoOnMcReconnectPlugingCheckBox.TabIndex = 28;
+            this.OptionToolTip.SetToolTip(this.CollectPlaylistInfoOnMcReconnectPlugingCheckBox, "The collection of MC playlist info takes a long time and is CPU intensive.");
+            this.CollectPlaylistInfoOnMcReconnectPlugingCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // CollectPlaylistInfoOnMcReconnectStandaloneLabel
+            // 
+            this.CollectPlaylistInfoOnMcReconnectStandaloneLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.CollectPlaylistInfoOnMcReconnectStandaloneLabel.AutoSize = true;
+            this.CollectPlaylistInfoOnMcReconnectStandaloneLabel.Location = new System.Drawing.Point(3, 416);
+            this.CollectPlaylistInfoOnMcReconnectStandaloneLabel.Name = "CollectPlaylistInfoOnMcReconnectStandaloneLabel";
+            this.CollectPlaylistInfoOnMcReconnectStandaloneLabel.Size = new System.Drawing.Size(236, 25);
+            this.CollectPlaylistInfoOnMcReconnectStandaloneLabel.TabIndex = 29;
+            this.CollectPlaylistInfoOnMcReconnectStandaloneLabel.Text = "Collect playlist info on MC reconnect, standalone";
+            this.CollectPlaylistInfoOnMcReconnectStandaloneLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // CollectPlaylistInfoOnMcReconnectStandaloneCheckBox
+            // 
+            this.CollectPlaylistInfoOnMcReconnectStandaloneCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.CollectPlaylistInfoOnMcReconnectStandaloneCheckBox.AutoSize = true;
+            this.CollectPlaylistInfoOnMcReconnectStandaloneCheckBox.Location = new System.Drawing.Point(251, 419);
+            this.CollectPlaylistInfoOnMcReconnectStandaloneCheckBox.Name = "CollectPlaylistInfoOnMcReconnectStandaloneCheckBox";
+            this.CollectPlaylistInfoOnMcReconnectStandaloneCheckBox.Size = new System.Drawing.Size(15, 19);
+            this.CollectPlaylistInfoOnMcReconnectStandaloneCheckBox.TabIndex = 30;
+            this.OptionToolTip.SetToolTip(this.CollectPlaylistInfoOnMcReconnectStandaloneCheckBox, "The collection of MC playlist info takes a long time and is CPU intensive.");
+            this.CollectPlaylistInfoOnMcReconnectStandaloneCheckBox.UseVisualStyleBackColor = true;
             // 
             // OptionToolTip
             // 
@@ -520,7 +548,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.CancelButton = this.CloseButton;
-            this.ClientSize = new System.Drawing.Size(549, 457);
+            this.ClientSize = new System.Drawing.Size(549, 485);
             this.Controls.Add(this.OptionPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -580,7 +608,9 @@
         private System.Windows.Forms.CheckBox SerialServiceRequestsDuringAutomaticSearchCheckBox;
         private System.Windows.Forms.Label StrictSearchOnlyLabel;
         private System.Windows.Forms.CheckBox StrictSearchOnlyCheckBox;
-        private System.Windows.Forms.Label CollectPlaylistInfoOnMcReconnectLabel;
-        private System.Windows.Forms.CheckBox CollectPlaylistInfoOnMcReconnectCheckBox;
+        private System.Windows.Forms.Label CollectPlaylistInfoOnMcReconnectPluginLabel;
+        private System.Windows.Forms.CheckBox CollectPlaylistInfoOnMcReconnectPlugingCheckBox;
+        private System.Windows.Forms.Label CollectPlaylistInfoOnMcReconnectStandaloneLabel;
+        private System.Windows.Forms.CheckBox CollectPlaylistInfoOnMcReconnectStandaloneCheckBox;
     }
 }

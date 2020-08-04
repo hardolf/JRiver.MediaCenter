@@ -57,7 +57,7 @@
             this.McControlToolStripContainer.ContentPanel.Controls.Add(this.McPositionTrackBar);
             this.McControlToolStripContainer.ContentPanel.Controls.Add(this.TrackingLabel);
             this.McControlToolStripContainer.ContentPanel.Padding = new System.Windows.Forms.Padding(0, 0, 10, 0);
-            this.McControlToolStripContainer.ContentPanel.Size = new System.Drawing.Size(368, 60);
+            this.McControlToolStripContainer.ContentPanel.Size = new System.Drawing.Size(369, 60);
             this.McControlToolStripContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // McControlToolStripContainer.LeftToolStripPanel
@@ -73,7 +73,7 @@
             this.McControlToolStripContainer.RightToolStripPanel.Enabled = false;
             this.McControlToolStripContainer.RightToolStripPanelVisible = false;
             this.McControlToolStripContainer.Size = new System.Drawing.Size(400, 60);
-            this.McControlToolStripContainer.TabIndex = 1;
+            this.McControlToolStripContainer.TabIndex = 0;
             this.McControlToolStripContainer.Text = "toolStripContainer1";
             // 
             // McControlToolStripContainer.TopToolStripPanel
@@ -90,7 +90,7 @@
             this.McPositionTrackBar.Location = new System.Drawing.Point(0, 3);
             this.McPositionTrackBar.Maximum = 100;
             this.McPositionTrackBar.Name = "McPositionTrackBar";
-            this.McPositionTrackBar.Size = new System.Drawing.Size(355, 45);
+            this.McPositionTrackBar.Size = new System.Drawing.Size(356, 45);
             this.McPositionTrackBar.SmallChange = 5;
             this.McPositionTrackBar.TabIndex = 2;
             this.McPositionTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
@@ -126,8 +126,8 @@
             this.ToolsPlayStartStopButton});
             this.McControlLeftToolStrip.Location = new System.Drawing.Point(0, 3);
             this.McControlLeftToolStrip.Name = "McControlLeftToolStrip";
-            this.McControlLeftToolStrip.Size = new System.Drawing.Size(32, 44);
-            this.McControlLeftToolStrip.TabIndex = 0;
+            this.McControlLeftToolStrip.Size = new System.Drawing.Size(31, 25);
+            this.McControlLeftToolStrip.TabIndex = 1;
             this.McControlLeftToolStrip.TabStop = true;
             this.McControlLeftToolStrip.MouseEnter += new System.EventHandler(this.McPlayControl_MouseEnterAsync);
             // 

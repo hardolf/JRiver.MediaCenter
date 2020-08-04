@@ -323,7 +323,7 @@ namespace MediaCenter.LyricsFinder
         [DefaultValue(false)]
         public new bool UseWaitCursor
         {
-            get { return (_textBox.Cursor == Cursors.Wait) ? true : false; }
+            get { return (_textBox.Cursor == Cursors.Wait); }
             set { _textBox.Cursor = (value) ? Cursors.Wait : null; }
         }
 

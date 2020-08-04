@@ -19,6 +19,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
+        /**********************/
+        /***** Properties *****/
+        /**********************/
+
         string Comment { get; set; }
 
         CreditType Credit { get; set; }
@@ -37,6 +41,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
         bool IsImplemented { get; set; }
 
+        DateTime LastRequest { get; set; }
+
+        DateTime LastSearchStart { get; set; }
+
+        DateTime LastSearchStop { get; set; }
+
         LyricsResultEnum LyricResult { get; set; }
 
         string LyricResultMessage { get; }
@@ -46,6 +56,13 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         int RequestCountToday { get; set; }
 
         int RequestCountTotal { get; set; }
+
+        int TimeoutMilliSeconds { get; set; }
+
+
+        /*********************/
+        /****** Methods ******/
+        /*********************/
 
         Task<FoundLyricType> AddFoundLyric(string lyricText, Uri lyricUrl, Uri trackingUrl = null, string copyright = null);
 

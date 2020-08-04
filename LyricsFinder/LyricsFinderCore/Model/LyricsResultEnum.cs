@@ -26,10 +26,9 @@ namespace MediaCenter.LyricsFinder.Model
         Error = 16,
         Processing = 32,
         Canceled = 64,
-        Saved = 128
+        Saved = 128,
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
-
 
 
     /// <summary>

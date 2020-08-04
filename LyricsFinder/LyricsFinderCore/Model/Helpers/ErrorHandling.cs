@@ -76,6 +76,8 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="innerExceptionLevel">The inner exception level, i.e. the number of inner exception messages to list under the primary exception message. "0": show all inner exceptions.</param>
         public static async Task ShowAndLogDetailedErrorHandlerAsync(string message, Exception exception, int progressPercentage = 0, int innerExceptionLevel = 0)
         {
+            if (exception is null) throw new ArgumentNullException(nameof(exception));
+
             const string indent = "    ";
             var sb = new StringBuilder(message.AppendProgressPercentage(progressPercentage));
 
@@ -137,6 +139,8 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
         /// <param name="innerExceptionLevel">The inner exception level, i.e. the number of inner exception messages to list under the primary exception message. "0": show all inner exceptions.</param>
         public static async Task ShowAndLogErrorHandlerAsync(string message, Exception exception, int progressPercentage = 0, int innerExceptionLevel = 0)
         {
+            if (exception is null) throw new ArgumentNullException(nameof(exception));
+
             const string indent = "    ";
             var sb = new StringBuilder(message.AppendProgressPercentage(progressPercentage));
 

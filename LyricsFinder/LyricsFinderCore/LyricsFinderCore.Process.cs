@@ -281,6 +281,7 @@ namespace MediaCenter.LyricsFinder
             var searchItemIndices = new List<int>();
             var queue = new Queue<int>(Enumerable.Range(0, _currentLyricsFinderPlaylist.Items.Count));
             var workers = new List<Task>();
+            var begin = DateTime.Now;
 
             try
             {
@@ -322,9 +323,11 @@ namespace MediaCenter.LyricsFinder
                         : "completed successfully"
                     : "failed";
 
+                var duration = DateTime.Now - begin;
+
                 _progressPercentage = Convert.ToInt32(100 * processedCount / _currentLyricsFinderPlaylist.Items.Count);
                 await StatusMessageAsync($"Finding lyrics for the current playlist {result} with {processedCount} items processed, {searchItemIndices.Count} items searched "
-                    + $"and {foundItemIndices.Count} lyrics found."
+                    + $"and {foundItemIndices.Count} lyrics found in {duration:h\\:mm\\:ss}."
                     , true, true);
             }
         }
@@ -375,7 +378,7 @@ namespace MediaCenter.LyricsFinder
                     var found = false;
 
                     row = MainGridView.Rows[i];
-                    msg = $"Process worker {workerNumber} failed at item {i}. ";
+                    msg = $"Process worker {workerNumber} failed at item {i + 1}. ";
 
                     if (!int.TryParse(row.Cells[(int)GridColumnEnum.Key].Value?.ToString(), out var key))
                         throw new Exception($"{row.Cells[(int)GridColumnEnum.Key].Value} could not be parsed as an integer.");

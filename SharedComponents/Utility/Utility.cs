@@ -159,10 +159,11 @@ namespace MediaCenter.SharedComponents
         /// </summary>
         /// <param name="userName">Name of the user.</param>
         /// <param name="password">The password.</param>
+        /// <param name="timeoutMilliSeconds">The timeout in milliseconds. 0 or negative: no timeout.</param>
         /// <remarks>
         /// If <c>userName</c> is not specified, an anonymous HTTP client is created.
         /// </remarks>
-        private static void CreateHttpClient(string userName = "", string password = "")
+        private static void CreateHttpClient(string userName = "", string password = "", int timeoutMilliSeconds = 0)
         {
             if (userName.IsNullOrEmptyTrimmed())
             {
@@ -179,6 +180,9 @@ namespace MediaCenter.SharedComponents
                 {
                     _httpClientAnonymous.DefaultRequestHeaders.TryAddWithoutValidation(httpHeader.Key, httpHeader.Value);
                 }
+
+                if (timeoutMilliSeconds > 0)
+                    _httpClientAnonymous.Timeout = new TimeSpan(timeoutMilliSeconds * 10000);
             }
             else
             {
@@ -196,6 +200,9 @@ namespace MediaCenter.SharedComponents
                 {
                     _httpClientWithCredentials.DefaultRequestHeaders.TryAddWithoutValidation(httpHeader.Key, httpHeader.Value);
                 }
+
+                if (timeoutMilliSeconds > 0)
+                    _httpClientWithCredentials.Timeout = new TimeSpan(timeoutMilliSeconds * 10000);
             }
         }
 
@@ -396,20 +403,20 @@ namespace MediaCenter.SharedComponents
             foreach (var attr in Attribute.GetCustomAttributes(assy))
             {
                 // Check for the AssemblyTitle attribute.
-                if (attr is AssemblyTitleAttribute)
-                    title = ((AssemblyTitleAttribute)attr).Title;
+                if (attr is AssemblyTitleAttribute titleAttr)
+                    title = titleAttr.Title;
 
                 // Check for the AssemblyDescription attribute.
-                else if (attr is AssemblyDescriptionAttribute)
-                    description = ((AssemblyDescriptionAttribute)attr).Description;
+                else if (attr is AssemblyDescriptionAttribute descAttr)
+                    description = descAttr.Description;
 
                 // Check for the AssemblyCompany attribute.
-                //else if (attr is AssemblyCompanyAttribute)
-                //    company = ((AssemblyCompanyAttribute)attr).Company;
+                // else if (attr is AssemblyCompanyAttribute companyAttr)
+                //    company = companyAttr.Company;
 
                 // Check for the AssemblyCompany attribute.
-                else if (attr is AssemblyCopyrightAttribute)
-                    copyright = ((AssemblyCopyrightAttribute)attr).Copyright;
+                else if (attr is AssemblyCopyrightAttribute crAttr)
+                    copyright = crAttr.Copyright;
             }
 
             ret.AppendFormat(CultureInfo.InvariantCulture, "{0} version {1}", title, version);
@@ -428,12 +435,13 @@ namespace MediaCenter.SharedComponents
         /// <param name="requestUrl">The request URL.</param>
         /// <param name="userName">Name of the user.</param>
         /// <param name="password">The password.</param>
+        /// <param name="timeoutMilliSeconds">The timeout in milliseconds. 0 or negative: no timeout.</param>
         /// <returns>
         /// Complete REST service Web request image.
         /// </returns>
         /// <exception cref="ArgumentNullException">requestUrl</exception>
         /// <exception cref="HttpRequestException">\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".</exception>
-        public static async Task<Bitmap> HttpGetImageAsync(this Uri requestUrl, string userName = "", string password = "")
+        public static async Task<Bitmap> HttpGetImageAsync(this Uri requestUrl, string userName = "", string password = "", int timeoutMilliSeconds = 0)
         {
             if (requestUrl is null) throw new ArgumentNullException(nameof(requestUrl));
 
@@ -446,7 +454,7 @@ namespace MediaCenter.SharedComponents
                     st = await _httpClientAnonymous.GetStreamAsync(requestUrl).ConfigureAwait(false);
                 else
                 {
-                    CreateHttpClient(userName, password);
+                    CreateHttpClient(userName, password, timeoutMilliSeconds);
 
                     st = await _httpClientWithCredentials.GetStreamAsync(requestUrl).ConfigureAwait(false);
                 }
@@ -471,12 +479,13 @@ namespace MediaCenter.SharedComponents
         /// <param name="requestUrl">The request URL.</param>
         /// <param name="userName">Name of the user.</param>
         /// <param name="password">The password.</param>
+        /// <param name="timeoutMilliSeconds">The timeout in milliseconds. 0 or negative: no timeout.</param>
         /// <returns>
         /// Complete REST service Web request string.
         /// </returns>
         /// <exception cref="ArgumentNullException">requestUrl</exception>
         /// <exception cref="HttpRequestException">\"The call to the service failed: \"{ex.Message}\". Request: \"{requestUrl.ToString()}\".</exception>
-        public static async Task<string> HttpGetStringAsync(this Uri requestUrl, string userName = "", string password = "")
+        public static async Task<string> HttpGetStringAsync(this Uri requestUrl, string userName = "", string password = "", int timeoutMilliSeconds = 0)
         {
             if (requestUrl is null) throw new ArgumentNullException(nameof(requestUrl));
 
@@ -488,7 +497,7 @@ namespace MediaCenter.SharedComponents
                     ret = await _httpClientAnonymous.GetStringAsync(requestUrl).ConfigureAwait(false);
                 else
                 {
-                    CreateHttpClient(userName, password);
+                    CreateHttpClient(userName, password, timeoutMilliSeconds);
 
                     ret = await _httpClientWithCredentials.GetStringAsync(requestUrl).ConfigureAwait(false);
                 }
@@ -794,6 +803,41 @@ namespace MediaCenter.SharedComponents
 
 
         /// <summary>
+        /// Capitalize letter after each period.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="cultureInfo">The culture information.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">input</exception>
+        public static string ToCapitalizedAfterPeriod(this string input, CultureInfo cultureInfo = null)
+        {
+            if (input is null) throw new ArgumentNullException(nameof(input));
+
+            var ci = cultureInfo ?? CultureInfo.CurrentCulture;
+            var isPeriod = false;
+            var ret = new StringBuilder();
+            var ws = new[] { ' ', '\t' };
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                var ch = input[i];
+
+                if (ch == '.')
+                    isPeriod = true;
+                else if (isPeriod && !ws.Contains(ch))
+                {
+                    isPeriod = false;
+                    ch = char.ToUpper(ch, ci);
+                }
+
+                ret.Append(ch);
+            }
+
+            return ret.ToString();
+        }
+
+
+        /// <summary>
         /// Converts to to a string where single '\r' and '\n' are replaced by '\r\n'.
         /// </summary>
         /// <param name="input">The input.</param>
@@ -891,6 +935,9 @@ namespace MediaCenter.SharedComponents
         /// Sentence case version of the input string.
         /// </returns>
         /// <exception cref="ArgumentNullException">input</exception>
+        /// <remarks>
+        /// The first letter of each line is made uppercase, the remaining is left as it is.
+        /// </remarks>
         public static string ToSentenceCase(this string input, CultureInfo cultureInfo = null)
         {
             if (input is null) throw new ArgumentNullException(nameof(input));
@@ -907,11 +954,11 @@ namespace MediaCenter.SharedComponents
                 if (tmp.IsNullOrEmptyTrimmed()) continue;
 
                 if (tmp.Length > 1)
-                    tmp = tmp[0].ToString(ci).ToUpper(ci) + tmp.Substring(1).ToLower(ci);
+                    tmp = tmp[0].ToString(ci).ToUpper(ci) + tmp.Substring(1);
                 else
                     tmp = tmp.ToUpper(ci);
 
-                lines[i] = tmp;
+                lines[i] = tmp.ToCapitalizedAfterPeriod(cultureInfo);
             }
 
             // Assemble the complete text

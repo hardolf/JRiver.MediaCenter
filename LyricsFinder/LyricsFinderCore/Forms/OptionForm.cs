@@ -109,7 +109,8 @@ namespace MediaCenter.LyricsFinder.Forms
                         try
                         {
                             // Save the data contents
-                            _lyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnect = CollectPlaylistInfoOnMcReconnectCheckBox.Checked;
+                            _lyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectPlugin = CollectPlaylistInfoOnMcReconnectPlugingCheckBox.Checked;
+                            _lyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectStandalone = CollectPlaylistInfoOnMcReconnectStandaloneCheckBox.Checked;
                             _lyricsFinderData.MainData.DelayMilliSecondsBetweenSearches = (int)DelayMilliSecondsBetweenSearchesUpDown.Value;
                             // _lyricsFinderData.MainData.LastUpdateCheck = DateTime.Parse(LastUpdateCheckTextBox.Text, CultureInfo.InvariantCulture); // Readonly!
                             _lyricsFinderData.MainData.MaxQueueLength = (int)MaxQueueLengthUpDown.Value;
@@ -157,7 +158,8 @@ namespace MediaCenter.LyricsFinder.Forms
                 HeaderTextBox.Text = _headerText;
 
                 // Set the data contents
-                CollectPlaylistInfoOnMcReconnectCheckBox.Checked = _lyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnect;
+                CollectPlaylistInfoOnMcReconnectPlugingCheckBox.Checked = _lyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectPlugin;
+                CollectPlaylistInfoOnMcReconnectStandaloneCheckBox.Checked = _lyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectStandalone;
                 DelayMilliSecondsBetweenSearchesUpDown.Value = _lyricsFinderData.MainData.DelayMilliSecondsBetweenSearches;
                 LastUpdateCheckTextBox.Text = _lyricsFinderData.MainData.LastUpdateCheck.ToString(CultureInfo.CurrentCulture);
                 MaxQueueLengthUpDown.Value = _lyricsFinderData.MainData.MaxQueueLength;
@@ -226,7 +228,7 @@ namespace MediaCenter.LyricsFinder.Forms
             {
                 switch (ctlName)
                 {
-                    case nameof(CollectPlaylistInfoOnMcReconnectCheckBox):
+                    case nameof(CollectPlaylistInfoOnMcReconnectPlugingCheckBox):
                     case nameof(LastUpdateCheckTextBox):
                     case nameof(MouseMoveOpenLyricsFormCheckBox):
                     case nameof(NoLyricsSearchFilterTextBox):

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -175,7 +176,12 @@ namespace MediaCenter.LyricsFinder
         /// <param name="isStandAlone">if set to <c>true</c> <see cref="LyricsFinderCore" /> is called from stand alone EXE; else called from JRiver Media Center.</param>
         /// <param name="callingAssembly">The entry assembly.</param>
         /// <remarks>
+        /// <para>
         /// This is the main constructor for the core.
+        /// </para>
+        /// <para>
+        /// Source for the last two delegates is inspired by: https://stackify.com/csharp-catch-all-exceptions/
+        /// </para>
         /// </remarks>
         public LyricsFinderCore(bool isStandAlone, Assembly callingAssembly = null)
             : base()
@@ -187,8 +193,10 @@ namespace MediaCenter.LyricsFinder
             _isDesignTime = (LicenseManager.UsageMode == LicenseUsageMode.Designtime);
 
             InitializeComponent();
-        }
 
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+        }
 
         /// <summary>
         /// Creates the lyrics finder core object.
@@ -206,6 +214,48 @@ namespace MediaCenter.LyricsFinder
         /*********************/
         /***** Delegates *****/
         /*********************/
+
+
+        /// <summary>
+        /// Handles the ThreadException event of the Application control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ThreadExceptionEventArgs"/> instance containing the event data.</param>
+        /// <remarks>
+        /// Source inspired by: https://stackify.com/csharp-catch-all-exceptions/
+        /// </remarks>
+        private void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            var ex = e.Exception;
+            var msg = (ex?.Message == _zeroErrorMessage) ? $" with misleading 'OK' error message" : string.Empty;
+            var task = ErrorHandling.ShowAndLogErrorHandlerAsync($"Unexpected fatal thread error{msg}:{Constants.NewLine}", ex);
+
+            task.Wait(_exceptionLoggingWaitMilliSeconds);
+
+            task = Logging.LogAsync(0, _exceptionLoggingTerminateMessage);
+            task.Wait(_exceptionLoggingWaitMilliSeconds);
+        }
+
+
+        /// <summary>
+        /// Handles the UnhandledException event of the CurrentDomain control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="UnhandledExceptionEventArgs"/> instance containing the event data.</param>
+        /// <remarks>
+        /// Source inspired by: https://stackify.com/csharp-catch-all-exceptions/
+        /// </remarks>
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            var msg = (ex?.Message == _zeroErrorMessage) ? $" with misleading 'OK' error message" : string.Empty;
+            var task = ErrorHandling.ShowAndLogErrorHandlerAsync($"Unexpected fatal unhandled error{msg}:{Constants.NewLine}", ex);
+
+            task.Wait(_exceptionLoggingWaitMilliSeconds);
+
+            task = Logging.LogAsync(0, _exceptionLoggingTerminateMessage);
+            task.Wait(_exceptionLoggingWaitMilliSeconds);
+        }
 
 
         /// <summary>
@@ -406,6 +456,10 @@ namespace MediaCenter.LyricsFinder
 
                 switch (e.ClickedItem.Name)
                 {
+                    case nameof(ContextClearLyricMenuItem):
+                        ClearLyrics(rowIdx);
+                        break;
+
                     case nameof(ContextEditMenuItem):
                         ShowLyrics(colIdx, rowIdx);
                         break;
@@ -612,6 +666,33 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the ColumnDisplayIndexChanged event of the MainGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewColumnEventArgs"/> instance containing the event data.</param>
+        private async void MainGridView_ColumnDisplayIndexChangedAsync(object sender, DataGridViewColumnEventArgs e)
+        {
+            try
+            {
+                // Save the columns' display indices
+                var colDisplayIndices = new List<int>();
+
+                foreach (DataGridViewColumn col in MainGridView.Columns)
+                {
+                    colDisplayIndices.Add(col.DisplayIndex);
+                }
+
+                LyricsFinderData.MainData.MainGridColumnDisplaySequence = string.Join(",", colDisplayIndices);
+                await LyricsFinderData.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the ColumnHeaderMouseClick event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -647,6 +728,35 @@ namespace MediaCenter.LyricsFinder
 
 
         /// <summary>
+        /// Handles the ColumnWidthChanged event of the MainGridView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="DataGridViewColumnEventArgs"/> instance containing the event data.</param>
+        private async void MainGridView_ColumnWidthChangedAsync(object sender, DataGridViewColumnEventArgs e)
+        {
+            if (LyricsFinderData?.MainData is null) return;
+
+            try
+            {
+                // Save the columns' widths
+                var colDisplayWidths = new List<int>();
+
+                foreach (DataGridViewColumn col in MainGridView.Columns)
+                {
+                    colDisplayWidths.Add(col.Width);
+                }
+
+                LyricsFinderData.MainData.MainGridColumnWidths = string.Join(",", colDisplayWidths);
+                await LyricsFinderData.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                await ErrorReportAsync(SharedComponents.Utility.GetActualAsyncMethodName(), ex);
+            }
+        }
+
+
+        /// <summary>
         /// Handles the MouseEnter event of the MainGridView control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -656,6 +766,7 @@ namespace MediaCenter.LyricsFinder
             try
             {
                 this.Focus();
+                MainGridView.Focus();
             }
             catch (Exception ex)
             {
@@ -702,7 +813,9 @@ namespace MediaCenter.LyricsFinder
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private async void MainGridView_ResizeAsync(object sender, EventArgs e)
         {
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
             const int fraction = 6;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
 
             try
             {
@@ -710,9 +823,11 @@ namespace MediaCenter.LyricsFinder
 
                 // Set the Artist, Album and Track columns' width to a 5th of the total width
                 // The Lyrics column is set to "Fill", so it will adjust itself
+                /* Omitted, as we now save the column widths, from v.1.3.3
                 MainGridView.Columns[(int)GridColumnEnum.Artist].Width = (int)(MainGridView.Width / (1.5 * fraction));
                 MainGridView.Columns[(int)GridColumnEnum.Album].Width = (int)(MainGridView.Width / (1 * fraction));
                 MainGridView.Columns[(int)GridColumnEnum.Title].Width = (int)(MainGridView.Width / (1 * fraction));
+                */
             }
             catch (Exception ex)
             {
@@ -1026,10 +1141,13 @@ namespace MediaCenter.LyricsFinder
 
                 // Load the items' playlist IDs.
                 // This is a long-running operation!
+                // First we clear any old list in order to minimize memory usage
                 ItemsPlayListIds?.Clear();
                 ItemsPlayListIds = null;
+                GC.Collect();
 
-                if (LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnect)
+                if ((!_isStandAlone && LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectPlugin)
+                    || (_isStandAlone && LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectStandalone))
                     ItemsPlayListIds = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(currentPlayListItemIds, new[] { "Playlist" }, new[] { "Recent Playing Now" });
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again
@@ -1043,7 +1161,8 @@ namespace MediaCenter.LyricsFinder
             {
                 var duration = DateTime.Now - begin;
 
-                if (LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnect)
+                if ((!_isStandAlone && LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectPlugin)
+                    || (_isStandAlone && LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectStandalone))
                     await StatusMessageAsync($"Collected playlists for the current items in {duration:m\\:ss}.", true, true, 10);
             }
         }

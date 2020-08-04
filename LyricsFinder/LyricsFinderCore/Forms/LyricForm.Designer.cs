@@ -533,7 +533,7 @@
             this.EditSentenceCaseMenuItem.Name = "EditSentenceCaseMenuItem";
             this.EditSentenceCaseMenuItem.Size = new System.Drawing.Size(277, 22);
             this.EditSentenceCaseMenuItem.Text = "&Sentence case selection";
-            this.EditSentenceCaseMenuItem.ToolTipText = "In the first word after a newline or period, \r\nthe first letter is capitalized";
+            this.EditSentenceCaseMenuItem.ToolTipText = "In the first word after a newline or period, \r\nthe first letter is capitalized, \r\nthe remaing letters are not changed";
             this.EditSentenceCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditSeparator3
