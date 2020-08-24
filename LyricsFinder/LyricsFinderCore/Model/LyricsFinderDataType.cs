@@ -252,7 +252,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <summary>
         /// Loads this instance.
         /// </summary>
-        /// <param name="xmlFilePath">The XML file path.</param>
+        /// <param name="xmlFilePath">The full XML file path.</param>
         /// <returns></returns>
         public static LyricsFinderDataType Load(string xmlFilePath)
         {

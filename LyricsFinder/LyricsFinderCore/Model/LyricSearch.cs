@@ -22,6 +22,11 @@ namespace MediaCenter.LyricsFinder.Model
     public static class LyricSearch
     {
 
+        // Instantiate a Singleton of the Semaphore with a value of 1. 
+        // This means that only 1 thread can be granted access at a time. 
+        // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+        private static readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+
         /// <summary>
         /// Searches for lyrics in all lyric services.
         /// </summary>
@@ -114,24 +119,40 @@ namespace MediaCenter.LyricsFinder.Model
             }
             finally
             {
+                // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
+                await _semaphoreSlim.WaitAsync();
+
                 try
                 {
+                    // Reload the lyric services' data
+                    lyricsFinderData = LyricsFinderDataType.Load(lyricsFinderData.DataFilePath);
+
                     // Add the clone service counters and IsActive flag back to the original services
                     for (int i = 0; i < services.Count; i++)
                     {
                         var service = services[i];
                         var serviceClone = ret[i];
+                        var reloadedService = lyricsFinderData.LyricServices.Find(s => s.Credit.ServiceName.Equals(service.Credit.ServiceName, StringComparison.CurrentCulture));
 
                         await service.IncrementRequestCountersAsync(serviceClone.RequestCountTotal);
                         await service.IncrementHitCountersAsync(serviceClone.HitCountTotal);
-                        service.IsActive = serviceClone.IsActive;
+
+                        if (reloadedService?.IsActive ?? false)
+                            service.IsActive = serviceClone.IsActive;
                     }
 
                 }
                 finally
                 {
                     // Save the service counters etc.
-                    await lyricsFinderData.SaveAsync();
+                    try
+                    {
+                        await lyricsFinderData.SaveAsync();
+                    }
+                    finally
+                    {
+                        _semaphoreSlim.Release();
+                    }
                 }
             }
 

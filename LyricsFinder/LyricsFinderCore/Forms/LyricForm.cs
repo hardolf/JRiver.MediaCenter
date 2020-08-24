@@ -995,14 +995,15 @@ namespace MediaCenter.LyricsFinder.Forms
 
                         case DialogResult.Yes:
                             LyricTextBox.Text = _searchForm.Lyric;
+                            _searchForm = null;
+                            LyricTextBox.Select();
                             break;
 
                         default:
+                            _searchForm = null;
+                            LyricTextBox.Select();
                             throw new Exception($"Unknown DialogResult: \"{lyricForm.Result}\".");
                     }
-
-                    _searchForm = null;
-                    LyricTextBox.Select();
                 }
             }
             catch (Exception ex)

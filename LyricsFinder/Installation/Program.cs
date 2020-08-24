@@ -87,6 +87,7 @@ namespace MediaCenter.LyricsFinder
         /// <param name="packageRootFolder">The package root folder.</param>
         private static void PackageSetupFile(IEnumerable<string> sourceDirectories, string destinationDirectory, string destinationFileRootName, string versionText, string packageRootFolder = "")
         {
+            var packageFiles = new SortedDictionary<string, string>();
             var zipPath = Path.Combine(destinationDirectory, $"{destinationFileRootName}.{versionText}.zip");
 
             // Delete the packed destination file if already there
@@ -104,6 +105,12 @@ namespace MediaCenter.LyricsFinder
 
                         if (!string.IsNullOrEmpty(packageRootFolder))
                             setupFileName = Path.Combine(packageRootFolder, setupFileName);
+
+                        // Avoid duplicate files in the package
+                        if (packageFiles.ContainsKey(setupFileName))
+                            continue;
+                        else
+                            packageFiles.Add(setupFileName, setupFilePath);
 
                         zip.CreateEntryFromFile(setupFilePath, setupFileName, CompressionLevel.Fastest);
                     }
