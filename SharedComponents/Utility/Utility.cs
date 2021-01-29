@@ -802,6 +802,22 @@ namespace MediaCenter.SharedComponents
         }
 
 
+        public static string ToAmpersandCorrected(this string input)
+        {
+            if (input is null) throw new ArgumentNullException(nameof(input));
+
+            var searchStrings = new[] { "&amp;amp;" };
+            var ret = new StringBuilder(input);
+
+            foreach (var s in searchStrings)
+            {
+                ret.Replace(s, "&");
+            }
+
+            return ret.ToString();
+        }
+
+
         /// <summary>
         /// Capitalize letter after each period.
         /// </summary>
@@ -945,16 +961,31 @@ namespace MediaCenter.SharedComponents
             var ci = cultureInfo ?? CultureInfo.CurrentCulture;
             var ret = input.ToNormalizedString();
             var lines = ret.Split(new[] { Constants.NewLine }, StringSplitOptions.None);
+            var skippedFirstCharacters = new[] { '\'', '(', '[', '{' };
 
             // Transform the lines
             for (var i = 0; i < lines.Length; i++)
             {
                 var tmp = lines[i];
+                var firstCharIdx = 0;
 
                 if (tmp.IsNullOrEmptyTrimmed()) continue;
 
                 if (tmp.Length > 1)
-                    tmp = tmp[0].ToString(ci).ToUpper(ci) + tmp.Substring(1);
+                {
+                    foreach (var ch in tmp)
+                    {
+                        // Find the index of the first character that should not be skipped
+                        if (skippedFirstCharacters.Contains(ch))
+                            firstCharIdx++;
+                        else
+                            break;
+                    }
+
+                    // Make the first 'real' character uppercase and preserve the rest of the string
+                    tmp = ((firstCharIdx > 0) ? tmp.Substring(0, firstCharIdx) : string.Empty)
+                        + tmp[firstCharIdx].ToString(ci).ToUpper(ci) + tmp.Substring(firstCharIdx + 1);
+                }
                 else
                     tmp = tmp.ToUpper(ci);
 

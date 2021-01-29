@@ -244,12 +244,14 @@ namespace MediaCenter.LyricsFinder.Forms
         {
             try
             {
+                e.Cancel = false;
                 _finalLyric = LyricTextBox.Text.Trim();
 
                 if (!_isSearch && (_searchForm != null))
                 {
                     _searchForm.Close();
                     _searchForm = null;
+                    LyricTextBox.Focus();
                 }
 
                 var question = (_isSearch)
@@ -257,15 +259,9 @@ namespace MediaCenter.LyricsFinder.Forms
                     : "Lyric is changed" + Constants.NewLine + "Do you want to use the new lyric?";
 
                 if (_finalLyric == _initLyric)
-                {
-                    e.Cancel = false;
                     Result = DialogResult.No;
-                }
                 else if (_isSearch && _finalLyric.IsNullOrEmptyTrimmed())
-                {
-                    e.Cancel = false;
                     Result = DialogResult.No;
-                }
                 else
                 {
                     Result = MessageBox.Show(this, question, "Lyric changed", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
@@ -277,12 +273,10 @@ namespace MediaCenter.LyricsFinder.Forms
                             break;
 
                         case DialogResult.No:
-                            e.Cancel = false;
                             Lyric = _initLyric;
                             break;
 
                         case DialogResult.Yes:
-                            e.Cancel = false;
                             Lyric = _finalLyric;
                             break;
 
@@ -727,6 +721,11 @@ namespace MediaCenter.LyricsFinder.Forms
                             case nameof(EditMenuItem):
                                 break;
 
+                            case nameof(EditAmpersandCorrectionMenuItem):
+                                if (DoTextOperationQuestion(true))
+                                    txt.SetSelectionText(SelectionOperation.AmpersandCorrection);
+                                break;
+
                             case nameof(EditCopyMenuItem):
                                 txt.Copy();
                                 break;
@@ -987,6 +986,8 @@ namespace MediaCenter.LyricsFinder.Forms
             {
                 if (!_isSearch && (_searchForm != null))
                 {
+                    LyricTextBox.Select();
+
                     switch (lyricForm.Result)
                     {
                         case DialogResult.Cancel:
@@ -995,15 +996,14 @@ namespace MediaCenter.LyricsFinder.Forms
 
                         case DialogResult.Yes:
                             LyricTextBox.Text = _searchForm.Lyric;
-                            _searchForm = null;
-                            LyricTextBox.Select();
                             break;
 
                         default:
-                            _searchForm = null;
                             LyricTextBox.Select();
                             throw new Exception($"Unknown DialogResult: \"{lyricForm.Result}\".");
                     }
+
+                    _searchForm = null;
                 }
             }
             catch (Exception ex)
@@ -1289,7 +1289,7 @@ namespace MediaCenter.LyricsFinder.Forms
             SharedComponents.Utility.EnableOrDisableToolStripItems((focusedControl is SpellBox),
                 EditRedoMenuItem,
                 EditFindMenuItem, EditReplaceMenuItem, EditFindReplaceNextMenuItem,
-                EditProperCaseMenuItem, EditSentenceCaseMenuItem, EditTitleCaseMenuItem, EditLowerCaseMenuItem, EditUpperCaseMenuItem,
+                EditAmpersandCorrectionMenuItem, EditProperCaseMenuItem, EditSentenceCaseMenuItem, EditTitleCaseMenuItem, EditLowerCaseMenuItem, EditUpperCaseMenuItem,
                 EditRemoveExcessSpacesAndLineEndingsMenuItem, EditTrimMenuItem,
                 EditToggleSpellCheckMenuItem, EditSpellCheckLanguageMenuItem);
 

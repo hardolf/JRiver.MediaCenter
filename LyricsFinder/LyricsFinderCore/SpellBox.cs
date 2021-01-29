@@ -513,6 +513,10 @@ namespace MediaCenter.LyricsFinder
 
             switch (selectionOperation)
             {
+                case SelectionOperation.AmpersandCorrection:
+                    SelectedText = selText.ToAmpersandCorrected();
+                    break;
+
                 case SelectionOperation.Copy:
                     Copy();
                     break;
@@ -534,7 +538,7 @@ namespace MediaCenter.LyricsFinder
                     break;
 
                 case SelectionOperation.ProperCase:
-                    SelectedText = selText.ToProperCase(ci);
+                    SelectedText = selText.ToProperCase();
                     break;
 
                 case SelectionOperation.RemoveDoubleLineEndings:
@@ -735,6 +739,7 @@ namespace MediaCenter.LyricsFinder
     public enum SelectionOperation
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        AmpersandCorrection,
         Copy,
         Cut,
         Delete,

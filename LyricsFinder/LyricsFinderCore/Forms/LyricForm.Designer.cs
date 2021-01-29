@@ -55,7 +55,6 @@
             this.ArtistLabel = new System.Windows.Forms.Label();
             this.AlbumLabel = new System.Windows.Forms.Label();
             this.TrackLabel = new System.Windows.Forms.Label();
-            this.LyricTextBox = new MediaCenter.LyricsFinder.SpellBox();
             this.LyricElementHost = new System.Windows.Forms.Integration.ElementHost();
             this.LyricFormMenuStrip = new System.Windows.Forms.MenuStrip();
             this.EditMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,11 +88,13 @@
             this.ToolsSeparator0 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolsItemInfoMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
             this.ToolsPlayJumpAheadLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsPlayJumpBackLargeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpHelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.LyricTextBox = new MediaCenter.LyricsFinder.SpellBox();
+            this.ToolsPlayStartStopButton = new MediaCenter.LyricsFinder.StartStopToolStripButton();
+            this.EditAmpersandCorrectionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.LyricFormTrackBar)).BeginInit();
             this.LyricFormToolStripContainer.BottomToolStripPanel.SuspendLayout();
             this.LyricFormToolStripContainer.ContentPanel.SuspendLayout();
@@ -322,27 +323,6 @@
             this.TrackLabel.TabIndex = 4;
             this.TrackLabel.Text = "Track Title";
             // 
-            // LyricTextBox
-            // 
-            this.LyricTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LyricTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.LyricTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.LyricTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.LyricTextBox.Location = new System.Drawing.Point(4, 112);
-            this.LyricTextBox.Multiline = true;
-            this.LyricTextBox.Name = "LyricTextBox";
-            this.LyricTextBox.ParentForm = this;
-            this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.LyricTextBox.SelectedText = "";
-            this.LyricTextBox.SelectionStart = 0;
-            this.LyricTextBox.Size = new System.Drawing.Size(377, 326);
-            this.LyricTextBox.SpellCheckEnabled = false;
-            this.LyricTextBox.TabIndex = 1;
-            this.LyricTextBox.KeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.LyricTextBox_KeyDownAsync);
-            this.LyricTextBox.Child = new System.Windows.Controls.TextBox();
-            // 
             // LyricElementHost
             // 
             this.LyricElementHost.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -389,6 +369,7 @@
             this.EditLowerCaseMenuItem,
             this.EditUpperCaseMenuItem,
             this.EditSentenceCaseMenuItem,
+            this.EditAmpersandCorrectionMenuItem,
             this.EditSeparator3,
             this.EditRemoveDoubleLineEndingsMenuItem,
             this.EditRemoveExcessSpacesAndLineEndingsMenuItem,
@@ -499,7 +480,7 @@
             // 
             this.EditProperCaseMenuItem.Name = "EditProperCaseMenuItem";
             this.EditProperCaseMenuItem.Size = new System.Drawing.Size(277, 22);
-            this.EditProperCaseMenuItem.Text = "&Proper case selection";
+            this.EditProperCaseMenuItem.Text = "&Proper case";
             this.EditProperCaseMenuItem.ToolTipText = "In every word the first letter is capitalized";
             this.EditProperCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -507,7 +488,7 @@
             // 
             this.EditTitleCaseMenuItem.Name = "EditTitleCaseMenuItem";
             this.EditTitleCaseMenuItem.Size = new System.Drawing.Size(277, 22);
-            this.EditTitleCaseMenuItem.Text = "&Title case selection";
+            this.EditTitleCaseMenuItem.Text = "&Title case";
             this.EditTitleCaseMenuItem.ToolTipText = "In every word the first letter is capitalized,\r\nexcept where word length is less " +
     "than 4";
             this.EditTitleCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
@@ -516,7 +497,7 @@
             // 
             this.EditLowerCaseMenuItem.Name = "EditLowerCaseMenuItem";
             this.EditLowerCaseMenuItem.Size = new System.Drawing.Size(277, 22);
-            this.EditLowerCaseMenuItem.Text = "&Lower case selection";
+            this.EditLowerCaseMenuItem.Text = "&Lower case";
             this.EditLowerCaseMenuItem.ToolTipText = "All text is in small letters";
             this.EditLowerCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -524,7 +505,7 @@
             // 
             this.EditUpperCaseMenuItem.Name = "EditUpperCaseMenuItem";
             this.EditUpperCaseMenuItem.Size = new System.Drawing.Size(277, 22);
-            this.EditUpperCaseMenuItem.Text = "&Upper case selection";
+            this.EditUpperCaseMenuItem.Text = "&Upper case";
             this.EditUpperCaseMenuItem.ToolTipText = "All text is in capital letters";
             this.EditUpperCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
@@ -532,8 +513,9 @@
             // 
             this.EditSentenceCaseMenuItem.Name = "EditSentenceCaseMenuItem";
             this.EditSentenceCaseMenuItem.Size = new System.Drawing.Size(277, 22);
-            this.EditSentenceCaseMenuItem.Text = "&Sentence case selection";
-            this.EditSentenceCaseMenuItem.ToolTipText = "In the first word after a newline or period, \r\nthe first letter is capitalized, \r\nthe remaing letters are not changed";
+            this.EditSentenceCaseMenuItem.Text = "&Sentence case";
+            this.EditSentenceCaseMenuItem.ToolTipText = "In the first word after a newline or period, \r\nthe first letter is capitalized, \r" +
+    "\nthe remaing letters are not changed";
             this.EditSentenceCaseMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // EditSeparator3
@@ -622,23 +604,6 @@
             this.ToolsSeparator1.Name = "ToolsSeparator1";
             this.ToolsSeparator1.Size = new System.Drawing.Size(237, 6);
             // 
-            // ToolsPlayStartStopButton
-            // 
-            this.ToolsPlayStartStopButton.AutoSize = false;
-            this.ToolsPlayStartStopButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.ToolsPlayStartStopButton.Clicked = false;
-            this.ToolsPlayStartStopButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.ToolsPlayStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStart")));
-            this.ToolsPlayStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStop")));
-            this.ToolsPlayStartStopButton.ImageTransparentColor = System.Drawing.SystemColors.Control;
-            this.ToolsPlayStartStopButton.IsRunning = false;
-            this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
-            this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(76, 20);
-            this.ToolsPlayStartStopButton.Text = "Start play";
-            this.ToolsPlayStartStopButton.TextStart = "Resume play";
-            this.ToolsPlayStartStopButton.TextStop = "Pause play";
-            this.ToolsPlayStartStopButton.ToolTipText = "Resume / pause play of the current item (Ctrl+P)";
-            // 
             // ToolsPlayJumpAheadLargeMenuItem
             // 
             this.ToolsPlayJumpAheadLargeMenuItem.Name = "ToolsPlayJumpAheadLargeMenuItem";
@@ -670,6 +635,53 @@
             this.HelpHelpMenuItem.Size = new System.Drawing.Size(118, 22);
             this.HelpHelpMenuItem.Text = "&Help";
             this.HelpHelpMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
+            // 
+            // LyricTextBox
+            // 
+            this.LyricTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LyricTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.LyricTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.LyricTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.LyricTextBox.Location = new System.Drawing.Point(4, 112);
+            this.LyricTextBox.Multiline = true;
+            this.LyricTextBox.Name = "LyricTextBox";
+            this.LyricTextBox.ParentForm = this;
+            this.LyricTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.LyricTextBox.SelectedText = "";
+            this.LyricTextBox.SelectionStart = 0;
+            this.LyricTextBox.Size = new System.Drawing.Size(377, 326);
+            this.LyricTextBox.SpellCheckEnabled = false;
+            this.LyricTextBox.TabIndex = 1;
+            this.LyricTextBox.KeyDown += new System.EventHandler<System.Windows.Forms.KeyEventArgs>(this.LyricTextBox_KeyDownAsync);
+            this.LyricTextBox.Child = new System.Windows.Controls.TextBox();
+            // 
+            // ToolsPlayStartStopButton
+            // 
+            this.ToolsPlayStartStopButton.AutoSize = false;
+            this.ToolsPlayStartStopButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.ToolsPlayStartStopButton.Clicked = false;
+            this.ToolsPlayStartStopButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ToolsPlayStartStopButton.ImageStart = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStart")));
+            this.ToolsPlayStartStopButton.ImageStop = ((System.Drawing.Bitmap)(resources.GetObject("ToolsPlayStartStopButton.ImageStop")));
+            this.ToolsPlayStartStopButton.ImageTransparentColor = System.Drawing.SystemColors.Control;
+            this.ToolsPlayStartStopButton.IsRunning = false;
+            this.ToolsPlayStartStopButton.Name = "ToolsPlayStartStopButton";
+            this.ToolsPlayStartStopButton.Size = new System.Drawing.Size(76, 20);
+            this.ToolsPlayStartStopButton.Text = "Start play";
+            this.ToolsPlayStartStopButton.TextStart = "Resume play";
+            this.ToolsPlayStartStopButton.TextStop = "Pause play";
+            this.ToolsPlayStartStopButton.ToolTipText = "Resume / pause play of the current item (Ctrl+P)";
+            // 
+            // EditAmpersandCorrectionMenuItem
+            // 
+            this.EditAmpersandCorrectionMenuItem.Name = "EditAmpersandCorrectionMenuItem";
+            this.EditAmpersandCorrectionMenuItem.Size = new System.Drawing.Size(277, 22);
+            this.EditAmpersandCorrectionMenuItem.Text = "&Ampersand correction";
+            this.EditAmpersandCorrectionMenuItem.ToolTipText = "Ampersands in text from Internet services may have the wrong format needing corre" +
+    "ction.\r\nE.g. \"&amp;amp;\"";
+            this.EditAmpersandCorrectionMenuItem.Click += new System.EventHandler(this.MenuItem_ClickAsync);
             // 
             // LyricForm
             // 
@@ -770,5 +782,6 @@
         private System.Windows.Forms.ToolStripSeparator ToolsSeparator0;
         private System.Windows.Forms.ToolStripMenuItem ToolsItemInfoMenuItem;
         private System.Windows.Forms.ToolStripMenuItem EditRemoveDoubleLineEndingsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem EditAmpersandCorrectionMenuItem;
     }
 }
