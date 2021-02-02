@@ -457,8 +457,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
     [Serializable, XmlType("result")]
     public class StandsResultType
     {
-
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         [XmlElement("song")]
         public string Song { get; set; }
 
@@ -476,8 +474,6 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
         [XmlElement("album-link")]
         public string AlbumLink { get; set; }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-
     }
 
 
