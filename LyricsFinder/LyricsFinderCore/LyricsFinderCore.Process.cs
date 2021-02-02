@@ -411,7 +411,7 @@ namespace MediaCenter.LyricsFinder
                         var resultServices = await LyricSearch.SearchAsync(LyricsFinderData, _currentLyricsFinderPlaylist.Items[key], lyricExceptions, cancellationToken, false);
 
                         // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
-                        await _semaphoreSlim.WaitAsync();
+                        await _semaphoreSlim.WaitAsync(cancellationToken);
 
                         try
                         {
@@ -433,7 +433,7 @@ namespace MediaCenter.LyricsFinder
                                 found = true;
 
                                 // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
-                                await _semaphoreSlim.WaitAsync();
+                                await _semaphoreSlim.WaitAsync(cancellationToken);
 
                                 try
                                 {

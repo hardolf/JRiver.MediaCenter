@@ -312,13 +312,11 @@ namespace MediaCenter.LyricsFinder
                     // Get the item's bitmap
                     using (var fs = new FileStream(ifn, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
-#pragma warning disable CA2000 // Dispose objects before losing scope
                         var image = new Bitmap(fs);
 
                         _itemBitmaps.Add(image);
 
                         ret = image;
-#pragma warning restore CA2000 // Dispose objects before losing scope
                     }
                 }
             }
@@ -1249,7 +1247,7 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="ex">The exception.</param>
-        private async Task StatusLogAsync(string message, Exception ex)
+        private static async Task StatusLogAsync(string message, Exception ex)
         {
             await Logging.LogAsync(_progressPercentage, message, ex);
         }
