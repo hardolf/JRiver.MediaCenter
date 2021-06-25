@@ -222,11 +222,34 @@ namespace MediaCenter.LyricsFinder.Forms
             dgv.Rows.Clear();
 
             // Populate the data grid
-            // First, add the item's playlists text
+            // First, get the item's playlists IDs
+            var playListIds = new List<int>();
+
+            if (LyricsFinderCore.McVersion?.Major >= 28)
+            {
+                var playLists = await McRestService.GetPlayListsForItemAsync(id);
+
+                // Join the item's playlist names
+                if ((playLists != null) && (playLists.Items.Count > 0))
+                {
+                    var firstValue = playLists.Items.First().Value;
+                    var idNamePairs = firstValue.Split(';');
+
+                    foreach (var s in idNamePairs)
+                    {
+                        playListIds.Add(int.Parse(s.Split(':').First()));
+                    }
+                }
+            }
+            else if (LyricsFinderCore.ItemsPlayListIds != null)
+                LyricsFinderCore.ItemsPlayListIds.TryGetValue(id, out playListIds);
+
+            // Next, add the item's playlists text
             var playListsText = string.Empty;
 
-            if ((LyricsFinderCore.ItemsPlayListIds != null)
-                && (LyricsFinderCore.ItemsPlayListIds.TryGetValue(id, out var playListIds)))
+            if (playListIds.IsNullOrEmpty())
+                playListsText = _emptyPlayListCollection;
+            else
             {
                 // Create a new list of playlist names
                 var playLists = new Dictionary<int, string>();
@@ -249,27 +272,6 @@ namespace MediaCenter.LyricsFinder.Forms
                     playListsText += playList.Value;
                 }
             }
-            else if (LyricsFinderCore.McVersion?.Major >= 28)
-            {
-                var playLists = await McRestService.GetPlayListsForItemAsync(id);
-
-                // Join the item's playlist names
-                if ((playLists != null) && (playLists.Items.Count > 0))
-                {
-                    var firstValue = playLists.Items.First().Value;
-                    var idNamePairs = firstValue.Split(';').OrderBy(p => p.Split(':').Last());
-
-                    foreach (var s in idNamePairs)
-                    {
-                        if (!playListsText.IsNullOrEmptyTrimmed())
-                            playListsText += ", ";
-
-                        playListsText += s.Split(':').Last();
-                    }
-                }
-            }
-            else
-                playListsText = _emptyPlayListCollection;
 
             dgv.Rows.Add("*", "PlayLists", playListsText);
 
