@@ -98,7 +98,7 @@ namespace MediaCenter.LyricsFinder.Forms
         {
             try
             {
-                FillData();
+                await FillData();
             }
             catch (Exception ex)
             {
@@ -166,7 +166,7 @@ namespace MediaCenter.LyricsFinder.Forms
                 if (_itemFields.TryGetValue("Name", out var text))
                     Text = text;
 
-                FillData();
+                await FillData();
             }
             catch (Exception ex)
             {
@@ -206,7 +206,7 @@ namespace MediaCenter.LyricsFinder.Forms
         /// <summary>
         /// Fills the data.
         /// </summary>
-        private void FillData()
+        private async Task FillData()
         {
             var dgv = MainDataGridView;
             var fields = (IncludeCalculatedCheckBox.Checked) ? _itemFieldsFull : _itemFields;
@@ -247,6 +247,25 @@ namespace MediaCenter.LyricsFinder.Forms
                         playListsText += ", ";
 
                     playListsText += playList.Value;
+                }
+            }
+            else if (LyricsFinderCore.McVersion?.Major >= 28)
+            {
+                var playLists = await McRestService.GetPlayListsForItemAsync(id);
+
+                // Join the item's playlist names
+                if ((playLists != null) && (playLists.Items.Count > 0))
+                {
+                    var firstValue = playLists.Items.First().Value;
+                    var idNamePairs = firstValue.Split(';').OrderBy(p => p.Split(':').Last());
+
+                    foreach (var s in idNamePairs)
+                    {
+                        if (!playListsText.IsNullOrEmptyTrimmed())
+                            playListsText += ", ";
+
+                        playListsText += s.Split(':').Last();
+                    }
                 }
             }
             else

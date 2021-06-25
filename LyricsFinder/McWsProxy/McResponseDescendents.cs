@@ -21,7 +21,6 @@ namespace MediaCenter.McWs
     public class McAliveResponse : McResponse
     {
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         [XmlElement]
         public string AccessKey { get; set; }
 
@@ -45,7 +44,6 @@ namespace MediaCenter.McWs
 
         [XmlElement]
         public string RuntimeGUID { get; set; }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 
         /// <summary>
@@ -102,7 +100,7 @@ namespace MediaCenter.McWs
             }
             set
             {
-                IsReadOnly = (value.IsNullOrEmptyTrimmed() || value.Equals("0", StringComparison.InvariantCultureIgnoreCase)) ? false : true;
+                IsReadOnly = !value.IsNullOrEmptyTrimmed() && !value.Equals("0", StringComparison.InvariantCultureIgnoreCase);
             }
         }
 
@@ -137,7 +135,6 @@ namespace MediaCenter.McWs
     public class McInfoResponse : McResponse
     {
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         [XmlElement]
         public string Album { get; set; }
 
@@ -215,7 +212,6 @@ namespace MediaCenter.McWs
 
         [XmlElement]
         public string ZoneID { get; set; }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 
         /// <summary>

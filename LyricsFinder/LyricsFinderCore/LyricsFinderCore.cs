@@ -146,6 +146,14 @@ namespace MediaCenter.LyricsFinder
         internal McPlayControl McPlayControl { get; private set; }
 
         /// <summary>
+        /// Gets the MediaCenter version.
+        /// </summary>
+        /// <value>
+        /// The MediaCenter version.
+        /// </value>
+        internal Version McVersion { get; private set; } = null;
+
+        /// <summary>
         /// The lyrics finder data.
         /// </summary>
         internal LyricsFinderDataType LyricsFinderData { get; private set; }
@@ -1139,16 +1147,19 @@ namespace MediaCenter.LyricsFinder
 
                 var currentPlayListItemIds = new List<int>(_currentLyricsFinderPlaylist.Items.Keys);
 
-                // Load the items' playlist IDs.
-                // This is a long-running operation!
-                // First we clear any old list in order to minimize memory usage
-                ItemsPlayListIds?.Clear();
-                ItemsPlayListIds = null;
-                GC.Collect();
+                if (McVersion?.Major < 28)
+                {
+                    // Load all the items' playlist IDs.
+                    // This is a long-running operation!
+                    // First we clear any old list in order to minimize memory usage
+                    ItemsPlayListIds?.Clear();
+                    ItemsPlayListIds = null;
+                    GC.Collect();
 
-                if ((!_isStandAlone && LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectPlugin)
-                    || (_isStandAlone && LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectStandalone))
-                    ItemsPlayListIds = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(currentPlayListItemIds, new[] { "Playlist" }, new[] { "Recent Playing Now" });
+                    if ((!_isStandAlone && LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectPlugin)
+                        || (_isStandAlone && LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectStandalone))
+                        ItemsPlayListIds = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(currentPlayListItemIds, new[] { "Playlist" }, new[] { "Recent Playing Now" }); 
+                }
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again
                 // ReadyTimer.Start();

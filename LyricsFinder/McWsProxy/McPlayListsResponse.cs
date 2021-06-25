@@ -229,7 +229,6 @@ namespace MediaCenter.McWs
     public class McPlayListType
     {
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         [XmlElement]
         public string Id { get; set; }
 
@@ -244,7 +243,6 @@ namespace MediaCenter.McWs
 
         [XmlIgnore]
         public List<int> ItemKeys { get; } = new List<int>();
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
 
         /// <summary>

@@ -1105,7 +1105,7 @@ namespace MediaCenter.LyricsFinder.Forms
         /// <exception cref="ArgumentNullException">findText</exception>
         internal void FindReplaceAction(bool isNext, string findText, string replaceText = null, bool isAll = false)
         {
-            if (findText.IsNullOrEmptyTrimmed()) throw new ArgumentOutOfRangeException($"{nameof(findText)} must have a value.");
+            if (findText.IsNullOrEmptyTrimmed()) throw new ArgumentOutOfRangeException(nameof(findText));
 
             if (LyricTextBox.SelectionStart <= LyricTextBox.Text.Length - findText.Length)
             {

@@ -85,6 +85,8 @@ namespace MediaCenter.LyricsFinder
                     {
                         Authentication = await McRestService.GetAuthenticationAsync();
                         _isConnectedToMc = true;
+                        if (Version.TryParse(alive.ProgramVersion, out var tmp))
+                            McVersion = tmp;
                         await StatusMessageAsync($"Connected successfully to the MCWS after {cnt} attempt(s).", true, true);
                     }
                     catch

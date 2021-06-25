@@ -55,7 +55,7 @@ namespace MediaCenter.McWs
             }
             set
             {
-                IsOk = value.Equals("OK", StringComparison.InvariantCultureIgnoreCase) ? true : false;
+                IsOk = value.Equals("OK", StringComparison.InvariantCultureIgnoreCase);
             }
         }
 

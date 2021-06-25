@@ -168,6 +168,10 @@ namespace MediaCenter.McWs
                     sb.Append($"/Playlists/List?Token={McWsToken}&Action=MPL");
                     break;
 
+                case McCommandEnum.PlaylistListForItem:
+                    sb.Append($"/File/GetPlaylists?Token={McWsToken}&File={key}");
+                    break;
+
                 case McCommandEnum.PlayPlaylist:
                     sb.Append($"/Playback/{command}?Token={McWsToken}&Playlist={key}");
                     break;
@@ -322,6 +326,23 @@ namespace MediaCenter.McWs
 
 
         /// <summary>
+        /// Gets the play list for a single item from MC server.
+        /// </summary>
+        /// <param name="key">The item key.</param>
+        /// <returns>
+        ///   <see cref="McMplResponse" /> object.
+        /// </returns>
+        public static async Task<McResponse> GetPlayListsForItemAsync(int key)
+        {
+            var requestUrl = CreateRequestUrl(McCommandEnum.PlaylistListForItem, key);
+            var rsp = await Utility.HttpGetStringAsync(requestUrl).ConfigureAwait(false);
+            var ret = new McResponse(rsp);
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Gets the current "Playing Now" list from MC server.
         /// </summary>
         /// <returns>
@@ -369,10 +390,10 @@ namespace MediaCenter.McWs
         /// Parameter must be specified: {nameof(mcWsPassword)}.</exception>
         public static void Init(string mcWebServiceAccessKey, string mcWebServiceUrl, string mcWsUserName, string mcWsPassword)
         {
-            if (mcWebServiceAccessKey.IsNullOrEmptyTrimmed()) throw new ArgumentNullException($"Parameter must be specified: {nameof(mcWebServiceAccessKey)}.");
-            if (mcWebServiceUrl.IsNullOrEmptyTrimmed()) throw new ArgumentNullException($"Parameter must be specified: {nameof(mcWebServiceUrl)}.");
-            if (mcWsUserName.IsNullOrEmptyTrimmed()) throw new ArgumentNullException($"Parameter must be specified: {nameof(mcWsUserName)}.");
-            if (mcWsPassword.IsNullOrEmptyTrimmed()) throw new ArgumentNullException($"Parameter must be specified: {nameof(mcWsPassword)}.");
+            if (mcWebServiceAccessKey.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(mcWebServiceAccessKey));
+            if (mcWebServiceUrl.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(mcWebServiceUrl));
+            if (mcWsUserName.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(mcWsUserName));
+            if (mcWsPassword.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(mcWsPassword));
 
             McWsAccessKey = mcWebServiceAccessKey;
             McWsUrl = mcWebServiceUrl;

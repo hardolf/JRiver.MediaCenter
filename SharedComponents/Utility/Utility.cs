@@ -818,6 +818,19 @@ namespace MediaCenter.SharedComponents
         }
 
 
+        public static string ToBracketsCorrected(this string input)
+        {
+            if (input is null) throw new ArgumentNullException(nameof(input));
+
+            var ret = new StringBuilder(input);
+
+            ret.Replace("&lt;", "<");
+            ret.Replace("&gt;", ">");
+
+            return ret.ToString();
+        }
+
+
         /// <summary>
         /// Capitalize letter after each period.
         /// </summary>

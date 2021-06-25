@@ -14,7 +14,6 @@ namespace MediaCenter.McWs
     public enum McCommandEnum
     {
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         AddToPlayingNow,
         Alive,
         Authenticate,
@@ -27,12 +26,12 @@ namespace MediaCenter.McWs
         Playlist,
         PlaylistFiles,
         PlaylistList,
+        PlaylistListForItem,
         PlayPause,
         PlayPlaylist,
         Position,
         Stop,
         SetInfo
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
     }
 

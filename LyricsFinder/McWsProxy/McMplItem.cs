@@ -22,7 +22,6 @@ namespace MediaCenter.McWs
     public class McMplItem
     {
 
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         [XmlElement()]
         public int Key { get; set; }
 
@@ -136,7 +135,6 @@ namespace MediaCenter.McWs
 
         [XmlElement]
         public Bitmap Image { get; set; }
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         /// <summary>
         /// Gets or sets the fields.
@@ -365,6 +363,8 @@ namespace MediaCenter.McWs
             }
             else if (!NoFormatFields.Contains(key, StringComparer.InvariantCultureIgnoreCase))
             {
+                ret = ret.ToBracketsCorrected();
+
                 if (long.TryParse(ret, out var tmp))
                     ret = tmp.ToString(Constants.IntegerFormat, CultureInfo.CurrentCulture); 
             }
