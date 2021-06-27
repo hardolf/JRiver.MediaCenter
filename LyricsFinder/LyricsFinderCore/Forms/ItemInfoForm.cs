@@ -244,7 +244,7 @@ namespace MediaCenter.LyricsFinder.Forms
             else if (LyricsFinderCore.ItemsPlayListIds != null)
                 LyricsFinderCore.ItemsPlayListIds.TryGetValue(id, out playListIds);
 
-            // Next, add the item's playlists text
+            // Next, concatenate the item's playlists text from the playlists' IDs
             var playListsText = string.Empty;
 
             if (playListIds.IsNullOrEmpty())
