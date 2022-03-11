@@ -13,14 +13,19 @@ set _my_name=%~n0
 set _exit_code=0
 set _cmd=MSBuild.exe ..\..\LyricsFinder.sln -property:Configuration=Release -t:Clean,Build
 set _out_file=BuildRelease.txt
-set _vs_versions=2017 2019
-set _vs_net_var1=C:\Program Files (x86)\Microsoft Visual Studio
-set _vs_net_var2=Community\Common7\Tools\VsDevCmd.bat
+set _vs_versions=2017 2019 2022
+set _vs_net_var_start1=C:\Program Files (x86)\Microsoft Visual Studio
+set _vs_net_var_start2=C:\Program Files\Microsoft Visual Studio
+set _vs_net_var_end=Community\Common7\Tools\VsDevCmd.bat
 set _vs_net_var=
 echo.
 
-:check
-for %%v in (%_vs_versions%) do if exist "%_vs_net_var1%\%%v\%_vs_net_var2%" set _vs_net_var=%_vs_net_var1%\%%v\%_vs_net_var2%
+:check x86
+for %%v in (%_vs_versions%) do if exist "%_vs_net_var_start1%\%%v\%_vs_net_var_end%" set _vs_net_var=%_vs_net_var_start1%\%%v\%_vs_net_var_end%
+if exist "%_vs_net_var%" goto :run
+
+:check x64
+for %%v in (%_vs_versions%) do if exist "%_vs_net_var_start2%\%%v\%_vs_net_var_end%" set _vs_net_var=%_vs_net_var_start2%\%%v\%_vs_net_var_end%
 if not exist "%_vs_net_var%" goto :no_vs
 
 :run
@@ -63,7 +68,7 @@ rem -----------------------
 :no_vs
 rem -----------------------
 echo.
-echo Microsoft Visual Studio 2019 is not installed on this machine!
+echo Microsoft Visual Studio (%_vs_versions%) is not installed on this machine!
 set _exit_code=1
 goto :end
 rem -----------------------
