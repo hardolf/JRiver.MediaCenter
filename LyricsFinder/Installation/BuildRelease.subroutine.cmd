@@ -14,8 +14,8 @@ set _exit_code=0
 set _cmd=MSBuild.exe ..\..\LyricsFinder.sln -property:Configuration=Release -t:Clean,Build
 set _out_file=BuildRelease.txt
 set _vs_versions=2017 2019 2022
-set _vs_net_var_start1=C:\Program Files (x86)\Microsoft Visual Studio
-set _vs_net_var_start2=C:\Program Files\Microsoft Visual Studio
+set _vs_net_var_start1=D:\Program Files (x86)\Microsoft Visual Studio
+set _vs_net_var_start2=D:\Program Files\Microsoft Visual Studio
 set _vs_net_var_end=Community\Common7\Tools\VsDevCmd.bat
 set _vs_net_var=
 echo.
