@@ -17,7 +17,7 @@ DefaultGroupName=MediaCenter LyricsFinder
 DirExistsWarning=no
 DisableDirPage=yes
 DisableProgramGroupPage=yes
-MinVersion=0,6.1
+MinVersion=0,6.1sp1
 OutputBaseFilename=Setup
 OutputDir=Output
 ShowLanguageDialog=no
@@ -67,11 +67,11 @@ Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe"; Parameters: "
 Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe"; Parameters: "/codebase   LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; StatusMsg: "Registering Plugin";        Flags:runascurrentuser;   Components: plugin;             Check: IsMc64
 
 [UninstallRun]
-Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe";   Parameters: "/unregister LyricsFinderCore.dll";     WorkingDir: "{app}\"; StatusMsg: "UnRegistering Plugin Core"; Flags:runascurrentuser;   Components: plugin standalone;  Check: IsMc32
-Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe";   Parameters: "/unregister LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; StatusMsg: "UnRegistering Plugin";      Flags:runascurrentuser;   Components: plugin;             Check: IsMc32
+Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe";   Parameters: "/unregister LyricsFinderCore.dll";     WorkingDir: "{app}\"; Flags: runascurrentuser; StatusMsg: "UnRegistering Plugin Core";  Components: plugin standalone;  Check: IsMc32; RunOnceId: "UnRegCore32"
+Filename: "{win}\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe";   Parameters: "/unregister LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; Flags: runascurrentuser; StatusMsg: "UnRegistering Plugin";       Components: plugin;             Check: IsMc32; RunOnceId: "UnRegPlugin32"
 
-Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe"; Parameters: "/unregister LyricsFinderCore.dll";     WorkingDir: "{app}\"; StatusMsg: "UnRegistering Plugin Core"; Flags:runascurrentuser;   Components: plugin standalone;  Check: IsMc64
-Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe"; Parameters: "/unregister LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; StatusMsg: "UnRegistering Plugin";      Flags:runascurrentuser;   Components: plugin;             Check: IsMc64
+Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe"; Parameters: "/unregister LyricsFinderCore.dll";     WorkingDir: "{app}\"; Flags: runascurrentuser; StatusMsg: "UnRegistering Plugin Core";  Components: plugin standalone;  Check: IsMc64; RunOnceId: "UnRegCore64"
+Filename: "{win}\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe"; Parameters: "/unregister LyricsFinderPlugin.dll";   WorkingDir: "{app}\"; Flags: runascurrentuser; StatusMsg: "UnRegistering Plugin";       Components: plugin;             Check: IsMc64; RunOnceId: "UnRegPlugin64"
 
 [Components]
 Name: "plugin";          Description: "LyricsFinder plug-in";               Types: full custom

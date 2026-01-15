@@ -71,7 +71,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </summary>
         /// <param name="xmlText">The XML text.</param>
         /// <returns>List of found lyric IDs.</returns>
-        private List<string> ExtractAllLyricIds(string xmlText)
+        private static List<string> ExtractAllLyricIds(string xmlText)
         {
             var ret = new List<string>();
 
@@ -172,7 +172,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 var lyricIds = ExtractAllLyricIds(xmlText);
 
                 // If no results where found, repeat the search with the track title alone (no artist)
-                if (IsActive && !LyricsFinderData.MainData.StrictSearchOnly && !lyricIds.Any())
+                if (IsActive && !LyricsFinderData.MainData.StrictSearchOnly && lyricIds.Count == 0)
                 {
                     ub = new UriBuilder($"{uriText}/LyricSearchList.php?title={itemName}");
 

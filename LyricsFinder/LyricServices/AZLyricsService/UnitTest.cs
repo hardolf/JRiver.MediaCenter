@@ -55,7 +55,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 Assert.IsNotNull(resultService.FoundLyricList[0]);
                 Assert.IsNotNull(resultService.FoundLyricList[0].LyricText);
                 Assert.AreNotEqual(0, resultService.FoundLyricList[0].LyricText.Trim().Length);
-                Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("AZLYRICS"));
+                Assert.Contains("AZLYRICS", resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant());
             }
         }
 
@@ -72,7 +72,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 Assert.IsNotNull(resultService.FoundLyricList[0]);
                 Assert.IsNotNull(resultService.FoundLyricList[0].LyricText);
                 Assert.AreNotEqual(0, resultService.FoundLyricList[0].LyricText.Trim().Length);
-                Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("AZLYRICS")); 
+                Assert.Contains("AZLYRICS", resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant());
             }
         }
 

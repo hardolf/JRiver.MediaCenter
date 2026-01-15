@@ -158,6 +158,9 @@ namespace MediaCenter.LyricsFinder
         /// </summary>
         internal LyricsFinderDataType LyricsFinderData { get; private set; }
 
+        private static readonly string[] playListPathFilters = new[] { "Recent Playing Now" };
+        private static readonly string[] playListTypes = new[] { "Playlist" };
+
 
         /************************/
         /***** Constructors *****/
@@ -1158,7 +1161,7 @@ namespace MediaCenter.LyricsFinder
 
                     if ((!_isStandAlone && LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectPlugin)
                         || (_isStandAlone && LyricsFinderData.MainData.CollectPlaylistInfoOnMcReconnectStandalone))
-                        ItemsPlayListIds = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(currentPlayListItemIds, new[] { "Playlist" }, new[] { "Recent Playing Now" }); 
+                        ItemsPlayListIds = await _currentUnsortedMcPlaylistsResponse.GetItemsPlaylistsAsync(currentPlayListItemIds, playListTypes, playListPathFilters); 
                 }
 
                 // We only use this timer once in each session, when the check is successful, so no need to start it again

@@ -64,7 +64,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 Assert.IsNotNull(resultService.FoundLyricList[0]);
                 Assert.IsNotNull(resultService.FoundLyricList[0].LyricText);
                 Assert.AreNotEqual(0, resultService.FoundLyricList[0].LyricText.Trim().Length);
-                Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("APISEEDS"));
+                //Assert.IsTrue(resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant().Contains("APISEEDS"));
+                Assert.Contains("APISEEDS", resultService.FoundLyricList[0].LyricCreditText.ToUpperInvariant());
             }
         }
 
@@ -77,8 +78,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 var resultService = await _service.ProcessAsync(_item2, cancellationTokenSource.Token).ConfigureAwait(false);
 
                 Assert.IsNotNull(resultService);
-                Assert.AreEqual(0, resultService.FoundLyricList.Count);
-                Assert.AreEqual(resultService.LyricResult, LyricsResultEnum.NotFound);
+                Assert.IsEmpty(resultService.FoundLyricList);
+                Assert.AreEqual(LyricsResultEnum.NotFound, resultService.LyricResult);
             }
         }
 
@@ -91,8 +92,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 var resultService = await _service.ProcessAsync(_item3, cancellationTokenSource.Token).ConfigureAwait(false);
 
                 Assert.IsNotNull(resultService);
-                Assert.AreEqual(0, resultService.FoundLyricList.Count);
-                Assert.AreEqual(resultService.LyricResult, LyricsResultEnum.NotFound);
+                Assert.IsEmpty(resultService.FoundLyricList);
+                Assert.AreEqual(LyricsResultEnum.NotFound, resultService.LyricResult);
             }
         }
 
