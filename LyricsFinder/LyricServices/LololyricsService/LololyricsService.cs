@@ -88,14 +88,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             doc.LoadHtml(html);
 
-            var docNode = doc.DocumentNode;
-
-            if (docNode == null) throw new NullReferenceException("Document node not found in the lyric page.");
-
-            var divs = docNode.SelectNodes("//div[@id]");
-
-            if (divs == null) throw new NullReferenceException("Lyric \"id\" nodes not found.");
-
+            var docNode = doc.DocumentNode ?? throw new NullReferenceException("Document node not found in the lyric page.");
+            var divs = docNode.SelectNodes("//div[@id]") ?? throw new NullReferenceException("Lyric \"id\" nodes not found.");
             HtmlNode divNode = null;
 
             foreach (var div in divs)

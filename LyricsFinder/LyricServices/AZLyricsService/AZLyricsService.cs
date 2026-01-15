@@ -97,14 +97,8 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             doc.LoadHtml(html);
 
-            var docNode = doc.DocumentNode;
-
-            if (docNode == null) throw new NullReferenceException("Document node not found in the lyric page.");
-
-            var divs = docNode.SelectNodes("//div[@class]");
-
-            if (divs == null) throw new NullReferenceException("Lyric \"div\" nodes not found.");
-
+            var docNode = doc.DocumentNode ?? throw new NullReferenceException("Document node not found in the lyric page.");
+            var divs = docNode.SelectNodes("//div[@class]") ?? throw new NullReferenceException("Lyric \"div\" nodes not found.");
             HtmlNode divNode = null;
 
             foreach (var div in divs)
@@ -165,10 +159,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             doc.LoadHtml(html);
 
-            var docNode = doc.DocumentNode;
-
-            if (docNode == null) throw new NullReferenceException("Document node not found in the search results page.");
-
+            var docNode = doc.DocumentNode ?? throw new NullReferenceException("Document node not found in the search results page.");
             var tableNode = docNode.SelectSingleNode("//table[@class]");
 
             if (tableNode == null) return ret; // No results
