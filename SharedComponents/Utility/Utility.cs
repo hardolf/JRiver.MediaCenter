@@ -1190,6 +1190,31 @@ namespace MediaCenter.SharedComponents
             return ret.ToString();
         }
 
+
+        /// <summary>
+        /// URL-encodes the text for safe use as a query string parameter value.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <returns>
+        /// The percent-encoded <c>text</c>, or an empty string if <c>text</c> is null.
+        /// </returns>
+        /// <remarks>
+        /// <para>The <see cref="Uri" /> and <see cref="UriBuilder" /> constructors escape spaces, control
+        /// characters and non-ASCII characters on their own, but they leave "&amp;", "#", "+" and existing
+        /// percent sequences untouched. In a query string value those either truncate the value or are
+        /// decoded into something else by the receiving server, so every interpolated value must be
+        /// encoded here first.</para>
+        /// <para><see cref="Uri.EscapeDataString(string)" /> is used rather than HttpUtility.UrlEncode,
+        /// because the latter encodes a space as "+", which only survives if the server form-decodes the
+        /// query string.</para>
+        /// </remarks>
+        public static string UrlEncoded(this string text)
+        {
+            return (text is null)
+                ? string.Empty
+                : Uri.EscapeDataString(text);
+        }
+
     }
 
 }

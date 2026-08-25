@@ -25,7 +25,7 @@ all the logic. `LyricsFinderPlugin` **inherits** directly from `LyricsFinderCore
 `base(isStandAlone, entryAssembly)` is the only real difference — among other things it picks
 which log4net configuration is read.
 
-### Solutions
+### 1.1 Solutions
 
 | File | Contents |
 |---|---|
@@ -77,7 +77,7 @@ against .NET Framework 4.8, which is supported but brings no runtime features.
    └──────────────────────────────────────────────────────────────┘
 ```
 
-Non-code projects:
+### 2.1 Non-code projects
 
 | Project | Role |
 |---|---|
@@ -86,7 +86,7 @@ Non-code projects:
 | `MjpCreator` | Generates MC `.mjp` package files. **No longer used** — the call has been commented out in `Installation/Program.cs` since v1.3.1, because MC uses RegSvr32 rather than RegAsm. |
 | `Visualizations` | ASP.NET-based; only in `MediaCenter.sln`. Independent of LyricsFinder. |
 
-### Key architectural detail: lyric services are loaded dynamically
+### 2.2 Key architectural detail: lyric services are loaded dynamically
 
 `LyricsFinderCore` does **not** reference the service projects. Instead
 `InitLyricServicesAsync()` (`LyricsFinderCore.Private.cs:524`) scans the program folder, calls
@@ -99,7 +99,7 @@ Core so they can inherit from it. The dependency is inverted at runtime — henc
 
 ## 3. Target frameworks, packages and central configuration
 
-* **TFM:** `net48` throughout. `LangVersion 13.0`.
+* **TFM** (Target Framework Moniker): `net48` throughout. `LangVersion 13.0`.
 * **Signing:** `LyricsFinderCore`, `LyricsFinderPlugin`, `McWsProxy`, `Utility` and
   `MessageInspection` are strong-named. The `.snk` files live in the repo.
 * **COM:** `LyricsFinderCore` and `LyricsFinderPlugin` are `ComVisible` with a `ProgId`.
@@ -107,7 +107,9 @@ Core so they can inherit from it. The dependency is inverted at runtime — henc
   debug builds. `LyricsFinderPlugin` has a `COMReference` to MC's type library
   (GUID `{03457D73-…}`), which can only be resolved if Media Center is installed.
 
-Runtime packages (development and analyzer packages omitted):
+### 3.1 Runtime packages
+
+*Development and analyzer packages are omitted.*
 
 | Package | Version | Used by |
 |---|---|---|
@@ -123,7 +125,7 @@ ApplicationInsights → Azure.Core → OpenTelemetry → `Microsoft.Extensions.*
 Roughly 60 packages per service project, all of it a consequence of unit tests living in the
 **same assembly** as the production code.
 
-Central configuration:
+### 3.2 Central configuration
 
 | File | Meaning |
 |---|---|
@@ -136,7 +138,7 @@ Central configuration:
 
 ## 4. Architecture and data flow
 
-### Startup
+### 4.1 Startup
 
 ```
 Program.Main / Plugin.Init
@@ -153,7 +155,7 @@ Program.Main / Plugin.Init
       6. ReloadPlaylistAsync(isReconnect: true)
 ```
 
-### Connecting to Media Center
+### 4.2 Connecting to Media Center
 
 `McWsProxy` is a **static** class over MC's REST API (MCWS, default
 `http://localhost:52199/MCWS/v1`).
@@ -166,7 +168,7 @@ ConnectAsync()
   → every other call sends ?Token=<McWsToken> in the query string
 ```
 
-### The search flow (the heart of the application)
+### 4.3 The search flow
 
 ```
 SearchAllProcessAsync
@@ -191,7 +193,7 @@ Note that the search result lands **only in the grid**. Only when the user saves
 `McRestService.SetInfoAsync(key, "Lyrics", lyrics)` called
 (`LyricsFinderCore.Private.cs:879`), which writes the text back to MC.
 
-### Persistence
+### 4.4 Persistence
 
 All user data — MCWS URL, user and password, window positions, grid columns, and **the entire
 service list with its tokens and counters** — lives in a single XML file,
@@ -352,7 +354,9 @@ This is already true in `HEAD`, not just in the working tree: the damage happene
 earlier point and was committed, so the three `App.config` files have themselves become the
 corrupted source.
 
-**The byte counts confirm the write path itself is sound.** Counting the current data file
+#### 5.8.1 The byte counts confirm the write path itself is sound
+
+Counting the current data file
 (`%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml`, 9257 bytes):
 
 | Measurement | Count |
@@ -371,7 +375,7 @@ The conclusion is therefore unambiguous: `XmlSerializeToFile` does the right thi
 fault lies entirely upstream in the `App.config` attributes. That is also why a fix in the
 serialization code will not help — the source is what needs repairing.
 
-**Consequences for the two symptoms observed:**
+#### 5.8.2 Consequences for the two symptoms
 
 * *New file* — `AbstractLyricService.RefreshServiceSettingsAsync` seeds `Comment`,
   `CreditTextFormat` and others from `App.config` via `ServiceSettingsValue`. The parser hands
@@ -385,7 +389,9 @@ in the media library. It is intact in the current data file (`&#xD;` on lines 12
 sits in the same attribute layer and is one flattening accident away from losing its line
 breaks in everything that gets saved.
 
-**Direction for a fix.** The quick way out is to use `&#xD;&#xA;` in all `App.config`
+#### 5.8.3 Direction for a fix
+
+The quick way out is to use `&#xD;&#xA;` in all `App.config`
 attributes, as MusiXmatch already does. That works, but the entities must be maintained by hand
 forever — a developer who presses Enter inside an attribute destroys the value without noticing.
 
@@ -577,7 +583,7 @@ They carry three hard out-of-process dependencies:
    themselves, which consequently ship with the whole test infrastructure. The post-build script
    removes `Microsoft.VisualStudio.TestPlatform*` by hand.
 
-**Entirely untested:**
+### 6.1 Entirely untested
 
 | Area | Comment |
 |---|---|
@@ -599,7 +605,7 @@ tests into a separate category that is disabled by default.
 
 ## 7. Build, test and run commands
 
-### Prerequisites
+### 7.1 Prerequisites
 
 * Windows, Visual Studio 2022 or newer with the **.NET desktop development** workload —
   classic csproj files and the WinForms designer. `dotnet build` alone is **not** enough.
@@ -608,7 +614,7 @@ tests into a separate category that is disabled by default.
   library and cannot be built without it.
 * Debug builds set `RegisterForComInterop` → **run Visual Studio as administrator**.
 
-### Restore and build
+### 7.2 Restore and build
 
 NuGet restore must go through `nuget.exe` or `msbuild -t:Restore`, not `dotnet restore` — the
 projects use the `packages.config` format:
@@ -638,7 +644,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    # build, then Outpu
 Note that `BuildRelease.subroutine.cmd` runs `-t:Clean,Build`, and that several projects carry
 `del /s /q "$(TargetDir)*.*"` as a pre-build — building is destructive to output folders.
 
-### Tests
+### 7.3 Tests
 
 ```powershell
 vstest.console.exe `
@@ -654,7 +660,7 @@ Or through Test Explorer in Visual Studio. Remember the prerequisites from §6: 
 existing `%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml`, and valid tokens for Stands4
 and MusiXmatch. Tests in CI will fail.
 
-### Running
+### 7.4 Running
 
 **Stand-alone:**
 
@@ -669,7 +675,7 @@ be filled in. The Access Key is found in Media Center under *Tools → Options �
 `HKLM\SOFTWARE\J. River\Media Center <version>\Plugins\Interface\LyricsFinder` — use the
 installer (`Installation\Output\Setup.exe`) rather than doing it by hand.
 
-### Logs and data
+### 7.5 Logs and data
 
 ```
 %USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml                    # all user data

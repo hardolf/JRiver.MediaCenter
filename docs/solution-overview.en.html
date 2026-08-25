@@ -252,6 +252,7 @@ section { scroll-margin-top: 1.5rem; }
   display: flex;
   align-items: baseline;
   gap: .8rem;
+  flex-wrap: wrap;
   border-bottom: 2px solid var(--ink);
   padding-bottom: .55rem;
   margin-bottom: 1.6rem;
@@ -261,6 +262,7 @@ section { scroll-margin-top: 1.5rem; }
   font-size: .8rem;
   font-weight: 500;
   color: var(--accent);
+  white-space: nowrap;
   padding-bottom: .28em;
 }
 .sec-head h2 {
@@ -289,6 +291,18 @@ h4 {
   margin: 1.7rem 0 .5rem;
   color: var(--ink-2);
 }
+
+/* section numbers on sub-headings */
+.hnum {
+  font-family: var(--f-mono);
+  font-size: .72em;
+  font-weight: 500;
+  color: var(--accent);
+  margin-right: .55em;
+}
+.risk h3 .hnum { margin-right: 0; }
+h4 .hnum { font-size: .78em; }
+h3[id], h4[id] { scroll-margin-top: 1.5rem; }
 
 p { max-width: var(--measure); margin: 0 0 1.05rem; }
 ul, ol { max-width: var(--measure); margin: 0 0 1.15rem; padding-left: 1.3rem; }
@@ -332,6 +346,12 @@ strong { font-weight: 600; color: var(--ink); }
   color: var(--accent);
   margin-top: auto;
   padding-top: .35rem;
+.finding .where a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 45%, transparent);
+}
+.finding .where a:hover { border-bottom-color: currentColor; }
 }
 
 .chip {
@@ -561,7 +581,7 @@ figcaption {
     <!-- ============ FINDINGS BOARD ============ -->
     <section aria-labelledby="board-h">
       <div class="sec-head">
-        <span class="num">TL;DR</span>
+        <span class="num">TL;DR (too long; didn't read)</span>
         <h2 id="board-h">The findings that matter</h2>
       </div>
       <p class="lead">Eight issues carry most of the risk. The detail is in section 5.</p>
@@ -571,56 +591,56 @@ figcaption {
           <div class="finding__top"><span class="chip chip--hi">High</span></div>
           <h3>XmlSerializer leaks assemblies</h3>
           <p>The <code>knownTypes</code> overload is not cached. Every call generates a dynamic assembly that never unloads — and it is called once per song.</p>
-          <p class="where">Serialize.cs · LyricSearch.cs:128</p>
+          <p class="where"><a href="#s5-1">&sect;5.1</a> &middot; Serialize.cs · LyricSearch.cs:128</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--hi">High</span></div>
           <h3>Counters may never be saved</h3>
           <p>The parameter is overwritten with a fresh object from disk; counters are folded back onto the old instance, but <code>SaveAsync()</code> runs on the new one.</p>
-          <p class="where">LyricSearch.cs:128–150</p>
+          <p class="where"><a href="#s5-2">&sect;5.2</a> &middot; LyricSearch.cs:128–150</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--hi">High</span></div>
           <h3>No URL encoding</h3>
           <p>The entire lyric text is interpolated straight into a GET query. A single <code>&amp;</code> or <code>#</code> in the text breaks the call.</p>
-          <p class="where">McRestService.cs:195</p>
+          <p class="where"><a href="#s5-4">&sect;5.4</a> &middot; McRestService.cs:195</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--hi">High</span></div>
           <h3>HttpClient recreated per call</h3>
           <p>The static client is disposed and rebuilt every time credentials are sent. Socket exhaustion, plus a genuine race on the static field.</p>
-          <p class="where">Utility.cs:228–269</p>
+          <p class="where"><a href="#s5-3">&sect;5.3</a> &middot; Utility.cs:228–269</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--md">Medium-high</span></div>
           <h3>Threading holds by accident</h3>
           <p>Ten workers share an unlocked <code>Queue&lt;int&gt;</code> and touch the grid directly. It only works because no await uses <code>ConfigureAwait(false)</code>.</p>
-          <p class="where">LyricsFinderCore.Process.cs:360</p>
+          <p class="where"><a href="#s5-5">&sect;5.5</a> &middot; LyricsFinderCore.Process.cs:360</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--md">Medium</span></div>
           <h3>Stop does not abort the search</h3>
           <p><code>CancellationToken</code> is threaded down to <code>ExtractOneLyricTextAsync</code> and stops there. The HTTP layer and <code>McWsProxy</code> have never heard of the type.</p>
-          <p class="where">AbstractLyricService.cs:441</p>
+          <p class="where"><a href="#s5-7">&sect;5.7</a> &middot; AbstractLyricService.cs:441</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--md">Medium</span></div>
           <h3>CR+LF does not survive config</h3>
           <p>Multi-line settings live in XML <em>attributes</em>. Raw line breaks there are normalized to spaces by any parser — lost on both new file and save.</p>
-          <p class="where">LyricServices/*/App.config</p>
+          <p class="where"><a href="#s5-8">&sect;5.8</a> &middot; LyricServices/*/App.config</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--md">Medium</span></div>
           <h3>No CI, no hermetic tests</h3>
           <p>All 28 tests hit live third-party websites and require the user's own data file with real API tokens.</p>
-          <p class="where">LyricServices/*/UnitTest.cs</p>
+          <p class="where"><a href="#s6">&sect;6</a> &middot; LyricServices/*/UnitTest.cs</p>
         </article>
 
       </div>
@@ -653,7 +673,7 @@ figcaption {
       <code>base(isStandAlone, entryAssembly)</code> is the only real difference — among other
       things it picks which log4net configuration is read.</p>
 
-      <h3>Solutions</h3>
+      <h3 id="s1-1"><span class="hnum">1.1</span>Solutions</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>File</th><th>Contents</th></tr></thead>
@@ -741,16 +761,14 @@ figcaption {
           </svg>
         </div>
         <figcaption>
-          The dependency is inverted: the six services hold a compile-time reference <em>to</em>
-          Core so they can inherit <code>AbstractLyricService</code>, while Core never references
-          them — it discovers them only at runtime through <code>Assembly.LoadFrom</code>. Hence the
-          <code>ProjectDependencies</code> entries in the .sln file and the many
-          <code>xcopy</code> post-build events. The services also use <code>Utility</code> and
-          <code>McWsProxy</code> directly; those edges are omitted for legibility.
+          The dependency is inverted: the six services reference Core at compile time, while Core
+          only discovers them at runtime — see <a href="#s2-2">§2.2</a>. The services also use
+          <code>Utility</code> and <code>McWsProxy</code> directly; those edges are omitted for
+          legibility.
         </figcaption>
       </figure>
 
-      <h3>Non-code projects</h3>
+      <h3 id="s2-1"><span class="hnum">2.1</span>Non-code projects</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Project</th><th>Role</th></tr></thead>
@@ -762,6 +780,16 @@ figcaption {
           </tbody>
         </table>
       </div>
+
+      <h3 id="s2-2"><span class="hnum">2.2</span>Key architectural detail: lyric services are loaded dynamically</h3>
+      <p><code>LyricsFinderCore</code> does <strong>not</strong> reference the service projects.
+      Instead <code>InitLyricServicesAsync()</code> (<code>LyricsFinderCore.Private.cs:524</code>)
+      scans the program folder, calls <code>Assembly.LoadFrom()</code> on <strong>every
+      <code>*.dll</code></strong> and instantiates every type deriving from
+      <code>AbstractLyricService</code>. The service projects, by contrast, hold a compile-time
+      reference <em>to</em> Core so they can inherit. The dependency is therefore inverted at
+      runtime — hence the <code>ProjectDependencies</code> entries in the .sln file and the many
+      <code>xcopy</code> post-build events.</p>
     </section>
 
     <!-- ============ 3 ============ -->
@@ -769,7 +797,7 @@ figcaption {
       <div class="sec-head"><span class="num">03</span><h2>Frameworks, packages and configuration</h2></div>
 
       <ul>
-        <li><strong>TFM:</strong> <code>net48</code> throughout. <code>LangVersion 13.0</code>.</li>
+        <li><strong>TFM</strong> (Target Framework Moniker): <code>net48</code> throughout. <code>LangVersion 13.0</code>.</li>
         <li><strong>Signing:</strong> <code>LyricsFinderCore</code>, <code>LyricsFinderPlugin</code>,
           <code>McWsProxy</code>, <code>Utility</code> and <code>MessageInspection</code> are
           strong-named. The <code>.snk</code> files live in the repo.</li>
@@ -780,7 +808,7 @@ figcaption {
           Center is installed.</li>
       </ul>
 
-      <h3>Runtime packages</h3>
+      <h3 id="s3-1"><span class="hnum">3.1</span>Runtime packages</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Package</th><th class="mono">Version</th><th>Used by</th></tr></thead>
@@ -801,7 +829,7 @@ figcaption {
       all of it a consequence of unit tests living in the <em>same assembly</em> as the production
       code.</p>
 
-      <h3>Central configuration</h3>
+      <h3 id="s3-2"><span class="hnum">3.2</span>Central configuration</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>File</th><th>Meaning</th></tr></thead>
@@ -819,7 +847,7 @@ figcaption {
     <section id="s4">
       <div class="sec-head"><span class="num">04</span><h2>Architecture and data flow</h2></div>
 
-      <h3>Startup</h3>
+      <h3 id="s4-1"><span class="hnum">4.1</span>Startup</h3>
       <ol class="pipe">
         <li><span class="step-name">InitLoggingAsync()</span><span class="step-desc">picks the Standalone or Plugin log4net config</span></li>
         <li><span class="step-name">LyricsFinderCoreConfigurationSectionHandler.Init()</span><span class="step-desc">points at the assembly whose <code>.config</code> should be read</span></li>
@@ -829,7 +857,7 @@ figcaption {
         <li><span class="step-name">ReloadPlaylistAsync(isReconnect: true)</span><span class="step-desc">connect, fetch playlist, fill the grid</span></li>
       </ol>
 
-      <h3>Connecting to Media Center</h3>
+      <h3 id="s4-2"><span class="hnum">4.2</span>Connecting to Media Center</h3>
       <p><code>McWsProxy</code> is a <strong>static</strong> class over MC's REST API (MCWS,
       default <code>http://localhost:52199/MCWS/v1</code>).</p>
       <pre>GET /Alive          <span class="cmt">retry up to MaxMcWsConnectAttempts, 500 ms pause</span>
@@ -837,7 +865,7 @@ figcaption {
 GET /Authenticate   <span class="cmt">Basic auth → McWsToken stored statically</span>
 GET /...?Token=…    <span class="cmt">every other call sends the token in the query string</span></pre>
 
-      <h3>The search flow</h3>
+      <h3 id="s4-3"><span class="hnum">4.3</span>The search flow</h3>
       <p><code>SearchAllProcessAsync</code> creates <code>MaxQueueLength</code> (default 10)
       workers over one shared <code>Queue&lt;int&gt;</code>. Each worker runs, for its item:</p>
 
@@ -856,7 +884,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
         Center.</p>
       </div>
 
-      <h3>Persistence</h3>
+      <h3 id="s4-4"><span class="hnum">4.4</span>Persistence</h3>
       <p>All user data — MCWS URL, user and password, window positions, grid columns, and
       <strong>the entire service list with its tokens and counters</strong> — lives in a single XML
       file, <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>, serialized with
@@ -871,7 +899,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
       <p class="lead">Ordered by how much they matter in practice.</p>
 
       <div class="risk risk--hi">
-        <h3>XmlSerializer with knownTypes → assembly leak <span class="chip chip--hi">High</span></h3>
+        <h3 id="s5-1"><span class="hnum">5.1</span>XmlSerializer with knownTypes → assembly leak <span class="chip chip--hi">High</span></h3>
         <p><code>Serialize.ToXmlWithNewlines</code> and <code>XmlDeserializeFromString</code> call
         <code>new XmlSerializer(type, knownTypes)</code>. <strong>Only</strong> the
         <code>XmlSerializer(Type)</code> and <code>XmlSerializer(Type, string)</code> overloads
@@ -887,7 +915,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
       </div>
 
       <div class="risk risk--hi">
-        <h3>Counters may never be saved <span class="chip chip--hi">High</span></h3>
+        <h3 id="s5-2"><span class="hnum">5.2</span>Counters may never be saved <span class="chip chip--hi">High</span></h3>
         <p>In <code>LyricSearch.SearchAsync</code> (<code>LyricSearch.cs:128</code>) the
         <strong>parameter</strong> <code>lyricsFinderData</code> is <strong>overwritten</strong>
         with a fresh object read from disk. The clones' counters are then folded back onto the
@@ -899,7 +927,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
       </div>
 
       <div class="risk risk--hi">
-        <h3>HttpClient recreated on every authenticated call <span class="chip chip--hi">High</span></h3>
+        <h3 id="s5-3"><span class="hnum">5.3</span>HttpClient recreated on every authenticated call <span class="chip chip--hi">High</span></h3>
         <p><code>Utility.CreateHttpClient</code> is called from <code>HttpGetStringAsync</code> and
         <code>HttpGetImageAsync</code> <strong>every time</strong> a username and password are
         supplied. It <code>Dispose()</code>s the existing static <code>HttpClient</code> and creates
@@ -917,7 +945,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
       </div>
 
       <div class="risk risk--hi">
-        <h3>No URL encoding in MCWS calls <span class="chip chip--hi">High</span></h3>
+        <h3 id="s5-4"><span class="hnum">5.4</span>No URL encoding in MCWS calls <span class="chip chip--hi">High</span></h3>
         <p><code>McRestService.CreateRequestUrl</code> builds query strings by plain string
         interpolation. There is <strong>not a single</strong> call to
         <code>Uri.EscapeDataString</code> or <code>HttpUtility.UrlEncode</code> anywhere in the
@@ -931,7 +959,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
       </div>
 
       <div class="risk risk--md">
-        <h3>The threading model holds only by accident <span class="chip chip--md">Medium-high</span></h3>
+        <h3 id="s5-5"><span class="hnum">5.5</span>The threading model holds only by accident <span class="chip chip--md">Medium-high</span></h3>
         <p><code>SearchAllProcessWorkerAsync</code> does three things that are normally illegal:</p>
         <ul>
           <li><code>Queue&lt;int&gt;.Dequeue()</code> from ten concurrent workers without a lock —
@@ -951,7 +979,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
       </div>
 
       <div class="risk risk--md">
-        <h3>WhenAny(predicate) does not swallow exceptions as intended <span class="chip chip--md">Medium</span></h3>
+        <h3 id="s5-6"><span class="hnum">5.6</span>WhenAny(predicate) does not swallow exceptions as intended <span class="chip chip--md">Medium</span></h3>
         <p><code>AsyncUtility.WhenAny</code> (<code>AsyncUtility.cs:378</code>) calls
         <code>condition(task)</code>, and the predicate in <code>LyricSearch</code> is
         <code>t =&gt; t.Result.LyricResult == …</code>. On a faulted task, <code>.Result</code>
@@ -963,7 +991,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
       </div>
 
       <div class="risk risk--md">
-        <h3>CancellationToken never reaches the HTTP layer <span class="chip chip--md">Medium</span></h3>
+        <h3 id="s5-7"><span class="hnum">5.7</span>CancellationToken never reaches the HTTP layer <span class="chip chip--md">Medium</span></h3>
         <p>The token is threaded neatly through the entire upper layer and then stops dead. The
         chain is intact all the way down:</p>
         <pre>SearchAllProcessWorkerAsync
@@ -1003,7 +1031,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
       </div>
 
       <div class="risk risk--md">
-        <h3>CR+LF does not survive the configuration file <span class="chip chip--md">Medium</span></h3>
+        <h3 id="s5-8"><span class="hnum">5.8</span>CR+LF does not survive the configuration file <span class="chip chip--md">Medium</span></h3>
         <p>Multi-line values lose their line breaks. This hits both when
         <code>LyricsFinder.xml</code> is created for the first time and on subsequent saves.</p>
 
@@ -1034,7 +1062,7 @@ Token required, may be obtained from:&amp;#xD;
         happened at some earlier point and was committed, so the three <code>App.config</code>
         files have themselves become the corrupted source.</p>
 
-        <h4>The byte counts confirm the write path itself is sound</h4>
+        <h4 id="s5-8-1"><span class="hnum">5.8.1</span>The byte counts confirm the write path itself is sound</h4>
         <p>Counting the current data file
         (<code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>, 9257 bytes):</p>
 
@@ -1061,7 +1089,7 @@ Token required, may be obtained from:&amp;#xD;
         is also why a fix in the serialization code will not help — the source is what needs
         repairing.</p>
 
-        <h4>Consequences for the two symptoms</h4>
+        <h4 id="s5-8-2"><span class="hnum">5.8.2</span>Consequences for the two symptoms</h4>
         <ul>
           <li><strong>New file</strong> — <code>RefreshServiceSettingsAsync</code> seeds
             <code>Comment</code>, <code>CreditTextFormat</code> and others from
@@ -1080,7 +1108,7 @@ Token required, may be obtained from:&amp;#xD;
         and is one flattening accident away from losing its line breaks in everything that gets
         saved.</p>
 
-        <h4>Direction for a fix</h4>
+        <h4 id="s5-8-3"><span class="hnum">5.8.3</span>Direction for a fix</h4>
         <p>The quick way out is to use <code>&amp;#xD;&amp;#xA;</code> in all
         <code>App.config</code> attributes, as MusiXmatch already does. That works, but the entities
         must be maintained by hand forever — a developer who presses Enter inside an attribute
@@ -1149,7 +1177,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
       </div>
 
       <div class="risk risk--md">
-        <h3>Two divergent serialization paths <span class="chip chip--md">Medium · needs verifying</span></h3>
+        <h3 id="s5-9"><span class="hnum">5.9</span>Two divergent serialization paths <span class="chip chip--md">Medium · needs verifying</span></h3>
         <p>Related to the above, and worth looking at in the same pass. <code>Serialize</code> has
         two write paths that do not use the same serializer:</p>
         <ul>
@@ -1171,7 +1199,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
         “changes are not saved”, but I have not verified which fields actually differ.</p>
       </div>
 
-      <h3>Security</h3>
+      <h3 id="s5-10"><span class="hnum">5.10</span>Security</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Topic</th><th>Assessment</th></tr></thead>
@@ -1204,7 +1232,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
         </table>
       </div>
 
-      <h3>Build setup</h3>
+      <h3 id="s5-11"><span class="hnum">5.11</span>Build setup</h3>
       <ul>
         <li><strong>Hard-coded Visual Studio paths.</strong>
           <code>BuildRelease.subroutine.cmd:17–18</code> only looks in
@@ -1245,7 +1273,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
           completion”.</li>
       </ul>
 
-      <h3>Other code smells</h3>
+      <h3 id="s5-12"><span class="hnum">5.12</span>Other code smells</h3>
       <ul>
         <li><strong><code>LyricsFinderCore</code> is a prime candidate for splitting up</strong> —
           1369 + 1296 + 486 lines in one partial class that mixes UI, MCWS orchestration, file
@@ -1334,7 +1362,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
           hand.</li>
       </ol>
 
-      <h4>Entirely untested</h4>
+      <h3 id="s6-1"><span class="hnum">6.1</span>Entirely untested</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Area</th><th>Comment</th></tr></thead>
@@ -1364,7 +1392,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
     <section id="s7">
       <div class="sec-head"><span class="num">07</span><h2>Build, test and run</h2></div>
 
-      <h3>Prerequisites</h3>
+      <h3 id="s7-1"><span class="hnum">7.1</span>Prerequisites</h3>
       <ul>
         <li>Windows, Visual Studio 2022 or newer with the <strong>.NET desktop development</strong>
           workload — classic csproj files and the WinForms designer. <code>dotnet build</code> alone
@@ -1376,7 +1404,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
           administrator</strong>.</li>
       </ul>
 
-      <h3>Restore and build</h3>
+      <h3 id="s7-2"><span class="hnum">7.2</span>Restore and build</h3>
       <p>NuGet restore must go through <code>nuget.exe</code> or <code>msbuild -t:Restore</code>,
       not <code>dotnet restore</code> — the projects use the <code>packages.config</code>
       format.</p>
@@ -1400,7 +1428,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
         destructive to output folders.</p>
       </div>
 
-      <h3>Tests</h3>
+      <h3 id="s7-3"><span class="hnum">7.3</span>Tests</h3>
       <pre>vstest.console.exe `
   LyricsFinder\LyricServices\CajunLyricsService\bin\Debug\CajunLyricsService.dll `
   LyricsFinder\LyricServices\LololyricsService\bin\Debug\LololyricsService.dll `
@@ -1412,7 +1440,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
       network, an existing <code>LyricsFinder.xml</code>, and valid tokens for Stands4 and
       MusiXmatch. Tests in CI will fail.</p>
 
-      <h3>Running</h3>
+      <h3 id="s7-4"><span class="hnum">7.4</span>Running</h3>
       <pre>LyricsFinder\LyricsFinderExe\bin\Debug\LyricsFinderExe.exe</pre>
       <p>The first start shows <code>OptionForm</code>, where the MCWS URL, Access Key, username and
       password must be filled in. The Access Key is found in Media Center under <em>Tools → Options
@@ -1422,7 +1450,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
       — use the installer (<code>Installation\Output\Setup.exe</code>) rather than doing it by
       hand.</p>
 
-      <h3>Logs and data</h3>
+      <h3 id="s7-5"><span class="hnum">7.5</span>Logs and data</h3>
       <pre>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml                    <span class="cmt">all user data</span>
 %USERPROFILE%\Documents\LyricsFinder\LyricsFinder.Standalone.log         <span class="cmt">info</span>
 %USERPROFILE%\Documents\LyricsFinder\LyricsFinder.Standalone.error.log   <span class="cmt">warn+</span>
