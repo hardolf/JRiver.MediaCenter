@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 /*
@@ -43,6 +44,63 @@ namespace MediaCenter.SharedComponents
                 ret.Insert(idx2, $" {ns}");
 
             return ret.ToString();
+        }
+
+
+        /// <summary>
+        /// Serializes an object to XML string, preserving CR+LF.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns>Serialized XML string.</returns>
+        public static string ToXmlWithNewlines<T>(this T obj)
+        {
+            if (obj == null) return string.Empty;
+
+            var serializer = new XmlSerializer(typeof(T));
+            var settings = new XmlWriterSettings
+            {
+                Indent = true,
+                NewLineHandling = NewLineHandling.Entitize, // Bevar CR+LF i strenge
+                Encoding = Encoding.UTF8
+            };
+
+            var sb = new StringBuilder();
+            using (var stringWriter = new StringWriter(sb))
+            using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
+            {
+                serializer.Serialize(xmlWriter, obj);
+            }
+            return sb.ToString();
+        }
+
+
+        /// <summary>
+        /// Serializes an object to XML string, preserving CR+LF.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <param name="knownTypes"></param>
+        /// <returns>Serialized XML string.</returns>
+        public static string ToXmlWithNewlines<T>(this T obj, params Type[] knownTypes)
+        {
+            if (obj == null) return string.Empty;
+
+            var serializer = new XmlSerializer(typeof(T), knownTypes);  // ← Tilføjet knownTypes
+            var settings = new XmlWriterSettings
+            {
+                Indent = true,
+                NewLineHandling = NewLineHandling.Entitize,
+                Encoding = Encoding.UTF8
+            };
+
+            var sb = new StringBuilder();
+            using (var stringWriter = new StringWriter(sb))
+            using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
+            {
+                serializer.Serialize(xmlWriter, obj);
+            }
+            return sb.ToString();
         }
 
 
@@ -138,7 +196,8 @@ namespace MediaCenter.SharedComponents
             if (xml.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(xml));
 
             object ret;
-            var sb = new StringBuilder(xml.LfToCrLf());
+            //var sb = new StringBuilder(xml.LfToCrLf());
+            var sb = new StringBuilder(xml);
             var serializer = new XmlSerializer(type, knownTypes);
 
             if (xmlElementEventHandler != null)
@@ -186,17 +245,17 @@ namespace MediaCenter.SharedComponents
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
             if (!Directory.Exists(Path.GetDirectoryName(filePath))) throw new DirectoryNotFoundException($"Directory not found for the file to write: \"{filePath}\"");
 
-            var s = XmlSerializeToString(objectInstance, knownTypes);
-            var utf8enc = new UTF8Encoding(false); // UTF-8 without BOM
-            var bytes = utf8enc.GetBytes(s);
-
-            s = utf8enc.GetString(bytes);
-            s = s.Replace("utf-16", "utf-8"); // The conversion above doesn't change the DocType "encoding" attribute, so we do it here
-
-            using (var writer = new StreamWriter(filePath, false, utf8enc))
+            using var fileStream = File.Create(filePath);
+            using var streamWriter = fileStream.CreateUTF8NoBOM();
+            using var xmlWriter = XmlWriter.Create(streamWriter, new XmlWriterSettings
             {
-                writer.Write(s);
-            }
+                Indent = true,
+                NewLineHandling = NewLineHandling.Entitize,
+                Encoding = Encoding.UTF8
+            });
+
+            var objectType = objectInstance.GetType();
+            new XmlSerializer(objectType, knownTypes).Serialize(xmlWriter, objectInstance);
         }
 
 
@@ -210,15 +269,9 @@ namespace MediaCenter.SharedComponents
         {
             if (objectInstance == null) throw new ArgumentNullException(nameof(objectInstance));
 
-            var ret = new StringBuilder();
-            var serializer = new XmlSerializer(objectInstance.GetType(), knownTypes);
+            var ret = ToXmlWithNewlines(objectInstance, knownTypes);
 
-            using (var writer = new StringWriter(ret))
-            {
-                serializer.Serialize(writer, objectInstance);
-            }
-
-            return ret.ToString().LfToCrLf();
+            return ret.ToString();
         }
 
 
@@ -239,12 +292,12 @@ namespace MediaCenter.SharedComponents
             var ret = new StringBuilder();
             var serializer = new XmlSerializer(objectInstance.GetType(), knownTypes);
 
-            using (var writer = new StringWriter(ret))
+            using (var writer = new StringWriterUTF8(ret))
             {
                 serializer.Serialize(writer, objectInstance, ns);
             }
 
-            return ret.ToString().LfToCrLf();
+            return ret.ToString();
         }
 
     }

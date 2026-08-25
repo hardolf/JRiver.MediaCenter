@@ -1,0 +1,1381 @@
+<title>LyricsFinder Solution Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+
+<style>
+:root {
+  --paper:      #EEF1F0;
+  --surface:    #FAFCFB;
+  --surface-2:  #E5EAE8;
+  --ink:        #131C1A;
+  --ink-2:      #2C3A37;
+  --muted:      #55635F;
+  --rule:       #CFD8D5;
+  --rule-soft:  #DFE6E3;
+  --accent:     #0E6B5E;
+  --accent-ink: #0A4C43;
+  --accent-wash:#DCE9E5;
+  --sev-hi:     #A33528;
+  --sev-md:     #8A6209;
+  --sev-lo:     #3F5C69;
+  --sev-hi-bg:  #F3DFDB;
+  --sev-md-bg:  #F1E7CE;
+  --sev-lo-bg:  #DEE7EB;
+  --shadow:     0 1px 2px rgba(19,28,26,.05), 0 8px 24px -16px rgba(19,28,26,.28);
+
+  --f-display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
+  --f-body:    "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --f-mono:    "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --measure: 66ch;
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #0E1413;
+    --surface:    #161E1D;
+    --surface-2:  #1E2827;
+    --ink:        #E2E9E6;
+    --ink-2:      #C3CFCB;
+    --muted:      #8E9D99;
+    --rule:       #293634;
+    --rule-soft:  #202B29;
+    --accent:     #4CBBA6;
+    --accent-ink: #7FD3C1;
+    --accent-wash:#14302C;
+    --sev-hi:     #E28776;
+    --sev-md:     #D3A845;
+    --sev-lo:     #86A9B8;
+    --sev-hi-bg:  #33201C;
+    --sev-md-bg:  #2E2717;
+    --sev-lo-bg:  #1B282D;
+    --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper:      #0E1413;
+  --surface:    #161E1D;
+  --surface-2:  #1E2827;
+  --ink:        #E2E9E6;
+  --ink-2:      #C3CFCB;
+  --muted:      #8E9D99;
+  --rule:       #293634;
+  --rule-soft:  #202B29;
+  --accent:     #4CBBA6;
+  --accent-ink: #7FD3C1;
+  --accent-wash:#14302C;
+  --sev-hi:     #E28776;
+  --sev-md:     #D3A845;
+  --sev-lo:     #86A9B8;
+  --sev-hi-bg:  #33201C;
+  --sev-md-bg:  #2E2717;
+  --sev-lo-bg:  #1B282D;
+  --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16.5px;
+  line-height: 1.68;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+code, kbd, samp { font-family: var(--f-mono); font-size: .855em; }
+
+/* ---------- masthead ---------- */
+
+.masthead {
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+  padding: clamp(2.25rem, 6vw, 4rem) var(--gutter) 0;
+}
+.masthead__inner { max-width: 1180px; margin: 0 auto; }
+
+.topline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.langbar {
+  font-family: var(--f-mono);
+  font-size: .72rem;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin: 0;
+  display: flex;
+  gap: .55rem;
+  align-items: baseline;
+}
+.langbar .current { color: var(--ink); font-weight: 500; }
+.langbar .sep { opacity: .45; }
+
+.masthead h1 {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 6.2vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -.018em;
+  text-wrap: balance;
+  margin: 0 0 1rem;
+}
+.masthead h1 span { color: var(--muted); font-weight: 600; }
+
+.standfirst {
+  max-width: 60ch;
+  font-size: 1.13rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+  margin: 0 0 2.25rem;
+}
+
+.factstrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-top: 1px solid var(--rule-soft);
+  margin: 0;
+  padding: 0;
+}
+.factstrip > div {
+  flex: 1 1 150px;
+  padding: 1rem 1.25rem 1.15rem 0;
+  border-bottom: 3px solid transparent;
+}
+.factstrip dt {
+  font-family: var(--f-mono);
+  font-size: .68rem;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 .35rem;
+}
+.factstrip dd {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.02rem;
+  margin: 0;
+  color: var(--ink);
+}
+
+/* ---------- shell ---------- */
+
+.shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3.5rem) var(--gutter) 5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+@media (min-width: 1040px) {
+  .shell { grid-template-columns: 186px minmax(0, 1fr); gap: 3.5rem; align-items: start; }
+}
+
+/* ---------- rail ---------- */
+
+.rail { display: none; }
+@media (min-width: 1040px) {
+  .rail {
+    display: block;
+    position: sticky;
+    top: 2rem;
+    font-family: var(--f-display);
+  }
+}
+.rail h2 {
+  font-family: var(--f-mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0 0 .85rem;
+  padding-bottom: .6rem;
+  border-bottom: 1px solid var(--rule);
+}
+.rail ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .1rem; counter-reset: r; }
+.rail a {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  gap: .35rem;
+  padding: .34rem 0;
+  font-size: .93rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.rail a::before {
+  counter-increment: r;
+  content: counter(r);
+  font-family: var(--f-mono);
+  font-size: .72rem;
+  color: var(--accent);
+  padding-top: .18em;
+}
+.rail a:hover { color: var(--ink); }
+
+/* ---------- sections ---------- */
+
+.body-col { min-width: 0; display: flex; flex-direction: column; gap: 3.25rem; }
+
+section { scroll-margin-top: 1.5rem; }
+
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  gap: .8rem;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: .55rem;
+  margin-bottom: 1.6rem;
+}
+.sec-head .num {
+  font-family: var(--f-mono);
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--accent);
+  padding-bottom: .28em;
+}
+.sec-head h2 {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(1.45rem, 3.2vw, 1.95rem);
+  letter-spacing: -.012em;
+  line-height: 1.12;
+  margin: 0;
+  text-wrap: balance;
+}
+
+h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.22rem;
+  letter-spacing: -.006em;
+  line-height: 1.25;
+  margin: 2.4rem 0 .7rem;
+  text-wrap: balance;
+}
+h4 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.02rem;
+  margin: 1.7rem 0 .5rem;
+  color: var(--ink-2);
+}
+
+p { max-width: var(--measure); margin: 0 0 1.05rem; }
+ul, ol { max-width: var(--measure); margin: 0 0 1.15rem; padding-left: 1.3rem; }
+li { margin-bottom: .5rem; }
+li::marker { color: var(--muted); }
+strong { font-weight: 600; color: var(--ink); }
+
+.lead {
+  font-size: 1.06rem;
+  color: var(--ink-2);
+}
+
+/* ---------- findings board ---------- */
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.finding {
+  background: var(--surface);
+  padding: 1.15rem 1.25rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.finding__top { display: flex; align-items: center; gap: .55rem; }
+.finding h3 {
+  font-size: 1.02rem;
+  margin: 0;
+  line-height: 1.3;
+}
+.finding p { font-size: .93rem; line-height: 1.55; margin: 0; color: var(--muted); max-width: none; }
+.finding .where {
+  font-family: var(--f-mono);
+  font-size: .73rem;
+  color: var(--accent);
+  margin-top: auto;
+  padding-top: .35rem;
+}
+
+.chip {
+  font-family: var(--f-display);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: .18rem .45rem;
+  border-radius: 2px;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+.chip--hi { color: var(--sev-hi); background: var(--sev-hi-bg); }
+.chip--md { color: var(--sev-md); background: var(--sev-md-bg); }
+.chip--lo { color: var(--sev-lo); background: var(--sev-lo-bg); }
+
+/* ---------- risk entries ---------- */
+
+.risk {
+  border-left: 3px solid var(--rule);
+  padding: 0 0 .1rem 1.15rem;
+  margin: 2rem 0;
+}
+.risk--hi { border-left-color: var(--sev-hi); }
+.risk--md { border-left-color: var(--sev-md); }
+.risk--lo { border-left-color: var(--sev-lo); }
+.risk h3 { margin: 0 0 .6rem; display: flex; align-items: baseline; flex-wrap: wrap; gap: .6rem; }
+.risk p:last-child { margin-bottom: 0; }
+
+/* ---------- tables ---------- */
+
+.tablewrap { overflow-x: auto; margin: 1.4rem 0 1.6rem; border: 1px solid var(--rule); border-radius: 3px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+th, td {
+  text-align: left;
+  padding: .6rem .85rem;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top;
+}
+thead th {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: none; }
+td.mono, th.mono, .num-col { font-family: var(--f-mono); font-size: .86rem; font-variant-numeric: tabular-nums; }
+td.right, th.right { text-align: right; }
+
+/* ---------- code ---------- */
+
+pre {
+  font-family: var(--f-mono);
+  font-size: .83rem;
+  line-height: 1.62;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: .95rem 1.1rem;
+  overflow-x: auto;
+  margin: 1rem 0 1.4rem;
+  color: var(--ink-2);
+}
+pre .cmt { color: var(--muted); font-style: italic; }
+p code, li code, td code, dd code {
+  background: var(--surface-2);
+  padding: .08em .32em;
+  border-radius: 2px;
+  color: var(--ink);
+}
+
+/* ---------- pipeline ---------- */
+
+.pipe { list-style: none; margin: 1.2rem 0 1.6rem; padding: 0; max-width: none; counter-reset: p; }
+.pipe > li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: .1rem 1rem;
+  padding: .7rem 0;
+  border-top: 1px solid var(--rule-soft);
+  margin: 0;
+}
+.pipe > li:last-child { border-bottom: 1px solid var(--rule-soft); }
+.pipe > li::before {
+  counter-increment: p;
+  content: counter(p, decimal-leading-zero);
+  font-family: var(--f-mono);
+  font-size: .74rem;
+  color: var(--accent);
+  padding-top: .3em;
+}
+.pipe .step-name { font-family: var(--f-mono); font-size: .88rem; font-weight: 500; color: var(--ink); }
+.pipe .step-desc { font-size: .95rem; color: var(--muted); grid-column: 2; }
+
+/* ---------- figure ---------- */
+
+figure { margin: 1.75rem 0 2rem; }
+.figbox {
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--surface);
+  padding: 1.25rem 1rem;
+  overflow-x: auto;
+}
+figure svg { display: block; width: 100%; min-width: 620px; max-width: 900px; height: auto; margin: 0 auto; color: var(--ink-2); }
+figcaption {
+  font-size: .88rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin-top: .8rem;
+  max-width: var(--measure);
+}
+.svg-box { fill: var(--surface); stroke: var(--ink-2); stroke-width: 1.25; }
+.svg-box--core { fill: var(--accent-wash); stroke: var(--accent); stroke-width: 1.75; }
+.svg-box--panel { fill: none; stroke: var(--ink-2); stroke-width: 1.25; stroke-dasharray: 3 3; opacity: .7; }
+.svg-t { font-family: var(--f-display); font-size: 14px; font-weight: 600; fill: var(--ink); }
+.svg-t--sm { font-family: var(--f-mono); font-size: 10.5px; font-weight: 400; fill: var(--muted); }
+.svg-t--lbl { font-family: var(--f-mono); font-size: 11px; fill: var(--muted); }
+.svg-t--acc { font-family: var(--f-mono); font-size: 11px; fill: var(--accent); font-weight: 500; }
+.svg-line { stroke: var(--ink-2); stroke-width: 1.25; fill: none; opacity: .85; }
+.svg-line--rt { stroke: var(--accent); stroke-width: 1.75; stroke-dasharray: 6 4; fill: none; }
+.mk { fill: var(--ink-2); }
+.mk-a { fill: var(--accent); }
+
+/* ---------- callout ---------- */
+
+.note {
+  background: var(--accent-wash);
+  border-left: 3px solid var(--accent);
+  padding: .9rem 1.1rem;
+  margin: 1.4rem 0;
+  border-radius: 0 3px 3px 0;
+}
+.note p { margin: 0; font-size: .95rem; max-width: none; }
+
+/* ---------- priorities ---------- */
+
+.prio { list-style: none; padding: 0; margin: 1.2rem 0 0; max-width: none; counter-reset: q; }
+.prio > li {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: .95rem 0;
+  border-bottom: 1px solid var(--rule-soft);
+  margin: 0;
+  align-items: baseline;
+}
+.prio > li::before {
+  counter-increment: q;
+  content: counter(q);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--accent);
+  line-height: 1;
+}
+.prio strong { display: block; font-family: var(--f-display); font-size: 1.02rem; margin-bottom: .1rem; }
+.prio span { font-size: .95rem; color: var(--muted); }
+
+/* ---------- footer ---------- */
+
+.colophon {
+  border-top: 1px solid var(--rule);
+  margin-top: 1rem;
+  padding-top: 1.4rem;
+  font-family: var(--f-mono);
+  font-size: .78rem;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <div class="topline">
+      <p class="eyebrow">Kodegennemgang · hardolf/JRiver.MediaCenter</p>
+      <p class="langbar">
+        <span class="current">Dansk</span>
+        <span class="sep">·</span>
+        <a href="https://claude.ai/code/artifact/71d2a395-d46f-4d90-adfc-6c866dfe501f">English</a>
+      </p>
+    </div>
+    <h1>LyricsFinder<br><span>arkitektur &amp; onboarding</span></h1>
+    <p class="standfirst">
+      En læsning af hele solutionen: hvordan de 15 projekter hænger sammen, hvor data løber hen,
+      og hvilke syv-otte ting der reelt er værd at rette først. Ingen kode er ændret.
+    </p>
+    <dl class="factstrip">
+      <div><dt>Gennemgået</dt><dd>25. aug. 2026</dd></div>
+      <div><dt>Branch</dt><dd>master</dd></div>
+      <div><dt>Projekter</dt><dd>15 aktive</dd></div>
+      <div><dt>Target</dt><dd>net48 · C# 13</dd></div>
+      <div><dt>Tests</dt><dd>28, alle live</dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="shell">
+
+  <nav class="rail" aria-label="Sektioner">
+    <h2>Indhold</h2>
+    <ol>
+      <li><a href="#s1">Hvad er det her?</a></li>
+      <li><a href="#s2">Projekter og afhængigheder</a></li>
+      <li><a href="#s3">Frameworks og konfiguration</a></li>
+      <li><a href="#s4">Arkitektur og dataflow</a></li>
+      <li><a href="#s5">Risici og code smells</a></li>
+      <li><a href="#s6">Testhuller</a></li>
+      <li><a href="#s7">Build, test og kørsel</a></li>
+      <li><a href="#s8">Prioritering</a></li>
+    </ol>
+  </nav>
+
+  <main class="body-col">
+
+    <!-- ============ FINDINGS BOARD ============ -->
+    <section aria-labelledby="board-h">
+      <div class="sec-head">
+        <span class="num">TL;DR</span>
+        <h2 id="board-h">De fund der betyder noget</h2>
+      </div>
+      <p class="lead">Syv forhold bærer størstedelen af risikoen. Detaljerne står i afsnit 5.</p>
+      <div class="board">
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--hi">Høj</span></div>
+          <h3>XmlSerializer lækker assemblies</h3>
+          <p>Overloaden med <code>knownTypes</code> cacher ikke. Hvert kald genererer en dynamisk assembly der aldrig unloades — og der kaldes én gang pr. sang.</p>
+          <p class="where">Serialize.cs · LyricSearch.cs:128</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--hi">Høj</span></div>
+          <h3>Tællere gemmes muligvis aldrig</h3>
+          <p>Parameteren overskrives med et frisk objekt fra disk; tællerne lægges tilbage på den gamle instans, men <code>SaveAsync()</code> kaldes på den nye.</p>
+          <p class="where">LyricSearch.cs:128–150</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--hi">Høj</span></div>
+          <h3>Ingen URL-encoding</h3>
+          <p>Hele sangteksten interpoleres direkte ind i en GET-query. Et <code>&amp;</code> eller <code>#</code> i teksten ødelægger kaldet.</p>
+          <p class="where">McRestService.cs:195</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--hi">Høj</span></div>
+          <h3>HttpClient genskabes pr. kald</h3>
+          <p>Den statiske klient disposes og nyoprettes hver gang der sendes credentials. Socket exhaustion, plus en reel race på det statiske felt.</p>
+          <p class="where">Utility.cs:228–269</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--md">Medium-høj</span></div>
+          <h3>Trådmodel hviler på et tilfælde</h3>
+          <p>Ti workers deler en ulåst <code>Queue&lt;int&gt;</code> og rører gridet direkte. Det virker kun fordi ingen await bruger <code>ConfigureAwait(false)</code>.</p>
+          <p class="where">LyricsFinderCore.Process.cs:360</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--md">Medium</span></div>
+          <h3>CR+LF overlever ikke konfigurationen</h3>
+          <p>Flerlinjede indstillinger bor i XML-<em>attributter</em>. Rå linjeskift dér normaliseres til mellemrum af enhver parser — tabt ved både ny fil og gem.</p>
+          <p class="where">LyricServices/*/App.config</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--md">Medium</span></div>
+          <h3>Ingen CI, ingen hermetiske tests</h3>
+          <p>Alle 28 tests rammer live tredjeparts-websites og kræver brugerens egen datafil med rigtige API-tokens.</p>
+          <p class="where">LyricServices/*/UnitTest.cs</p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============ 1 ============ -->
+    <section id="s1">
+      <div class="sec-head"><span class="num">01</span><h2>Hvad er det her?</h2></div>
+
+      <p>Repoet indeholder udvidelser til <strong>JRiver Media Center</strong> (MC). Langt hovedparten
+      er <strong>LyricsFinder</strong>: et værktøj der henter sangtekster fra online lyric-tjenester og
+      skriver dem tilbage i MC's mediebibliotek.</p>
+
+      <p>Samme kode udgives i to skikkelser:</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Udgave</th><th>Assembly</th><th>Vært</th></tr></thead>
+          <tbody>
+            <tr><td>Stand-alone</td><td class="mono">LyricsFinderExe.exe</td><td>Windows Forms-app</td></tr>
+            <tr><td>MC plug-in</td><td class="mono">LyricsFinderPlugin.dll</td><td>COM-objekt indlejret i Media Center</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Begge er tynde skaller omkring <code>LyricsFinderCore</code>, en <code>UserControl</code> der
+      indeholder hele UI'et og al logik. <code>LyricsFinderPlugin</code> <strong>arver</strong> direkte
+      fra <code>LyricsFinderCore</code>, og <code>MainForm</code> i exe'en hoster den samme kontrol.
+      Konstruktørflaget <code>base(isStandAlone, entryAssembly)</code> er den eneste reelle forskel —
+      blandt andet hvilken log4net-konfiguration der læses.</p>
+
+      <h3>Solutions</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Fil</th><th>Indhold</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">LyricsFinder.sln</td><td><strong>Den aktive solution.</strong> 15 kodeprojekter.</td></tr>
+            <tr><td class="mono">MediaCenter.sln</td><td>“Alt”-solution. <strong>Er i øjeblikket brudt</strong> — peger på <code>LyricServices\ApiseedsService\ApiseedsService.csproj</code>, som er slettet og nu kun findes i <code>LyricServices.Old</code>. Tilføjer desuden <code>Visualizations</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Øvrige <code>.sln</code>-filer under <code>Lib/</code> og <code>C# Plugin Template/</code> er
+      tredjeparts SDK-eksempler og skabeloner — ikke en del af produktet.</p>
+    </section>
+
+    <!-- ============ 2 ============ -->
+    <section id="s2">
+      <div class="sec-head"><span class="num">02</span><h2>Projekter og afhængigheder</h2></div>
+
+      <p>Alle projekter er <strong>klassiske (non-SDK) csproj'er</strong>, <code>net48</code>,
+      <code>AnyCPU</code>, med <code>packages.config</code> til NuGet.
+      <code>Directory.Build.props</code> sætter kun én ting globalt: <code>LangVersion 13.0</code> —
+      C# 13 mod .NET Framework 4.8, hvilket er understøttet, men uden runtime-features.</p>
+
+      <figure>
+        <div class="figbox">
+          <svg viewBox="0 0 900 470" role="img" aria-label="Afhængighedsdiagram: LyricsFinderExe og LyricsFinderPlugin bygger på LyricsFinderCore, som bygger på McWsProxy og MessageInspection, som begge bygger på Utility. De seks lyric-tjenester refererer Core på compile-time, mens Core indlæser dem dynamisk på runtime via Assembly.LoadFrom.">
+            <defs>
+              <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                <polygon class="mk" points="0,1.5 10,5 0,8.5"></polygon>
+              </marker>
+              <marker id="arwa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <polygon class="mk-a" points="0,1.5 10,5 0,8.5"></polygon>
+              </marker>
+            </defs>
+
+            <!-- hosts -->
+            <rect class="svg-box" x="90" y="24" width="200" height="50" rx="2"></rect>
+            <text class="svg-t" x="190" y="45" text-anchor="middle">LyricsFinderExe</text>
+            <text class="svg-t--sm" x="190" y="62" text-anchor="middle">WinExe</text>
+
+            <rect class="svg-box" x="330" y="24" width="220" height="50" rx="2"></rect>
+            <text class="svg-t" x="440" y="45" text-anchor="middle">LyricsFinderPlugin</text>
+            <text class="svg-t--sm" x="440" y="62" text-anchor="middle">COM · arver Core</text>
+
+            <!-- core -->
+            <rect class="svg-box svg-box--core" x="150" y="132" width="340" height="58" rx="2"></rect>
+            <text class="svg-t" x="320" y="156" text-anchor="middle">LyricsFinderCore</text>
+            <text class="svg-t--sm" x="320" y="174" text-anchor="middle">UI · orkestrering · datamodel</text>
+
+            <!-- services panel -->
+            <rect class="svg-box--panel" x="600" y="110" width="280" height="146" rx="2"></rect>
+            <text class="svg-t" x="620" y="136">6 lyric-tjenester</text>
+            <text class="svg-t--sm" x="620" y="166">AZLyrics</text>
+            <text class="svg-t--sm" x="620" y="190">CajunLyrics</text>
+            <text class="svg-t--sm" x="620" y="214">ChartLyrics</text>
+            <text class="svg-t--sm" x="756" y="166">Lololyrics</text>
+            <text class="svg-t--sm" x="756" y="190">MusiXmatch</text>
+            <text class="svg-t--sm" x="756" y="214">Stands4</text>
+            <text class="svg-t--sm" x="620" y="242">hver med sine MSTest-tests indeni</text>
+
+            <!-- shared -->
+            <rect class="svg-box" x="60" y="300" width="180" height="48" rx="2"></rect>
+            <text class="svg-t" x="150" y="320" text-anchor="middle">McWsProxy</text>
+            <text class="svg-t--sm" x="150" y="336" text-anchor="middle">MCWS REST-klient</text>
+
+            <rect class="svg-box" x="270" y="300" width="200" height="48" rx="2"></rect>
+            <text class="svg-t" x="370" y="320" text-anchor="middle">MessageInspection</text>
+            <text class="svg-t--sm" x="370" y="336" text-anchor="middle">WCF-tracing</text>
+
+            <rect class="svg-box" x="150" y="404" width="200" height="48" rx="2"></rect>
+            <text class="svg-t" x="250" y="424" text-anchor="middle">Utility</text>
+            <text class="svg-t--sm" x="250" y="440" text-anchor="middle">strenge · HTTP · XML</text>
+
+            <!-- edges: hosts to core -->
+            <line class="svg-line" x1="190" y1="76" x2="248" y2="130" marker-end="url(#arw)"></line>
+            <line class="svg-line" x1="440" y1="76" x2="400" y2="130" marker-end="url(#arw)"></line>
+
+            <!-- core down -->
+            <line class="svg-line" x1="230" y1="192" x2="160" y2="298" marker-end="url(#arw)"></line>
+            <line class="svg-line" x1="400" y1="192" x2="372" y2="298" marker-end="url(#arw)"></line>
+            <line class="svg-line" x1="152" y1="350" x2="212" y2="402" marker-end="url(#arw)"></line>
+            <line class="svg-line" x1="366" y1="350" x2="300" y2="402" marker-end="url(#arw)"></line>
+
+            <!-- services -> core (compile time) -->
+            <line class="svg-line" x1="598" y1="152" x2="496" y2="152" marker-end="url(#arw)"></line>
+            <text class="svg-t--lbl" x="547" y="143" text-anchor="middle">refererer</text>
+
+            <!-- core -> services (runtime) -->
+            <path class="svg-line--rt" d="M 470 192 L 470 276 L 738 276 L 738 258" marker-end="url(#arwa)"></path>
+            <text class="svg-t--acc" x="604" y="294" text-anchor="middle">indlæser dynamisk ved runtime</text>
+          </svg>
+        </div>
+        <figcaption>
+          Afhængigheden er vendt om: de seks tjenester har en compile-time-reference <em>til</em> Core
+          for at kunne arve <code>AbstractLyricService</code>, mens Core aldrig refererer dem — den
+          finder dem først ved runtime med <code>Assembly.LoadFrom</code>. Derfor
+          <code>ProjectDependencies</code> i .sln-filen og de mange <code>xcopy</code>-post-build-events.
+          Tjenesterne bruger desuden <code>Utility</code> og <code>McWsProxy</code> direkte; de kanter er
+          udeladt for læsbarhedens skyld.
+        </figcaption>
+      </figure>
+
+      <h3>Ikke-kode-projekter</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Projekt</th><th>Rolle</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">Installation</td><td>Console-exe der <strong>pakker release-zips</strong>. Ejer også <code>SharedAssemblyInfo.cs</code> (delt version for alle assemblies) og <code>Setup.iss</code> (Inno Setup).</td></tr>
+            <tr><td class="mono">Documentation</td><td>Tom <code>Main()</code>. Findes kun for at kopiere HTML-dokumentation til <code>Build/</code>.</td></tr>
+            <tr><td class="mono">MjpCreator</td><td>Genererer MC <code>.mjp</code>-pakkefiler. <strong>Ikke længere brugt</strong> — kaldet er udkommenteret siden v1.3.1, fordi MC bruger RegSvr32 og ikke RegAsm.</td></tr>
+            <tr><td class="mono">Visualizations</td><td>ASP.NET-baseret; kun i <code>MediaCenter.sln</code>. Uafhængig af LyricsFinder.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ 3 ============ -->
+    <section id="s3">
+      <div class="sec-head"><span class="num">03</span><h2>Frameworks, pakker og konfiguration</h2></div>
+
+      <ul>
+        <li><strong>TFM:</strong> <code>net48</code> overalt. <code>LangVersion 13.0</code>.</li>
+        <li><strong>Signering:</strong> <code>LyricsFinderCore</code>, <code>LyricsFinderPlugin</code>,
+          <code>McWsProxy</code>, <code>Utility</code> og <code>MessageInspection</code> er strong-named.
+          <code>.snk</code>-filerne ligger i repoet.</li>
+        <li><strong>COM:</strong> Core og Plugin er <code>ComVisible</code> med <code>ProgId</code>.
+          <code>RegisterForComInterop</code> er sat i <em>Debug</em> — Visual Studio skal derfor køre
+          som administrator ved debug-builds. Plugin har en <code>COMReference</code> til MC's
+          type-library, som kun kan resolves hvis Media Center er installeret.</li>
+      </ul>
+
+      <h3>Runtime-pakker</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Pakke</th><th class="mono">Version</th><th>Bruges af</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">log4net</td><td class="mono">3.3.1</td><td>Core</td></tr>
+            <tr><td class="mono">Newtonsoft.Json</td><td class="mono">13.0.4</td><td>Core, MusiXmatch</td></tr>
+            <tr><td class="mono">HtmlAgilityPack</td><td class="mono">1.12.4</td><td>AZLyrics, Lololyrics</td></tr>
+            <tr><td class="mono">System.ComponentModel.Annotations</td><td class="mono">5.0.0</td><td>Core</td></tr>
+            <tr><td class="mono">Microsoft.CodeAnalysis.NetAnalyzers</td><td class="mono">10.0.203</td><td>alle</td></tr>
+            <tr><td class="mono">MSTest + Microsoft.NET.Test.Sdk</td><td class="mono">4.2.1 / 18.4.0</td><td>de 6 service-projekter</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Service-projekterne trækker desuden en <strong>stor transitiv hale</strong> ind via
+      <code>Microsoft.NET.Test.Sdk</code> → ApplicationInsights → Azure.Core → OpenTelemetry →
+      <code>Microsoft.Extensions.*</code> 10.0.7 → MSAL. Cirka 60 pakker pr. serviceprojekt — alt
+      sammen konsekvens af at unit-tests bor i <em>samme assembly</em> som produktionskoden.</p>
+
+      <h3>Central konfiguration</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Fil</th><th>Betydning</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">LyricsFinderCore.dll.config</td><td><code>localAppDataFile</code> = <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code></td></tr>
+            <tr><td class="mono">Log4net.{Standalone,Plugin}.xml</td><td>log4net-appenders; logfiler i samme mappe</td></tr>
+            <tr><td class="mono">LyricServices/*/App.config</td><td>Kun <strong>initiel</strong> seeding af <code>ServiceName</code>, <code>CreditUrl</code>, <code>Comment</code> m.fl. Efter første start læses alt fra XML-datafilen.</td></tr>
+            <tr><td class="mono">SharedAssemblyInfo.cs</td><td><code>AssemblyVersion 1.3.7.0</code>, linket ind i Core, Exe og Plugin</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ 4 ============ -->
+    <section id="s4">
+      <div class="sec-head"><span class="num">04</span><h2>Arkitektur og dataflow</h2></div>
+
+      <h3>Opstart</h3>
+      <ol class="pipe">
+        <li><span class="step-name">InitLoggingAsync()</span><span class="step-desc">vælger Standalone- eller Plugin-log4net-config</span></li>
+        <li><span class="step-name">LyricsFinderCoreConfigurationSectionHandler.Init()</span><span class="step-desc">peger på den assembly hvis <code>.config</code> skal læses</span></li>
+        <li><span class="step-name">InitLocalDataAsync()</span><span class="step-desc">sikrer skriveadgang → <code>InitLyricServicesAsync()</code> (LoadFrom på alle <code>*.dll</code>) → <code>LyricsFinderDataType.Load(xml)</code> → flet nye services ind → <code>RefreshServiceSettingsAsync()</code> pr. service</span></li>
+        <li><span class="step-name">OptionForm</span><span class="step-desc">vises kun hvis MCWS-opsætningen mangler</span></li>
+        <li><span class="step-name">McRestService.Init(...)</span><span class="step-desc">accessKey, url, bruger, password lægges i statiske felter</span></li>
+        <li><span class="step-name">ReloadPlaylistAsync(isReconnect: true)</span><span class="step-desc">forbind, hent playliste, fyld gridet</span></li>
+      </ol>
+
+      <h3>Forbindelse til Media Center</h3>
+      <p><code>McWsProxy</code> er en <strong>statisk</strong> klasse over MC's REST-API (MCWS, default
+      <code>http://localhost:52199/MCWS/v1</code>).</p>
+      <pre>GET /Alive          <span class="cmt">retry op til MaxMcWsConnectAttempts, 500 ms pause</span>
+                    <span class="cmt">sammenlign AccessKey med den konfigurerede</span>
+GET /Authenticate   <span class="cmt">Basic auth → McWsToken gemmes statisk</span>
+GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-strengen</span></pre>
+
+      <h3>Søgeforløbet</h3>
+      <p><code>SearchAllProcessAsync</code> opretter <code>MaxQueueLength</code> (default 10) workers
+      over én delt <code>Queue&lt;int&gt;</code>. Hver worker kører for sit element:</p>
+
+      <ol class="pipe">
+        <li><span class="step-name">LyricSearch.SearchAsync(...)</span><span class="step-desc">kloner hver aktiv service, så samtidige søgninger ikke deler state</span></li>
+        <li><span class="step-name">clone.ProcessAsyncWrapper(...)</span><span class="step-desc">service-specifik HTTP / HTML-scrape / SOAP / JSON — og et retry hvor parentes-tekst er fjernet fra artist, album og titel</span></li>
+        <li><span class="step-name">AddFoundLyric(...)</span><span class="step-desc">HTML-dekoder, filtrerer duplikater, opdaterer hit-tællere</span></li>
+        <li><span class="step-name">WhenAll / seriel / WhenAny(predicate)</span><span class="step-desc">tre strategier: alle hits, én ad gangen ved kvotehensyn, eller første service med hit vinder</span></li>
+        <li><span class="step-name">finally</span><span class="step-desc">genindlæs XML-datafil, læg klonernes tællere tilbage, gem XML igen — <em>pr. sang</em></span></li>
+      </ol>
+
+      <div class="note">
+        <p>Søgeresultatet lander <strong>kun i gridet</strong>. Først når brugeren gemmer, kaldes
+        <code>McRestService.SetInfoAsync(key, "Lyrics", lyrics)</code>
+        (<code>LyricsFinderCore.Private.cs:879</code>), som skriver teksten tilbage til Media Center.</p>
+      </div>
+
+      <h3>Persistering</h3>
+      <p>Al brugerdata — MCWS-URL, bruger og password, vinduespositioner, gridkolonner og
+      <strong>hele service-listen med tokens og tællere</strong> — ligger i én XML-fil,
+      <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>, serialiseret med
+      <code>XmlSerializer</code> via <code>SharedComponents.Serialize</code>.
+      <code>LyricsFinderDataType.IsChanged</code> afgør “dirty” ved at <em>serialisere hele objektet til
+      en streng</em> og sammenligne med en gemt baseline-streng.</p>
+    </section>
+
+    <!-- ============ 5 ============ -->
+    <section id="s5">
+      <div class="sec-head"><span class="num">05</span><h2>Risici, code smells og sikkerhed</h2></div>
+      <p class="lead">Sorteret efter hvor meget de betyder i praksis.</p>
+
+      <div class="risk risk--hi">
+        <h3>XmlSerializer med knownTypes → assembly-læk <span class="chip chip--hi">Høj</span></h3>
+        <p><code>Serialize.ToXmlWithNewlines</code> og <code>XmlDeserializeFromString</code> kalder
+        <code>new XmlSerializer(type, knownTypes)</code>. <strong>Kun</strong> overloads
+        <code>XmlSerializer(Type)</code> og <code>XmlSerializer(Type, string)</code> cacher den
+        genererede serialiserings-assembly; alle andre genererer en ny dynamisk assembly pr. kald,
+        som aldrig kan unloades.</p>
+        <p>Kaldsstien gør det alvorligt: <code>IsChanged</code> serialiserer hele datamodellen ved
+        <em>hvert</em> opslag, <code>SaveAsync</code> gør det igen, og
+        <code>LyricSearch.SearchAsync</code> kører <code>Load</code> + <code>SaveAsync</code> i sin
+        <code>finally</code> for <strong>hver eneste sang</strong>. En søgning over en playliste på
+        1000 numre giver i størrelsesordenen tusindvis af dynamiske assemblies plus lige så mange
+        fulde læse/skrive-runder på XML-filen. Forventet symptom: voksende hukommelsesforbrug og
+        stigende langsommelighed jo længere en “Search all” kører.</p>
+      </div>
+
+      <div class="risk risk--hi">
+        <h3>Tællere gemmes muligvis aldrig <span class="chip chip--hi">Høj</span></h3>
+        <p>I <code>LyricSearch.SearchAsync</code> (<code>LyricSearch.cs:128</code>)
+        <strong>overskrives parameteren</strong> <code>lyricsFinderData</code> med et frisk objekt fra
+        disk. Derefter lægges klonernes tællere tilbage på <code>service</code>-objekterne, som
+        stammer fra den <em>oprindelige</em> — nu overskrevne — instans, mens
+        <code>SaveAsync()</code> kaldes på den <em>nyindlæste</em>. Forøgelserne af
+        <code>RequestCountTotal</code> og <code>HitCountTotal</code> skrives altså til objekter der
+        ikke gemmes. Dette bør verificeres mod faktisk observeret adfærd, men koden læser som en fejl.</p>
+      </div>
+
+      <div class="risk risk--hi">
+        <h3>HttpClient genskabes ved hvert autentificeret kald <span class="chip chip--hi">Høj</span></h3>
+        <p><code>Utility.CreateHttpClient</code> kaldes fra <code>HttpGetStringAsync</code> og
+        <code>HttpGetImageAsync</code> <strong>hver gang</strong> der sendes brugernavn og password.
+        Den <code>Dispose()</code>'r den eksisterende statiske <code>HttpClient</code> og laver en ny.</p>
+        <ul>
+          <li><strong>Socket exhaustion / TIME_WAIT</strong> — det klassiske HttpClient-antimønster.</li>
+          <li><strong>Race</strong> — feltet <code>_httpClientWithCredentials</code> er statisk og
+          muterbart. Kører to autentificerede kald samtidig, kan det ene disposere den klient det
+          andet er ved at bruge → <code>ObjectDisposedException</code>.</li>
+        </ul>
+        <p>Bemærk også at <code>timeoutMilliSeconds</code> kun har effekt for den credentialed klient
+        og kun når den lige er genskabt; <code>new TimeSpan(ms * 10000)</code> overløber desuden ved
+        værdier over ca. 214 sekunder.</p>
+      </div>
+
+      <div class="risk risk--hi">
+        <h3>Ingen URL-encoding i MCWS-kald <span class="chip chip--hi">Høj</span></h3>
+        <p><code>McRestService.CreateRequestUrl</code> bygger query-strenge med ren
+        strenginterpolation. Der findes <strong>ikke ét eneste</strong> kald til
+        <code>Uri.EscapeDataString</code> eller <code>HttpUtility.UrlEncode</code> i hele kodebasen.
+        Værst i:</p>
+        <pre>case McCommandEnum.SetInfo:
+    sb.Append($"…&amp;Field={field}&amp;Value={value}");   <span class="cmt">// value = hele sangteksten</span></pre>
+        <p>En sangtekst med <code>&amp;</code>, <code>#</code>, <code>+</code> eller <code>%</code>
+        bliver enten afkortet eller fejltolket, og fler-KB tekster risikerer at overskride serverens
+        URL-længdegrænse. <code>System.Web</code> er <code>using</code>'et i filen, men
+        <code>HttpUtility</code> bruges aldrig. Skrivning af lyrics burde være POST med body.</p>
+      </div>
+
+      <div class="risk risk--md">
+        <h3>Trådmodellen holder kun ved et tilfælde <span class="chip chip--md">Medium-høj</span></h3>
+        <p><code>SearchAllProcessWorkerAsync</code> gør tre ting der normalt er ulovlige:</p>
+        <ul>
+          <li><code>Queue&lt;int&gt;.Dequeue()</code> fra ti samtidige workers uden lås —
+            <code>Queue&lt;T&gt;</code> er ikke trådsikker.</li>
+          <li>Direkte adgang til <code>MainGridView.Rows[…]</code> og celleværdier fra async-workers.</li>
+          <li><code>IsDataChanged</code>-<em>getteren</em> har sideeffekter: den sætter
+            <code>FileSaveMenuItem.Enabled</code> og <code>DataChangedTextBox.Visible</code>.</li>
+        </ul>
+        <p>Det virker i praksis, fordi ingen af de awaits der ligger på vejen tilbage til workeren
+        bruger <code>ConfigureAwait(false)</code>, så alle continuations postes tilbage til UI-tråden
+        og serialiseres dermed. Men det er en usynlig kontrakt: <strong>ét enkelt
+        <code>ConfigureAwait(false)</code> tilføjet et vilkårligt sted i <code>LyricSearch</code>- eller
+        <code>AbstractLyricService</code>-kæden vil ødelægge både køen og grid-adgangen.</strong> Brug
+        <code>ConcurrentQueue&lt;int&gt;.TryDequeue</code> og eksplicit UI-marshalling i stedet for at
+        stole på synkroniseringskonteksten.</p>
+      </div>
+
+      <div class="risk risk--md">
+        <h3>WhenAny(predicate) sluger ikke undtagelser som forventet <span class="chip chip--md">Medium</span></h3>
+        <p><code>AsyncUtility.WhenAny</code> (<code>AsyncUtility.cs:378</code>) kalder
+        <code>condition(task)</code>, og prædikatet i <code>LyricSearch</code> er
+        <code>t =&gt; t.Result.LyricResult == …</code>. På en fejlet task kaster <code>.Result</code> en
+        <strong><code>AggregateException</code></strong>, ikke den oprindelige
+        <code>LyricServiceBaseException</code>. Derfor rammer <code>catch (LyricServiceBaseException)</code>
+        i <code>LyricSearch.cs:112</code> ikke, og en kvoteoverskridelse i den parallelle sti
+        propagerer som en uventet undtagelsestype. Samme mønster i den serielle sti
+        (<code>LyricSearch.cs:102</code>).</p>
+      </div>
+
+      <div class="risk risk--md">
+        <h3>CR+LF overlever ikke konfigurationsfilen <span class="chip chip--md">Medium</span></h3>
+        <p>Flerlinjede værdier mister deres linjeskift. Det rammer både når
+        <code>LyricsFinder.xml</code> oprettes første gang, og ved efterfølgende gem.</p>
+
+        <p><strong>Mekanismen</strong> er XML'ens regel om attributnormalisering (XML 1.0 §3.3.3):
+        et <em>bogstaveligt</em> CR, LF eller TAB inde i en <strong>attributværdi</strong> bliver
+        erstattet af ét mellemrum af enhver konform parser. Linjeskiftet er væk allerede når værdien
+        læses, og kan ikke gendannes bagefter — kun tegnreferencerne <code>&amp;#xD;</code> /
+        <code>&amp;#xA;</code> overlever. Service-indstillingerne bor netop i attributter,
+        <code>&lt;add key="Comment" value="…" /&gt;</code>, og er derfor eksponeret.</p>
+
+        <p><strong>Beviset ligger i repoet.</strong> MusiXmatch skriver sin <code>Comment</code>
+        med entiteter og klarer sig helt igennem til datafilen:</p>
+        <pre><span class="cmt">&lt;!-- MusiXmatchService/App.config --&gt;</span>
+value="No user ID required.&amp;#xD;&amp;#xA;Token required, may be obtained from:&amp;#xD;&amp;#xA;…"
+
+<span class="cmt">&lt;!-- LyricsFinder.xml, linje 118-121 --&gt;</span>
+&lt;Comment&gt;No user ID required.&amp;#xD;
+Token required, may be obtained from:&amp;#xD;
+…&lt;/Comment&gt;</pre>
+
+        <p>AZLyrics og Stands4 skriver rå linjeskift i attributten, og deres tekst står nu med
+        <strong>dobbelte mellemrum</strong> præcis dér hvor linjeskiftene var — signaturen på at CR
+        og LF hver især er blevet til ét mellemrum:</p>
+        <pre>"No user ID or token required.<span class="cmt">··</span>Use this service for manual lyric searches only,<span class="cmt">··</span>as automatic…"</pre>
+
+        <p>Det gælder allerede i <code>HEAD</code>, ikke kun i arbejdstræet: skaden er sket engang
+        tidligere og er blevet committet, og de tre <code>App.config</code>-filer er dermed selv
+        blevet den korrupte kilde.</p>
+
+        <h4>Tællingen bekræfter at skrivestien selv er sund</h4>
+        <p>En optælling af den aktuelle datafil
+        (<code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>, 9257 bytes):</p>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Måling</th><th class="right">Antal</th></tr></thead>
+            <tbody>
+              <tr><td><code>&amp;#xD;</code>-entiteter</td><td class="right num-col">12</td></tr>
+              <tr><td>Bogstavelige CR-bytes</td><td class="right num-col">160</td></tr>
+              <tr><td>Bogstavelige LF-bytes</td><td class="right num-col">172</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>De 160 CR indgår alle i CR+LF-par og stammer fra <code>Indent = true</code>, hvis
+        <code>NewLineChars</code> som standard er <code>"\r\n"</code> — det er ren pretty-printing
+        mellem elementer. De resterende <code>172 − 160 = 12</code> løse LF matcher
+        <strong>nøjagtigt</strong> de 12 entiteter: hvert indlejret linjeskift i tekstindhold er
+        skrevet som <code>&amp;#xD;</code> plus et bogstaveligt LF, præcis som
+        <code>NewLineHandling.Entitize</code> foreskriver. Ingen af dem er gået tabt.</p>
+
+        <p>Konklusionen er derfor entydig: <code>XmlSerializeToFile</code> gør det rigtige, og
+        fejlen ligger udelukkende opstrøms i <code>App.config</code>-attributterne. Det er også
+        grunden til at en rettelse i serialiseringskoden ikke vil hjælpe — kilden skal repareres.</p>
+
+        <h4>Konsekvens for de to symptomer</h4>
+        <ul>
+          <li><strong>Ny fil</strong> — <code>RefreshServiceSettingsAsync</code> seeder
+            <code>Comment</code>, <code>CreditTextFormat</code> m.fl. fra <code>App.config</code> via
+            <code>ServiceSettingsValue</code>. Parseren afleverer allerede fladet tekst, så en frisk
+            <code>LyricsFinder.xml</code> arver fladningen. Datafilens skrivesti er i sig selv
+            korrekt — kilden var ødelagt inden.</li>
+          <li><strong>Gem af ændringer</strong> — så længe værdierne skrives tilbage i en attribut
+            uden entitisering, flades de igen ved næste læsning. Runden er tabsgivende hver gang.</li>
+        </ul>
+
+        <p>Bemærk hvor det gør ondt: <code>CreditTextFormat</code> er den blok der føjes til
+        <strong>hver eneste gemt sangtekst</strong> i mediebiblioteket. Den er intakt i den
+        nuværende datafil (<code>&amp;#xD;</code> på linje 125–133), men den ligger i samme
+        attribut-lag og er ét fladningsuheld fra at mangle sine linjeskift i alt hvad der er gemt.</p>
+
+        <h4>Retningen på en rettelse</h4>
+        <p>Den hurtige udvej er at bruge <code>&amp;#xD;&amp;#xA;</code> i alle
+        <code>App.config</code>-attributter, som MusiXmatch allerede gør. Det virker, men
+        entiteterne skal vedligeholdes i hånden for evigt — en udvikler der trykker Enter i en
+        attribut ødelægger værdien uden at opdage det.</p>
+
+        <p>Den holdbare rettelse er at flytte de flerlinjede indstillinger ud af attributter og
+        over i child-elementer. Bemærk at reglen dér er en anden: i <strong>elementindhold</strong>
+        normaliseres CR+LF til et enkelt LF (XML 1.0 §2.11) — linjeskiftet <em>overlever</em> altså,
+        det bliver bare LF i stedet for CR+LF. Det er den afgørende forskel fra attributter, hvor
+        bruddet forsvinder helt.</p>
+
+        <p><em>Før — bruddet dør ved læsning:</em></p>
+        <pre>&lt;appSettings&gt;
+  &lt;add key="Comment" value="No user ID required.
+Token required, may be obtained from:
+https://about.musixmatch.com/api-pricing" /&gt;
+&lt;/appSettings&gt;</pre>
+
+        <p><em>Efter — bruddet overlever som LF:</em></p>
+        <pre>&lt;lyricService&gt;
+  &lt;ServiceName&gt;MusiXmatch&lt;/ServiceName&gt;
+  &lt;Comment&gt;No user ID required.
+Token required, may be obtained from:
+https://about.musixmatch.com/api-pricing&lt;/Comment&gt;
+&lt;/lyricService&gt;</pre>
+
+        <p>Læsesiden bliver samtidig enklere. Indstillingerne bruges kun til seeding ved første
+        start, så hele <code>ConfigurationManager</code>-maskineriet kan udgå til fordel for
+        almindelig XML-læsning:</p>
+
+        <pre><span class="cmt">// Erstatter ConfigurationManager.OpenExeConfiguration(assy.Location) i RefreshServiceSettingsAsync</span>
+private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type serviceType)
+{
+    var configPath = Assembly.GetAssembly(serviceType).Location + ".config";
+    var ret = new Dictionary&lt;string, string&gt;(StringComparer.OrdinalIgnoreCase);
+    var doc = new XmlDocument { XmlResolver = null };
+
+    using (var reader = XmlReader.Create(configPath, new XmlReaderSettings { XmlResolver = null }))
+        doc.Load(reader);
+
+    foreach (XmlNode node in doc.SelectNodes("/configuration/lyricService/*"))
+    {
+        <span class="cmt">// Elementindhold kommer tilbage med LF; WinForms vil have CR+LF.</span>
+        ret[node.Name] = node.InnerText.LfToCrLf();
+    }
+
+    return ret;
+}</pre>
+
+        <p>To pointer ved den form: <code>LfToCrLf()</code> findes allerede i
+        <code>SharedComponents.Utility</code> og gør netop det sidste skridt, og
+        <code>XmlResolver = null</code> holder XXE-linjen fra resten af kodebasen.</p>
+
+        <div class="note">
+          <p><code>Utility.DllConfigurationFile()</code> kan <strong>ikke</strong> bruges her — den
+          kalder <code>Assembly.GetExecutingAssembly()</code> og peger derfor på
+          <code>Utility.dll</code>, ikke på den service der skal læses.
+          <code>Assembly.GetAssembly(serviceType)</code> er den rigtige, og er også den form
+          <code>RefreshServiceSettingsAsync</code> allerede bruger.</p>
+        </div>
+
+        <p>Uanset hvilken vej der vælges: reparér samtidig de tre committede
+        <code>App.config</code>-filer. Deres linjeskift kan ikke udledes af koden og skal skrives
+        ind igen i hånden.</p>
+      </div>
+
+      <div class="risk risk--md">
+        <h3>To uens serialiseringsstier <span class="chip chip--md">Medium · bør verificeres</span></h3>
+        <p>Beslægtet med ovenstående, og værd at se på i samme omgang. <code>Serialize</code> har to
+        skrivestier der ikke bruger den samme serializer:</p>
+        <ul>
+          <li><code>XmlSerializeToFile</code> bruger <code>objectInstance.GetType()</code> — den
+            konkrete type.</li>
+          <li><code>XmlSerializeToString</code> kalder
+            <code>ToXmlWithNewlines&lt;T&gt;(this T obj, …)</code> med <code>objectInstance</code>
+            <strong>statisk typet som <code>object</code></strong>. Typeinferensen binder derfor
+            <code>T</code> til <code>object</code>, og der konstrueres
+            <code>new XmlSerializer(typeof(object), knownTypes)</code> — en anden serializer end
+            filstien bruger.</li>
+        </ul>
+        <p>Konsekvensen er at <code>IsChanged</code>-baselinen (<code>InitialXml</code>) produceres
+        af en anden serializer end den der skriver filen. De to er internt konsistente, så
+        dirty-detektionen fungerer sandsynligvis — men hvis den <code>object</code>-typede serializer
+        udelader felter som den konkrete tager med, vil ændringer i netop de felter ikke blive
+        opdaget, og <code>SaveAsync</code> springer tavst gemningen over
+        (<code>if (IsChanged &amp;&amp; IsSaveOk)</code>). Det er en plausibel medvirkende årsag til
+        “ændringer bliver ikke gemt”, men jeg har ikke verificeret hvilke felter der reelt afviger.</p>
+      </div>
+
+      <h3>Sikkerhed</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Emne</th><th>Vurdering</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>MCWS-password i klartekst</strong></td>
+              <td><code>MainDataType.McWsPassword</code> er <code>[XmlElement]</code> og gemmes ukrypteret i <code>LyricsFinder.xml</code> under <code>Documents</code>. Samme gælder Stands4-<code>Token</code>/<code>UserId</code> og MusiXmatch-token. Overvej DPAPI (<code>ProtectedData</code>) eller Windows Credential Manager.</td>
+            </tr>
+            <tr>
+              <td><strong>Token i query-streng</strong></td>
+              <td><code>McWsToken</code> sendes som <code>?Token=…</code> i hver URL. Mod localhost er eksponeringen begrænset, men tokens havner i logfiler: <code>HttpGetStringAsync</code> indlejrer den fulde URL i sine exception-beskeder, som skrives til <code>LyricsFinder.*.error.log</code>.</td>
+            </tr>
+            <tr>
+              <td><strong><code>Assembly.LoadFrom</code> på alle <code>*.dll</code></strong></td>
+              <td>Enhver DLL lagt i programmappen bliver indlæst og instantieret. Mappen er <code>Program Files</code> og kræver adminrettigheder, så det er ikke en akut sårbarhed — men der er ingen strong-name- eller signaturvalidering af “plugins”.</td>
+            </tr>
+            <tr>
+              <td><strong><code>.snk</code>-filer i repoet</strong></td>
+              <td>Strong-name-nøglerne er committet. Strong naming er ikke en sikkerhedsgrænse, men enhver kan nu signere assemblies med samme identitet.</td>
+            </tr>
+            <tr>
+              <td><strong>XXE</strong></td>
+              <td>Håndteret korrekt — <code>XmlResolver = null</code> er sat konsekvent i <code>McMplResponse</code>, <code>McPlayListsResponse</code> og <code>LyricsFinderDataType</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>HTML-scraping</strong></td>
+              <td>AZLyrics og Lololyrics parser fremmed HTML med HtmlAgilityPack og lægger resultatet i en <code>DataGridView</code>. Ingen HTML-rendering af indholdet, så XSS-risikoen er lav.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Byggeopsætning</h3>
+      <ul>
+        <li><strong>Hardkodede Visual Studio-stier.</strong> <code>BuildRelease.subroutine.cmd:17–18</code>
+          leder kun i <code>D:\Program Files [(x86)]\Microsoft Visual Studio\{2017,2019,2022,2026}\Community\…</code>.
+          Scriptet virker ikke på en maskine hvor VS ligger på C:, eller med Professional/Enterprise. Brug <code>vswhere.exe</code>.</li>
+        <li><strong><code>del /s /q "$(TargetDir)*.*"</code> som pre-build</strong> i Core, Exe og Plugin,
+          kombineret med post-build-<code>xcopy</code>-kæder på tværs af projektmapper.
+          <code>LyricsFinderCore</code> <em>tømmer</em> <code>Build\LyricServices</code> i sin post-build.
+          Det hele afhænger af build-rækkefølgen i <code>.sln</code>-filens <code>ProjectDependencies</code>
+          og er hverken inkrementelt- eller parallelbygge-sikkert.</li>
+        <li><strong>Binding redirects passer ikke til pakkeversionerne.</strong>
+          <code>LyricsFinderCore/App.config</code> redirect'er <code>Newtonsoft.Json</code> til
+          <code>12.0.0.0</code>, mens <code>packages.config</code> har 13.0.4 (assembly-version
+          <code>13.0.0.0</code>). Tilsvarende for <code>System.Buffers</code> og
+          <code>System.Numerics.Vectors</code>. Kan give <code>FileLoadException</code> ved runtime.</li>
+        <li><strong><code>MediaCenter.sln</code> er brudt</strong> — manglende <code>ApiseedsService.csproj</code>.</li>
+        <li><strong>Ingen CI.</strong> <code>.github/</code> indeholder kun <code>ISSUE_TEMPLATE</code>.</li>
+        <li><strong>Versionsinkonsistens.</strong> <code>SharedAssemblyInfo.cs</code> = 1.3.7.0;
+          <code>Setup.iss</code> <code>AppVersion</code> og registry-<code>Version</code> = hardkodet 1.0.0;
+          <code>ReleaseNotes.html</code> topper ved v1.3.1; seneste commit hedder “Starting v1.4.0 changes”.</li>
+        <li><strong><code>Setup.iss</code>: <code>IsMc32()</code> kan aldrig returnere <code>true</code>.</strong>
+          <code>McVersion</code> sættes til <code>Copy(McInstVersions[Idx], 1, 2)</code> — kun de to
+          versionscifre, fx <code>"34"</code> — men <code>IsMc32</code> tester
+          <code>Pos('32-bit', McVersion)</code>. En 32-bit MC-installation får derfor 64-bit
+          <code>RegAsm</code> og <code>HKLM64</code>-nøgler. Vælger brugeren kun
+          <code>standalone</code>-komponenten, springes version-siden over, og
+          <code>NextButtonClick</code> sætter aldrig <code>InstallDir</code>.</li>
+        <li><strong><code>BuildAndInstallLyricsFinder.cmd</code></strong>:
+          <code>:wait / if exist %_out_file% goto :wait</code> løkker så længe filen <em>findes</em> —
+          logikken ser omvendt ud i forhold til kommentaren “Waiting for the build completion”.</li>
+      </ul>
+
+      <h3>Øvrige code smells</h3>
+      <ul>
+        <li><strong><code>LyricsFinderCore</code> er en oplagt kandidat til opdeling</strong> —
+          1369 + 1296 + 486 linjer i én partial klasse, der blander UI, MCWS-orkestrering, filsystem og
+          forretningslogik. Det er den primære grund til at der ikke findes unit-tests for kernen.</li>
+        <li><strong><code>StackTrace</code> i en property-getter.</strong>
+          <code>LyricsFinderCoreConfigurationSectionHandler.Instance</code> laver
+          <code>new StackTrace()</code> og <code>GetFrame(1).GetMethod().Name</code> ved <em>hvert</em>
+          opslag for at udlede hvem der kalder. Dyrt, og fejlbehæftet så snart JIT'en inliner.</li>
+        <li><strong><code>Utility.GetLinkerTime</code></strong> læser PE-headerens tidsstempel. Med
+          deterministiske builds (<code>&lt;Deterministic&gt;true&lt;/Deterministic&gt;</code> i
+          <code>McWsProxy</code>; Roslyn-default) er feltet en hash, ikke en dato — funktionen giver
+          meningsløse “build-tidspunkter”.</li>
+        <li><strong><code>RandomizedDelayAsync</code></strong> laver <code>new Random()</code> pr. kald.
+          På .NET Framework seedes den fra systemuret, så samtidige kald inden for samme tick får
+          <em>identisk</em> forsinkelse — hvilket ophæver formålet: at sprede requests ud for ikke at
+          blive rate-limited.</li>
+        <li><strong><code>AbstractLyricService._semaphoreSlim</code> er <code>static</code>.</strong>
+          Alle tællere for <em>alle</em> services serialiseres gennem én global semafor, selvom låsen
+          kun beskytter instans-felter.</li>
+        <li><strong><code>ProcessAsyncWrapper</code></strong> tilgår <code>ret.LyricResult</code> uden
+          null-tjek — en override der returnerer <code>null</code> giver NRE.</li>
+        <li><strong><code>InitLocalDataAsync</code></strong>:
+          <code>Path.Combine(DataDirectory, dataFile + ".tmp")</code> hvor <code>dataFile</code>
+          allerede er en absolut sti. Det virker, fordi <code>Combine</code> ignorerer første argument
+          når det andet er rooted, men det er utilsigtet og forvirrende.</li>
+        <li><strong>Dødt kode.</strong> <code>LyricServices.Old/</code> er ikke i nogen solution.
+          <code>McPlayControlForm.cs</code> (411 linjer) ligger i Core-mappen men står <em>ikke</em> i
+          <code>LyricsFinderCore.csproj</code> og kompileres derfor ikke. <code>MjpCreator</code> er sat
+          ud af drift. <code>Serialize.cs</code> bærer kommentaren “Not used in this solution version”,
+          men er faktisk central.</li>
+        <li><strong>Genererede filer i kildetræet.</strong> <code>MessageInspection.dll/.pdb/.xml</code>,
+          <code>*.GeneratedMSBuildEditorConfig.editorconfig</code> og
+          <code>*.CodeAnalysisLog.xml</code> ligger side om side med kildekoden i hver service-mappe,
+          kopieret dertil af <code>PostBuild.cmd</code>. De er ikke git-trackede, men støjer.</li>
+        <li><strong>Undtagelsesdisciplin.</strong> Cirka 50 forekomster af
+          <code>throw new Exception(...)</code> — svært at fange selektivt. Der findes til gengæld et
+          gennemarbejdet <code>LyricServiceExceptions.cs</code>-hierarki, som bare ikke bruges konsekvent.</li>
+        <li><strong>95 <code>async void</code>-metoder.</strong> Næsten alle er WinForms-event-handlere
+          og dermed konventionelle, men <code>LyricsFinderExe/Program.cs</code> installerer
+          <em>hverken</em> <code>Application.ThreadException</code> eller
+          <code>AppDomain.UnhandledException</code>. En undtagelse der slipper ud af en
+          <code>async void</code>-handler lukker programmet uden log.</li>
+      </ul>
+    </section>
+
+    <!-- ============ 6 ============ -->
+    <section id="s6">
+      <div class="sec-head"><span class="num">06</span><h2>Testhuller</h2></div>
+
+      <p>Der findes i alt <strong>28 <code>[TestMethod]</code></strong> — alle i de seks
+      lyric-service-projekter, og alle er <strong>integrationstests mod live
+      tredjeparts-websites</strong>.</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Projekt</th><th class="right">Tests</th></tr></thead>
+          <tbody>
+            <tr><td>Lololyrics</td><td class="right num-col">10</td></tr>
+            <tr><td>CajunLyrics</td><td class="right num-col">8</td></tr>
+            <tr><td>AZLyrics</td><td class="right num-col">4</td></tr>
+            <tr><td>ChartLyrics</td><td class="right num-col">2</td></tr>
+            <tr><td>MusiXmatch</td><td class="right num-col">2</td></tr>
+            <tr><td>Stands4</td><td class="right num-col">2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>De har tre hårde afhængigheder ud af processen:</p>
+      <ol>
+        <li><strong>Netværk og tredjepartstjenester.</strong> Testene slår hardkodede sange op
+          (“Bruce Daigrepont – La Jalouserie”) og fejler når en side ændrer markup, er nede, eller
+          rate-limiter. AZLyrics-konfigurationen advarer selv om at automatisk søgning kan give IP-ban.</li>
+        <li><strong>Brugerens rigtige datafil.</strong> <code>[TestInitialize]</code> kalder
+          <code>LyricsFinderDataType.GetLyricService&lt;T&gt;()</code>, som læser
+          <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>. Testene kan derfor
+          <em>ikke</em> køre på en ren maskine eller i CI, og de kræver at brugeren har konfigureret
+          rigtige API-tokens til Stands4 og MusiXmatch.</li>
+        <li><strong>Test-kode i produktions-assembly.</strong> MSTest-referencerne ligger i selve
+          service-dll'erne, som derfor shipper med hele testinfrastrukturen. Post-build-scriptet
+          fjerner <code>Microsoft.VisualStudio.TestPlatform*</code> manuelt.</li>
+      </ol>
+
+      <h4>Helt utestet</h4>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Område</th><th>Kommentar</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">SharedComponents.Utility</td><td>Cirka 30 rene strengfunktioner (<code>ToSentenceCase</code>, <code>ToTitleCase</code>, <code>RemoveParenthesizedText</code>, <code>ToNormalizedLineEndings</code>, <code>TrimStringLines</code>) — trivielle at teste, og med kendte kanttilfælde: <code>ToTitleCase</code> indekserer <code>lines[i][0]</code>, og <code>CapitalizeWordTitle</code> kaster på ord med mellemrum.</td></tr>
+            <tr><td class="mono">Serialize / LyricsFinderDataType</td><td>Round-trip, v1.1→v1.2-migreringen (<code>&lt;Service&gt;</code> → <code>&lt;LyricService&gt;</code>), <code>IsChanged</code>-semantik.</td></tr>
+            <tr><td class="mono">McWsProxy</td><td><code>CreateRequestUrl</code> pr. kommando — netop dér hvor encoding-fejlen sidder. Kan testes helt uden netværk.</td></tr>
+            <tr><td class="mono">LyricSearch</td><td>Orkestreringen: parallel vs. seriel, first-hit, tællertilbageføring. Ingen netværk nødvendig med fake-services.</td></tr>
+            <tr><td class="mono">AbstractLyricService</td><td>Kvotehåndtering, retry-uden-parenteser, duplikatfiltrering i <code>AddFoundLyric</code>.</td></tr>
+            <tr><td class="mono">LyricsFinderCore</td><td>Ingen — og koden er ikke struktureret til det.</td></tr>
+            <tr><td class="mono">Installation / Setup.iss</td><td>Ingen.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <p><strong>Anbefalet rækkefølge:</strong> (1) separate <code>*.Tests</code>-projekter pr. lag, så
+        MSTest ryger ud af produktions-assemblies; (2) rene enhedstests af <code>Utility</code>,
+        <code>McRestService.CreateRequestUrl</code> og <code>Serialize</code> — hurtige, hermetiske, og
+        de dækker to af de mistænkte fejl ovenfor; (3) <code>LyricSearch</code> med in-memory-fakes;
+        (4) de eksisterende netværkstests flyttes til en separat kategori der er slået fra by default.</p>
+      </div>
+    </section>
+
+    <!-- ============ 7 ============ -->
+    <section id="s7">
+      <div class="sec-head"><span class="num">07</span><h2>Build, test og kørsel</h2></div>
+
+      <h3>Forudsætninger</h3>
+      <ul>
+        <li>Windows, Visual Studio 2022 eller nyere med workloaden <strong>.NET desktop development</strong>
+          — klassiske csproj'er og WinForms-designer. <code>dotnet build</code> alene er <em>ikke</em> nok.</li>
+        <li>.NET Framework 4.8 Developer Pack.</li>
+        <li>JRiver Media Center installeret — <code>LyricsFinderPlugin</code> har en
+          <code>COMReference</code> til MC's type-library og kan ikke bygges uden.</li>
+        <li>Debug-builds sætter <code>RegisterForComInterop</code> → <strong>kør Visual Studio som administrator</strong>.</li>
+      </ul>
+
+      <h3>Restore og build</h3>
+      <p>NuGet-restore skal ske med <code>nuget.exe</code> eller <code>msbuild -t:Restore</code>, ikke
+      <code>dotnet restore</code> — projekterne bruger <code>packages.config</code>-formatet.</p>
+      <pre><span class="cmt"># fra repo-roden</span>
+nuget restore LyricsFinder.sln
+msbuild LyricsFinder.sln -p:Configuration=Debug   -p:Platform="Any CPU"
+msbuild LyricsFinder.sln -p:Configuration=Release -p:Platform="Any CPU"</pre>
+
+      <p>Find <code>msbuild</code> uden at hardkode stien:</p>
+      <pre>$vs = &amp; "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
+        -latest -requires Microsoft.Component.MSBuild -property installationPath
+&amp; "$vs\MSBuild\Current\Bin\MSBuild.exe" LyricsFinder.sln -p:Configuration=Release</pre>
+
+      <p>Projektets egne scripts — kræver at VS ligger på <code>D:\</code>, se afsnit 5:</p>
+      <pre>LyricsFinder\Installation\BuildRelease.cmd                    <span class="cmt">elevated clean+release-build</span>
+LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">build, derefter Output\Setup.exe</span></pre>
+
+      <div class="note">
+        <p><code>BuildRelease.subroutine.cmd</code> kører <code>-t:Clean,Build</code>, og flere projekter
+        har <code>del /s /q "$(TargetDir)*.*"</code> som pre-build. Build er destruktivt over for
+        output-mapper.</p>
+      </div>
+
+      <h3>Tests</h3>
+      <pre>vstest.console.exe `
+  LyricsFinder\LyricServices\CajunLyricsService\bin\Debug\CajunLyricsService.dll `
+  LyricsFinder\LyricServices\LololyricsService\bin\Debug\LololyricsService.dll `
+  LyricsFinder\LyricServices\AZLyricsService\bin\Debug\AZLyricsService.dll `
+  LyricsFinder\LyricServices\ChartLyricsService\bin\Debug\ChartLyricsService.dll `
+  LyricsFinder\LyricServices\MusiXmatchService\bin\Debug\MusiXmatchService.dll `
+  LyricsFinder\LyricServices\Stands4Service\bin\Debug\Stands4Service.dll</pre>
+      <p>Eller via Test Explorer i Visual Studio. Husk forudsætningerne fra afsnit 6: netværk, en
+      eksisterende <code>LyricsFinder.xml</code>, og gyldige tokens for Stands4 og MusiXmatch. Tests i
+      CI vil fejle.</p>
+
+      <h3>Kørsel</h3>
+      <pre>LyricsFinder\LyricsFinderExe\bin\Debug\LyricsFinderExe.exe</pre>
+      <p>Første start viser <code>OptionForm</code>, hvor MCWS-URL, Access Key, brugernavn og password
+      skal udfyldes. Access Key findes i Media Center under <em>Tools → Options → Media Network</em>.</p>
+      <p><strong>Som MC plug-in</strong> kræves COM-registrering og en registry-nøgle under
+      <code>HKLM\SOFTWARE\J. River\Media Center &lt;version&gt;\Plugins\Interface\LyricsFinder</code>
+      — brug installeren (<code>Installation\Output\Setup.exe</code>) frem for at gøre det i hånden.</p>
+
+      <h3>Logs og data</h3>
+      <pre>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml                    <span class="cmt">al brugerdata</span>
+%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.Standalone.log         <span class="cmt">info</span>
+%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.Standalone.error.log   <span class="cmt">warn+</span>
+%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.Plugin[.error].log</pre>
+      <p>Slet <code>LyricsFinder.xml</code> for at nulstille til fabriksindstillinger — services
+      genskabes fra <code>App.config</code>-seeds ved næste start.</p>
+    </section>
+
+    <!-- ============ 8 ============ -->
+    <section id="s8">
+      <div class="sec-head"><span class="num">08</span><h2>Hvis jeg skulle prioritere</h2></div>
+
+      <ol class="prio">
+        <li><div><strong>URL-encoding i McRestService</strong><span>Lille rettelse, direkte brugersynlig fejl.</span></div></li>
+        <li><div><strong>Cache XmlSerializer-instanserne</strong><span>Og fjern <code>Load</code> + <code>Save</code> pr. sang fra <code>LyricSearch</code>'s <code>finally</code>. Det er både lækagen og det største performance-problem.</span></div></li>
+        <li><div><strong>Verificér tællerlogikken</strong><span>I <code>LyricSearch.SearchAsync</code> — bekræft mod faktisk kørsel før den regnes for en fejl.</span></div></li>
+        <li><div><strong>Én statisk HttpClient</strong><span>Med <code>HttpRequestMessage</code>-baseret auth i stedet for at genskabe klienten pr. kald.</span></div></li>
+        <li><div><strong>Flyt flerlinjede indstillinger ud af XML-attributter</strong><span>Og reparér de tre <code>App.config</code>-filer hvis linjeskift allerede er fladet ud. Attributnormalisering er tabsgivende ved hver læsning, og <code>CreditTextFormat</code> ender i hver gemt sangtekst.</span></div></li>
+        <li><div><strong>ConcurrentQueue og eksplicit UI-marshalling</strong><span>I søge-workerne, så koden ikke afhænger af en usynlig kontrakt.</span></div></li>
+        <li><div><strong>Ryd op i build</strong><span><code>vswhere</code> i stedet for <code>D:\</code>-stier, ret binding redirects, reparér eller fjern <code>MediaCenter.sln</code>, slet <code>LyricServices.Old</code> og <code>McPlayControlForm.cs</code>.</span></div></li>
+        <li><div><strong>Separate testprojekter</strong><span>Plus enhedstests af <code>Utility</code>, <code>CreateRequestUrl</code> og <code>Serialize</code>, så der findes et sikkerhedsnet at refaktorere med. En round-trip-test af flerlinjet tekst gennem <code>App.config</code> → datafil → <code>App.config</code> ville have fanget linjeskift-fejlen.</span></div></li>
+      </ol>
+
+      <p class="colophon">
+        Gennemgang af <span style="color:var(--accent)">hardolf/JRiver.MediaCenter</span> @ master · 25. august 2026<br>
+        Ren analyse — ingen kildefiler er ændret. Tekstversion: <code>docs/solution-overview.da.md</code><br>
+        English version: <a href="https://claude.ai/code/artifact/71d2a395-d46f-4d90-adfc-6c866dfe501f">solution-overview.en</a>
+      </p>
+    </section>
+
+  </main>
+</div>

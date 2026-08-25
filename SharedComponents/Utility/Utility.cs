@@ -18,6 +18,68 @@ namespace MediaCenter.SharedComponents
 {
 
     /// <summary>
+    /// StreamWriter extensions for UTF-8.
+    /// </summary>
+    public static class StreamWriterExtensions
+    {
+
+        /// <summary>
+        /// Opretter en StreamWriter med korrekt UTF-8 encoding til XML header
+        /// </summary>
+        public static StreamWriter CreateUTF8(this Stream stream)
+        {
+            return new StreamWriterUTF8(stream);
+        }
+
+
+        public static StreamWriter CreateUTF8NoBOM(this Stream stream)
+        {
+            return new StreamWriterUTF8NoBOM(stream);
+        }
+    }
+
+
+
+    /// <summary>
+    /// StreamWriter for UTF-8 with BOM.
+    /// </summary>
+    public sealed class StreamWriterUTF8 : StreamWriter
+    {
+        public StreamWriterUTF8(Stream stream) : base(stream, Encoding.UTF8, 1024)
+        {
+        }
+
+        public override Encoding Encoding => Encoding.UTF8;
+    }
+
+
+
+    /// <summary>
+    /// StreamWriter for UTF-8 without BOM.
+    /// </summary>
+    public sealed class StreamWriterUTF8NoBOM : StreamWriter
+    {
+        public StreamWriterUTF8NoBOM(Stream stream)
+            : base(stream, new UTF8Encoding(false), 1024)  // ← false = no BOM
+        {
+        }
+
+        public override Encoding Encoding => Encoding.UTF8;
+    }
+
+
+    /// <summary>
+    /// StringWriter with forced UTF-8 document header.
+    /// </summary>
+    public class StringWriterUTF8 : StringWriter
+    {
+        public StringWriterUTF8(StringBuilder sb) : base(sb) { }
+        public override Encoding Encoding => Encoding.UTF8;
+    }
+
+
+
+    /// <summary>
     /// Utilities for the LyricsFinder.
     /// </summary>
     public static class Utility

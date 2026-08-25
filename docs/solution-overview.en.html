@@ -1,0 +1,1410 @@
+<title>LyricsFinder Solution Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+
+<style>
+:root {
+  --paper:      #EEF1F0;
+  --surface:    #FAFCFB;
+  --surface-2:  #E5EAE8;
+  --ink:        #131C1A;
+  --ink-2:      #2C3A37;
+  --muted:      #55635F;
+  --rule:       #CFD8D5;
+  --rule-soft:  #DFE6E3;
+  --accent:     #0E6B5E;
+  --accent-ink: #0A4C43;
+  --accent-wash:#DCE9E5;
+  --sev-hi:     #A33528;
+  --sev-md:     #8A6209;
+  --sev-lo:     #3F5C69;
+  --sev-hi-bg:  #F3DFDB;
+  --sev-md-bg:  #F1E7CE;
+  --sev-lo-bg:  #DEE7EB;
+  --shadow:     0 1px 2px rgba(19,28,26,.05), 0 8px 24px -16px rgba(19,28,26,.28);
+
+  --f-display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
+  --f-body:    "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --f-mono:    "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --measure: 66ch;
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:      #0E1413;
+    --surface:    #161E1D;
+    --surface-2:  #1E2827;
+    --ink:        #E2E9E6;
+    --ink-2:      #C3CFCB;
+    --muted:      #8E9D99;
+    --rule:       #293634;
+    --rule-soft:  #202B29;
+    --accent:     #4CBBA6;
+    --accent-ink: #7FD3C1;
+    --accent-wash:#14302C;
+    --sev-hi:     #E28776;
+    --sev-md:     #D3A845;
+    --sev-lo:     #86A9B8;
+    --sev-hi-bg:  #33201C;
+    --sev-md-bg:  #2E2717;
+    --sev-lo-bg:  #1B282D;
+    --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper:      #0E1413;
+  --surface:    #161E1D;
+  --surface-2:  #1E2827;
+  --ink:        #E2E9E6;
+  --ink-2:      #C3CFCB;
+  --muted:      #8E9D99;
+  --rule:       #293634;
+  --rule-soft:  #202B29;
+  --accent:     #4CBBA6;
+  --accent-ink: #7FD3C1;
+  --accent-wash:#14302C;
+  --sev-hi:     #E28776;
+  --sev-md:     #D3A845;
+  --sev-lo:     #86A9B8;
+  --sev-hi-bg:  #33201C;
+  --sev-md-bg:  #2E2717;
+  --sev-lo-bg:  #1B282D;
+  --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16.5px;
+  line-height: 1.68;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+code, kbd, samp { font-family: var(--f-mono); font-size: .855em; }
+
+/* ---------- masthead ---------- */
+
+.masthead {
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface);
+  padding: clamp(2.25rem, 6vw, 4rem) var(--gutter) 0;
+}
+.masthead__inner { max-width: 1180px; margin: 0 auto; }
+
+.topline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.langbar {
+  font-family: var(--f-mono);
+  font-size: .72rem;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin: 0;
+  display: flex;
+  gap: .55rem;
+  align-items: baseline;
+}
+.langbar .current { color: var(--ink); font-weight: 500; }
+.langbar .sep { opacity: .45; }
+
+.masthead h1 {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 6.2vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -.018em;
+  text-wrap: balance;
+  margin: 0 0 1rem;
+}
+.masthead h1 span { color: var(--muted); font-weight: 600; }
+
+.standfirst {
+  max-width: 60ch;
+  font-size: 1.13rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+  margin: 0 0 2.25rem;
+}
+
+.factstrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-top: 1px solid var(--rule-soft);
+  margin: 0;
+  padding: 0;
+}
+.factstrip > div {
+  flex: 1 1 150px;
+  padding: 1rem 1.25rem 1.15rem 0;
+  border-bottom: 3px solid transparent;
+}
+.factstrip dt {
+  font-family: var(--f-mono);
+  font-size: .68rem;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 .35rem;
+}
+.factstrip dd {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.02rem;
+  margin: 0;
+  color: var(--ink);
+}
+
+/* ---------- shell ---------- */
+
+.shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3.5rem) var(--gutter) 5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+@media (min-width: 1040px) {
+  .shell { grid-template-columns: 186px minmax(0, 1fr); gap: 3.5rem; align-items: start; }
+}
+
+/* ---------- rail ---------- */
+
+.rail { display: none; }
+@media (min-width: 1040px) {
+  .rail {
+    display: block;
+    position: sticky;
+    top: 2rem;
+    font-family: var(--f-display);
+  }
+}
+.rail h2 {
+  font-family: var(--f-mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0 0 .85rem;
+  padding-bottom: .6rem;
+  border-bottom: 1px solid var(--rule);
+}
+.rail ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .1rem; counter-reset: r; }
+.rail a {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  gap: .35rem;
+  padding: .34rem 0;
+  font-size: .93rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.rail a::before {
+  counter-increment: r;
+  content: counter(r);
+  font-family: var(--f-mono);
+  font-size: .72rem;
+  color: var(--accent);
+  padding-top: .18em;
+}
+.rail a:hover { color: var(--ink); }
+
+/* ---------- sections ---------- */
+
+.body-col { min-width: 0; display: flex; flex-direction: column; gap: 3.25rem; }
+
+section { scroll-margin-top: 1.5rem; }
+
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  gap: .8rem;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: .55rem;
+  margin-bottom: 1.6rem;
+}
+.sec-head .num {
+  font-family: var(--f-mono);
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--accent);
+  padding-bottom: .28em;
+}
+.sec-head h2 {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(1.45rem, 3.2vw, 1.95rem);
+  letter-spacing: -.012em;
+  line-height: 1.12;
+  margin: 0;
+  text-wrap: balance;
+}
+
+h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.22rem;
+  letter-spacing: -.006em;
+  line-height: 1.25;
+  margin: 2.4rem 0 .7rem;
+  text-wrap: balance;
+}
+h4 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.02rem;
+  margin: 1.7rem 0 .5rem;
+  color: var(--ink-2);
+}
+
+p { max-width: var(--measure); margin: 0 0 1.05rem; }
+ul, ol { max-width: var(--measure); margin: 0 0 1.15rem; padding-left: 1.3rem; }
+li { margin-bottom: .5rem; }
+li::marker { color: var(--muted); }
+strong { font-weight: 600; color: var(--ink); }
+
+.lead {
+  font-size: 1.06rem;
+  color: var(--ink-2);
+}
+
+/* ---------- findings board ---------- */
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.finding {
+  background: var(--surface);
+  padding: 1.15rem 1.25rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.finding__top { display: flex; align-items: center; gap: .55rem; }
+.finding h3 {
+  font-size: 1.02rem;
+  margin: 0;
+  line-height: 1.3;
+}
+.finding p { font-size: .93rem; line-height: 1.55; margin: 0; color: var(--muted); max-width: none; }
+.finding .where {
+  font-family: var(--f-mono);
+  font-size: .73rem;
+  color: var(--accent);
+  margin-top: auto;
+  padding-top: .35rem;
+}
+
+.chip {
+  font-family: var(--f-display);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: .18rem .45rem;
+  border-radius: 2px;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+.chip--hi { color: var(--sev-hi); background: var(--sev-hi-bg); }
+.chip--md { color: var(--sev-md); background: var(--sev-md-bg); }
+.chip--lo { color: var(--sev-lo); background: var(--sev-lo-bg); }
+
+/* ---------- risk entries ---------- */
+
+.risk {
+  border-left: 3px solid var(--rule);
+  padding: 0 0 .1rem 1.15rem;
+  margin: 2rem 0;
+}
+.risk--hi { border-left-color: var(--sev-hi); }
+.risk--md { border-left-color: var(--sev-md); }
+.risk--lo { border-left-color: var(--sev-lo); }
+.risk h3 { margin: 0 0 .6rem; display: flex; align-items: baseline; flex-wrap: wrap; gap: .6rem; }
+.risk p:last-child { margin-bottom: 0; }
+
+/* ---------- tables ---------- */
+
+.tablewrap { overflow-x: auto; margin: 1.4rem 0 1.6rem; border: 1px solid var(--rule); border-radius: 3px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+th, td {
+  text-align: left;
+  padding: .6rem .85rem;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top;
+}
+thead th {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: none; }
+td.mono, th.mono, .num-col { font-family: var(--f-mono); font-size: .86rem; font-variant-numeric: tabular-nums; }
+td.right, th.right { text-align: right; }
+
+/* ---------- code ---------- */
+
+pre {
+  font-family: var(--f-mono);
+  font-size: .83rem;
+  line-height: 1.62;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: .95rem 1.1rem;
+  overflow-x: auto;
+  margin: 1rem 0 1.4rem;
+  color: var(--ink-2);
+}
+pre .cmt { color: var(--muted); font-style: italic; }
+p code, li code, td code, dd code {
+  background: var(--surface-2);
+  padding: .08em .32em;
+  border-radius: 2px;
+  color: var(--ink);
+}
+
+/* ---------- pipeline ---------- */
+
+.pipe { list-style: none; margin: 1.2rem 0 1.6rem; padding: 0; max-width: none; counter-reset: p; }
+.pipe > li {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: .1rem 1rem;
+  padding: .7rem 0;
+  border-top: 1px solid var(--rule-soft);
+  margin: 0;
+}
+.pipe > li:last-child { border-bottom: 1px solid var(--rule-soft); }
+.pipe > li::before {
+  counter-increment: p;
+  content: counter(p, decimal-leading-zero);
+  font-family: var(--f-mono);
+  font-size: .74rem;
+  color: var(--accent);
+  padding-top: .3em;
+}
+.pipe .step-name { font-family: var(--f-mono); font-size: .88rem; font-weight: 500; color: var(--ink); }
+.pipe .step-desc { font-size: .95rem; color: var(--muted); grid-column: 2; }
+
+/* ---------- figure ---------- */
+
+figure { margin: 1.75rem 0 2rem; }
+.figbox {
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--surface);
+  padding: 1.25rem 1rem;
+  overflow-x: auto;
+}
+figure svg { display: block; width: 100%; min-width: 620px; max-width: 900px; height: auto; margin: 0 auto; color: var(--ink-2); }
+figcaption {
+  font-size: .88rem;
+  line-height: 1.55;
+  color: var(--muted);
+  margin-top: .8rem;
+  max-width: var(--measure);
+}
+.svg-box { fill: var(--surface); stroke: var(--ink-2); stroke-width: 1.25; }
+.svg-box--core { fill: var(--accent-wash); stroke: var(--accent); stroke-width: 1.75; }
+.svg-box--panel { fill: none; stroke: var(--ink-2); stroke-width: 1.25; stroke-dasharray: 3 3; opacity: .7; }
+.svg-t { font-family: var(--f-display); font-size: 14px; font-weight: 600; fill: var(--ink); }
+.svg-t--sm { font-family: var(--f-mono); font-size: 10.5px; font-weight: 400; fill: var(--muted); }
+.svg-t--lbl { font-family: var(--f-mono); font-size: 11px; fill: var(--muted); }
+.svg-t--acc { font-family: var(--f-mono); font-size: 11px; fill: var(--accent); font-weight: 500; }
+.svg-line { stroke: var(--ink-2); stroke-width: 1.25; fill: none; opacity: .85; }
+.svg-line--rt { stroke: var(--accent); stroke-width: 1.75; stroke-dasharray: 6 4; fill: none; }
+.mk { fill: var(--ink-2); }
+.mk-a { fill: var(--accent); }
+
+/* ---------- callout ---------- */
+
+.note {
+  background: var(--accent-wash);
+  border-left: 3px solid var(--accent);
+  padding: .9rem 1.1rem;
+  margin: 1.4rem 0;
+  border-radius: 0 3px 3px 0;
+}
+.note p { margin: 0; font-size: .95rem; max-width: none; }
+
+/* ---------- priorities ---------- */
+
+.prio { list-style: none; padding: 0; margin: 1.2rem 0 0; max-width: none; counter-reset: q; }
+.prio > li {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: .95rem 0;
+  border-bottom: 1px solid var(--rule-soft);
+  margin: 0;
+  align-items: baseline;
+}
+.prio > li::before {
+  counter-increment: q;
+  content: counter(q);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--accent);
+  line-height: 1;
+}
+.prio strong { display: block; font-family: var(--f-display); font-size: 1.02rem; margin-bottom: .1rem; }
+.prio span { font-size: .95rem; color: var(--muted); }
+
+/* ---------- footer ---------- */
+
+.colophon {
+  border-top: 1px solid var(--rule);
+  margin-top: 1rem;
+  padding-top: 1.4rem;
+  font-family: var(--f-mono);
+  font-size: .78rem;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <div class="topline">
+      <p class="eyebrow">Code review · hardolf/JRiver.MediaCenter</p>
+      <p class="langbar">
+        <span class="current">English</span>
+        <span class="sep">·</span>
+        <a href="https://claude.ai/code/artifact/f10cb9c3-d4ac-47b3-8d0b-b8867a0f8426">Dansk</a>
+      </p>
+    </div>
+    <h1>LyricsFinder<br><span>architecture &amp; onboarding</span></h1>
+    <p class="standfirst">
+      A reading of the whole solution: how the 15 projects fit together, where the data flows,
+      and which seven or eight things are actually worth fixing first. No code was changed.
+    </p>
+    <dl class="factstrip">
+      <div><dt>Reviewed</dt><dd>25 Aug 2026</dd></div>
+      <div><dt>Branch</dt><dd>master</dd></div>
+      <div><dt>Projects</dt><dd>15 active</dd></div>
+      <div><dt>Target</dt><dd>net48 · C# 13</dd></div>
+      <div><dt>Tests</dt><dd>28, all live</dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="shell">
+
+  <nav class="rail" aria-label="Sections">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#s1">What is this?</a></li>
+      <li><a href="#s2">Projects and dependencies</a></li>
+      <li><a href="#s3">Frameworks and configuration</a></li>
+      <li><a href="#s4">Architecture and data flow</a></li>
+      <li><a href="#s5">Risks and code smells</a></li>
+      <li><a href="#s6">Test gaps</a></li>
+      <li><a href="#s7">Build, test and run</a></li>
+      <li><a href="#s8">Prioritization</a></li>
+    </ol>
+  </nav>
+
+  <main class="body-col">
+
+    <!-- ============ FINDINGS BOARD ============ -->
+    <section aria-labelledby="board-h">
+      <div class="sec-head">
+        <span class="num">TL;DR</span>
+        <h2 id="board-h">The findings that matter</h2>
+      </div>
+      <p class="lead">Seven issues carry most of the risk. The detail is in section 5.</p>
+      <div class="board">
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--hi">High</span></div>
+          <h3>XmlSerializer leaks assemblies</h3>
+          <p>The <code>knownTypes</code> overload is not cached. Every call generates a dynamic assembly that never unloads — and it is called once per song.</p>
+          <p class="where">Serialize.cs · LyricSearch.cs:128</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--hi">High</span></div>
+          <h3>Counters may never be saved</h3>
+          <p>The parameter is overwritten with a fresh object from disk; counters are folded back onto the old instance, but <code>SaveAsync()</code> runs on the new one.</p>
+          <p class="where">LyricSearch.cs:128–150</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--hi">High</span></div>
+          <h3>No URL encoding</h3>
+          <p>The entire lyric text is interpolated straight into a GET query. A single <code>&amp;</code> or <code>#</code> in the text breaks the call.</p>
+          <p class="where">McRestService.cs:195</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--hi">High</span></div>
+          <h3>HttpClient recreated per call</h3>
+          <p>The static client is disposed and rebuilt every time credentials are sent. Socket exhaustion, plus a genuine race on the static field.</p>
+          <p class="where">Utility.cs:228–269</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--md">Medium-high</span></div>
+          <h3>Threading holds by accident</h3>
+          <p>Ten workers share an unlocked <code>Queue&lt;int&gt;</code> and touch the grid directly. It only works because no await uses <code>ConfigureAwait(false)</code>.</p>
+          <p class="where">LyricsFinderCore.Process.cs:360</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--md">Medium</span></div>
+          <h3>CR+LF does not survive config</h3>
+          <p>Multi-line settings live in XML <em>attributes</em>. Raw line breaks there are normalized to spaces by any parser — lost on both new file and save.</p>
+          <p class="where">LyricServices/*/App.config</p>
+        </article>
+
+        <article class="finding">
+          <div class="finding__top"><span class="chip chip--md">Medium</span></div>
+          <h3>No CI, no hermetic tests</h3>
+          <p>All 28 tests hit live third-party websites and require the user's own data file with real API tokens.</p>
+          <p class="where">LyricServices/*/UnitTest.cs</p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============ 1 ============ -->
+    <section id="s1">
+      <div class="sec-head"><span class="num">01</span><h2>What is this?</h2></div>
+
+      <p>The repo holds extensions for <strong>JRiver Media Center</strong> (MC). The bulk of it
+      is <strong>LyricsFinder</strong>: a tool that fetches song lyrics from online lyric services
+      and writes them back into MC's media library.</p>
+
+      <p>The same code ships in two guises:</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Edition</th><th>Assembly</th><th>Host</th></tr></thead>
+          <tbody>
+            <tr><td>Stand-alone</td><td class="mono">LyricsFinderExe.exe</td><td>Windows Forms app</td></tr>
+            <tr><td>MC plug-in</td><td class="mono">LyricsFinderPlugin.dll</td><td>COM object embedded in Media Center</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Both are thin shells around <code>LyricsFinderCore</code>, a <code>UserControl</code> that
+      contains the entire UI and all the logic. <code>LyricsFinderPlugin</code>
+      <strong>inherits</strong> directly from <code>LyricsFinderCore</code>, and
+      <code>MainForm</code> in the exe hosts the same control. The constructor flag
+      <code>base(isStandAlone, entryAssembly)</code> is the only real difference — among other
+      things it picks which log4net configuration is read.</p>
+
+      <h3>Solutions</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>File</th><th>Contents</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">LyricsFinder.sln</td><td><strong>The active solution.</strong> 15 code projects.</td></tr>
+            <tr><td class="mono">MediaCenter.sln</td><td>The “everything” solution. <strong>Currently broken</strong> — it points at <code>LyricServices\ApiseedsService\ApiseedsService.csproj</code>, which has been deleted and now only exists under <code>LyricServices.Old</code>. It also adds <code>Visualizations</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The other <code>.sln</code> files under <code>Lib/</code> and
+      <code>C# Plugin Template/</code> are third-party SDK samples and templates — not part of the
+      product.</p>
+    </section>
+
+    <!-- ============ 2 ============ -->
+    <section id="s2">
+      <div class="sec-head"><span class="num">02</span><h2>Projects and dependencies</h2></div>
+
+      <p>Every project is a <strong>classic (non-SDK) csproj</strong>, <code>net48</code>,
+      <code>AnyCPU</code>, using <code>packages.config</code> for NuGet.
+      <code>Directory.Build.props</code> sets exactly one thing globally:
+      <code>LangVersion 13.0</code> — C# 13 against .NET Framework 4.8, which is supported but
+      brings no runtime features.</p>
+
+      <figure>
+        <div class="figbox">
+          <svg viewBox="0 0 900 470" role="img" aria-label="Dependency diagram: LyricsFinderExe and LyricsFinderPlugin build on LyricsFinderCore, which builds on McWsProxy and MessageInspection, both of which build on Utility. The six lyric services reference Core at compile time, while Core loads them dynamically at runtime via Assembly.LoadFrom.">
+            <defs>
+              <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                <polygon class="mk" points="0,1.5 10,5 0,8.5"></polygon>
+              </marker>
+              <marker id="arwa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <polygon class="mk-a" points="0,1.5 10,5 0,8.5"></polygon>
+              </marker>
+            </defs>
+
+            <rect class="svg-box" x="90" y="24" width="200" height="50" rx="2"></rect>
+            <text class="svg-t" x="190" y="45" text-anchor="middle">LyricsFinderExe</text>
+            <text class="svg-t--sm" x="190" y="62" text-anchor="middle">WinExe</text>
+
+            <rect class="svg-box" x="330" y="24" width="220" height="50" rx="2"></rect>
+            <text class="svg-t" x="440" y="45" text-anchor="middle">LyricsFinderPlugin</text>
+            <text class="svg-t--sm" x="440" y="62" text-anchor="middle">COM · inherits Core</text>
+
+            <rect class="svg-box svg-box--core" x="150" y="132" width="340" height="58" rx="2"></rect>
+            <text class="svg-t" x="320" y="156" text-anchor="middle">LyricsFinderCore</text>
+            <text class="svg-t--sm" x="320" y="174" text-anchor="middle">UI · orchestration · data model</text>
+
+            <rect class="svg-box--panel" x="600" y="110" width="280" height="146" rx="2"></rect>
+            <text class="svg-t" x="620" y="136">6 lyric services</text>
+            <text class="svg-t--sm" x="620" y="166">AZLyrics</text>
+            <text class="svg-t--sm" x="620" y="190">CajunLyrics</text>
+            <text class="svg-t--sm" x="620" y="214">ChartLyrics</text>
+            <text class="svg-t--sm" x="756" y="166">Lololyrics</text>
+            <text class="svg-t--sm" x="756" y="190">MusiXmatch</text>
+            <text class="svg-t--sm" x="756" y="214">Stands4</text>
+            <text class="svg-t--sm" x="620" y="242">each with its MSTest tests inside</text>
+
+            <rect class="svg-box" x="60" y="300" width="180" height="48" rx="2"></rect>
+            <text class="svg-t" x="150" y="320" text-anchor="middle">McWsProxy</text>
+            <text class="svg-t--sm" x="150" y="336" text-anchor="middle">MCWS REST client</text>
+
+            <rect class="svg-box" x="270" y="300" width="200" height="48" rx="2"></rect>
+            <text class="svg-t" x="370" y="320" text-anchor="middle">MessageInspection</text>
+            <text class="svg-t--sm" x="370" y="336" text-anchor="middle">WCF tracing</text>
+
+            <rect class="svg-box" x="150" y="404" width="200" height="48" rx="2"></rect>
+            <text class="svg-t" x="250" y="424" text-anchor="middle">Utility</text>
+            <text class="svg-t--sm" x="250" y="440" text-anchor="middle">strings · HTTP · XML</text>
+
+            <line class="svg-line" x1="190" y1="76" x2="248" y2="130" marker-end="url(#arw)"></line>
+            <line class="svg-line" x1="440" y1="76" x2="400" y2="130" marker-end="url(#arw)"></line>
+
+            <line class="svg-line" x1="230" y1="192" x2="160" y2="298" marker-end="url(#arw)"></line>
+            <line class="svg-line" x1="400" y1="192" x2="372" y2="298" marker-end="url(#arw)"></line>
+            <line class="svg-line" x1="152" y1="350" x2="212" y2="402" marker-end="url(#arw)"></line>
+            <line class="svg-line" x1="366" y1="350" x2="300" y2="402" marker-end="url(#arw)"></line>
+
+            <line class="svg-line" x1="598" y1="152" x2="496" y2="152" marker-end="url(#arw)"></line>
+            <text class="svg-t--lbl" x="547" y="143" text-anchor="middle">references</text>
+
+            <path class="svg-line--rt" d="M 470 192 L 470 276 L 738 276 L 738 258" marker-end="url(#arwa)"></path>
+            <text class="svg-t--acc" x="604" y="294" text-anchor="middle">loads dynamically at runtime</text>
+          </svg>
+        </div>
+        <figcaption>
+          The dependency is inverted: the six services hold a compile-time reference <em>to</em>
+          Core so they can inherit <code>AbstractLyricService</code>, while Core never references
+          them — it discovers them only at runtime through <code>Assembly.LoadFrom</code>. Hence the
+          <code>ProjectDependencies</code> entries in the .sln file and the many
+          <code>xcopy</code> post-build events. The services also use <code>Utility</code> and
+          <code>McWsProxy</code> directly; those edges are omitted for legibility.
+        </figcaption>
+      </figure>
+
+      <h3>Non-code projects</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Project</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">Installation</td><td>Console exe that <strong>builds the release zips</strong>. Also owns <code>SharedAssemblyInfo.cs</code> (shared version for all assemblies) and <code>Setup.iss</code> (Inno Setup).</td></tr>
+            <tr><td class="mono">Documentation</td><td>Empty <code>Main()</code>. Exists only to copy HTML documentation into <code>Build/</code>.</td></tr>
+            <tr><td class="mono">MjpCreator</td><td>Generates MC <code>.mjp</code> package files. <strong>No longer used</strong> — the call has been commented out since v1.3.1, because MC uses RegSvr32 rather than RegAsm.</td></tr>
+            <tr><td class="mono">Visualizations</td><td>ASP.NET-based; only in <code>MediaCenter.sln</code>. Independent of LyricsFinder.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ 3 ============ -->
+    <section id="s3">
+      <div class="sec-head"><span class="num">03</span><h2>Frameworks, packages and configuration</h2></div>
+
+      <ul>
+        <li><strong>TFM:</strong> <code>net48</code> throughout. <code>LangVersion 13.0</code>.</li>
+        <li><strong>Signing:</strong> <code>LyricsFinderCore</code>, <code>LyricsFinderPlugin</code>,
+          <code>McWsProxy</code>, <code>Utility</code> and <code>MessageInspection</code> are
+          strong-named. The <code>.snk</code> files live in the repo.</li>
+        <li><strong>COM:</strong> Core and Plugin are <code>ComVisible</code> with a
+          <code>ProgId</code>. <code>RegisterForComInterop</code> is set in <em>Debug</em>, so
+          Visual Studio must run as administrator for debug builds. Plugin has a
+          <code>COMReference</code> to MC's type library, which can only be resolved if Media
+          Center is installed.</li>
+      </ul>
+
+      <h3>Runtime packages</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Package</th><th class="mono">Version</th><th>Used by</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">log4net</td><td class="mono">3.3.1</td><td>Core</td></tr>
+            <tr><td class="mono">Newtonsoft.Json</td><td class="mono">13.0.4</td><td>Core, MusiXmatch</td></tr>
+            <tr><td class="mono">HtmlAgilityPack</td><td class="mono">1.12.4</td><td>AZLyrics, Lololyrics</td></tr>
+            <tr><td class="mono">System.ComponentModel.Annotations</td><td class="mono">5.0.0</td><td>Core</td></tr>
+            <tr><td class="mono">Microsoft.CodeAnalysis.NetAnalyzers</td><td class="mono">10.0.203</td><td>all</td></tr>
+            <tr><td class="mono">MSTest + Microsoft.NET.Test.Sdk</td><td class="mono">4.2.1 / 18.4.0</td><td>the 6 service projects</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The service projects also drag in a <strong>large transitive tail</strong> via
+      <code>Microsoft.NET.Test.Sdk</code> → ApplicationInsights → Azure.Core → OpenTelemetry →
+      <code>Microsoft.Extensions.*</code> 10.0.7 → MSAL. Roughly 60 packages per service project,
+      all of it a consequence of unit tests living in the <em>same assembly</em> as the production
+      code.</p>
+
+      <h3>Central configuration</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>File</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">LyricsFinderCore.dll.config</td><td><code>localAppDataFile</code> = <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code></td></tr>
+            <tr><td class="mono">Log4net.{Standalone,Plugin}.xml</td><td>log4net appenders; log files in the same folder</td></tr>
+            <tr><td class="mono">LyricServices/*/App.config</td><td><strong>Initial</strong> seeding only, of <code>ServiceName</code>, <code>CreditUrl</code>, <code>Comment</code> and so on. After first start everything is read from the XML data file.</td></tr>
+            <tr><td class="mono">SharedAssemblyInfo.cs</td><td><code>AssemblyVersion 1.3.7.0</code>, linked into Core, Exe and Plugin</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ 4 ============ -->
+    <section id="s4">
+      <div class="sec-head"><span class="num">04</span><h2>Architecture and data flow</h2></div>
+
+      <h3>Startup</h3>
+      <ol class="pipe">
+        <li><span class="step-name">InitLoggingAsync()</span><span class="step-desc">picks the Standalone or Plugin log4net config</span></li>
+        <li><span class="step-name">LyricsFinderCoreConfigurationSectionHandler.Init()</span><span class="step-desc">points at the assembly whose <code>.config</code> should be read</span></li>
+        <li><span class="step-name">InitLocalDataAsync()</span><span class="step-desc">verify write access → <code>InitLyricServicesAsync()</code> (LoadFrom on every <code>*.dll</code>) → <code>LyricsFinderDataType.Load(xml)</code> → merge in new services → <code>RefreshServiceSettingsAsync()</code> per service</span></li>
+        <li><span class="step-name">OptionForm</span><span class="step-desc">shown only if the MCWS setup is missing</span></li>
+        <li><span class="step-name">McRestService.Init(...)</span><span class="step-desc">accessKey, url, user, password go into static fields</span></li>
+        <li><span class="step-name">ReloadPlaylistAsync(isReconnect: true)</span><span class="step-desc">connect, fetch playlist, fill the grid</span></li>
+      </ol>
+
+      <h3>Connecting to Media Center</h3>
+      <p><code>McWsProxy</code> is a <strong>static</strong> class over MC's REST API (MCWS,
+      default <code>http://localhost:52199/MCWS/v1</code>).</p>
+      <pre>GET /Alive          <span class="cmt">retry up to MaxMcWsConnectAttempts, 500 ms pause</span>
+                    <span class="cmt">compare AccessKey against the configured one</span>
+GET /Authenticate   <span class="cmt">Basic auth → McWsToken stored statically</span>
+GET /...?Token=…    <span class="cmt">every other call sends the token in the query string</span></pre>
+
+      <h3>The search flow</h3>
+      <p><code>SearchAllProcessAsync</code> creates <code>MaxQueueLength</code> (default 10)
+      workers over one shared <code>Queue&lt;int&gt;</code>. Each worker runs, for its item:</p>
+
+      <ol class="pipe">
+        <li><span class="step-name">LyricSearch.SearchAsync(...)</span><span class="step-desc">clones every active service, so concurrent searches do not share state</span></li>
+        <li><span class="step-name">clone.ProcessAsyncWrapper(...)</span><span class="step-desc">service-specific HTTP / HTML scrape / SOAP / JSON — plus a retry with parenthesized text stripped from artist, album and title</span></li>
+        <li><span class="step-name">AddFoundLyric(...)</span><span class="step-desc">HTML-decodes, filters duplicates, updates hit counters</span></li>
+        <li><span class="step-name">WhenAll / serial / WhenAny(predicate)</span><span class="step-desc">three strategies: all hits, one at a time for quota reasons, or first service with a hit wins</span></li>
+        <li><span class="step-name">finally</span><span class="step-desc">reload the XML data file, fold the clones' counters back, save the XML again — <em>per song</em></span></li>
+      </ol>
+
+      <div class="note">
+        <p>The search result lands <strong>only in the grid</strong>. Only when the user saves is
+        <code>McRestService.SetInfoAsync(key, "Lyrics", lyrics)</code>
+        (<code>LyricsFinderCore.Private.cs:879</code>) called, writing the text back to Media
+        Center.</p>
+      </div>
+
+      <h3>Persistence</h3>
+      <p>All user data — MCWS URL, user and password, window positions, grid columns, and
+      <strong>the entire service list with its tokens and counters</strong> — lives in a single XML
+      file, <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>, serialized with
+      <code>XmlSerializer</code> via <code>SharedComponents.Serialize</code>.
+      <code>LyricsFinderDataType.IsChanged</code> decides “dirty” by <em>serializing the whole
+      object to a string</em> and comparing it against a stored baseline string.</p>
+    </section>
+
+    <!-- ============ 5 ============ -->
+    <section id="s5">
+      <div class="sec-head"><span class="num">05</span><h2>Risks, code smells and security</h2></div>
+      <p class="lead">Ordered by how much they matter in practice.</p>
+
+      <div class="risk risk--hi">
+        <h3>XmlSerializer with knownTypes → assembly leak <span class="chip chip--hi">High</span></h3>
+        <p><code>Serialize.ToXmlWithNewlines</code> and <code>XmlDeserializeFromString</code> call
+        <code>new XmlSerializer(type, knownTypes)</code>. <strong>Only</strong> the
+        <code>XmlSerializer(Type)</code> and <code>XmlSerializer(Type, string)</code> overloads
+        cache the generated serialization assembly; every other overload generates a fresh dynamic
+        assembly per call, which can never be unloaded.</p>
+        <p>The call path makes this serious: <code>IsChanged</code> serializes the whole data model
+        on <em>every read</em>, <code>SaveAsync</code> does it again, and
+        <code>LyricSearch.SearchAsync</code> runs <code>Load</code> + <code>SaveAsync</code> in its
+        <code>finally</code> for <strong>every single song</strong>. A search across a 1000-track
+        playlist therefore produces thousands of dynamic assemblies plus as many full read/write
+        round trips on the XML file. Expected symptom: growing memory use and increasing
+        sluggishness the longer a “Search all” runs.</p>
+      </div>
+
+      <div class="risk risk--hi">
+        <h3>Counters may never be saved <span class="chip chip--hi">High</span></h3>
+        <p>In <code>LyricSearch.SearchAsync</code> (<code>LyricSearch.cs:128</code>) the
+        <strong>parameter</strong> <code>lyricsFinderData</code> is <strong>overwritten</strong>
+        with a fresh object read from disk. The clones' counters are then folded back onto the
+        <code>service</code> objects, which came from the <em>original</em> — now overwritten —
+        instance, while <code>SaveAsync()</code> is called on the <em>newly loaded</em> one. The
+        increments to <code>RequestCountTotal</code> and <code>HitCountTotal</code> are thus
+        applied to objects that are never saved. This should be verified against observed
+        behaviour, but the code reads as a bug.</p>
+      </div>
+
+      <div class="risk risk--hi">
+        <h3>HttpClient recreated on every authenticated call <span class="chip chip--hi">High</span></h3>
+        <p><code>Utility.CreateHttpClient</code> is called from <code>HttpGetStringAsync</code> and
+        <code>HttpGetImageAsync</code> <strong>every time</strong> a username and password are
+        supplied. It <code>Dispose()</code>s the existing static <code>HttpClient</code> and creates
+        a new one.</p>
+        <ul>
+          <li><strong>Socket exhaustion / TIME_WAIT</strong> — the classic HttpClient
+            anti-pattern.</li>
+          <li><strong>Race</strong> — the field <code>_httpClientWithCredentials</code> is static
+            and mutable. With two authenticated calls in flight, one can dispose the client the
+            other is using → <code>ObjectDisposedException</code>.</li>
+        </ul>
+        <p>Note also that <code>timeoutMilliSeconds</code> only takes effect for the credentialed
+        client, and only when it has just been recreated; <code>new TimeSpan(ms * 10000)</code>
+        additionally overflows above roughly 214 seconds.</p>
+      </div>
+
+      <div class="risk risk--hi">
+        <h3>No URL encoding in MCWS calls <span class="chip chip--hi">High</span></h3>
+        <p><code>McRestService.CreateRequestUrl</code> builds query strings by plain string
+        interpolation. There is <strong>not a single</strong> call to
+        <code>Uri.EscapeDataString</code> or <code>HttpUtility.UrlEncode</code> anywhere in the
+        codebase. Worst case:</p>
+        <pre>case McCommandEnum.SetInfo:
+    sb.Append($"…&amp;Field={field}&amp;Value={value}");   <span class="cmt">// value = the entire lyric text</span></pre>
+        <p>A lyric containing <code>&amp;</code>, <code>#</code>, <code>+</code> or <code>%</code>
+        is either truncated or misparsed, and multi-KB texts risk exceeding the server's URL length
+        limit. <code>System.Web</code> is <code>using</code>'d in the file, but
+        <code>HttpUtility</code> is never used. Writing lyrics should be a POST with a body.</p>
+      </div>
+
+      <div class="risk risk--md">
+        <h3>The threading model holds only by accident <span class="chip chip--md">Medium-high</span></h3>
+        <p><code>SearchAllProcessWorkerAsync</code> does three things that are normally illegal:</p>
+        <ul>
+          <li><code>Queue&lt;int&gt;.Dequeue()</code> from ten concurrent workers without a lock —
+            <code>Queue&lt;T&gt;</code> is not thread-safe.</li>
+          <li>Direct access to <code>MainGridView.Rows[…]</code> and cell values from async
+            workers.</li>
+          <li>The <code>IsDataChanged</code> <em>getter</em> has side effects: it sets
+            <code>FileSaveMenuItem.Enabled</code> and <code>DataChangedTextBox.Visible</code>.</li>
+        </ul>
+        <p>It works in practice because none of the awaits on the path back to the worker use
+        <code>ConfigureAwait(false)</code>, so every continuation is posted back to the UI thread
+        and thereby serialized. But that is an invisible contract: <strong>a single
+        <code>ConfigureAwait(false)</code> added anywhere in the <code>LyricSearch</code> or
+        <code>AbstractLyricService</code> chain will break both the queue and the grid
+        access.</strong> Use <code>ConcurrentQueue&lt;int&gt;.TryDequeue</code> and explicit UI
+        marshalling instead of relying on the synchronization context.</p>
+      </div>
+
+      <div class="risk risk--md">
+        <h3>WhenAny(predicate) does not swallow exceptions as intended <span class="chip chip--md">Medium</span></h3>
+        <p><code>AsyncUtility.WhenAny</code> (<code>AsyncUtility.cs:378</code>) calls
+        <code>condition(task)</code>, and the predicate in <code>LyricSearch</code> is
+        <code>t =&gt; t.Result.LyricResult == …</code>. On a faulted task, <code>.Result</code>
+        throws an <strong><code>AggregateException</code></strong>, not the original
+        <code>LyricServiceBaseException</code>. So <code>catch (LyricServiceBaseException)</code> at
+        <code>LyricSearch.cs:112</code> never fires, and a quota overrun on the parallel path
+        propagates as an unexpected exception type. Same pattern on the serial path
+        (<code>LyricSearch.cs:102</code>).</p>
+      </div>
+
+      <div class="risk risk--md">
+        <h3>CR+LF does not survive the configuration file <span class="chip chip--md">Medium</span></h3>
+        <p>Multi-line values lose their line breaks. This hits both when
+        <code>LyricsFinder.xml</code> is created for the first time and on subsequent saves.</p>
+
+        <p><strong>The mechanism</strong> is XML's attribute-value normalization rule (XML 1.0
+        §3.3.3): a <em>literal</em> CR, LF or TAB inside an <strong>attribute value</strong> is
+        replaced by a single space by any conforming parser. The line break is gone the moment the
+        value is read, and cannot be recovered afterwards — only the character references
+        <code>&amp;#xD;</code> / <code>&amp;#xA;</code> survive. The service settings live in
+        exactly such attributes, <code>&lt;add key="Comment" value="…" /&gt;</code>, and are
+        therefore exposed.</p>
+
+        <p><strong>The evidence is in the repo.</strong> MusiXmatch writes its <code>Comment</code>
+        using entities and makes it all the way through to the data file:</p>
+        <pre><span class="cmt">&lt;!-- MusiXmatchService/App.config --&gt;</span>
+value="No user ID required.&amp;#xD;&amp;#xA;Token required, may be obtained from:&amp;#xD;&amp;#xA;…"
+
+<span class="cmt">&lt;!-- LyricsFinder.xml, lines 118-121 --&gt;</span>
+&lt;Comment&gt;No user ID required.&amp;#xD;
+Token required, may be obtained from:&amp;#xD;
+…&lt;/Comment&gt;</pre>
+
+        <p>AZLyrics and Stands4 write raw line breaks inside the attribute, and their text now
+        carries <strong>double spaces</strong> exactly where the line breaks used to be — the
+        signature of CR and LF each being turned into one space:</p>
+        <pre>"No user ID or token required.<span class="cmt">··</span>Use this service for manual lyric searches only,<span class="cmt">··</span>as automatic…"</pre>
+
+        <p>This is already true in <code>HEAD</code>, not just in the working tree: the damage
+        happened at some earlier point and was committed, so the three <code>App.config</code>
+        files have themselves become the corrupted source.</p>
+
+        <h4>The byte counts confirm the write path itself is sound</h4>
+        <p>Counting the current data file
+        (<code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>, 9257 bytes):</p>
+
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Measurement</th><th class="right">Count</th></tr></thead>
+            <tbody>
+              <tr><td><code>&amp;#xD;</code> entities</td><td class="right num-col">12</td></tr>
+              <tr><td>Literal CR bytes</td><td class="right num-col">160</td></tr>
+              <tr><td>Literal LF bytes</td><td class="right num-col">172</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>All 160 CRs are part of CR+LF pairs and come from <code>Indent = true</code>, whose
+        <code>NewLineChars</code> defaults to <code>"\r\n"</code> — that is pure pretty-printing
+        between elements. The remaining <code>172 − 160 = 12</code> lone LFs match the 12 entities
+        <strong>exactly</strong>: every embedded line break in text content is written as
+        <code>&amp;#xD;</code> plus a literal LF, precisely as
+        <code>NewLineHandling.Entitize</code> prescribes. None of them were lost.</p>
+
+        <p>The conclusion is therefore unambiguous: <code>XmlSerializeToFile</code> does the right
+        thing, and the fault lies entirely upstream in the <code>App.config</code> attributes. That
+        is also why a fix in the serialization code will not help — the source is what needs
+        repairing.</p>
+
+        <h4>Consequences for the two symptoms</h4>
+        <ul>
+          <li><strong>New file</strong> — <code>RefreshServiceSettingsAsync</code> seeds
+            <code>Comment</code>, <code>CreditTextFormat</code> and others from
+            <code>App.config</code> via <code>ServiceSettingsValue</code>. The parser hands back
+            already-flattened text, so a fresh <code>LyricsFinder.xml</code> inherits the
+            flattening. The data file's write path is itself correct — the source was destroyed
+            beforehand.</li>
+          <li><strong>Saving changes</strong> — as long as the values are written back into an
+            attribute without entitizing, they are flattened again on the next read. The round trip
+            is lossy every time.</li>
+        </ul>
+
+        <p>Note where this hurts: <code>CreditTextFormat</code> is the block appended to
+        <strong>every single saved lyric</strong> in the media library. It is intact in the current
+        data file (<code>&amp;#xD;</code> on lines 125–133), but it sits in the same attribute layer
+        and is one flattening accident away from losing its line breaks in everything that gets
+        saved.</p>
+
+        <h4>Direction for a fix</h4>
+        <p>The quick way out is to use <code>&amp;#xD;&amp;#xA;</code> in all
+        <code>App.config</code> attributes, as MusiXmatch already does. That works, but the entities
+        must be maintained by hand forever — a developer who presses Enter inside an attribute
+        destroys the value without noticing.</p>
+
+        <p>The durable fix is to move the multi-line settings out of attributes and into child
+        elements. Note that the rule there is a different one: in <strong>element content</strong>,
+        CR+LF is normalized to a single LF (XML 1.0 §2.11) — so the line break <em>survives</em>, it
+        just becomes LF instead of CR+LF. That is the decisive difference from attributes, where the
+        break disappears entirely.</p>
+
+        <p><em>Before — the break dies on read:</em></p>
+        <pre>&lt;appSettings&gt;
+  &lt;add key="Comment" value="No user ID required.
+Token required, may be obtained from:
+https://about.musixmatch.com/api-pricing" /&gt;
+&lt;/appSettings&gt;</pre>
+
+        <p><em>After — the break survives as LF:</em></p>
+        <pre>&lt;lyricService&gt;
+  &lt;ServiceName&gt;MusiXmatch&lt;/ServiceName&gt;
+  &lt;Comment&gt;No user ID required.
+Token required, may be obtained from:
+https://about.musixmatch.com/api-pricing&lt;/Comment&gt;
+&lt;/lyricService&gt;</pre>
+
+        <p>The read side gets simpler at the same time. These settings are only used for seeding at
+        first start, so the whole <code>ConfigurationManager</code> machinery can go in favour of
+        plain XML reading:</p>
+
+        <pre><span class="cmt">// Replaces ConfigurationManager.OpenExeConfiguration(assy.Location) in RefreshServiceSettingsAsync</span>
+private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type serviceType)
+{
+    var configPath = Assembly.GetAssembly(serviceType).Location + ".config";
+    var ret = new Dictionary&lt;string, string&gt;(StringComparer.OrdinalIgnoreCase);
+    var doc = new XmlDocument { XmlResolver = null };
+
+    using (var reader = XmlReader.Create(configPath, new XmlReaderSettings { XmlResolver = null }))
+        doc.Load(reader);
+
+    foreach (XmlNode node in doc.SelectNodes("/configuration/lyricService/*"))
+    {
+        <span class="cmt">// Element content comes back with LF; WinForms wants CR+LF.</span>
+        ret[node.Name] = node.InnerText.LfToCrLf();
+    }
+
+    return ret;
+}</pre>
+
+        <p>Two points about that shape: <code>LfToCrLf()</code> already exists in
+        <code>SharedComponents.Utility</code> and does exactly that last step, and
+        <code>XmlResolver = null</code> keeps the XXE line consistent with the rest of the
+        codebase.</p>
+
+        <div class="note">
+          <p><code>Utility.DllConfigurationFile()</code> <strong>cannot</strong> be used here — it
+          calls <code>Assembly.GetExecutingAssembly()</code> and therefore points at
+          <code>Utility.dll</code>, not at the service being read.
+          <code>Assembly.GetAssembly(serviceType)</code> is the correct form, and it is also what
+          <code>RefreshServiceSettingsAsync</code> already uses.</p>
+        </div>
+
+        <p>Whichever route is chosen: repair the three committed <code>App.config</code> files at
+        the same time. Their line breaks cannot be inferred from the code and must be typed back in
+        by hand.</p>
+      </div>
+
+      <div class="risk risk--md">
+        <h3>Two divergent serialization paths <span class="chip chip--md">Medium · needs verifying</span></h3>
+        <p>Related to the above, and worth looking at in the same pass. <code>Serialize</code> has
+        two write paths that do not use the same serializer:</p>
+        <ul>
+          <li><code>XmlSerializeToFile</code> uses <code>objectInstance.GetType()</code> — the
+            concrete type.</li>
+          <li><code>XmlSerializeToString</code> calls
+            <code>ToXmlWithNewlines&lt;T&gt;(this T obj, …)</code> with <code>objectInstance</code>
+            <strong>statically typed as <code>object</code></strong>. Type inference therefore binds
+            <code>T</code> to <code>object</code>, and
+            <code>new XmlSerializer(typeof(object), knownTypes)</code> is constructed — a different
+            serializer from the one the file path uses.</li>
+        </ul>
+        <p>The consequence is that the <code>IsChanged</code> baseline (<code>InitialXml</code>) is
+        produced by a different serializer from the one that writes the file. The two are internally
+        consistent, so dirty detection probably works — but if the <code>object</code>-typed
+        serializer omits fields that the concrete one includes, changes to precisely those fields
+        will go undetected and <code>SaveAsync</code> will silently skip the save
+        (<code>if (IsChanged &amp;&amp; IsSaveOk)</code>). This is a plausible contributing cause of
+        “changes are not saved”, but I have not verified which fields actually differ.</p>
+      </div>
+
+      <h3>Security</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Topic</th><th>Assessment</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>MCWS password in cleartext</strong></td>
+              <td><code>MainDataType.McWsPassword</code> is an <code>[XmlElement]</code> and is stored unencrypted in <code>LyricsFinder.xml</code> under <code>Documents</code>. The same goes for the Stands4 <code>Token</code>/<code>UserId</code> and the MusiXmatch token. Consider DPAPI (<code>ProtectedData</code>) or Windows Credential Manager.</td>
+            </tr>
+            <tr>
+              <td><strong>Token in the query string</strong></td>
+              <td><code>McWsToken</code> is sent as <code>?Token=…</code> on every URL. Against localhost the exposure is limited, but tokens end up in log files: <code>HttpGetStringAsync</code> embeds the full URL in its exception messages, which are written to <code>LyricsFinder.*.error.log</code>.</td>
+            </tr>
+            <tr>
+              <td><strong><code>Assembly.LoadFrom</code> on every <code>*.dll</code></strong></td>
+              <td>Any DLL placed in the program folder is loaded and instantiated. The folder is <code>Program Files</code> and requires admin rights, so this is not an acute vulnerability — but there is no strong-name or signature validation of “plug-ins”.</td>
+            </tr>
+            <tr>
+              <td><strong><code>.snk</code> files in the repo</strong></td>
+              <td>The strong-name keys are committed. Strong naming is not a security boundary, but anyone can now sign assemblies with the same identity.</td>
+            </tr>
+            <tr>
+              <td><strong>XXE</strong></td>
+              <td>Handled correctly — <code>XmlResolver = null</code> is set consistently in <code>McMplResponse</code>, <code>McPlayListsResponse</code> and <code>LyricsFinderDataType</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>HTML scraping</strong></td>
+              <td>AZLyrics and Lololyrics parse foreign HTML with HtmlAgilityPack and put the result into a <code>DataGridView</code>. The content is never rendered as HTML, so the XSS risk is low.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Build setup</h3>
+      <ul>
+        <li><strong>Hard-coded Visual Studio paths.</strong>
+          <code>BuildRelease.subroutine.cmd:17–18</code> only looks in
+          <code>D:\Program Files [(x86)]\Microsoft Visual Studio\{2017,2019,2022,2026}\Community\…</code>.
+          The script does not work on a machine where VS sits on C:, or with
+          Professional/Enterprise. Use <code>vswhere.exe</code>.</li>
+        <li><strong><code>del /s /q "$(TargetDir)*.*"</code> as a pre-build</strong> in Core, Exe and
+          Plugin, combined with post-build <code>xcopy</code> chains across project folders.
+          <code>LyricsFinderCore</code> <em>empties</em> <code>Build\LyricServices</code> in its
+          post-build. The whole thing depends on the build order in the <code>.sln</code> file's
+          <code>ProjectDependencies</code> and is neither incremental-safe nor
+          parallel-build-safe.</li>
+        <li><strong>Binding redirects do not match the package versions.</strong>
+          <code>LyricsFinderCore/App.config</code> redirects <code>Newtonsoft.Json</code> to
+          <code>12.0.0.0</code>, while <code>packages.config</code> has 13.0.4 (assembly version
+          <code>13.0.0.0</code>). Likewise for <code>System.Buffers</code> and
+          <code>System.Numerics.Vectors</code>. Can produce a <code>FileLoadException</code> at
+          runtime.</li>
+        <li><strong><code>MediaCenter.sln</code> is broken</strong> — missing
+          <code>ApiseedsService.csproj</code>.</li>
+        <li><strong>No CI.</strong> <code>.github/</code> contains only
+          <code>ISSUE_TEMPLATE</code>.</li>
+        <li><strong>Version inconsistency.</strong> <code>SharedAssemblyInfo.cs</code> = 1.3.7.0;
+          <code>Setup.iss</code> <code>AppVersion</code> and the registry <code>Version</code> =
+          hard-coded 1.0.0; <code>ReleaseNotes.html</code> tops out at v1.3.1; the latest commit is
+          titled “Starting v1.4.0 changes”.</li>
+        <li><strong><code>Setup.iss</code>: <code>IsMc32()</code> can never return
+          <code>true</code>.</strong> <code>McVersion</code> is set to
+          <code>Copy(McInstVersions[Idx], 1, 2)</code> — just the two version digits, e.g.
+          <code>"34"</code> — but <code>IsMc32</code> tests <code>Pos('32-bit', McVersion)</code>. A
+          32-bit MC installation therefore gets 64-bit <code>RegAsm</code> and
+          <code>HKLM64</code> registry keys. If the user selects only the <code>standalone</code>
+          component, the version page is skipped and <code>NextButtonClick</code> never sets
+          <code>InstallDir</code>.</li>
+        <li><strong><code>BuildAndInstallLyricsFinder.cmd</code></strong>:
+          <code>:wait / if exist %_out_file% goto :wait</code> loops for as long as the file
+          <em>exists</em> — the logic looks inverted relative to the comment “Waiting for the build
+          completion”.</li>
+      </ul>
+
+      <h3>Other code smells</h3>
+      <ul>
+        <li><strong><code>LyricsFinderCore</code> is a prime candidate for splitting up</strong> —
+          1369 + 1296 + 486 lines in one partial class that mixes UI, MCWS orchestration, file
+          system and business logic. This is the main reason no unit tests exist for the core.</li>
+        <li><strong><code>StackTrace</code> inside a property getter.</strong>
+          <code>LyricsFinderCoreConfigurationSectionHandler.Instance</code> builds a
+          <code>new StackTrace()</code> and reads <code>GetFrame(1).GetMethod().Name</code> on
+          <em>every</em> access, to work out who is calling. Expensive, and unreliable as soon as
+          the JIT inlines.</li>
+        <li><strong><code>Utility.GetLinkerTime</code></strong> reads the PE header timestamp. With
+          deterministic builds (<code>&lt;Deterministic&gt;true&lt;/Deterministic&gt;</code> in
+          <code>McWsProxy</code>; the Roslyn default) that field is a hash, not a date — so the
+          function yields meaningless “build times”.</li>
+        <li><strong><code>RandomizedDelayAsync</code></strong> creates <code>new Random()</code> per
+          call. On .NET Framework it is seeded from the system clock, so concurrent calls within the
+          same tick get an <em>identical</em> delay — which defeats the whole purpose of spreading
+          requests out to avoid rate limiting.</li>
+        <li><strong><code>AbstractLyricService._semaphoreSlim</code> is <code>static</code>.</strong>
+          Counters for <em>all</em> services are serialized through one global semaphore, even
+          though the lock only protects instance fields.</li>
+        <li><strong><code>ProcessAsyncWrapper</code></strong> accesses <code>ret.LyricResult</code>
+          without a null check — an override returning <code>null</code> yields an NRE.</li>
+        <li><strong><code>InitLocalDataAsync</code></strong>:
+          <code>Path.Combine(DataDirectory, dataFile + ".tmp")</code> where <code>dataFile</code> is
+          already an absolute path. It works, because <code>Combine</code> ignores the first
+          argument when the second is rooted, but it is unintentional and confusing.</li>
+        <li><strong>Dead code.</strong> <code>LyricServices.Old/</code> is in no solution.
+          <code>McPlayControlForm.cs</code> (411 lines) sits in the Core folder but is <em>not</em>
+          listed in <code>LyricsFinderCore.csproj</code> and is therefore never compiled.
+          <code>MjpCreator</code> is out of service. <code>Serialize.cs</code> carries the comment
+          “Not used in this solution version” while actually being central.</li>
+        <li><strong>Generated files in the source tree.</strong>
+          <code>MessageInspection.dll/.pdb/.xml</code>,
+          <code>*.GeneratedMSBuildEditorConfig.editorconfig</code> and
+          <code>*.CodeAnalysisLog.xml</code> sit alongside the source in every service folder,
+          copied there by <code>PostBuild.cmd</code>. They are not git-tracked, but they
+          clutter.</li>
+        <li><strong>Exception discipline.</strong> Around 50 occurrences of
+          <code>throw new Exception(...)</code> — hard to catch selectively. There is, by contrast,
+          a well-developed <code>LyricServiceExceptions.cs</code> hierarchy that simply is not used
+          consistently.</li>
+        <li><strong>95 <code>async void</code> methods.</strong> Almost all are WinForms event
+          handlers and therefore conventional, but <code>LyricsFinderExe/Program.cs</code> installs
+          <em>neither</em> <code>Application.ThreadException</code> nor
+          <code>AppDomain.UnhandledException</code>. An exception escaping an
+          <code>async void</code> handler closes the program without a log entry.</li>
+      </ul>
+    </section>
+
+    <!-- ============ 6 ============ -->
+    <section id="s6">
+      <div class="sec-head"><span class="num">06</span><h2>Test gaps</h2></div>
+
+      <p>There are <strong>28 <code>[TestMethod]</code></strong> in total — all in the six lyric
+      service projects, and all of them <strong>integration tests against live third-party
+      websites</strong>.</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Project</th><th class="right">Tests</th></tr></thead>
+          <tbody>
+            <tr><td>Lololyrics</td><td class="right num-col">10</td></tr>
+            <tr><td>CajunLyrics</td><td class="right num-col">8</td></tr>
+            <tr><td>AZLyrics</td><td class="right num-col">4</td></tr>
+            <tr><td>ChartLyrics</td><td class="right num-col">2</td></tr>
+            <tr><td>MusiXmatch</td><td class="right num-col">2</td></tr>
+            <tr><td>Stands4</td><td class="right num-col">2</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>They carry three hard out-of-process dependencies:</p>
+      <ol>
+        <li><strong>Network and third-party services.</strong> The tests look up hard-coded songs
+          (“Bruce Daigrepont – La Jalouserie”) and fail when a site changes its markup, goes down,
+          or rate-limits. The AZLyrics configuration itself warns that automatic searching can get
+          your IP banned.</li>
+        <li><strong>The user's real data file.</strong> <code>[TestInitialize]</code> calls
+          <code>LyricsFinderDataType.GetLyricService&lt;T&gt;()</code>, which reads
+          <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>. The tests therefore
+          <em>cannot</em> run on a clean machine or in CI, and they require the user to have
+          configured real API tokens for Stands4 and MusiXmatch.</li>
+        <li><strong>Test code inside the production assembly.</strong> The MSTest references live in
+          the service DLLs themselves, which consequently ship with the whole test infrastructure.
+          The post-build script removes <code>Microsoft.VisualStudio.TestPlatform*</code> by
+          hand.</li>
+      </ol>
+
+      <h4>Entirely untested</h4>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Area</th><th>Comment</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">SharedComponents.Utility</td><td>Around 30 pure string functions (<code>ToSentenceCase</code>, <code>ToTitleCase</code>, <code>RemoveParenthesizedText</code>, <code>ToNormalizedLineEndings</code>, <code>TrimStringLines</code>) — trivial to test, and with known edge cases: <code>ToTitleCase</code> indexes <code>lines[i][0]</code>, and <code>CapitalizeWordTitle</code> throws on words containing spaces.</td></tr>
+            <tr><td class="mono">Serialize / LyricsFinderDataType</td><td>Round trip, the v1.1→v1.2 migration (<code>&lt;Service&gt;</code> → <code>&lt;LyricService&gt;</code>), <code>IsChanged</code> semantics.</td></tr>
+            <tr><td class="mono">McWsProxy</td><td><code>CreateRequestUrl</code> per command — exactly where the encoding bug sits. Testable entirely without a network.</td></tr>
+            <tr><td class="mono">LyricSearch</td><td>The orchestration: parallel vs. serial, first-hit, counter fold-back. No network needed with fake services.</td></tr>
+            <tr><td class="mono">AbstractLyricService</td><td>Quota handling, retry-without-parentheses, duplicate filtering in <code>AddFoundLyric</code>.</td></tr>
+            <tr><td class="mono">LyricsFinderCore</td><td>None — and the code is not structured for it.</td></tr>
+            <tr><td class="mono">Installation / Setup.iss</td><td>None.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <p><strong>Recommended order:</strong> (1) separate <code>*.Tests</code> projects per layer,
+        so MSTest leaves the production assemblies; (2) pure unit tests of <code>Utility</code>,
+        <code>McRestService.CreateRequestUrl</code> and <code>Serialize</code> — fast, hermetic, and
+        covering two of the suspected bugs above; (3) <code>LyricSearch</code> with in-memory fakes;
+        (4) move the existing network tests into a separate category that is disabled by
+        default.</p>
+      </div>
+    </section>
+
+    <!-- ============ 7 ============ -->
+    <section id="s7">
+      <div class="sec-head"><span class="num">07</span><h2>Build, test and run</h2></div>
+
+      <h3>Prerequisites</h3>
+      <ul>
+        <li>Windows, Visual Studio 2022 or newer with the <strong>.NET desktop development</strong>
+          workload — classic csproj files and the WinForms designer. <code>dotnet build</code> alone
+          is <em>not</em> enough.</li>
+        <li>.NET Framework 4.8 Developer Pack.</li>
+        <li>JRiver Media Center installed — <code>LyricsFinderPlugin</code> has a
+          <code>COMReference</code> to MC's type library and cannot be built without it.</li>
+        <li>Debug builds set <code>RegisterForComInterop</code> → <strong>run Visual Studio as
+          administrator</strong>.</li>
+      </ul>
+
+      <h3>Restore and build</h3>
+      <p>NuGet restore must go through <code>nuget.exe</code> or <code>msbuild -t:Restore</code>,
+      not <code>dotnet restore</code> — the projects use the <code>packages.config</code>
+      format.</p>
+      <pre><span class="cmt"># from the repo root</span>
+nuget restore LyricsFinder.sln
+msbuild LyricsFinder.sln -p:Configuration=Debug   -p:Platform="Any CPU"
+msbuild LyricsFinder.sln -p:Configuration=Release -p:Platform="Any CPU"</pre>
+
+      <p>Locate <code>msbuild</code> without hard-coding the path:</p>
+      <pre>$vs = &amp; "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" `
+        -latest -requires Microsoft.Component.MSBuild -property installationPath
+&amp; "$vs\MSBuild\Current\Bin\MSBuild.exe" LyricsFinder.sln -p:Configuration=Release</pre>
+
+      <p>The project's own scripts — these require VS to sit on <code>D:\</code>, see section 5:</p>
+      <pre>LyricsFinder\Installation\BuildRelease.cmd                    <span class="cmt">elevated clean+release build</span>
+LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">build, then Output\Setup.exe</span></pre>
+
+      <div class="note">
+        <p><code>BuildRelease.subroutine.cmd</code> runs <code>-t:Clean,Build</code>, and several
+        projects carry <code>del /s /q "$(TargetDir)*.*"</code> as a pre-build. Building is
+        destructive to output folders.</p>
+      </div>
+
+      <h3>Tests</h3>
+      <pre>vstest.console.exe `
+  LyricsFinder\LyricServices\CajunLyricsService\bin\Debug\CajunLyricsService.dll `
+  LyricsFinder\LyricServices\LololyricsService\bin\Debug\LololyricsService.dll `
+  LyricsFinder\LyricServices\AZLyricsService\bin\Debug\AZLyricsService.dll `
+  LyricsFinder\LyricServices\ChartLyricsService\bin\Debug\ChartLyricsService.dll `
+  LyricsFinder\LyricServices\MusiXmatchService\bin\Debug\MusiXmatchService.dll `
+  LyricsFinder\LyricServices\Stands4Service\bin\Debug\Stands4Service.dll</pre>
+      <p>Or through Test Explorer in Visual Studio. Remember the prerequisites from section 6:
+      network, an existing <code>LyricsFinder.xml</code>, and valid tokens for Stands4 and
+      MusiXmatch. Tests in CI will fail.</p>
+
+      <h3>Running</h3>
+      <pre>LyricsFinder\LyricsFinderExe\bin\Debug\LyricsFinderExe.exe</pre>
+      <p>The first start shows <code>OptionForm</code>, where the MCWS URL, Access Key, username and
+      password must be filled in. The Access Key is found in Media Center under <em>Tools → Options
+      → Media Network</em>.</p>
+      <p><strong>As an MC plug-in</strong> this requires COM registration and a registry key under
+      <code>HKLM\SOFTWARE\J. River\Media Center &lt;version&gt;\Plugins\Interface\LyricsFinder</code>
+      — use the installer (<code>Installation\Output\Setup.exe</code>) rather than doing it by
+      hand.</p>
+
+      <h3>Logs and data</h3>
+      <pre>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml                    <span class="cmt">all user data</span>
+%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.Standalone.log         <span class="cmt">info</span>
+%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.Standalone.error.log   <span class="cmt">warn+</span>
+%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.Plugin[.error].log</pre>
+      <p>Delete <code>LyricsFinder.xml</code> to reset to factory settings — the services are
+      recreated from the <code>App.config</code> seeds on the next start.</p>
+    </section>
+
+    <!-- ============ 8 ============ -->
+    <section id="s8">
+      <div class="sec-head"><span class="num">08</span><h2>If I had to prioritize</h2></div>
+
+      <ol class="prio">
+        <li><div><strong>URL encoding in McRestService</strong><span>A small fix for a directly user-visible bug.</span></div></li>
+        <li><div><strong>Cache the XmlSerializer instances</strong><span>And drop the per-song <code>Load</code> + <code>Save</code> from <code>LyricSearch</code>'s <code>finally</code>. That is both the leak and the biggest performance problem.</span></div></li>
+        <li><div><strong>Verify the counter logic</strong><span>In <code>LyricSearch.SearchAsync</code> — confirm against a real run before treating it as a bug.</span></div></li>
+        <li><div><strong>One static HttpClient</strong><span>With <code>HttpRequestMessage</code>-based auth instead of recreating the client per call.</span></div></li>
+        <li><div><strong>Move multi-line settings out of XML attributes</strong><span>And repair the three <code>App.config</code> files whose line breaks have already been flattened. Attribute normalization is lossy on every read, and <code>CreditTextFormat</code> ends up in every saved lyric.</span></div></li>
+        <li><div><strong>ConcurrentQueue and explicit UI marshalling</strong><span>In the search workers, so the code does not depend on an invisible contract.</span></div></li>
+        <li><div><strong>Clean up the build</strong><span><code>vswhere</code> instead of <code>D:\</code> paths, fix the binding redirects, repair or remove <code>MediaCenter.sln</code>, delete <code>LyricServices.Old</code> and <code>McPlayControlForm.cs</code>.</span></div></li>
+        <li><div><strong>Separate test projects</strong><span>Plus unit tests of <code>Utility</code>, <code>CreateRequestUrl</code> and <code>Serialize</code>, so there is a safety net to refactor against. A round-trip test of multi-line text through <code>App.config</code> → data file → <code>App.config</code> would have caught the line-break bug.</span></div></li>
+      </ol>
+
+      <p class="colophon">
+        Review of <span style="color:var(--accent)">hardolf/JRiver.MediaCenter</span> @ master · 25 August 2026<br>
+        Analysis only — no source files were changed. Text version: <code>docs/solution-overview.en.md</code><br>
+        Danish original: <a href="https://claude.ai/code/artifact/f10cb9c3-d4ac-47b3-8d0b-b8867a0f8426">solution-overview.da</a>
+      </p>
+    </section>
+
+  </main>
+</div>
