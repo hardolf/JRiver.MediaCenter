@@ -8,7 +8,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 using MediaCenter.SharedComponents;
 
@@ -122,7 +121,7 @@ namespace MediaCenter.McWs
             switch (command)
             {
                 case McCommandEnum.AddToPlayingNow:
-                    sb.Append($"/Playlist/AddFile?Token={McWsToken}&PlaylistType=ID&FileType=Key&File={key}");
+                    sb.Append($"/Playlist/AddFile?Token={McWsToken.UrlEncoded()}&PlaylistType=ID&FileType=Key&File={key}");
                     break;
 
                 case McCommandEnum.Alive:
@@ -131,56 +130,56 @@ namespace MediaCenter.McWs
                     break;
 
                 case McCommandEnum.GetImage:
-                    sb.Append($"/File/{command}?Token={McWsToken}&File={key}&FileType=Key&Type=Thumbnail&ThumbnailSize=Large&Format=jpg");
+                    sb.Append($"/File/{command}?Token={McWsToken.UrlEncoded()}&File={key}&FileType=Key&Type=Thumbnail&ThumbnailSize=Large&Format=jpg");
                     break;
 
                 case McCommandEnum.GetInfo:
-                    sb.Append($"/File/{command}?Token={McWsToken}&Action=MPL&File={value}");
+                    sb.Append($"/File/{command}?Token={McWsToken.UrlEncoded()}&Action=MPL&File={value.UrlEncoded()}");
                     break;
 
                 case McCommandEnum.GetInfoFull:
-                    sb.Append($"/File/GetInfo?Token={McWsToken}&Action=MPL&Fields=Calculated&File={value}");
+                    sb.Append($"/File/GetInfo?Token={McWsToken.UrlEncoded()}&Action=MPL&Fields=Calculated&File={value.UrlEncoded()}");
                     break;
 
                 case McCommandEnum.Info:
                 case McCommandEnum.PlayPause:
                 case McCommandEnum.Stop:
-                    sb.Append($"/Playback/{command}?Token={McWsToken}");
+                    sb.Append($"/Playback/{command}?Token={McWsToken.UrlEncoded()}");
                     break;
 
                 case McCommandEnum.PlayByIndex:
-                    sb.Append($"/Playback/{command}?Token={McWsToken}&Index={key}");
+                    sb.Append($"/Playback/{command}?Token={McWsToken.UrlEncoded()}&Index={key}");
                     break;
 
                 case McCommandEnum.PlayByKey:
-                    sb.Append($"/Playback/{command}?Token={McWsToken}&Key={key}");
+                    sb.Append($"/Playback/{command}?Token={McWsToken.UrlEncoded()}&Key={key}");
                     break;
 
                 case McCommandEnum.Playlist:
-                    sb.Append($"/Playback/{command}?Token={McWsToken}&Action=MPL");
+                    sb.Append($"/Playback/{command}?Token={McWsToken.UrlEncoded()}&Action=MPL");
                     break;
 
                 case McCommandEnum.PlaylistFiles:
-                    sb.Append($"/Playlist/Files?Token={McWsToken}&PlaylistType=ID&Action=MPL&Playlist={key}");
+                    sb.Append($"/Playlist/Files?Token={McWsToken.UrlEncoded()}&PlaylistType=ID&Action=MPL&Playlist={key}");
                     break;
 
                 case McCommandEnum.PlaylistList:
-                    sb.Append($"/Playlists/List?Token={McWsToken}&Action=MPL");
+                    sb.Append($"/Playlists/List?Token={McWsToken.UrlEncoded()}&Action=MPL");
                     break;
 
                 case McCommandEnum.PlaylistListForItem:
-                    sb.Append($"/File/GetPlaylists?Token={McWsToken}&File={key}");
+                    sb.Append($"/File/GetPlaylists?Token={McWsToken.UrlEncoded()}&File={key}");
                     break;
 
                 case McCommandEnum.PlayPlaylist:
-                    sb.Append($"/Playback/{command}?Token={McWsToken}&Playlist={key}");
+                    sb.Append($"/Playback/{command}?Token={McWsToken.UrlEncoded()}&Playlist={key}");
                     break;
 
                 case McCommandEnum.Position:
                     if (key < -1)
-                        sb.Append($"/Playback/{command}?Token={McWsToken}");
+                        sb.Append($"/Playback/{command}?Token={McWsToken.UrlEncoded()}");
                     else
-                        sb.Append($"/Playback/{command}?Token={McWsToken}&Position={key}");
+                        sb.Append($"/Playback/{command}?Token={McWsToken.UrlEncoded()}&Position={key}");
 
                     if (!field.IsNullOrEmptyTrimmed())
                     {
@@ -192,7 +191,7 @@ namespace MediaCenter.McWs
                     break;
 
                 case McCommandEnum.SetInfo:
-                    sb.Append($"/File/{command}?Token={McWsToken}&File={key}&FileType=Key&Formatted=1&Field={field}&Value={value}");
+                    sb.Append($"/File/{command}?Token={McWsToken.UrlEncoded()}&File={key}&FileType=Key&Formatted=1&Field={field.UrlEncoded()}&Value={value.UrlEncoded()}");
                     break;
 
                 default:

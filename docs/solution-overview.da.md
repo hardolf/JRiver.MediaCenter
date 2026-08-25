@@ -24,7 +24,7 @@ og al logik. `LyricsFinderPlugin` **arver** direkte fra `LyricsFinderCore`, og `
 exe'en hoster den samme kontrol. Konstruktørflaget `base(isStandAlone, entryAssembly)`
 er den eneste reelle forskel (bl.a. hvilken log4net-konfiguration der læses).
 
-### Solutions
+### 1.1 Solutions
 
 | Fil | Indhold |
 |---|---|
@@ -76,7 +76,7 @@ til NuGet. `Directory.Build.props` sætter kun én ting globalt: `LangVersion 13
    └──────────────────────────────────────────────────────────────┘
 ```
 
-Ikke-kode-projekter:
+### 2.1 Ikke-kode-projekter
 
 | Projekt | Rolle |
 |---|---|
@@ -85,7 +85,7 @@ Ikke-kode-projekter:
 | `MjpCreator` | Genererer MC `.mjp`-pakkefiler. **Ikke længere brugt** (kaldet er udkommenteret i `Installation/Program.cs` siden v1.3.1 — MC bruger RegSvr32, ikke RegAsm). |
 | `Visualizations` | ASP.NET-baseret; kun i `MediaCenter.sln`. Uafhængig af LyricsFinder. |
 
-### Vigtig arkitekturdetalje: lyric-services indlæses dynamisk
+### 2.2 Vigtig arkitekturdetalje: lyric-services indlæses dynamisk
 
 `LyricsFinderCore` refererer **ikke** service-projekterne. I stedet scanner
 `InitLyricServicesAsync()` (`LyricsFinderCore.Private.cs:524`) programmappen, kalder
@@ -98,7 +98,7 @@ i .sln-filen og de mange `xcopy`-post-build-events.
 
 ## 3. Target frameworks, pakker og central konfiguration
 
-* **TFM:** `net48` overalt. `LangVersion 13.0`.
+* **TFM** (Target Framework Moniker): `net48` overalt. `LangVersion 13.0`.
 * **Signering:** `LyricsFinderCore`, `LyricsFinderPlugin`, `McWsProxy`, `Utility`,
   `MessageInspection` er strong-named. `.snk`-filerne ligger i repoet.
 * **COM:** `LyricsFinderCore` og `LyricsFinderPlugin` er `ComVisible` med `ProgId`.
@@ -106,7 +106,9 @@ i .sln-filen og de mange `xcopy`-post-build-events.
   ved debug-builds. `LyricsFinderPlugin` har en `COMReference` til MC's type-library
   (GUID `{03457D73-…}`), som kun kan resolves hvis Media Center er installeret.
 
-Runtime-pakker (udviklings-/analyzer-pakker udeladt):
+### 3.1 Runtime-pakker
+
+*Udviklings- og analyzer-pakker er udeladt.*
 
 | Pakke | Version | Bruges af |
 |---|---|---|
@@ -122,7 +124,7 @@ Service-projekterne trækker desuden en **stor transitiv hale** ind via
 `Microsoft.Extensions.*` 10.0.7 → MSAL. Ca. 60 pakker pr. serviceprojekt, alle sammen
 konsekvens af at unit-tests bor i **samme assembly** som produktionskoden.
 
-Central konfiguration:
+### 3.2 Central konfiguration
 
 | Fil | Betydning |
 |---|---|
@@ -135,7 +137,7 @@ Central konfiguration:
 
 ## 4. Arkitektur og dataflow
 
-### Opstart
+### 4.1 Opstart
 
 ```
 Program.Main / Plugin.Init
@@ -152,7 +154,7 @@ Program.Main / Plugin.Init
       6. ReloadPlaylistAsync(isReconnect: true)
 ```
 
-### Forbindelse til Media Center
+### 4.2 Forbindelse til Media Center
 
 `McWsProxy` er en **statisk** klasse over MC's REST-API (MCWS, default
 `http://localhost:52199/MCWS/v1`).
@@ -165,7 +167,7 @@ ConnectAsync()
   → alle øvrige kald sender ?Token=<McWsToken> i query-strengen
 ```
 
-### Søgeforløbet (hjertet i applikationen)
+### 4.3 Søgeforløbet
 
 ```
 SearchAllProcessAsync
@@ -189,7 +191,7 @@ Bemærk: søgeresultatet lander **kun i gridet**. Først når brugeren gemmer, k
 `McRestService.SetInfoAsync(key, "Lyrics", lyrics)` (`LyricsFinderCore.Private.cs:879`)
 som skriver teksten tilbage til MC.
 
-### Persistering
+### 4.4 Persistering
 
 Al brugerdata — MCWS-URL/bruger/password, vinduespositioner, gridkolonner, og **hele
 service-listen med tokens og tællere** — ligger i én XML-fil,
@@ -349,7 +351,9 @@ især er blevet til ét mellemrum:
 Det gælder allerede i `HEAD`, ikke kun i arbejdstræet: skaden er sket engang tidligere og er
 blevet committet, og de tre `App.config`-filer er dermed selv blevet den korrupte kilde.
 
-**Tællingen bekræfter at skrivestien selv er sund.** En optælling af den aktuelle datafil
+#### 5.8.1 Tællingen bekræfter at skrivestien selv er sund
+
+En optælling af den aktuelle datafil
 (`%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml`, 9257 bytes):
 
 | Måling | Antal |
@@ -368,7 +372,7 @@ Konklusionen er derfor entydig: `XmlSerializeToFile` gør det rigtige, og fejlen
 udelukkende opstrøms i `App.config`-attributterne. Det er også grunden til at en rettelse i
 serialiseringskoden ikke vil hjælpe — kilden skal repareres.
 
-**Konsekvens for de to symptomer brugeren ser:**
+#### 5.8.2 Konsekvens for de to symptomer
 
 * *Ny fil* — `AbstractLyricService.RefreshServiceSettingsAsync` seeder `Comment`,
   `CreditTextFormat` m.fl. fra `App.config` via `ServiceSettingsValue`. Parseren afleverer
@@ -382,7 +386,9 @@ sangtekst** i mediebiblioteket. Den er intakt i den nuværende datafil (`&#xD;` 
 125-133), men den ligger i samme attribut-lag og er ét fladningsuheld fra at mangle sine
 linjeskift i alt hvad der er gemt.
 
-**Retningen på en rettelse.** Den hurtige udvej er at bruge `&#xD;&#xA;` i alle
+#### 5.8.3 Retningen på en rettelse
+
+Den hurtige udvej er at bruge `&#xD;&#xA;` i alle
 `App.config`-attributter, som MusiXmatch allerede gør. Det virker, men entiteterne skal
 vedligeholdes i hånden for evigt — en udvikler der trykker Enter i en attribut ødelægger
 værdien uden at opdage det.
@@ -574,7 +580,7 @@ De har tre hårde afhængigheder ud af processen:
    service-dll'erne, som derfor shipper med hele testinfrastrukturen. Post-build-scriptet
    fjerner `Microsoft.VisualStudio.TestPlatform*` manuelt.
 
-**Helt utestet:**
+### 6.1 Helt utestet
 
 | Område | Kommentar |
 |---|---|
@@ -597,7 +603,7 @@ er slået fra by default.
 
 ## 7. Build-, test- og køre-kommandoer
 
-### Forudsætninger
+### 7.1 Forudsætninger
 
 * Windows, Visual Studio 2022 eller nyere med workloaden **.NET desktop development**
   (klassiske csproj'er + WinForms-designer). `dotnet build` alene er **ikke** nok.
@@ -606,7 +612,7 @@ er slået fra by default.
   type-library og kan ikke bygges uden.
 * Debug-builds sætter `RegisterForComInterop` → **kør Visual Studio som administrator**.
 
-### Restore + build
+### 7.2 Restore og build
 
 NuGet-restore skal ske med `nuget.exe`/`msbuild -t:Restore`, ikke `dotnet restore`
 (`packages.config`-format):
@@ -636,7 +642,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd   # build, derefter Ou
 Bemærk at `BuildRelease.subroutine.cmd` kører `-t:Clean,Build` og at flere projekter har
 `del /s /q "$(TargetDir)*.*"` som pre-build — build er destruktivt over for output-mapper.
 
-### Tests
+### 7.3 Tests
 
 ```powershell
 vstest.console.exe `
@@ -652,7 +658,7 @@ Eller via Test Explorer i Visual Studio. Husk forudsætningerne fra §6: netvær
 eksisterende `%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml`, og gyldige tokens
 for Stands4 og MusiXmatch. Tests i CI vil fejle.
 
-### Kørsel
+### 7.4 Kørsel
 
 **Stand-alone:**
 
@@ -667,7 +673,7 @@ udfyldes. Access Key findes i Media Center under *Tools → Options → Media Ne
 `HKLM\SOFTWARE\J. River\Media Center <version>\Plugins\Interface\LyricsFinder` — brug
 installeren (`Installation\Output\Setup.exe`) frem for at gøre det i hånden.
 
-### Logs og data
+### 7.5 Logs og data
 
 ```
 %USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml                    # al brugerdata

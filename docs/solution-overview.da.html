@@ -252,6 +252,7 @@ section { scroll-margin-top: 1.5rem; }
   display: flex;
   align-items: baseline;
   gap: .8rem;
+  flex-wrap: wrap;
   border-bottom: 2px solid var(--ink);
   padding-bottom: .55rem;
   margin-bottom: 1.6rem;
@@ -261,6 +262,7 @@ section { scroll-margin-top: 1.5rem; }
   font-size: .8rem;
   font-weight: 500;
   color: var(--accent);
+  white-space: nowrap;
   padding-bottom: .28em;
 }
 .sec-head h2 {
@@ -289,6 +291,18 @@ h4 {
   margin: 1.7rem 0 .5rem;
   color: var(--ink-2);
 }
+
+/* section numbers on sub-headings */
+.hnum {
+  font-family: var(--f-mono);
+  font-size: .72em;
+  font-weight: 500;
+  color: var(--accent);
+  margin-right: .55em;
+}
+.risk h3 .hnum { margin-right: 0; }
+h4 .hnum { font-size: .78em; }
+h3[id], h4[id] { scroll-margin-top: 1.5rem; }
 
 p { max-width: var(--measure); margin: 0 0 1.05rem; }
 ul, ol { max-width: var(--measure); margin: 0 0 1.15rem; padding-left: 1.3rem; }
@@ -332,6 +346,12 @@ strong { font-weight: 600; color: var(--ink); }
   color: var(--accent);
   margin-top: auto;
   padding-top: .35rem;
+.finding .where a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 45%, transparent);
+}
+.finding .where a:hover { border-bottom-color: currentColor; }
 }
 
 .chip {
@@ -561,7 +581,7 @@ figcaption {
     <!-- ============ FINDINGS BOARD ============ -->
     <section aria-labelledby="board-h">
       <div class="sec-head">
-        <span class="num">TL;DR</span>
+        <span class="num">TL;DR (kort fortalt)</span>
         <h2 id="board-h">De fund der betyder noget</h2>
       </div>
       <p class="lead">Otte forhold bærer størstedelen af risikoen. Detaljerne står i afsnit 5.</p>
@@ -571,56 +591,56 @@ figcaption {
           <div class="finding__top"><span class="chip chip--hi">Høj</span></div>
           <h3>XmlSerializer lækker assemblies</h3>
           <p>Overloaden med <code>knownTypes</code> cacher ikke. Hvert kald genererer en dynamisk assembly der aldrig unloades — og der kaldes én gang pr. sang.</p>
-          <p class="where">Serialize.cs · LyricSearch.cs:128</p>
+          <p class="where"><a href="#s5-1">&sect;5.1</a> &middot; Serialize.cs · LyricSearch.cs:128</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--hi">Høj</span></div>
           <h3>Tællere gemmes muligvis aldrig</h3>
           <p>Parameteren overskrives med et frisk objekt fra disk; tællerne lægges tilbage på den gamle instans, men <code>SaveAsync()</code> kaldes på den nye.</p>
-          <p class="where">LyricSearch.cs:128–150</p>
+          <p class="where"><a href="#s5-2">&sect;5.2</a> &middot; LyricSearch.cs:128–150</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--hi">Høj</span></div>
           <h3>Ingen URL-encoding</h3>
           <p>Hele sangteksten interpoleres direkte ind i en GET-query. Et <code>&amp;</code> eller <code>#</code> i teksten ødelægger kaldet.</p>
-          <p class="where">McRestService.cs:195</p>
+          <p class="where"><a href="#s5-4">&sect;5.4</a> &middot; McRestService.cs:195</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--hi">Høj</span></div>
           <h3>HttpClient genskabes pr. kald</h3>
           <p>Den statiske klient disposes og nyoprettes hver gang der sendes credentials. Socket exhaustion, plus en reel race på det statiske felt.</p>
-          <p class="where">Utility.cs:228–269</p>
+          <p class="where"><a href="#s5-3">&sect;5.3</a> &middot; Utility.cs:228–269</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--md">Medium-høj</span></div>
           <h3>Trådmodel hviler på et tilfælde</h3>
           <p>Ti workers deler en ulåst <code>Queue&lt;int&gt;</code> og rører gridet direkte. Det virker kun fordi ingen await bruger <code>ConfigureAwait(false)</code>.</p>
-          <p class="where">LyricsFinderCore.Process.cs:360</p>
+          <p class="where"><a href="#s5-5">&sect;5.5</a> &middot; LyricsFinderCore.Process.cs:360</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--md">Medium</span></div>
           <h3>Stop afbryder ikke søgningen</h3>
           <p><code>CancellationToken</code> trædes ned til <code>ExtractOneLyricTextAsync</code> og stopper der. HTTP-laget og <code>McWsProxy</code> kender ikke typen.</p>
-          <p class="where">AbstractLyricService.cs:441</p>
+          <p class="where"><a href="#s5-7">&sect;5.7</a> &middot; AbstractLyricService.cs:441</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--md">Medium</span></div>
           <h3>CR+LF overlever ikke konfigurationen</h3>
           <p>Flerlinjede indstillinger bor i XML-<em>attributter</em>. Rå linjeskift dér normaliseres til mellemrum af enhver parser — tabt ved både ny fil og gem.</p>
-          <p class="where">LyricServices/*/App.config</p>
+          <p class="where"><a href="#s5-8">&sect;5.8</a> &middot; LyricServices/*/App.config</p>
         </article>
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--md">Medium</span></div>
           <h3>Ingen CI, ingen hermetiske tests</h3>
           <p>Alle 28 tests rammer live tredjeparts-websites og kræver brugerens egen datafil med rigtige API-tokens.</p>
-          <p class="where">LyricServices/*/UnitTest.cs</p>
+          <p class="where"><a href="#s6">&sect;6</a> &middot; LyricServices/*/UnitTest.cs</p>
         </article>
 
       </div>
@@ -652,7 +672,7 @@ figcaption {
       Konstruktørflaget <code>base(isStandAlone, entryAssembly)</code> er den eneste reelle forskel —
       blandt andet hvilken log4net-konfiguration der læses.</p>
 
-      <h3>Solutions</h3>
+      <h3 id="s1-1"><span class="hnum">1.1</span>Solutions</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Fil</th><th>Indhold</th></tr></thead>
@@ -746,16 +766,14 @@ figcaption {
           </svg>
         </div>
         <figcaption>
-          Afhængigheden er vendt om: de seks tjenester har en compile-time-reference <em>til</em> Core
-          for at kunne arve <code>AbstractLyricService</code>, mens Core aldrig refererer dem — den
-          finder dem først ved runtime med <code>Assembly.LoadFrom</code>. Derfor
-          <code>ProjectDependencies</code> i .sln-filen og de mange <code>xcopy</code>-post-build-events.
-          Tjenesterne bruger desuden <code>Utility</code> og <code>McWsProxy</code> direkte; de kanter er
-          udeladt for læsbarhedens skyld.
+          Afhængigheden er vendt om: de seks tjenester refererer Core på compile-time, mens Core
+          først finder dem ved runtime — se <a href="#s2-2">§2.2</a>. Tjenesterne bruger desuden
+          <code>Utility</code> og <code>McWsProxy</code> direkte; de kanter er udeladt for
+          læsbarhedens skyld.
         </figcaption>
       </figure>
 
-      <h3>Ikke-kode-projekter</h3>
+      <h3 id="s2-1"><span class="hnum">2.1</span>Ikke-kode-projekter</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Projekt</th><th>Rolle</th></tr></thead>
@@ -767,6 +785,15 @@ figcaption {
           </tbody>
         </table>
       </div>
+
+      <h3 id="s2-2"><span class="hnum">2.2</span>Vigtig arkitekturdetalje: lyric-services indlæses dynamisk</h3>
+      <p><code>LyricsFinderCore</code> refererer <strong>ikke</strong> service-projekterne. I stedet
+      scanner <code>InitLyricServicesAsync()</code> (<code>LyricsFinderCore.Private.cs:524</code>)
+      programmappen, kalder <code>Assembly.LoadFrom()</code> på <strong>hver <code>*.dll</code></strong>
+      og instantierer alle typer der nedarver fra <code>AbstractLyricService</code>.
+      Service-projekterne har derimod en compile-time-reference <em>til</em> Core for at kunne arve.
+      Afhængigheden er altså vendt om ved runtime — deraf <code>ProjectDependencies</code> i
+      .sln-filen og de mange <code>xcopy</code>-post-build-events.</p>
     </section>
 
     <!-- ============ 3 ============ -->
@@ -774,7 +801,7 @@ figcaption {
       <div class="sec-head"><span class="num">03</span><h2>Frameworks, pakker og konfiguration</h2></div>
 
       <ul>
-        <li><strong>TFM:</strong> <code>net48</code> overalt. <code>LangVersion 13.0</code>.</li>
+        <li><strong>TFM</strong> (Target Framework Moniker): <code>net48</code> overalt. <code>LangVersion 13.0</code>.</li>
         <li><strong>Signering:</strong> <code>LyricsFinderCore</code>, <code>LyricsFinderPlugin</code>,
           <code>McWsProxy</code>, <code>Utility</code> og <code>MessageInspection</code> er strong-named.
           <code>.snk</code>-filerne ligger i repoet.</li>
@@ -784,7 +811,7 @@ figcaption {
           type-library, som kun kan resolves hvis Media Center er installeret.</li>
       </ul>
 
-      <h3>Runtime-pakker</h3>
+      <h3 id="s3-1"><span class="hnum">3.1</span>Runtime-pakker</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Pakke</th><th class="mono">Version</th><th>Bruges af</th></tr></thead>
@@ -804,7 +831,7 @@ figcaption {
       <code>Microsoft.Extensions.*</code> 10.0.7 → MSAL. Cirka 60 pakker pr. serviceprojekt — alt
       sammen konsekvens af at unit-tests bor i <em>samme assembly</em> som produktionskoden.</p>
 
-      <h3>Central konfiguration</h3>
+      <h3 id="s3-2"><span class="hnum">3.2</span>Central konfiguration</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Fil</th><th>Betydning</th></tr></thead>
@@ -822,7 +849,7 @@ figcaption {
     <section id="s4">
       <div class="sec-head"><span class="num">04</span><h2>Arkitektur og dataflow</h2></div>
 
-      <h3>Opstart</h3>
+      <h3 id="s4-1"><span class="hnum">4.1</span>Opstart</h3>
       <ol class="pipe">
         <li><span class="step-name">InitLoggingAsync()</span><span class="step-desc">vælger Standalone- eller Plugin-log4net-config</span></li>
         <li><span class="step-name">LyricsFinderCoreConfigurationSectionHandler.Init()</span><span class="step-desc">peger på den assembly hvis <code>.config</code> skal læses</span></li>
@@ -832,7 +859,7 @@ figcaption {
         <li><span class="step-name">ReloadPlaylistAsync(isReconnect: true)</span><span class="step-desc">forbind, hent playliste, fyld gridet</span></li>
       </ol>
 
-      <h3>Forbindelse til Media Center</h3>
+      <h3 id="s4-2"><span class="hnum">4.2</span>Forbindelse til Media Center</h3>
       <p><code>McWsProxy</code> er en <strong>statisk</strong> klasse over MC's REST-API (MCWS, default
       <code>http://localhost:52199/MCWS/v1</code>).</p>
       <pre>GET /Alive          <span class="cmt">retry op til MaxMcWsConnectAttempts, 500 ms pause</span>
@@ -840,7 +867,7 @@ figcaption {
 GET /Authenticate   <span class="cmt">Basic auth → McWsToken gemmes statisk</span>
 GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-strengen</span></pre>
 
-      <h3>Søgeforløbet</h3>
+      <h3 id="s4-3"><span class="hnum">4.3</span>Søgeforløbet</h3>
       <p><code>SearchAllProcessAsync</code> opretter <code>MaxQueueLength</code> (default 10) workers
       over én delt <code>Queue&lt;int&gt;</code>. Hver worker kører for sit element:</p>
 
@@ -858,7 +885,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
         (<code>LyricsFinderCore.Private.cs:879</code>), som skriver teksten tilbage til Media Center.</p>
       </div>
 
-      <h3>Persistering</h3>
+      <h3 id="s4-4"><span class="hnum">4.4</span>Persistering</h3>
       <p>Al brugerdata — MCWS-URL, bruger og password, vinduespositioner, gridkolonner og
       <strong>hele service-listen med tokens og tællere</strong> — ligger i én XML-fil,
       <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>, serialiseret med
@@ -873,7 +900,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       <p class="lead">Sorteret efter hvor meget de betyder i praksis.</p>
 
       <div class="risk risk--hi">
-        <h3>XmlSerializer med knownTypes → assembly-læk <span class="chip chip--hi">Høj</span></h3>
+        <h3 id="s5-1"><span class="hnum">5.1</span>XmlSerializer med knownTypes → assembly-læk <span class="chip chip--hi">Høj</span></h3>
         <p><code>Serialize.ToXmlWithNewlines</code> og <code>XmlDeserializeFromString</code> kalder
         <code>new XmlSerializer(type, knownTypes)</code>. <strong>Kun</strong> overloads
         <code>XmlSerializer(Type)</code> og <code>XmlSerializer(Type, string)</code> cacher den
@@ -889,7 +916,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       </div>
 
       <div class="risk risk--hi">
-        <h3>Tællere gemmes muligvis aldrig <span class="chip chip--hi">Høj</span></h3>
+        <h3 id="s5-2"><span class="hnum">5.2</span>Tællere gemmes muligvis aldrig <span class="chip chip--hi">Høj</span></h3>
         <p>I <code>LyricSearch.SearchAsync</code> (<code>LyricSearch.cs:128</code>)
         <strong>overskrives parameteren</strong> <code>lyricsFinderData</code> med et frisk objekt fra
         disk. Derefter lægges klonernes tællere tilbage på <code>service</code>-objekterne, som
@@ -900,7 +927,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       </div>
 
       <div class="risk risk--hi">
-        <h3>HttpClient genskabes ved hvert autentificeret kald <span class="chip chip--hi">Høj</span></h3>
+        <h3 id="s5-3"><span class="hnum">5.3</span>HttpClient genskabes ved hvert autentificeret kald <span class="chip chip--hi">Høj</span></h3>
         <p><code>Utility.CreateHttpClient</code> kaldes fra <code>HttpGetStringAsync</code> og
         <code>HttpGetImageAsync</code> <strong>hver gang</strong> der sendes brugernavn og password.
         Den <code>Dispose()</code>'r den eksisterende statiske <code>HttpClient</code> og laver en ny.</p>
@@ -916,7 +943,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       </div>
 
       <div class="risk risk--hi">
-        <h3>Ingen URL-encoding i MCWS-kald <span class="chip chip--hi">Høj</span></h3>
+        <h3 id="s5-4"><span class="hnum">5.4</span>Ingen URL-encoding i MCWS-kald <span class="chip chip--hi">Høj</span></h3>
         <p><code>McRestService.CreateRequestUrl</code> bygger query-strenge med ren
         strenginterpolation. Der findes <strong>ikke ét eneste</strong> kald til
         <code>Uri.EscapeDataString</code> eller <code>HttpUtility.UrlEncode</code> i hele kodebasen.
@@ -930,7 +957,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       </div>
 
       <div class="risk risk--md">
-        <h3>Trådmodellen holder kun ved et tilfælde <span class="chip chip--md">Medium-høj</span></h3>
+        <h3 id="s5-5"><span class="hnum">5.5</span>Trådmodellen holder kun ved et tilfælde <span class="chip chip--md">Medium-høj</span></h3>
         <p><code>SearchAllProcessWorkerAsync</code> gør tre ting der normalt er ulovlige:</p>
         <ul>
           <li><code>Queue&lt;int&gt;.Dequeue()</code> fra ti samtidige workers uden lås —
@@ -949,7 +976,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       </div>
 
       <div class="risk risk--md">
-        <h3>WhenAny(predicate) sluger ikke undtagelser som forventet <span class="chip chip--md">Medium</span></h3>
+        <h3 id="s5-6"><span class="hnum">5.6</span>WhenAny(predicate) sluger ikke undtagelser som forventet <span class="chip chip--md">Medium</span></h3>
         <p><code>AsyncUtility.WhenAny</code> (<code>AsyncUtility.cs:378</code>) kalder
         <code>condition(task)</code>, og prædikatet i <code>LyricSearch</code> er
         <code>t =&gt; t.Result.LyricResult == …</code>. På en fejlet task kaster <code>.Result</code> en
@@ -961,7 +988,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       </div>
 
       <div class="risk risk--md">
-        <h3>CancellationToken når aldrig HTTP-laget <span class="chip chip--md">Medium</span></h3>
+        <h3 id="s5-7"><span class="hnum">5.7</span>CancellationToken når aldrig HTTP-laget <span class="chip chip--md">Medium</span></h3>
         <p>Token'et trædes pænt gennem hele det øverste lag og stopper så brat. Kæden er intakt
         hele vejen ned:</p>
         <pre>SearchAllProcessWorkerAsync
@@ -1000,7 +1027,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       </div>
 
       <div class="risk risk--md">
-        <h3>CR+LF overlever ikke konfigurationsfilen <span class="chip chip--md">Medium</span></h3>
+        <h3 id="s5-8"><span class="hnum">5.8</span>CR+LF overlever ikke konfigurationsfilen <span class="chip chip--md">Medium</span></h3>
         <p>Flerlinjede værdier mister deres linjeskift. Det rammer både når
         <code>LyricsFinder.xml</code> oprettes første gang, og ved efterfølgende gem.</p>
 
@@ -1030,7 +1057,7 @@ Token required, may be obtained from:&amp;#xD;
         tidligere og er blevet committet, og de tre <code>App.config</code>-filer er dermed selv
         blevet den korrupte kilde.</p>
 
-        <h4>Tællingen bekræfter at skrivestien selv er sund</h4>
+        <h4 id="s5-8-1"><span class="hnum">5.8.1</span>Tællingen bekræfter at skrivestien selv er sund</h4>
         <p>En optælling af den aktuelle datafil
         (<code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>, 9257 bytes):</p>
 
@@ -1056,7 +1083,7 @@ Token required, may be obtained from:&amp;#xD;
         fejlen ligger udelukkende opstrøms i <code>App.config</code>-attributterne. Det er også
         grunden til at en rettelse i serialiseringskoden ikke vil hjælpe — kilden skal repareres.</p>
 
-        <h4>Konsekvens for de to symptomer</h4>
+        <h4 id="s5-8-2"><span class="hnum">5.8.2</span>Konsekvens for de to symptomer</h4>
         <ul>
           <li><strong>Ny fil</strong> — <code>RefreshServiceSettingsAsync</code> seeder
             <code>Comment</code>, <code>CreditTextFormat</code> m.fl. fra <code>App.config</code> via
@@ -1072,7 +1099,7 @@ Token required, may be obtained from:&amp;#xD;
         nuværende datafil (<code>&amp;#xD;</code> på linje 125–133), men den ligger i samme
         attribut-lag og er ét fladningsuheld fra at mangle sine linjeskift i alt hvad der er gemt.</p>
 
-        <h4>Retningen på en rettelse</h4>
+        <h4 id="s5-8-3"><span class="hnum">5.8.3</span>Retningen på en rettelse</h4>
         <p>Den hurtige udvej er at bruge <code>&amp;#xD;&amp;#xA;</code> i alle
         <code>App.config</code>-attributter, som MusiXmatch allerede gør. Det virker, men
         entiteterne skal vedligeholdes i hånden for evigt — en udvikler der trykker Enter i en
@@ -1140,7 +1167,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
       </div>
 
       <div class="risk risk--md">
-        <h3>To uens serialiseringsstier <span class="chip chip--md">Medium · bør verificeres</span></h3>
+        <h3 id="s5-9"><span class="hnum">5.9</span>To uens serialiseringsstier <span class="chip chip--md">Medium · bør verificeres</span></h3>
         <p>Beslægtet med ovenstående, og værd at se på i samme omgang. <code>Serialize</code> har to
         skrivestier der ikke bruger den samme serializer:</p>
         <ul>
@@ -1162,7 +1189,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
         “ændringer bliver ikke gemt”, men jeg har ikke verificeret hvilke felter der reelt afviger.</p>
       </div>
 
-      <h3>Sikkerhed</h3>
+      <h3 id="s5-10"><span class="hnum">5.10</span>Sikkerhed</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Emne</th><th>Vurdering</th></tr></thead>
@@ -1195,7 +1222,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
         </table>
       </div>
 
-      <h3>Byggeopsætning</h3>
+      <h3 id="s5-11"><span class="hnum">5.11</span>Byggeopsætning</h3>
       <ul>
         <li><strong>Hardkodede Visual Studio-stier.</strong> <code>BuildRelease.subroutine.cmd:17–18</code>
           leder kun i <code>D:\Program Files [(x86)]\Microsoft Visual Studio\{2017,2019,2022,2026}\Community\…</code>.
@@ -1227,7 +1254,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
           logikken ser omvendt ud i forhold til kommentaren “Waiting for the build completion”.</li>
       </ul>
 
-      <h3>Øvrige code smells</h3>
+      <h3 id="s5-12"><span class="hnum">5.12</span>Øvrige code smells</h3>
       <ul>
         <li><strong><code>LyricsFinderCore</code> er en oplagt kandidat til opdeling</strong> —
           1369 + 1296 + 486 linjer i én partial klasse, der blander UI, MCWS-orkestrering, filsystem og
@@ -1310,7 +1337,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
           fjerner <code>Microsoft.VisualStudio.TestPlatform*</code> manuelt.</li>
       </ol>
 
-      <h4>Helt utestet</h4>
+      <h3 id="s6-1"><span class="hnum">6.1</span>Helt utestet</h3>
       <div class="tablewrap">
         <table>
           <thead><tr><th>Område</th><th>Kommentar</th></tr></thead>
@@ -1339,7 +1366,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
     <section id="s7">
       <div class="sec-head"><span class="num">07</span><h2>Build, test og kørsel</h2></div>
 
-      <h3>Forudsætninger</h3>
+      <h3 id="s7-1"><span class="hnum">7.1</span>Forudsætninger</h3>
       <ul>
         <li>Windows, Visual Studio 2022 eller nyere med workloaden <strong>.NET desktop development</strong>
           — klassiske csproj'er og WinForms-designer. <code>dotnet build</code> alene er <em>ikke</em> nok.</li>
@@ -1349,7 +1376,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
         <li>Debug-builds sætter <code>RegisterForComInterop</code> → <strong>kør Visual Studio som administrator</strong>.</li>
       </ul>
 
-      <h3>Restore og build</h3>
+      <h3 id="s7-2"><span class="hnum">7.2</span>Restore og build</h3>
       <p>NuGet-restore skal ske med <code>nuget.exe</code> eller <code>msbuild -t:Restore</code>, ikke
       <code>dotnet restore</code> — projekterne bruger <code>packages.config</code>-formatet.</p>
       <pre><span class="cmt"># fra repo-roden</span>
@@ -1372,7 +1399,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
         output-mapper.</p>
       </div>
 
-      <h3>Tests</h3>
+      <h3 id="s7-3"><span class="hnum">7.3</span>Tests</h3>
       <pre>vstest.console.exe `
   LyricsFinder\LyricServices\CajunLyricsService\bin\Debug\CajunLyricsService.dll `
   LyricsFinder\LyricServices\LololyricsService\bin\Debug\LololyricsService.dll `
@@ -1384,7 +1411,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
       eksisterende <code>LyricsFinder.xml</code>, og gyldige tokens for Stands4 og MusiXmatch. Tests i
       CI vil fejle.</p>
 
-      <h3>Kørsel</h3>
+      <h3 id="s7-4"><span class="hnum">7.4</span>Kørsel</h3>
       <pre>LyricsFinder\LyricsFinderExe\bin\Debug\LyricsFinderExe.exe</pre>
       <p>Første start viser <code>OptionForm</code>, hvor MCWS-URL, Access Key, brugernavn og password
       skal udfyldes. Access Key findes i Media Center under <em>Tools → Options → Media Network</em>.</p>
@@ -1392,7 +1419,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
       <code>HKLM\SOFTWARE\J. River\Media Center &lt;version&gt;\Plugins\Interface\LyricsFinder</code>
       — brug installeren (<code>Installation\Output\Setup.exe</code>) frem for at gøre det i hånden.</p>
 
-      <h3>Logs og data</h3>
+      <h3 id="s7-5"><span class="hnum">7.5</span>Logs og data</h3>
       <pre>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml                    <span class="cmt">al brugerdata</span>
 %USERPROFILE%\Documents\LyricsFinder\LyricsFinder.Standalone.log         <span class="cmt">info</span>
 %USERPROFILE%\Documents\LyricsFinder\LyricsFinder.Standalone.error.log   <span class="cmt">warn+</span>

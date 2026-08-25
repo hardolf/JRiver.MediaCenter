@@ -363,3 +363,6 @@ MessageInspection.xml
 *.bak
 *.dll
 *.exe
+
+# Exception: checked-in interop assembly generated from the JRiver Media Center type library
+!LyricsFinder/Lib/Interop.MediaCenter.dll
