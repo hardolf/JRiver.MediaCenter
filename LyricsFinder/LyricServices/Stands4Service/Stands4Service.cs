@@ -416,9 +416,9 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
             if (IsConfigurationFileUsed)
             {
-                var quotaResetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue(Settings, "QuotaResetTimeZone"));
+                var quotaResetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(ServiceSettingsValue("QuotaResetTimeZone"));
 
-                QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Parse(ServiceSettingsValue(Settings, "QuotaResetTime"), CultureInfo.CurrentCulture), quotaResetTimeZone);
+                QuotaResetTime = new ServiceDateTimeWithZone(DateTime.Parse(ServiceSettingsValue("QuotaResetTime"), CultureInfo.CurrentCulture), quotaResetTimeZone);
             }
 
             CreateDisplayProperties();

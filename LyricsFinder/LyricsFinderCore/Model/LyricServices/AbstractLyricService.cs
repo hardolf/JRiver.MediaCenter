@@ -14,6 +14,7 @@ using System.ServiceModel.Configuration;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 
 using MediaCenter.LyricsFinder.Model.Helpers;
@@ -230,6 +231,20 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// </value>
         [XmlIgnore]
         protected virtual KeyValueConfigurationCollection Settings { get; private set; }
+
+        /// <summary>
+        /// Gets the lyric service settings, read from both supported forms in the service configuration file.
+        /// </summary>
+        /// <value>
+        /// The service settings, keyed case insensitively by setting name.
+        /// </value>
+        /// <remarks>
+        /// Unlike <see cref="Settings"/>, which only ever sees the <c>appSettings</c> section, this dictionary also
+        /// carries the settings written as child elements of a <c>lyricService</c> section. See
+        /// <see cref="ReadServiceSettings(Assembly)"/>.
+        /// </remarks>
+        [XmlIgnore]
+        protected virtual IReadOnlyDictionary<string, string> ServiceSettings { get; private set; }
 
         /// <summary>
         /// Gets or sets the timeout in milliseconds.
@@ -624,18 +639,19 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
             if (IsConfigurationFileUsed)
             {
                 Settings = config.AppSettings.Settings;
+                ServiceSettings = ReadServiceSettings(assy);
 
-                Comment = ServiceSettingsValue(Settings, "Comment");
+                Comment = ServiceSettingsValue("Comment");
 
                 Credit = new CreditType
                 {
-                    Company = ServiceSettingsValue(Settings, "Company"),
+                    Company = ServiceSettingsValue("Company"),
                     CreditDate = DateTime.Now,
-                    CreditTextFormat = ServiceSettingsValue(Settings, "CreditTextFormat"),
-                    CreditUrl = new UriBuilder(ServiceSettingsValue(Settings, "CreditUrl")).Uri,
-                    DateFormat = ServiceSettingsValue(Settings, "DateFormat"),
-                    ServiceName = ServiceSettingsValue(Settings, "ServiceName"),
-                    ServiceUrl = new UriBuilder(ServiceSettingsValue(Settings, "ServiceUrl")).Uri,
+                    CreditTextFormat = ServiceSettingsValue("CreditTextFormat"),
+                    CreditUrl = new UriBuilder(ServiceSettingsValue("CreditUrl")).Uri,
+                    DateFormat = ServiceSettingsValue("DateFormat"),
+                    ServiceName = ServiceSettingsValue("ServiceName"),
+                    ServiceUrl = new UriBuilder(ServiceSettingsValue("ServiceUrl")).Uri,
                 };
             }
 
@@ -697,6 +713,94 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
 
 
         /// <summary>
+        /// Reads the lyric service settings from the service configuration file.
+        /// </summary>
+        /// <param name="assembly">The lyric service assembly.</param>
+        /// <returns>
+        /// Dictionary of the settings, keyed case insensitively by setting name.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">assembly</exception>
+        /// <exception cref="FileNotFoundException">Lyric service configuration file not found: \"{configPath}\"</exception>
+        /// <remarks>
+        /// <para>Two forms are supported, and both may appear in the same file:</para>
+        /// <para>
+        /// The attribute form, <c>&lt;appSettings&gt;&lt;add key="Comment" value="…" /&gt;&lt;/appSettings&gt;</c>.
+        /// A line break written literally in an attribute value is replaced by a single space by any conforming
+        /// parser (XML 1.0 §3.3.3), so a multi-line value must be written with the <c>&amp;#xD;&amp;#xA;</c>
+        /// character references. The parser decodes those, so the line breaks are intact by the time we see them.
+        /// </para>
+        /// <para>
+        /// The element form, <c>&lt;lyricService&gt;&lt;Comment&gt;…&lt;/Comment&gt;&lt;/lyricService&gt;</c>.
+        /// Element content keeps a literal line break, but the parser normalises CR+LF to a single LF
+        /// (XML 1.0 §2.11), hence the <see cref="SharedComponents.Utility.LfToCrLf(string)"/> call. Note that the
+        /// indentation of a continuation line becomes part of the value, so a multi-line value must start in
+        /// column 1.
+        /// </para>
+        /// <para>A setting present in both forms takes its value from the element form.</para>
+        /// </remarks>
+        protected static Dictionary<string, string> ReadServiceSettings(Assembly assembly)
+        {
+            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+
+            var configPath = $"{assembly.Location}.config";
+
+            if (!File.Exists(configPath))
+                throw new FileNotFoundException($"Lyric service configuration file not found: \"{configPath}\"", configPath);
+
+            var ret = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var doc = new XmlDocument { XmlResolver = null };
+            var readerSettings = new XmlReaderSettings { XmlResolver = null, DtdProcessing = DtdProcessing.Prohibit };
+
+            using (var reader = XmlReader.Create(configPath, readerSettings))
+            {
+                doc.Load(reader);
+            }
+
+            foreach (XmlNode node in doc.SelectNodes("/configuration/appSettings/add[@key]"))
+            {
+                var valueAttribute = node.Attributes["value"];
+
+                ret[node.Attributes["key"].Value] = (valueAttribute == null) ? string.Empty : valueAttribute.Value;
+            }
+
+            foreach (XmlNode node in doc.SelectNodes("/configuration/lyricService/*"))
+            {
+                ret[node.Name] = node.InnerText.LfToCrLf();
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Gets the lyric service settings value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>
+        /// String representing the value of the setting.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">key</exception>
+        /// <exception cref="InvalidOperationException">The lyric service settings are not loaded yet...</exception>
+        /// <exception cref="IndexOutOfRangeException">Configuration value for key '{key}</exception>
+        /// <remarks>
+        /// Reads from <see cref="ServiceSettings"/> and therefore sees both configuration file forms, unlike the
+        /// <see cref="ServiceSettingsValue(KeyValueConfigurationCollection, string)"/> overload.
+        /// </remarks>
+        protected string ServiceSettingsValue(string key)
+        {
+            if (key.IsNullOrEmptyTrimmed()) throw new ArgumentNullException(nameof(key));
+
+            if (ServiceSettings == null)
+                throw new InvalidOperationException($"The lyric service settings are not loaded yet, cannot read the key '{key}'.");
+
+            if (!ServiceSettings.TryGetValue(key, out var ret))
+                throw new IndexOutOfRangeException($"Configuration value for key '{key}' not found.");
+
+            return ret;
+        }
+
+
+        /// <summary>
         /// Gets the lyric service settings value.
         /// </summary>
         /// <param name="settings">The settings.</param>
@@ -707,6 +811,10 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
         /// <exception cref="ArgumentNullException">settings</exception>
         /// <exception cref="IndexOutOfRangeException">Configuration value for key '{key}</exception>
         /// <exception cref="ArgumentException">Argument '{nameof(key)}</exception>
+        /// <remarks>
+        /// Only sees the <c>appSettings</c> section. Prefer <see cref="ServiceSettingsValue(string)"/>, which also
+        /// sees settings written as child elements of a <c>lyricService</c> section.
+        /// </remarks>
         protected static string ServiceSettingsValue(
             KeyValueConfigurationCollection settings,
             string key)

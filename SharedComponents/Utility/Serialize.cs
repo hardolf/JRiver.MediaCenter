@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,10 +8,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-
-/*
- * Not used in this solution version.
- */
 
 
 namespace MediaCenter.SharedComponents
@@ -24,6 +21,41 @@ namespace MediaCenter.SharedComponents
     /// </remarks>
     public static class Serialize
     {
+
+        /// <summary>
+        /// Cache of the <see cref="XmlSerializer"/> instances, keyed by the serialized type and its known types.
+        /// </summary>
+        /// <remarks>
+        /// Only the <see cref="XmlSerializer(Type)"/> and <see cref="XmlSerializer(Type, string)"/> constructors
+        /// reuse the dynamically generated serialization assembly. Every other overload - including the ones
+        /// taking known types - generates a fresh assembly per call, and such an assembly can never be unloaded.
+        /// Caching the serializer instances here is what keeps repeated load/save rounds from leaking assemblies.
+        /// </remarks>
+        private static readonly ConcurrentDictionary<string, XmlSerializer> _serializerCache = new ConcurrentDictionary<string, XmlSerializer>();
+
+
+        /// <summary>
+        /// Gets a cached serializer for the specified type and known types, creating it if necessary.
+        /// </summary>
+        /// <param name="type">The type to serialize or deserialize.</param>
+        /// <param name="knownTypes">The known types. May be null or empty.</param>
+        /// <returns>A shared <see cref="XmlSerializer"/> instance.</returns>
+        /// <exception cref="ArgumentNullException">type</exception>
+        private static XmlSerializer GetSerializer(Type type, Type[] knownTypes)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            var hasKnownTypes = (knownTypes != null) && (knownTypes.Length > 0);
+            var key = hasKnownTypes
+                ? type.AssemblyQualifiedName + "|" + string.Join("|", knownTypes.Select(t => t.AssemblyQualifiedName))
+                : type.AssemblyQualifiedName;
+
+            // An empty known type array would still hit the non-caching constructor overload, hence the branch.
+            return _serializerCache.GetOrAdd(key, _ => hasKnownTypes
+                ? new XmlSerializer(type, knownTypes)
+                : new XmlSerializer(type));
+        }
+
 
         /// <summary>
         /// Patches the namespace if missing from the root element.
@@ -50,14 +82,15 @@ namespace MediaCenter.SharedComponents
         /// <summary>
         /// Serializes an object to XML string, preserving CR+LF.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
+        /// <param name="obj">The object instance.</param>
+        /// <param name="type">The type to serialize the object as.</param>
+        /// <param name="knownTypes">The known types. May be null or empty.</param>
         /// <returns>Serialized XML string.</returns>
-        public static string ToXmlWithNewlines<T>(this T obj)
+        private static string ToXmlWithNewlinesCore(object obj, Type type, Type[] knownTypes)
         {
             if (obj == null) return string.Empty;
 
-            var serializer = new XmlSerializer(typeof(T));
+            var serializer = GetSerializer(type, knownTypes);
             var settings = new XmlWriterSettings
             {
                 Indent = true,
@@ -66,12 +99,26 @@ namespace MediaCenter.SharedComponents
             };
 
             var sb = new StringBuilder();
+
             using (var stringWriter = new StringWriter(sb))
             using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
             {
                 serializer.Serialize(xmlWriter, obj);
             }
+
             return sb.ToString();
+        }
+
+
+        /// <summary>
+        /// Serializes an object to XML string, preserving CR+LF.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns>Serialized XML string.</returns>
+        public static string ToXmlWithNewlines<T>(this T obj)
+        {
+            return ToXmlWithNewlinesCore(obj, typeof(T), null);
         }
 
 
@@ -82,25 +129,14 @@ namespace MediaCenter.SharedComponents
         /// <param name="obj"></param>
         /// <param name="knownTypes"></param>
         /// <returns>Serialized XML string.</returns>
+        /// <remarks>
+        /// Note that <typeparamref name="T"/> is inferred from the static type of <paramref name="obj"/>, which is
+        /// not necessarily its runtime type. Use <see cref="XmlSerializeToString(object, Type[])"/> when the
+        /// concrete type is the one that should be serialized.
+        /// </remarks>
         public static string ToXmlWithNewlines<T>(this T obj, params Type[] knownTypes)
         {
-            if (obj == null) return string.Empty;
-
-            var serializer = new XmlSerializer(typeof(T), knownTypes);  // ← Tilføjet knownTypes
-            var settings = new XmlWriterSettings
-            {
-                Indent = true,
-                NewLineHandling = NewLineHandling.Entitize,
-                Encoding = Encoding.UTF8
-            };
-
-            var sb = new StringBuilder();
-            using (var stringWriter = new StringWriter(sb))
-            using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
-            {
-                serializer.Serialize(xmlWriter, obj);
-            }
-            return sb.ToString();
+            return ToXmlWithNewlinesCore(obj, typeof(T), knownTypes);
         }
 
 
@@ -198,10 +234,7 @@ namespace MediaCenter.SharedComponents
             object ret;
             //var sb = new StringBuilder(xml.LfToCrLf());
             var sb = new StringBuilder(xml);
-            var serializer = new XmlSerializer(type, knownTypes);
-
-            if (xmlElementEventHandler != null)
-                serializer.UnknownElement += xmlElementEventHandler;
+            var serializer = GetSerializer(type, knownTypes);
 
             if (replaceDictionary != null)
             {
@@ -211,23 +244,45 @@ namespace MediaCenter.SharedComponents
                 }
             }
 
-            StringReader sr = null;
-            try
-            {
-                sr = new StringReader(sb.ToString());
-                using (var xr = XmlReader.Create(sr))
-                {
-                    ret = serializer.Deserialize(xr);
-                }
+            var text = sb.ToString();
 
-            }
-            finally
+            if (xmlElementEventHandler == null)
+                ret = Deserialize(serializer, text);
+            else
             {
-                if (sr != null)
-                    sr.Dispose();
+                // The serializer instance is shared through the cache, so the handler must be attached and
+                // detached around this single call, and no other thread may use the instance meanwhile.
+                lock (serializer)
+                {
+                    serializer.UnknownElement += xmlElementEventHandler;
+
+                    try
+                    {
+                        ret = Deserialize(serializer, text);
+                    }
+                    finally
+                    {
+                        serializer.UnknownElement -= xmlElementEventHandler;
+                    }
+                }
             }
 
             return ret;
+        }
+
+
+        /// <summary>
+        /// Deserializes an XML string with the specified serializer.
+        /// </summary>
+        /// <param name="serializer">The serializer.</param>
+        /// <param name="xml">The XML string.</param>
+        /// <returns>The deserialized object.</returns>
+        private static object Deserialize(XmlSerializer serializer, string xml)
+        {
+            using var stringReader = new StringReader(xml);
+            using var xmlReader = XmlReader.Create(stringReader);
+
+            return serializer.Deserialize(xmlReader);
         }
 
 
@@ -255,7 +310,8 @@ namespace MediaCenter.SharedComponents
             });
 
             var objectType = objectInstance.GetType();
-            new XmlSerializer(objectType, knownTypes).Serialize(xmlWriter, objectInstance);
+
+            GetSerializer(objectType, knownTypes).Serialize(xmlWriter, objectInstance);
         }
 
 
@@ -265,13 +321,18 @@ namespace MediaCenter.SharedComponents
         /// <param name="objectInstance">The object instance.</param>
         /// <param name="knownTypes">The known types.</param>
         /// <returns>XML string.</returns>
+        /// <exception cref="System.ArgumentNullException">objectInstance</exception>
+        /// <remarks>
+        /// The concrete runtime type of <paramref name="objectInstance"/> is serialized, so that this method and
+        /// <see cref="XmlSerializeToFile(object, string, Type[])"/> use one and the same serializer.
+        /// </remarks>
         public static string XmlSerializeToString(this object objectInstance, params Type[] knownTypes)
         {
             if (objectInstance == null) throw new ArgumentNullException(nameof(objectInstance));
 
-            var ret = ToXmlWithNewlines(objectInstance, knownTypes);
+            var ret = ToXmlWithNewlinesCore(objectInstance, objectInstance.GetType(), knownTypes);
 
-            return ret.ToString();
+            return ret;
         }
 
 
@@ -290,7 +351,7 @@ namespace MediaCenter.SharedComponents
             if (objectInstance == null) throw new ArgumentNullException(nameof(objectInstance));
 
             var ret = new StringBuilder();
-            var serializer = new XmlSerializer(objectInstance.GetType(), knownTypes);
+            var serializer = GetSerializer(objectInstance.GetType(), knownTypes);
 
             using (var writer = new StringWriterUTF8(ret))
             {
