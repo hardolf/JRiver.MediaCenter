@@ -22,6 +22,8 @@
   --sev-hi-bg:  #F3DFDB;
   --sev-md-bg:  #F1E7CE;
   --sev-lo-bg:  #DEE7EB;
+  --done:       #0A6E85;
+  --done-bg:    #D6EBF1;
   --shadow:     0 1px 2px rgba(19,28,26,.05), 0 8px 24px -16px rgba(19,28,26,.28);
 
   --f-display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
@@ -51,6 +53,8 @@
     --sev-hi-bg:  #33201C;
     --sev-md-bg:  #2E2717;
     --sev-lo-bg:  #1B282D;
+    --done:       #57CFE6;
+    --done-bg:    #113039;
     --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
   }
 }
@@ -73,6 +77,8 @@
   --sev-hi-bg:  #33201C;
   --sev-md-bg:  #2E2717;
   --sev-lo-bg:  #1B282D;
+  --done:       #57CFE6;
+  --done-bg:    #113039;
   --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
 }
 
@@ -368,6 +374,7 @@ strong { font-weight: 600; color: var(--ink); }
 .chip--hi { color: var(--sev-hi); background: var(--sev-hi-bg); }
 .chip--md { color: var(--sev-md); background: var(--sev-md-bg); }
 .chip--lo { color: var(--sev-lo); background: var(--sev-lo-bg); }
+.chip--done { color: var(--done); background: var(--done-bg); }
 
 /* ---------- risk entries ---------- */
 
@@ -492,6 +499,9 @@ figcaption {
   border-radius: 0 3px 3px 0;
 }
 .note p { margin: 0; font-size: .95rem; max-width: none; }
+.note p + p { margin-top: .6rem; }
+.note--done { background: var(--done-bg); border-left-color: var(--done); }
+.note--done strong { color: var(--done); }
 
 /* ---------- priorities ---------- */
 
@@ -602,7 +612,7 @@ figcaption {
         </article>
 
         <article class="finding">
-          <div class="finding__top"><span class="chip chip--hi">Høj</span></div>
+          <div class="finding__top"><span class="chip chip--hi">Høj</span><span class="chip chip--done">Løst 2026-08-26</span></div>
           <h3>Ingen URL-encoding</h3>
           <p>Hele sangteksten interpoleres direkte ind i en GET-query. Et <code>&amp;</code> eller <code>#</code> i teksten ødelægger kaldet.</p>
           <p class="where"><a href="#s5-4">&sect;5.4</a> &middot; McRestService.cs:195</p>
@@ -943,7 +953,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       </div>
 
       <div class="risk risk--hi">
-        <h3 id="s5-4"><span class="hnum">5.4</span>Ingen URL-encoding i MCWS-kald <span class="chip chip--hi">Høj</span></h3>
+        <h3 id="s5-4"><span class="hnum">5.4</span>Ingen URL-encoding i MCWS-kald <span class="chip chip--hi">Høj</span> <span class="chip chip--done">Løst 2026-08-26</span></h3>
         <p><code>McRestService.CreateRequestUrl</code> bygger query-strenge med ren
         strenginterpolation. Der findes <strong>ikke ét eneste</strong> kald til
         <code>Uri.EscapeDataString</code> eller <code>HttpUtility.UrlEncode</code> i hele kodebasen.
@@ -954,6 +964,24 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
         bliver enten afkortet eller fejltolket, og fler-KB tekster risikerer at overskride serverens
         URL-længdegrænse. <code>System.Web</code> er <code>using</code>'et i filen, men
         <code>HttpUtility</code> bruges aldrig. Skrivning af lyrics burde være POST med body.</p>
+        <div class="note note--done">
+          <p><strong>Løst 2026-08-26.</strong> En ny <code>UrlEncoded()</code>-extension i
+          <code>SharedComponents/Utility/Utility.cs</code> anvendes nu på hver interpoleret
+          strengværdi i <code>McRestService.CreateRequestUrl</code> — <code>McWsToken</code>
+          samt <code>field</code>/<code>value</code> i <code>SetInfo</code> og
+          <code>GetInfo</code>/<code>GetInfoFull</code>. Det ubrugte
+          <code>using System.Web</code> er fjernet. Verificeret mod en kørende
+          Media Center-proces.</p>
+          <p>To præciseringer til teksten ovenfor: <code>Uri</code>/<code>UriBuilder</code>
+          escapede allerede mellemrum, CR+LF og ikke-ASCII, så det var reelt kun
+          <code>&amp;</code>, <code>#</code>, <code>+</code> og bogstavelige
+          <code>%XX</code>-sekvenser der var i stykker. Og <code>HttpUtility</code> var aldrig
+          et muligt valg — <code>McWsProxy.csproj</code> har ingen
+          <code>System.Web</code>-reference. Samme rå interpolation findes stadig i
+          lyric-tjenesterne (<code>CajunLyricsService</code>, <code>LololyricsService</code>,
+          <code>MusiXmatchService</code>, <code>Stands4Service</code>) — bevidst uden for
+          §5.4&rsquo;s scope.</p>
+        </div>
       </div>
 
       <div class="risk risk--md">

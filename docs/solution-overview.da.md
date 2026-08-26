@@ -245,6 +245,19 @@ værdier over ca. 214 sekunder.
 
 ### 5.4 Ingen URL-encoding i MCWS-kald (høj)
 
+> <span style="color:#0A6E85">**&#10004; Løst 2026-08-26.**</span> En ny `UrlEncoded()`-extension i
+> `SharedComponents/Utility/Utility.cs` anvendes nu på hver interpoleret strengværdi i
+> `McRestService.CreateRequestUrl` — `McWsToken` samt `field`/`value` i `SetInfo` og
+> `GetInfo`/`GetInfoFull`. Det ubrugte `using System.Web` er fjernet. Verificeret mod en
+> kørende Media Center-proces.
+>
+> To præciseringer til teksten nedenfor: `Uri`/`UriBuilder` escapede allerede mellemrum, CR+LF
+> og ikke-ASCII, så det var reelt kun `&`, `#`, `+` og bogstavelige `%XX`-sekvenser der var i
+> stykker. Og `HttpUtility` var aldrig et muligt valg — `McWsProxy.csproj` har ingen
+> `System.Web`-reference. Samme rå interpolation findes stadig i lyric-tjenesterne
+> (`CajunLyricsService`, `LololyricsService`, `MusiXmatchService`, `Stands4Service`) — bevidst
+> uden for §5.4's scope.
+
 `McRestService.CreateRequestUrl` bygger query-strenge med ren strenginterpolation. Der findes
 **ikke ét eneste** kald til `Uri.EscapeDataString` / `HttpUtility.UrlEncode` i hele
 kodebasen. Værst i:
@@ -690,6 +703,7 @@ Slet `LyricsFinder.xml` for at nulstille til fabriksindstillinger (services gens
 ## 8. Hvis jeg skulle prioritere
 
 1. **URL-encoding i `McRestService`** (§5.4) — lille rettelse, direkte brugersynlig fejl.
+   <span style="color:#0A6E85">**&#10004; Løst 2026-08-26.**</span>
 2. **Cache `XmlSerializer`-instanserne** (§5.1) og fjern `Load`+`Save` pr. sang fra
    `LyricSearch`'s `finally` — det er både lækagen og det største performance-problem.
 3. **Verificér tællerlogikken** i `LyricSearch.SearchAsync` (§5.2).

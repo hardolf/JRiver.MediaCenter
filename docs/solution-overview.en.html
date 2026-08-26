@@ -22,6 +22,8 @@
   --sev-hi-bg:  #F3DFDB;
   --sev-md-bg:  #F1E7CE;
   --sev-lo-bg:  #DEE7EB;
+  --done:       #0A6E85;
+  --done-bg:    #D6EBF1;
   --shadow:     0 1px 2px rgba(19,28,26,.05), 0 8px 24px -16px rgba(19,28,26,.28);
 
   --f-display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
@@ -51,6 +53,8 @@
     --sev-hi-bg:  #33201C;
     --sev-md-bg:  #2E2717;
     --sev-lo-bg:  #1B282D;
+    --done:       #57CFE6;
+    --done-bg:    #113039;
     --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
   }
 }
@@ -73,6 +77,8 @@
   --sev-hi-bg:  #33201C;
   --sev-md-bg:  #2E2717;
   --sev-lo-bg:  #1B282D;
+  --done:       #57CFE6;
+  --done-bg:    #113039;
   --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
 }
 
@@ -368,6 +374,7 @@ strong { font-weight: 600; color: var(--ink); }
 .chip--hi { color: var(--sev-hi); background: var(--sev-hi-bg); }
 .chip--md { color: var(--sev-md); background: var(--sev-md-bg); }
 .chip--lo { color: var(--sev-lo); background: var(--sev-lo-bg); }
+.chip--done { color: var(--done); background: var(--done-bg); }
 
 /* ---------- risk entries ---------- */
 
@@ -492,6 +499,9 @@ figcaption {
   border-radius: 0 3px 3px 0;
 }
 .note p { margin: 0; font-size: .95rem; max-width: none; }
+.note p + p { margin-top: .6rem; }
+.note--done { background: var(--done-bg); border-left-color: var(--done); }
+.note--done strong { color: var(--done); }
 
 /* ---------- priorities ---------- */
 
@@ -602,7 +612,7 @@ figcaption {
         </article>
 
         <article class="finding">
-          <div class="finding__top"><span class="chip chip--hi">High</span></div>
+          <div class="finding__top"><span class="chip chip--hi">High</span><span class="chip chip--done">Fixed 2026-08-26</span></div>
           <h3>No URL encoding</h3>
           <p>The entire lyric text is interpolated straight into a GET query. A single <code>&amp;</code> or <code>#</code> in the text breaks the call.</p>
           <p class="where"><a href="#s5-4">&sect;5.4</a> &middot; McRestService.cs:195</p>
@@ -945,7 +955,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
       </div>
 
       <div class="risk risk--hi">
-        <h3 id="s5-4"><span class="hnum">5.4</span>No URL encoding in MCWS calls <span class="chip chip--hi">High</span></h3>
+        <h3 id="s5-4"><span class="hnum">5.4</span>No URL encoding in MCWS calls <span class="chip chip--hi">High</span> <span class="chip chip--done">Fixed 2026-08-26</span></h3>
         <p><code>McRestService.CreateRequestUrl</code> builds query strings by plain string
         interpolation. There is <strong>not a single</strong> call to
         <code>Uri.EscapeDataString</code> or <code>HttpUtility.UrlEncode</code> anywhere in the
@@ -956,6 +966,23 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
         is either truncated or misparsed, and multi-KB texts risk exceeding the server's URL length
         limit. <code>System.Web</code> is <code>using</code>'d in the file, but
         <code>HttpUtility</code> is never used. Writing lyrics should be a POST with a body.</p>
+        <div class="note note--done">
+          <p><strong>Fixed 2026-08-26.</strong> A new <code>UrlEncoded()</code> extension in
+          <code>SharedComponents/Utility/Utility.cs</code> is now applied to every interpolated
+          string value in <code>McRestService.CreateRequestUrl</code> — <code>McWsToken</code>,
+          plus <code>field</code>/<code>value</code> in <code>SetInfo</code> and
+          <code>GetInfo</code>/<code>GetInfoFull</code>. The unused
+          <code>using System.Web</code> was removed. Verified against a running Media Center
+          process.</p>
+          <p>Two corrections to the text above: <code>Uri</code>/<code>UriBuilder</code>
+          already escaped spaces, CR+LF and non-ASCII, so only <code>&amp;</code>,
+          <code>#</code>, <code>+</code> and literal <code>%XX</code> sequences were actually
+          broken. And <code>HttpUtility</code> was never even reachable —
+          <code>McWsProxy.csproj</code> has no <code>System.Web</code> reference. The same raw
+          interpolation still exists in the lyric services (<code>CajunLyricsService</code>,
+          <code>LololyricsService</code>, <code>MusiXmatchService</code>,
+          <code>Stands4Service</code>) — deliberately outside the scope of &sect;5.4.</p>
+        </div>
       </div>
 
       <div class="risk risk--md">

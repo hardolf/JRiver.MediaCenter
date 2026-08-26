@@ -41,7 +41,7 @@ namespace MediaCenter.LyricsFinder.Model
         /// <value>
         /// The copyright text.
         /// </value>
-        [XmlIgnore]
+        [XmlElement]
         public virtual string Copyright { get; set; }
 
         /// <summary>

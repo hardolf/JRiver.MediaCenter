@@ -208,7 +208,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                         if (prop.PropertyType == typeof(Uri))
                             prop.SetValue(obj, new UriBuilder(Value.ToString()).Uri);
                         else if ((prop.PropertyType == typeof(int))
-                            && (int.TryParse(Value.ToString(), out var intVar)))
+                            && (int.TryParse(Value.ToString().Replace(".", "").Replace(",", ""), out var intVar)))
                             prop.SetValue(obj, intVar);
                         else if (prop.PropertyType == typeof(DateTime))
                         {
