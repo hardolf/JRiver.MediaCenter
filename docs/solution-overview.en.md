@@ -1,6 +1,7 @@
 # LyricsFinder / JRiver.MediaCenter — architecture and onboarding report
 
-Status: reviewed 2026-08-25 on branch `master`. This report is analysis only — no code was changed.
+Status: reviewed 2026-08-25 on branch `master`, status updated 2026-08-26.
+§5.1, §5.4, §5.8 and §5.9 are fixed and tested; the rest is in [section 9](#9-outstanding).
 
 > English version. The Danish original is [`solution-overview.da.md`](solution-overview.da.md).
 
@@ -209,6 +210,18 @@ Ordered by how much they matter in practice.
 
 ### 5.1 `XmlSerializer` with `knownTypes` → assembly leak (high)
 
+> <span style="color:#0A6E85">**&#10004; Fixed 2026-08-26.**</span> All four construction sites in `SharedComponents/Utility/Serialize.cs` now go
+> through a private `GetSerializer(Type, Type[])` backed by a static
+> `ConcurrentDictionary<string, XmlSerializer>`, keyed on `AssemblyQualifiedName`. Because the
+> cached instance is shared, `XmlDeserializeFromString` now attaches and detaches
+> `UnknownElement` under `lock (serializer)` with a `finally`. The “Not used in this solution
+> version” header comment is gone.
+>
+> Correction: the leak hit `Stands4Service` too. Because `knownTypes` is `params`, even an
+> *empty* array reaches the non-caching overload — the fix therefore routes an empty list to
+> `XmlSerializer(Type)`. The per-song `Load` + `SaveAsync` in `LyricSearch`'s `finally` is still
+> there; see §9.1.
+
 `Serialize.ToXmlWithNewlines` and `XmlDeserializeFromString` call
 `new XmlSerializer(type, knownTypes)`. **Only** the `XmlSerializer(Type)` and
 `XmlSerializer(Type, string)` overloads cache the generated serialization assembly; every other
@@ -331,6 +344,22 @@ the recreated `HttpClient`, so the two should be done in the same pass.
 appropriate", so this is a gap against the project's own rules and not merely an improvement.
 
 ### 5.8 CR+LF does not survive the configuration file (medium)
+
+> <span style="color:#0A6E85">**&#10004; Fixed 2026-08-26.**</span> `AbstractLyricService` gained `ReadServiceSettings(Assembly)`, a
+> `ServiceSettings` dictionary and a one-argument `ServiceSettingsValue(key)`. The
+> configuration is now read directly as XML, and **both forms are supported**: the attribute
+> form with `&#xD;&#xA;`, and a `lyricService` section with one child element per setting. On a
+> clash the element form wins. The old `Settings` pair is kept for compatibility.
+>
+> MusiXmatch was already correct and is the reference. `CreditTextFormat` was re-entitized in
+> AZLyrics, Cajun, ChartLyrics and Lololyrics, and `Comment` likewise in AZLyrics; all five
+> gained a warning in the header comment. **Stands4 was converted to the element form**, so both
+> routes are exercised in the same run, and the values are verified byte-identical to
+> MusiXmatch's.
+>
+> Correction to the text below: a double space is *not* the signature of CR+LF. XML normalizes
+> CR+LF to a single LF (§2.11) *before* attribute-value normalization (§3.3.3), so one line
+> break yields one space. The double spaces came from a stray trailing space before the break.
 
 Multi-line values lose their line breaks. This hits both when `LyricsFinder.xml` is created for
 the first time and on subsequent saves.
@@ -471,6 +500,15 @@ Whichever route is chosen: repair the three committed `App.config` files at the 
 Their line breaks cannot be inferred from the code and must be typed back in by hand.
 
 ### 5.9 Two divergent serialization paths (medium, needs verifying)
+
+> <span style="color:#0A6E85">**&#10004; Fixed 2026-08-26.**</span> A private `ToXmlWithNewlinesCore(object, Type, Type[])` now carries the logic,
+> and `XmlSerializeToString` passes `objectInstance.GetType()` instead of letting `T` infer to
+> `object`. The string and file paths therefore share one serializer; `ToXmlWithNewlines<T>` is
+> unchanged.
+>
+> Clarification: the concrete consequence was that `InitialXml` got the root element `anyType`
+> instead of `LyricsFinderDataType`. Whether the `object`-typed serializer actually omitted
+> fields was never verified — and no longer needs to be.
 
 Related to the above, and worth looking at in the same pass. `Serialize` has two write paths
 that do not use the same serializer:
@@ -708,13 +746,15 @@ Delete `LyricsFinder.xml` to reset to factory settings — the services are recr
    <span style="color:#0A6E85">**&#10004; Fixed 2026-08-26.**</span>
 2. **Cache the `XmlSerializer` instances** (§5.1) and drop the per-song `Load` + `Save` from
    `LyricSearch`'s `finally` — that is both the leak and the biggest performance problem.
+   <span style="color:#0A6E85">**&#10004; Fixed 2026-08-26.**</span> The cache is in place; the per-song `Load` + `Save` still stands, see §9.1.
 3. **Verify the counter logic** in `LyricSearch.SearchAsync` (§5.2).
 4. **One static `HttpClient`** with `HttpRequestMessage`-based auth instead of recreating the
    client per call (§5.3). Thread `CancellationToken` all the way down through
    `HttpGetStringAsync` and `McWsProxy` at the same time (§5.7) — it is the same rework, because
    `GetStringAsync` on net48 has no token overload.
 5. **Move multi-line settings out of XML attributes** (§5.8) and repair the three `App.config`
-   files whose line breaks have already been flattened. Attribute normalization is lossy on
+   files whose line breaks have already been flattened.
+   <span style="color:#0A6E85">**&#10004; Fixed 2026-08-26.**</span> Both forms are read now; Stands4 runs the element form. Attribute normalization is lossy on
    every single read, and `CreditTextFormat` ends up in every saved lyric.
 6. **`ConcurrentQueue` plus explicit UI marshalling** in the search workers (§5.5), so the code
    does not depend on an invisible contract.
@@ -723,3 +763,80 @@ Delete `LyricsFinder.xml` to reset to factory settings — the services are recr
 8. **Separate test projects** plus unit tests of `Utility`, `CreateRequestUrl` and `Serialize`,
    so there is a safety net to refactor against at all. A round-trip test of multi-line text
    through `App.config` → data file → `App.config` would have caught §5.8.
+
+---
+
+## 9. Outstanding
+
+Status as of 2026-08-26. §5.1, §5.4, §5.8 and §5.9 are fixed and tested against a running Media
+Center. What follows is what is left, including three things that only surfaced while doing the
+fixing.
+
+### 9.1 Counters are maintained incorrectly in `LyricSearch` (medium, new)
+
+Three separate problems in the same piece of code, all around `RequestCountToday` /
+`RequestCountTotal`:
+
+* **The reset races the work it is supposed to precede.** `LyricSearch.cs:67-69` starts
+  `ProcessAsyncWrapper` and only *then* calls `serviceClone.ResetTotalCountersAsync()`. The clone's
+  totals are meant to act as a delta for this one song, but the clone is already running.
+  `IncrementRequestCountersAsync` sits in the `finally` of `HttpGetStringAsync`
+  (`AbstractLyricService.cs:471`), and `RandomizedDelayAsync` runs first, so the reset almost always
+  wins — but with `DelayMilliSecondsBetweenSearches` at 0 and a fast response an increment can be
+  reset away. The fix is to reset *before* starting the task, or to clone with zeroed counters.
+* **The per-song save is a guaranteed no-op.** This refines §5.2: the increments land on objects
+  from the *original* instance, while `SaveAsync()` is called on the newly loaded one
+  (`LyricSearch.cs:128` and `:150`). The newly loaded instance is untouched since `Load`, so
+  `IsChanged` is false and `if (IsChanged && IsSaveOk)` skips the write entirely. The counters are
+  *not* lost — they stay in the Core's live model and get written by one of the other `SaveAsync()`
+  call sites — but this one costs a full XML read per song while never writing anything.
+* **Half-reset clone.** `ResetTotalCountersAsync` zeroes only the totals. The clone's `...Today`
+  values are copied from the original and then ignored.
+
+### 9.2 Three independent daily-reset rules (low, new)
+
+| Location | Condition | When |
+|---|---|---|
+| `AbstractLyricService.cs:661` | `LastRequest.Date < Now.Date` | at startup only |
+| `LyricsFinderCore.cs:897` | `Now.Date > MainData.LastMcStatusCheck.Date` | on the MC status timer |
+| `Stands4Service.cs:300` | `QuotaResetTime` in UTC | on every quota check |
+
+They can fire in any order and at different moments. If `RequestCountToday` is to be trustworthy,
+there should be one rule.
+
+### 9.3 `DailyQuota` is never seeded from `App.config` (low, new)
+
+`Stands4Service.RefreshServiceSettingsAsync` reads `QuotaResetTimeZone` and `QuotaResetTime`, but
+not `DailyQuota`, so the setting never reaches the property. The impact is low today, because the
+quota calculation is deliberately disabled (`ret = false;` with a comment at
+`Stands4Service.cs:309-312` — the service is left to report it itself), but the `DailyQuota` column
+in the service form displays the value.
+
+### 9.4 `IsConfigurationFileUsed` is `static` (low, new)
+
+`AbstractLyricService.cs:98` declares it `public static bool`, yet it is assigned per instance in
+`RefreshServiceSettingsAsync` (`:632`) and read as instance state at `:639` and in
+`Stands4Service.cs:417` after the `base` call. Every service therefore shares one flag. It works
+only because `InitLyricServicesAsync` (`LyricsFinderCore.Private.cs:452-457`) walks them
+sequentially and each override reads the flag immediately afterwards.
+
+### 9.5 Raw interpolation still lives in the lyric services (medium)
+
+§5.4 fixed `McRestService.CreateRequestUrl`, but the four services that build their own URLs —
+`CajunLyricsService`, `LololyricsService`, `MusiXmatchService` and `Stands4Service` — still
+interpolate artist, album and title straight into the query string. `UrlEncoded()` now exists in
+`SharedComponents/Utility/Utility.cs` and can be applied directly.
+
+### 9.6 Still open from sections 5 and 6
+
+| Item | Topic | Note |
+|---|---|---|
+| §5.2 | Counters may never be saved | Refined in §9.1 — not lost, but the per-song save never writes |
+| §5.3 | HttpClient recreated per call | Unchanged. Should be done together with §5.7 |
+| §5.5 | Threading model holds by accident | Unchanged |
+| §5.6 | `WhenAny(predicate)` and `AggregateException` | Unchanged |
+| §5.7 | CancellationToken never reaches HTTP | Unchanged |
+| §5.10 | Security | Password and tokens are still cleartext in the data file |
+| §5.11 | Build setup | Unchanged |
+| §5.12 | Other code smells | Only the `Serialize.cs` comment is gone; the rest stands |
+| §6 | Test gaps | Unchanged. `Serialize` and `CreateRequestUrl` have now been changed with no safety net underneath them |

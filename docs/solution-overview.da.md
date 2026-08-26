@@ -1,6 +1,7 @@
 # LyricsFinder / JRiver.MediaCenter — arkitektur- og onboarding-rapport
 
-Status: gennemgang pr. 2026-08-25 på branch `master`. Rapporten er ren analyse — der er ikke ændret kode.
+Status: gennemgang pr. 2026-08-25 på branch `master`, statusopdateret 2026-08-26.
+§5.1, §5.4, §5.8 og §5.9 er rettet og testet; resten står i [afsnit 9](#9-udestående).
 
 > Dansk udgave. Den engelske oversættelse ligger i [`solution-overview.en.md`](solution-overview.en.md).
 
@@ -207,6 +208,18 @@ Sorteret efter hvor meget de betyder i praksis.
 
 ### 5.1 `XmlSerializer` med `knownTypes` → assembly-læk (høj)
 
+> <span style="color:#0A6E85">**&#10004; Løst 2026-08-26.**</span> Alle fire konstruktionssteder i `SharedComponents/Utility/Serialize.cs` går nu
+> gennem en privat `GetSerializer(Type, Type[])` med en statisk
+> `ConcurrentDictionary<string, XmlSerializer>`, nøglet på `AssemblyQualifiedName`. Fordi den
+> cachede instans er delt, til- og afmelder `XmlDeserializeFromString` nu `UnknownElement`
+> under `lock (serializer)` med en `finally`. Kommentaren “Not used in this solution version”
+> øverst i filen er fjernet.
+>
+> Præcisering: lækket ramte også `Stands4Service`. Fordi `knownTypes` er `params`, rammer selv
+> et *tomt* array den ikke-cachende overload — rettelsen ruter derfor en tom liste til
+> `XmlSerializer(Type)`. Det per-sang `Load` + `SaveAsync` i `LyricSearch`'s `finally` står
+> stadig; se §9.1.
+
 `Serialize.ToXmlWithNewlines` og `XmlDeserializeFromString` kalder
 `new XmlSerializer(type, knownTypes)`. **Kun** overloads `XmlSerializer(Type)` og
 `XmlSerializer(Type, string)` cacher den genererede serialiserings-assembly; alle andre
@@ -329,6 +342,22 @@ appropriate", så dette er et hul i forhold til projektets egne regler og ikke b
 forbedring.
 
 ### 5.8 CR+LF overlever ikke konfigurationsfilen (medium)
+
+> <span style="color:#0A6E85">**&#10004; Løst 2026-08-26.**</span> `AbstractLyricService` har fået `ReadServiceSettings(Assembly)`, en
+> `ServiceSettings`-dictionary og en etarguments `ServiceSettingsValue(key)`. Konfigurationen
+> læses nu direkte som XML, og **begge former understøttes**: attributformen med `&#xD;&#xA;`
+> og en `lyricService`-sektion med ét child-element pr. indstilling. Ved sammenstød vinder
+> elementformen. Det gamle `Settings`-par er bevaret for kompatibilitet.
+>
+> MusiXmatch var i forvejen korrekt og er referencen. `CreditTextFormat` er entitiseret igen i
+> AZLyrics, Cajun, ChartLyrics og Lololyrics, og `Comment` ligeledes i AZLyrics; alle fem har
+> fået en advarsel i header-kommentaren. **Stands4 er lagt om til elementformen**, så begge
+> veje afprøves i samme kørsel, og værdierne er verificeret byte-identiske med MusiXmatch'.
+>
+> Rettelse til teksten nedenfor: et dobbelt mellemrum er *ikke* signaturen på CR+LF. XML
+> normaliserer CR+LF til ét LF (§2.11) *før* attributnormaliseringen (§3.3.3), så ét linjeskift
+> giver ét mellemrum. De dobbelte mellemrum stammer fra et overskydende mellemrum før
+> linjeskiftet.
 
 Flerlinjede værdier mister deres linjeskift. Det rammer både når `LyricsFinder.xml` oprettes
 første gang, og ved efterfølgende gem.
@@ -468,6 +497,14 @@ Uanset hvilken vej der vælges: reparér samtidig de tre committede `App.config`
 linjeskift kan ikke udledes af koden og skal skrives ind igen i hånden.
 
 ### 5.9 To uens serialiseringsstier (medium, bør verificeres)
+
+> <span style="color:#0A6E85">**&#10004; Løst 2026-08-26.**</span> En privat `ToXmlWithNewlinesCore(object, Type, Type[])` bærer nu logikken, og
+> `XmlSerializeToString` sender `objectInstance.GetType()` i stedet for at lade `T` udlede til
+> `object`. Streng- og filstien deler dermed serializer; `ToXmlWithNewlines<T>` er uændret.
+>
+> Præcisering: den konkrete konsekvens var at `InitialXml` fik rod-elementet `anyType` i stedet
+> for `LyricsFinderDataType`. Om den `object`-typede serializer faktisk udelod felter blev
+> aldrig verificeret — og behøver det ikke længere.
 
 Beslægtet med ovenstående, og værd at se på i samme omgang. `Serialize` har to skrivestier
 der ikke bruger den samme serializer:
@@ -706,13 +743,15 @@ Slet `LyricsFinder.xml` for at nulstille til fabriksindstillinger (services gens
    <span style="color:#0A6E85">**&#10004; Løst 2026-08-26.**</span>
 2. **Cache `XmlSerializer`-instanserne** (§5.1) og fjern `Load`+`Save` pr. sang fra
    `LyricSearch`'s `finally` — det er både lækagen og det største performance-problem.
+   <span style="color:#0A6E85">**&#10004; Løst 2026-08-26.**</span> Cachen er på plads; `Load`+`Save` pr. sang står stadig, se §9.1.
 3. **Verificér tællerlogikken** i `LyricSearch.SearchAsync` (§5.2).
 4. **Én statisk `HttpClient`** med `HttpRequestMessage`-baseret auth i stedet for at
    genskabe klienten (§5.3). Før samtidig `CancellationToken` hele vejen ned gennem
    `HttpGetStringAsync` og `McWsProxy` (§5.7) — det er den samme ombygning, fordi
    `GetStringAsync` på net48 ikke har nogen token-overload.
 5. **Flyt flerlinjede indstillinger ud af XML-attributter** (§5.8) og reparér de tre
-   `App.config`-filer hvis linjeskift allerede er fladet ud. Attributnormalisering er tabsgivende
+   `App.config`-filer hvis linjeskift allerede er fladet ud.
+   <span style="color:#0A6E85">**&#10004; Løst 2026-08-26.**</span> Begge former læses nu; Stands4 kører elementformen. Attributnormalisering er tabsgivende
    ved hver eneste læsning, og `CreditTextFormat` ender i hver gemt sangtekst.
 6. **`ConcurrentQueue` + eksplicit UI-marshalling** i søge-workerne (§5.5), så koden ikke
    afhænger af en usynlig kontrakt.
@@ -721,3 +760,79 @@ Slet `LyricsFinder.xml` for at nulstille til fabriksindstillinger (services gens
 8. **Separate testprojekter** + enhedstests af `Utility`, `CreateRequestUrl` og `Serialize`,
    så der overhovedet findes et sikkerhedsnet at refaktorere med. En round-trip-test af
    flerlinjet tekst gennem `App.config` → datafil → `App.config` ville have fanget §5.8.
+
+---
+
+## 9. Udestående
+
+Status pr. 2026-08-26. §5.1, §5.4, §5.8 og §5.9 er rettet og testet mod en kørende Media Center.
+Herunder står det der er tilbage, inklusive tre forhold der først dukkede op under rettearbejdet.
+
+### 9.1 Tællerne vedligeholdes skævt i `LyricSearch` (medium, ny)
+
+Tre selvstændige problemer i det samme stykke kode, alle omkring `RequestCountToday` /
+`RequestCountTotal`:
+
+* **Nulstillingen kapløber med det arbejde den skal gå forud for.** `LyricSearch.cs:67-69` starter
+  `ProcessAsyncWrapper` og kalder *derefter* `serviceClone.ResetTotalCountersAsync()`. Klonens
+  totaler er ment som en delta for netop denne sang, men klonen er allerede i gang.
+  `IncrementRequestCountersAsync` ligger i `finally`'en i `HttpGetStringAsync`
+  (`AbstractLyricService.cs:471`), og `RandomizedDelayAsync` kører først, så nulstillingen vinder
+  næsten altid — men med `DelayMilliSecondsBetweenSearches` på 0 og et hurtigt svar kan en optælling
+  blive nulstillet væk. Rettelsen er at nulstille *før* tasken startes, eller at klone med
+  nulstillede tællere.
+* **Gemningen pr. sang er en garanteret no-op.** Præcisering af §5.2: forøgelserne lander på
+  objekter fra den *oprindelige* instans, mens `SaveAsync()` kaldes på den nyindlæste
+  (`LyricSearch.cs:128` og `:150`). Den nyindlæste er uændret siden `Load`, så `IsChanged` er falsk
+  og `if (IsChanged && IsSaveOk)` springer skrivningen over. Tællerne går *ikke* tabt — de bliver
+  siddende i Core'ens levende model og skrives af et af de øvrige `SaveAsync()`-kald — men denne ene
+  koster en fuld XML-læsning pr. sang uden nogensinde at skrive noget.
+* **Halvt nulstillet klon.** `ResetTotalCountersAsync` nulstiller kun totalerne. Klonens
+  `...Today`-værdier kopieres med fra originalen og ignoreres derefter.
+
+### 9.2 Tre uafhængige regler for daglig nulstilling (lav, ny)
+
+| Sted | Betingelse | Hvornår |
+|---|---|---|
+| `AbstractLyricService.cs:661` | `LastRequest.Date < Now.Date` | kun ved opstart |
+| `LyricsFinderCore.cs:897` | `Now.Date > MainData.LastMcStatusCheck.Date` | på MC-status-timeren |
+| `Stands4Service.cs:300` | `QuotaResetTime` i UTC | ved hvert kvotetjek |
+
+De kan nulstille i vilkårlig rækkefølge og på forskellige tidspunkter. Vil man kunne stole på
+`RequestCountToday`, bør der være én regel.
+
+### 9.3 `DailyQuota` seedes aldrig fra `App.config` (lav, ny)
+
+`Stands4Service.RefreshServiceSettingsAsync` læser `QuotaResetTimeZone` og `QuotaResetTime`, men
+ikke `DailyQuota`. Indstillingen når derfor aldrig frem til propertyen. Effekten er lav i dag, fordi
+kvoteberegningen er slået fra med vilje (`ret = false;` med kommentar i `Stands4Service.cs:309-312`
+— tjenesten får lov at melde selv), men `DailyQuota`-kolonnen i service-formularen viser værdien.
+
+### 9.4 `IsConfigurationFileUsed` er `static` (lav, ny)
+
+`AbstractLyricService.cs:98` erklærer den `public static bool`, men den tildeles pr. instans i
+`RefreshServiceSettingsAsync` (`:632`) og læses som instanstilstand på `:639` og i
+`Stands4Service.cs:417` efter `base`-kaldet. Alle tjenester deler altså ét flag. Det virker kun
+fordi `InitLyricServicesAsync` (`LyricsFinderCore.Private.cs:452-457`) gennemløber dem sekventielt
+og hver override læser flaget umiddelbart efter.
+
+### 9.5 Rå interpolation lever stadig i lyric-tjenesterne (medium)
+
+§5.4 rettede `McRestService.CreateRequestUrl`, men de fire tjenester der selv bygger URL'er —
+`CajunLyricsService`, `LololyricsService`, `MusiXmatchService` og `Stands4Service` — interpolerer
+stadig artist, album og titel direkte ind i query-strengen. `UrlEncoded()` findes nu i
+`SharedComponents/Utility/Utility.cs` og kan bruges direkte.
+
+### 9.6 Stadig åbne fra afsnit 5 og 6
+
+| Punkt | Emne | Bemærkning |
+|---|---|---|
+| §5.2 | Tællere gemmes muligvis aldrig | Præciseret i §9.1 — ikke tabt, men gemningen pr. sang skriver aldrig |
+| §5.3 | HttpClient genskabes pr. kald | Uændret. Bør laves sammen med §5.7 |
+| §5.5 | Trådmodellen holder ved et tilfælde | Uændret |
+| §5.6 | `WhenAny(predicate)` og `AggregateException` | Uændret |
+| §5.7 | CancellationToken når ikke HTTP-laget | Uændret |
+| §5.10 | Sikkerhed | Password og tokens ligger stadig i klartekst i datafilen |
+| §5.11 | Byggeopsætning | Uændret |
+| §5.12 | Øvrige code smells | Kun kommentaren i `Serialize.cs` er væk; resten står |
+| §6 | Testhuller | Uændret. `Serialize` og `CreateRequestUrl` er nu rettet uden et sikkerhedsnet under sig |

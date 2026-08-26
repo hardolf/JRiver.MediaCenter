@@ -558,7 +558,7 @@ figcaption {
     <h1>LyricsFinder<br><span>arkitektur &amp; onboarding</span></h1>
     <p class="standfirst">
       En læsning af hele solutionen: hvordan de 15 projekter hænger sammen, hvor data løber hen,
-      og hvilke syv-otte ting der reelt er værd at rette først. Ingen kode er ændret.
+      og hvilke syv-otte ting der reelt er værd at rette først. Fire af dem er rettet og testet siden — resten står i afsnit 9.
     </p>
     <dl class="factstrip">
       <div><dt>Gennemgået</dt><dd>25. aug. 2026</dd></div>
@@ -583,6 +583,7 @@ figcaption {
       <li><a href="#s6">Testhuller</a></li>
       <li><a href="#s7">Build, test og kørsel</a></li>
       <li><a href="#s8">Prioritering</a></li>
+      <li><a href="#s9">Udestående</a></li>
     </ol>
   </nav>
 
@@ -598,7 +599,7 @@ figcaption {
       <div class="board">
 
         <article class="finding">
-          <div class="finding__top"><span class="chip chip--hi">Høj</span></div>
+          <div class="finding__top"><span class="chip chip--hi">Høj</span><span class="chip chip--done">Løst 2026-08-26</span></div>
           <h3>XmlSerializer lækker assemblies</h3>
           <p>Overloaden med <code>knownTypes</code> cacher ikke. Hvert kald genererer en dynamisk assembly der aldrig unloades — og der kaldes én gang pr. sang.</p>
           <p class="where"><a href="#s5-1">&sect;5.1</a> &middot; Serialize.cs · LyricSearch.cs:128</p>
@@ -640,7 +641,7 @@ figcaption {
         </article>
 
         <article class="finding">
-          <div class="finding__top"><span class="chip chip--md">Medium</span></div>
+          <div class="finding__top"><span class="chip chip--md">Medium</span><span class="chip chip--done">Løst 2026-08-26</span></div>
           <h3>CR+LF overlever ikke konfigurationen</h3>
           <p>Flerlinjede indstillinger bor i XML-<em>attributter</em>. Rå linjeskift dér normaliseres til mellemrum af enhver parser — tabt ved både ny fil og gem.</p>
           <p class="where"><a href="#s5-8">&sect;5.8</a> &middot; LyricServices/*/App.config</p>
@@ -910,7 +911,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       <p class="lead">Sorteret efter hvor meget de betyder i praksis.</p>
 
       <div class="risk risk--hi">
-        <h3 id="s5-1"><span class="hnum">5.1</span>XmlSerializer med knownTypes → assembly-læk <span class="chip chip--hi">Høj</span></h3>
+        <h3 id="s5-1"><span class="hnum">5.1</span>XmlSerializer med knownTypes → assembly-læk <span class="chip chip--hi">Høj</span> <span class="chip chip--done">Løst 2026-08-26</span></h3>
         <p><code>Serialize.ToXmlWithNewlines</code> og <code>XmlDeserializeFromString</code> kalder
         <code>new XmlSerializer(type, knownTypes)</code>. <strong>Kun</strong> overloads
         <code>XmlSerializer(Type)</code> og <code>XmlSerializer(Type, string)</code> cacher den
@@ -923,6 +924,10 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
         1000 numre giver i størrelsesordenen tusindvis af dynamiske assemblies plus lige så mange
         fulde læse/skrive-runder på XML-filen. Forventet symptom: voksende hukommelsesforbrug og
         stigende langsommelighed jo længere en “Search all” kører.</p>
+        <div class="note note--done">
+          <p><strong>Løst 2026-08-26.</strong> Alle fire konstruktionssteder i <code>SharedComponents/Utility/Serialize.cs</code> går nu gennem en privat <code>GetSerializer(Type, Type[])</code> med en statisk <code>ConcurrentDictionary&lt;string, XmlSerializer&gt;</code>, nøglet på <code>AssemblyQualifiedName</code> for roden og hver kendt type. Fordi den cachede instans er delt, til- og afmelder <code>XmlDeserializeFromString</code> nu <code>UnknownElement</code> under <code>lock (serializer)</code> med en <code>finally</code>. Den forældede kommentar “Not used in this solution version” øverst i filen er fjernet.</p>
+          <p><strong>Præcisering til teksten ovenfor:</strong> lækket ramte også <code>Stands4Service</code>. Fordi <code>knownTypes</code> er <code>params</code>, rammer selv et <em>tomt</em> array den ikke-cachende overload, så et kald helt uden kendte typer lækkede lige så meget. Rettelsen ruter derfor en tom liste til <code>XmlSerializer(Type)</code>. Det per-sang <code>Load</code> + <code>SaveAsync</code> i <code>LyricSearch</code>’s <code>finally</code> står stadig — se <a href="#s9-1">&sect;9.1</a>.</p>
+        </div>
       </div>
 
       <div class="risk risk--hi">
@@ -1055,7 +1060,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       </div>
 
       <div class="risk risk--md">
-        <h3 id="s5-8"><span class="hnum">5.8</span>CR+LF overlever ikke konfigurationsfilen <span class="chip chip--md">Medium</span></h3>
+        <h3 id="s5-8"><span class="hnum">5.8</span>CR+LF overlever ikke konfigurationsfilen <span class="chip chip--md">Medium</span> <span class="chip chip--done">Løst 2026-08-26</span></h3>
         <p>Flerlinjede værdier mister deres linjeskift. Det rammer både når
         <code>LyricsFinder.xml</code> oprettes første gang, og ved efterfølgende gem.</p>
 
@@ -1192,10 +1197,15 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
         <p>Uanset hvilken vej der vælges: reparér samtidig de tre committede
         <code>App.config</code>-filer. Deres linjeskift kan ikke udledes af koden og skal skrives
         ind igen i hånden.</p>
+        <div class="note note--done">
+          <p><strong>Løst 2026-08-26.</strong> <code>AbstractLyricService</code> har fået <code>ReadServiceSettings(Assembly)</code>, en <code>ServiceSettings</code>-dictionary og en etarguments <code>ServiceSettingsValue(key)</code>. Konfigurationsfilen læses nu direkte som XML, og <strong>begge former understøttes</strong>: attributformen med <code>&amp;#xD;&amp;#xA;</code> og en <code>lyricService</code>-sektion med ét child-element pr. indstilling. Ved sammenstød vinder elementformen. Det gamle <code>Settings</code>-par er bevaret for kompatibilitet.</p>
+          <p>MusiXmatch var i forvejen korrekt og er referencen. <code>CreditTextFormat</code> er entitiseret igen i AZLyrics, Cajun, ChartLyrics og Lololyrics, og <code>Comment</code> ligeledes i AZLyrics; alle fem har fået en advarsel i deres header-kommentar. <strong>Stands4 er lagt om til elementformen</strong>, så begge veje afprøves i samme kørsel. Verificeret at elementformen giver værdier der er byte-identiske med MusiXmatch’ entitiserede.</p>
+          <p><strong>Rettelse til teksten ovenfor:</strong> et dobbelt mellemrum er <em>ikke</em> signaturen på CR+LF. XML normaliserer CR+LF til ét LF (§2.11) <em>før</em> attributnormaliseringen (§3.3.3), så ét linjeskift giver ét mellemrum. De dobbelte mellemrum stammer fra et overskydende mellemrum før linjeskiftet. Lololyrics-posten i datafilen viser det entydigt mod MusiXmatch’ intakte kopi.</p>
+        </div>
       </div>
 
       <div class="risk risk--md">
-        <h3 id="s5-9"><span class="hnum">5.9</span>To uens serialiseringsstier <span class="chip chip--md">Medium · bør verificeres</span></h3>
+        <h3 id="s5-9"><span class="hnum">5.9</span>To uens serialiseringsstier <span class="chip chip--md">Medium · bør verificeres</span> <span class="chip chip--done">Løst 2026-08-26</span></h3>
         <p>Beslægtet med ovenstående, og værd at se på i samme omgang. <code>Serialize</code> har to
         skrivestier der ikke bruger den samme serializer:</p>
         <ul>
@@ -1215,6 +1225,10 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
         opdaget, og <code>SaveAsync</code> springer tavst gemningen over
         (<code>if (IsChanged &amp;&amp; IsSaveOk)</code>). Det er en plausibel medvirkende årsag til
         “ændringer bliver ikke gemt”, men jeg har ikke verificeret hvilke felter der reelt afviger.</p>
+        <div class="note note--done">
+          <p><strong>Løst 2026-08-26.</strong> En privat <code>ToXmlWithNewlinesCore(object, Type, Type[])</code> bærer nu logikken, og <code>XmlSerializeToString</code> sender <code>objectInstance.GetType()</code> i stedet for at lade <code>T</code> udlede til <code>object</code>. Streng- og filstien deler dermed serializer. <code>ToXmlWithNewlines&lt;T&gt;</code> er bevaret uændret.</p>
+          <p><strong>Præcisering:</strong> den konkrete konsekvens var at <code>InitialXml</code> fik rod-elementet <code>anyType</code> i stedet for <code>LyricsFinderDataType</code>. Om den <code>object</code>-typede serializer faktisk udelod felter blev aldrig verificeret — og behøver det ikke længere.</p>
+        </div>
       </div>
 
       <h3 id="s5-10"><span class="hnum">5.10</span>Sikkerhed</h3>
@@ -1470,10 +1484,119 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
         <li><div><strong>Ryd op i build</strong><span><code>vswhere</code> i stedet for <code>D:\</code>-stier, ret binding redirects, reparér eller fjern <code>MediaCenter.sln</code>, slet <code>LyricServices.Old</code> og <code>McPlayControlForm.cs</code>.</span></div></li>
         <li><div><strong>Separate testprojekter</strong><span>Plus enhedstests af <code>Utility</code>, <code>CreateRequestUrl</code> og <code>Serialize</code>, så der findes et sikkerhedsnet at refaktorere med. En round-trip-test af flerlinjet tekst gennem <code>App.config</code> → datafil → <code>App.config</code> ville have fanget linjeskift-fejlen.</span></div></li>
       </ol>
+    </section>
+
+    <!-- ============ 9 ============ -->
+    <section id="s9">
+      <div class="sec-head"><span class="num">09</span><h2>Udestående</h2></div>
+      <p class="lead">Status pr. 26. august 2026. <a href="#s5-1">&sect;5.1</a>,
+      <a href="#s5-4">&sect;5.4</a>, <a href="#s5-8">&sect;5.8</a> og <a href="#s5-9">&sect;5.9</a>
+      er rettet og testet mod en kørende Media Center. Herunder står det der er tilbage, inklusive
+      tre forhold der først dukkede op under rettearbejdet.</p>
+
+      <div class="risk risk--md">
+        <h3 id="s9-1"><span class="hnum">9.1</span>Tællerne vedligeholdes skævt i LyricSearch <span class="chip chip--md">Medium · ny</span></h3>
+        <p>Tre selvstændige problemer i det samme stykke kode, alle omkring
+        <code>RequestCountToday</code> / <code>RequestCountTotal</code>:</p>
+        <ul>
+          <li><strong>Nulstillingen kapløber med det arbejde den skal gå forud for.</strong>
+            <code>LyricSearch.cs:67-69</code> starter <code>ProcessAsyncWrapper</code> og kalder
+            <em>derefter</em> <code>serviceClone.ResetTotalCountersAsync()</code>. Klonens totaler
+            er ment som en delta for netop denne sang, men klonen er allerede i gang.
+            <code>IncrementRequestCountersAsync</code> ligger i <code>finally</code>’en i
+            <code>HttpGetStringAsync</code> (<code>AbstractLyricService.cs:471</code>), og
+            <code>RandomizedDelayAsync</code> kører først, så nulstillingen vinder næsten altid —
+            men med <code>DelayMilliSecondsBetweenSearches</code> på 0 og et hurtigt svar kan en
+            optælling blive nulstillet væk. Rettelsen er at nulstille <em>før</em> tasken startes,
+            eller at klone med nulstillede tællere.</li>
+          <li><strong>Gemningen pr. sang er en garanteret no-op.</strong> Dette er præcisering af
+            <a href="#s5-2">&sect;5.2</a>: forøgelserne lander på objekter fra den
+            <em>oprindelige</em> instans, mens <code>SaveAsync()</code> kaldes på den nyindlæste
+            (<code>LyricSearch.cs:128</code> og <code>:150</code>). Den nyindlæste er uændret siden
+            <code>Load</code>, så <code>IsChanged</code> er falsk og
+            <code>if (IsChanged &amp;&amp; IsSaveOk)</code> springer skrivningen over. Tællerne går
+            <em>ikke</em> tabt — de bliver siddende i Core’ens levende model og skrives af et af de
+            øvrige <code>SaveAsync()</code>-kald — men denne ene koster en fuld XML-læsning pr. sang
+            uden nogensinde at skrive noget.</li>
+          <li><strong>Halvt nulstillet klon.</strong> <code>ResetTotalCountersAsync</code> nulstiller
+            kun totalerne. Klonens <code>...Today</code>-værdier kopieres med fra originalen og
+            ignoreres derefter. Det virker, fordi kun totalerne læses tilbage, men det gør koden
+            svær at læse rigtigt.</li>
+        </ul>
+      </div>
+
+      <div class="risk risk--lo">
+        <h3 id="s9-2"><span class="hnum">9.2</span>Tre uafhængige regler for daglig nulstilling <span class="chip chip--lo">Lav · ny</span></h3>
+        <p>Dagsskiftet afgøres tre steder, ud fra tre forskellige tidsstempler:</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Sted</th><th>Betingelse</th><th>Hvornår</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">AbstractLyricService.cs:661</td><td class="mono">LastRequest.Date &lt; Now.Date</td><td>kun ved opstart</td></tr>
+              <tr><td class="mono">LyricsFinderCore.cs:897</td><td class="mono">Now.Date &gt; MainData.LastMcStatusCheck.Date</td><td>på MC-status-timeren</td></tr>
+              <tr><td class="mono">Stands4Service.cs:300</td><td class="mono">QuotaResetTime i UTC</td><td>ved hvert kvotetjek</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>De kan nulstille i vilkårlig rækkefølge og på forskellige tidspunkter. Vil man kunne
+        stole på <code>RequestCountToday</code>, bør der være én regel.</p>
+      </div>
+
+      <div class="risk risk--lo">
+        <h3 id="s9-3"><span class="hnum">9.3</span>DailyQuota seedes aldrig fra App.config <span class="chip chip--lo">Lav · ny</span></h3>
+        <p><code>Stands4Service.RefreshServiceSettingsAsync</code> læser
+        <code>QuotaResetTimeZone</code> og <code>QuotaResetTime</code>, men ikke
+        <code>DailyQuota</code>. Indstillingen i <code>App.config</code> når derfor aldrig frem til
+        propertyen. Effekten er lav i dag, fordi kvoteberegningen er slået fra med vilje
+        (<code>ret = false;</code> med kommentar i <code>Stands4Service.cs:309-312</code> — tjenesten
+        får lov at melde selv), men <code>DailyQuota</code>-kolonnen i service-formularen viser
+        værdien.</p>
+      </div>
+
+      <div class="risk risk--lo">
+        <h3 id="s9-4"><span class="hnum">9.4</span>IsConfigurationFileUsed er static <span class="chip chip--lo">Lav · ny</span></h3>
+        <p><code>AbstractLyricService.cs:98</code> erklærer den <code>public static bool</code>, men
+        den tildeles pr. instans i <code>RefreshServiceSettingsAsync</code>
+        (<code>:632</code>) og læses som instanstilstand på <code>:639</code> og i
+        <code>Stands4Service.cs:417</code> efter <code>base</code>-kaldet. Alle tjenester deler
+        altså ét flag. Det virker kun fordi <code>InitLyricServicesAsync</code>
+        (<code>LyricsFinderCore.Private.cs:452-457</code>) gennemløber dem sekventielt og hver
+        override læser flaget umiddelbart efter. Den læser som en instans-property der er blevet
+        <code>static</code> ved et uheld.</p>
+      </div>
+
+      <div class="risk risk--md">
+        <h3 id="s9-5"><span class="hnum">9.5</span>Rå interpolation lever stadig i lyric-tjenesterne <span class="chip chip--md">Medium</span></h3>
+        <p><a href="#s5-4">&sect;5.4</a> rettede <code>McRestService.CreateRequestUrl</code>, men de
+        fire tjenester der selv bygger URL’er — <code>CajunLyricsService</code>,
+        <code>LololyricsService</code>, <code>MusiXmatchService</code> og
+        <code>Stands4Service</code> — interpolerer stadig artist, album og titel direkte ind i
+        query-strengen. En sangtitel med <code>&amp;</code> eller <code>#</code> giver et forkert
+        opslag. <code>UrlEncoded()</code> findes nu i
+        <code>SharedComponents/Utility/Utility.cs</code> og kan bruges direkte.</p>
+      </div>
+
+      <h3 id="s9-6"><span class="hnum">9.6</span>Stadig åbne fra afsnit 5 og 6</h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Punkt</th><th>Emne</th><th>Bemærkning</th></tr></thead>
+          <tbody>
+            <tr><td class="mono"><a href="#s5-2">&sect;5.2</a></td><td>Tællere gemmes muligvis aldrig</td><td>Præciseret i <a href="#s9-1">&sect;9.1</a> — ikke tabt, men gemningen pr. sang skriver aldrig</td></tr>
+            <tr><td class="mono"><a href="#s5-3">&sect;5.3</a></td><td>HttpClient genskabes pr. kald</td><td>Uændret. Bør laves sammen med <a href="#s5-7">&sect;5.7</a></td></tr>
+            <tr><td class="mono"><a href="#s5-5">&sect;5.5</a></td><td>Trådmodellen holder ved et tilfælde</td><td>Uændret</td></tr>
+            <tr><td class="mono"><a href="#s5-6">&sect;5.6</a></td><td>WhenAny(predicate) og AggregateException</td><td>Uændret</td></tr>
+            <tr><td class="mono"><a href="#s5-7">&sect;5.7</a></td><td>CancellationToken når ikke HTTP-laget</td><td>Uændret</td></tr>
+            <tr><td class="mono"><a href="#s5-10">&sect;5.10</a></td><td>Sikkerhed</td><td>Password og tokens ligger stadig i klartekst i datafilen</td></tr>
+            <tr><td class="mono"><a href="#s5-11">&sect;5.11</a></td><td>Byggeopsætning</td><td>Uændret</td></tr>
+            <tr><td class="mono"><a href="#s5-12">&sect;5.12</a></td><td>Øvrige code smells</td><td>Kun kommentaren i <code>Serialize.cs</code> er væk; resten står</td></tr>
+            <tr><td class="mono"><a href="#s6">&sect;6</a></td><td>Testhuller</td><td>Uændret. <code>Serialize</code> og <code>CreateRequestUrl</code> er nu rettet uden et sikkerhedsnet under sig</td></tr>
+          </tbody>
+        </table>
+      </div>
 
       <p class="colophon">
         Gennemgang af <span style="color:var(--accent)">hardolf/JRiver.MediaCenter</span> @ master · 25. august 2026<br>
-        Ren analyse — ingen kildefiler er ændret. Tekstversion: <code>docs/solution-overview.da.md</code><br>
+        Statusopdateret 26. august 2026 — &sect;5.1, &sect;5.4, &sect;5.8 og &sect;5.9 er rettet og testet. Tekstversion: <code>docs/solution-overview.da.md</code><br>
         English version: <a href="https://claude.ai/code/artifact/71d2a395-d46f-4d90-adfc-6c866dfe501f">solution-overview.en</a>
       </p>
     </section>
