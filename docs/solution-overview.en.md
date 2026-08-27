@@ -124,7 +124,7 @@ Core so they can inherit from it. The dependency is inverted at runtime — henc
 The service projects also drag in a **large transitive tail** via `Microsoft.NET.Test.Sdk` →
 ApplicationInsights → Azure.Core → OpenTelemetry → `Microsoft.Extensions.*` 10.0.7 → MSAL.
 Roughly 60 packages per service project, all of it a consequence of unit tests living in the
-**same assembly** as the production code.
+**same assembly** as the production code. Separate test projects remove the tail — see §6.2.
 
 ### 3.2 Central configuration
 
@@ -554,7 +554,8 @@ of "changes are not saved", but I have not verified which fields actually differ
   version `13.0.0.0`). Likewise for `System.Buffers` (`4.0.3.0` vs. package 4.6.1) and
   `System.Numerics.Vectors`. Can produce a `FileLoadException` at runtime.
 * **`MediaCenter.sln` is broken** — missing `ApiseedsService.csproj`, see §2.
-* **No CI.** `.github/` contains only `ISSUE_TEMPLATE`. No workflows.
+* **No CI.** `.github/` contains only `ISSUE_TEMPLATE`. No workflows. Hermetic tests are the
+  prerequisite; the plan is in §6.2.
 * **Version inconsistency.** `SharedAssemblyInfo.cs` = 1.3.7.0; `Setup.iss` `AppVersion` and
   the registry `Version` = hard-coded 1.0.0; `ReleaseNotes.html` tops out at v1.3.1; the latest
   commit is titled "Starting v1.4.0 changes".
@@ -572,7 +573,7 @@ of "changes are not saved", but I have not verified which fields actually differ
 * **`LyricsFinderCore` is a prime candidate for splitting up**: `LyricsFinderCore.cs` (1369
   lines) + `.Private.cs` (1296) + `.Process.cs` (486) in one partial class that mixes UI, MCWS
   orchestration, file system and business logic. This is the main reason no unit tests exist
-  for the core.
+  for the core (§6.2).
 * **`StackTrace` inside a property getter.**
   `LyricsFinderCoreConfigurationSectionHandler.Instance` builds a `new StackTrace()` and reads
   `GetFrame(1).GetMethod().Name` on **every** access, to work out who is calling. Expensive,
@@ -647,11 +648,86 @@ They carry three hard out-of-process dependencies:
 | `LyricsFinderCore` | None — and the code is not structured for it. |
 | `Installation` / `Setup.iss` | None. |
 
-**Recommended order** if tests are to be invested in: (1) a separate `*.Tests` project per
-layer, so MSTest leaves the production assemblies; (2) pure unit tests of `Utility`,
-`McRestService.CreateRequestUrl` and `Serialize` — fast, hermetic, and covering two of the
-suspected bugs above; (3) `LyricSearch` with in-memory fakes; (4) move the existing network
-tests into a separate category that is disabled by default.
+> **Recommended order** now lives in §6.2, together with the rest of the planned test work.
+
+### 6.2 An expanded test regime
+
+*This is the single place where the planned test work is described. §6.1 records what is
+untested; everything below is what to do about it. Other sections point here rather than
+repeating it.*
+
+**The order to build it in.** (1) A separate `*.Tests` project per layer, so MSTest leaves the
+production assemblies — that also sheds the ~60-package transitive tail described in §3.1.
+(2) Pure unit tests of `Utility`, `McRestService.CreateRequestUrl` and `Serialize` — fast,
+hermetic, and covering two of the suspected bugs in §5. (3) `LyricSearch` with in-memory fakes.
+(4) The existing network tests made passive, see below. (5) CI, once (1)–(4) hold.
+
+**Offline fixtures.** The three out-of-process dependencies above trace back to one missing
+piece: nothing can serve a lyric service's response except the lyric service itself. The fix is
+a fake `HttpMessageHandler` injected into `AbstractLyricService`, returning saved HTML/JSON
+fixtures instead of calling the network. `HttpMessageHandler` is a BCL type, so this needs no
+new NuGet package.
+
+That makes the parser tests hermetic and fast, and it turns "a lyric site changed its markup"
+into a failing *parser* test instead of today's failure, in which network trouble and a code
+defect are indistinguishable.
+
+**Capturing the fixtures is browser work.** For each service, open a real result page, save the
+exact response body to `Tests/Fixtures/<Service>/<artist>-<title>.html`, and record the source
+URL and capture date beside it. These files rot, and a stale fixture that quietly disagrees
+with the live site is worse than no fixture at all.
+
+**Use the same pass to settle the open `CA1309` cluster.** The analyzers flag 31 sites with
+"use ordinal string comparison", and they split three ways — only the first group is a browser
+question:
+
+| Where | Sites | How to decide |
+|---|---:|---|
+| Lyric-service parsers — `Stands4Service` 6, `AZLyricsService` 2, `LololyricsService` 1 | 9 | From captured markup: casing, non-breaking spaces, en-dashes and accented artist names all change the answer |
+| `McWsProxy` response parsing — `McPlayListsResponse` 4, `McResponse`, `McResponseDescendents`, `McMplItem` | 7 | MCWS field names are machine-generated ASCII; ordinal is almost certainly correct |
+| `LyricsFinderCore` internals — `DisplayProperty` 6, `LyricsFinderDataType` 2, `LyricServiceForm` 2, five others | 15 | Internal keys and enum names — decidable by reading the code, no capture needed |
+
+The hard-coded test song already carries an en-dash ("Bruce Daigrepont – La Jalouserie"),
+exactly the class of character that makes a culture-sensitive comparison diverge from an
+ordinal one. The nine parser sites are worth deciding from real bytes rather than from reading
+the call sites.
+
+**Make the live tests passive.** The 28 existing tests stay — only they catch a lyric site
+changing its markup, which is precisely what fixtures cannot. But they must stop running by
+accident, and they must be started deliberately from Visual Studio. Mark them and exclude them
+by default:
+
+```csharp
+[TestClass]
+[TestCategory("Live")]          // on the class, so all its tests inherit it
+public class UnitTest { … }
+```
+
+```xml
+<!-- LyricsFinder.runsettings — select once via Test > Configure Run Settings -->
+<RunSettings>
+  <RunConfiguration>
+    <TestCaseFilter>TestCategory!=Live</TestCaseFilter>
+  </RunConfiguration>
+</RunSettings>
+```
+
+Test Explorer's **Run All** then skips them. Running them is a deliberate act: group by
+**Traits**, select `Live`, Run. `vstest.console.exe` takes the same filter as
+`/TestCaseFilter:"TestCategory!=Live"`. `[Ignore]` would also grey them out, but it cannot be
+lifted without editing code, so it is the wrong tool for tests that are meant to be runnable
+on demand.
+
+**Dependency 2 above disappears in the same pass.** `[TestInitialize]` reads the user's real
+`%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml`. Point it at a checked-in fixture data
+file and the tests stop requiring a configured machine or real API tokens.
+
+**CI becomes possible once the above holds.** `.github/` currently contains only
+`ISSUE_TEMPLATE` and no workflows (§5.11). A Windows runner building the solution on every push
+would stop compile breaks at the commit, and it runs on GitHub's machine, so it never touches
+the local `Build\`, `Output\` or `Release\` folders. Only the hermetic tests belong there — the
+`Live` category stays excluded.
+
 
 ---
 
@@ -712,6 +788,9 @@ Or through Test Explorer in Visual Studio. Remember the prerequisites from §6: 
 existing `%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml`, and valid tokens for Stands4
 and MusiXmatch. Tests in CI will fail.
 
+These are the live integration tests. §6.2 proposes marking them `[TestCategory("Live")]` and
+excluding them by default, so they run only when started deliberately from Test Explorer.
+
 ### 7.4 Running
 
 **Stand-alone:**
@@ -761,9 +840,9 @@ Delete `LyricsFinder.xml` to reset to factory settings — the services are recr
    does not depend on an invisible contract.
 7. **Clean up the build**: `vswhere` instead of `D:\` paths, fix the binding redirects, repair
    or remove `MediaCenter.sln`, delete `LyricServices.Old` and `McPlayControlForm.cs`.
-8. **Separate test projects** plus unit tests of `Utility`, `CreateRequestUrl` and `Serialize`,
-   so there is a safety net to refactor against at all. A round-trip test of multi-line text
-   through `App.config` → data file → `App.config` would have caught §5.8.
+8. **Build the test regime in §6.2** — separate test projects, offline fixtures, the live tests
+   made passive, then CI. A round-trip test of multi-line text through `App.config` → data file
+   → `App.config` would have caught §5.8, and there is still no safety net to refactor against.
 
 ---
 
@@ -840,4 +919,4 @@ interpolate artist, album and title straight into the query string. `UrlEncoded(
 | §5.10 | Security | Password and tokens are still cleartext in the data file |
 | §5.11 | Build setup | Unchanged |
 | §5.12 | Other code smells | Only the `Serialize.cs` comment is gone; the rest stands |
-| §6 | Test gaps | Unchanged. `Serialize` and `CreateRequestUrl` have now been changed with no safety net underneath them |
+| §6 | Test gaps | Unchanged. `Serialize` and `CreateRequestUrl` have now been changed with no safety net underneath them. The plan is consolidated in §6.2 |

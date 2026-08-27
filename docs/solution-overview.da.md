@@ -123,7 +123,8 @@ i .sln-filen og de mange `xcopy`-post-build-events.
 Service-projekterne trækker desuden en **stor transitiv hale** ind via
 `Microsoft.NET.Test.Sdk` → ApplicationInsights → Azure.Core → OpenTelemetry →
 `Microsoft.Extensions.*` 10.0.7 → MSAL. Ca. 60 pakker pr. serviceprojekt, alle sammen
-konsekvens af at unit-tests bor i **samme assembly** som produktionskoden.
+konsekvens af at unit-tests bor i **samme assembly** som produktionskoden. Separate
+testprojekter fjerner halen — se §6.2.
 
 ### 3.2 Central konfiguration
 
@@ -551,7 +552,8 @@ ikke gemt", men jeg har ikke verificeret hvilke felter der reelt afviger.
   (assembly-version `13.0.0.0`). Tilsvarende for `System.Buffers` (`4.0.3.0` vs. pakke 4.6.1)
   og `System.Numerics.Vectors`. Kan give `FileLoadException` ved runtime.
 * **`MediaCenter.sln` er brudt** (manglende `ApiseedsService.csproj`, se §2).
-* **Ingen CI.** `.github/` indeholder kun `ISSUE_TEMPLATE`. Ingen workflows.
+* **Ingen CI.** `.github/` indeholder kun `ISSUE_TEMPLATE`. Ingen workflows. Hermetiske tests
+  er forudsætningen; planen står i §6.2.
 * **Versionsinkonsistens.** `SharedAssemblyInfo.cs` = 1.3.7.0; `Setup.iss` `AppVersion` og
   registry-`Version` = hardkodet 1.0.0; `ReleaseNotes.html` topper ved v1.3.1; seneste commit
   hedder "Starting v1.4.0 changes".
@@ -569,7 +571,7 @@ ikke gemt", men jeg har ikke verificeret hvilke felter der reelt afviger.
 * **`LyricsFinderCore` er en god monolit-kandidat til opdeling**: `LyricsFinderCore.cs` (1369
   linjer) + `.Private.cs` (1296) + `.Process.cs` (486) i én partial klasse, der blander UI,
   MCWS-orkestrering, filsystem og forretningslogik. Det er den primære grund til at der
-  ikke findes unit-tests for kernen.
+  ikke findes unit-tests for kernen (§6.2).
 * **`StackTrace` i en property-getter.** `LyricsFinderCoreConfigurationSectionHandler.Instance`
   laver `new StackTrace()` og `GetFrame(1).GetMethod().Name` ved **hvert** opslag, for at
   udlede hvem der kalder. Dyrt, og fejlbehæftet så snart JIT'en inliner.
@@ -644,12 +646,84 @@ De har tre hårde afhængigheder ud af processen:
 | `LyricsFinderCore` | Ingen — og koden er ikke struktureret til det. |
 | `Installation` / `Setup.iss` | Ingen. |
 
-**Anbefalet rækkefølge**, hvis der skal investeres i tests: (1) et separat
-`*.Tests`-projekt pr. lag, så MSTest ryger ud af produktions-assemblies; (2) rene
-enhedstests af `Utility` + `McRestService.CreateRequestUrl` + `Serialize` — hurtige,
-hermetiske, og de dækker to af de mistænkte fejl ovenfor; (3) `LyricSearch` med
-in-memory-fakes; (4) de eksisterende netværkstests flyttes til en separat kategori der
-er slået fra by default.
+> **Anbefalet rækkefølge** ligger nu i §6.2, sammen med resten af det planlagte testarbejde.
+
+### 6.2 Et udbygget test-regime
+
+*Dette er det ene sted hvor det planlagte testarbejde beskrives. §6.1 registrerer hvad der er
+utestet; alt nedenfor er hvad der skal gøres ved det. Øvrige afsnit henviser hertil frem for at
+gentage det.*
+
+**Rækkefølgen at bygge det i.** (1) Et separat `*.Tests`-projekt pr. lag, så MSTest ryger ud af
+produktions-assemblies — det fjerner samtidig den ~60-pakkers transitive hale beskrevet i §3.1.
+(2) Rene enhedstests af `Utility`, `McRestService.CreateRequestUrl` og `Serialize` — hurtige,
+hermetiske, og de dækker to af de mistænkte fejl i §5. (3) `LyricSearch` med in-memory-fakes.
+(4) De eksisterende netværkstests gjort passive, se nedenfor. (5) CI, når (1)–(4) er på plads.
+
+**Offline-fixtures.** De tre afhængigheder ud af processen ovenfor stammer alle fra én manglende
+brik: intet kan levere en lyric-tjenestes svar undtagen tjenesten selv. Løsningen er en fake
+`HttpMessageHandler` injiceret i `AbstractLyricService`, som returnerer gemte
+HTML/JSON-fixtures i stedet for at kalde netværket. `HttpMessageHandler` er en BCL-type, så det
+kræver ingen ny NuGet-pakke.
+
+Det gør parser-testene hermetiske og hurtige, og det gør "en lyric-side har ændret markup" til
+en fejlende *parser*-test i stedet for den nuværende fejl, hvor netværksproblemer og en kodefejl
+ikke kan skelnes fra hinanden.
+
+**At optage fixtures er browser-arbejde.** For hver tjeneste: åbn en rigtig resultatside, gem
+det præcise response-body i `Tests/Fixtures/<Service>/<artist>-<title>.html`, og notér kilde-URL
+og optagelsesdato ved siden af. Filerne rådner, og en forældet fixture, der stille er uenig med
+den live side, er værre end slet ingen fixture.
+
+**Brug samme gennemgang til at afgøre den åbne `CA1309`-klynge.** Analysatorerne markerer 31
+steder med "use ordinal string comparison", og de deler sig i tre — kun den første gruppe er et
+browser-spørgsmål:
+
+| Hvor | Steder | Sådan afgøres det |
+|---|---:|---|
+| Lyric-service-parsere — `Stands4Service` 6, `AZLyricsService` 2, `LololyricsService` 1 | 9 | Ud fra optaget markup: versalisering, hårde mellemrum, tankestreger og accenttegn i kunstnernavne ændrer alle svaret |
+| `McWsProxy`-responsparsning — `McPlayListsResponse` 4, `McResponse`, `McResponseDescendents`, `McMplItem` | 7 | MCWS-feltnavne er maskingenereret ASCII; ordinal er næsten sikkert korrekt |
+| `LyricsFinderCore`-interne — `DisplayProperty` 6, `LyricsFinderDataType` 2, `LyricServiceForm` 2, fem øvrige | 15 | Interne nøgler og enum-navne — kan afgøres ved at læse koden, ingen optagelse nødvendig |
+
+Den hardkodede testsang indeholder allerede en tankestreg ("Bruce Daigrepont – La Jalouserie") —
+præcis den slags tegn der får en kultur-følsom sammenligning til at afvige fra en ordinal. De ni
+parser-steder bør afgøres ud fra rigtige bytes frem for ud fra kaldstederne.
+
+**Gør live-testene passive.** De 28 eksisterende tests bliver — kun de fanger at en lyric-side
+ændrer markup, hvilket er netop hvad fixtures ikke kan. Men de skal holde op med at køre ved et
+uheld, og de skal startes bevidst fra Visual Studio. Markér dem og udelad dem som standard:
+
+```csharp
+[TestClass]
+[TestCategory("Live")]          // på klassen, så alle dens tests arver den
+public class UnitTest { … }
+```
+
+```xml
+<!-- LyricsFinder.runsettings — vælges én gang via Test > Konfigurer kørselsindstillinger -->
+<RunSettings>
+  <RunConfiguration>
+    <TestCaseFilter>TestCategory!=Live</TestCaseFilter>
+  </RunConfiguration>
+</RunSettings>
+```
+
+Test Explorers **Kør alle** springer dem så over. At køre dem bliver en bevidst handling:
+gruppér efter **Traits**, vælg `Live`, Kør. `vstest.console.exe` tager samme filter som
+`/TestCaseFilter:"TestCategory!=Live"`. `[Ignore]` ville også gøre dem grå, men den kan ikke
+ophæves uden at rette i koden, så den er forkert værktøj til tests der skal kunne køres efter
+behov.
+
+**Afhængighed 2 ovenfor forsvinder i samme ombæring.** `[TestInitialize]` læser brugerens
+rigtige `%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml`. Peg den mod en indtjekket
+fixture-datafil, og testene kræver ikke længere en konfigureret maskine eller rigtige API-tokens.
+
+**CI bliver muligt når ovenstående er på plads.** `.github/` indeholder i dag kun
+`ISSUE_TEMPLATE` og ingen workflows (§5.11). En Windows-runner der bygger solutionen ved hvert
+push ville stoppe compile-brud allerede ved committet, og den kører på GitHubs maskine, så den
+rører aldrig de lokale `Build\`-, `Output\`- eller `Release\`-mapper. Kun de hermetiske tests
+hører til dér — `Live`-kategorien forbliver udeladt.
+
 
 ---
 
@@ -710,6 +784,9 @@ Eller via Test Explorer i Visual Studio. Husk forudsætningerne fra §6: netvær
 eksisterende `%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml`, og gyldige tokens
 for Stands4 og MusiXmatch. Tests i CI vil fejle.
 
+Det er live-integrationstestene. §6.2 foreslår at markere dem `[TestCategory("Live")]` og
+udelade dem som standard, så de kun kører når de startes bevidst fra Test Explorer.
+
 ### 7.4 Kørsel
 
 **Stand-alone:**
@@ -759,9 +836,10 @@ Slet `LyricsFinder.xml` for at nulstille til fabriksindstillinger (services gens
    afhænger af en usynlig kontrakt.
 7. **Ryd op i build**: `vswhere` i stedet for `D:\`-stier, ret binding redirects, reparér
    eller fjern `MediaCenter.sln`, slet `LyricServices.Old` og `McPlayControlForm.cs`.
-8. **Separate testprojekter** + enhedstests af `Utility`, `CreateRequestUrl` og `Serialize`,
-   så der overhovedet findes et sikkerhedsnet at refaktorere med. En round-trip-test af
-   flerlinjet tekst gennem `App.config` → datafil → `App.config` ville have fanget §5.8.
+8. **Byg test-regimet i §6.2** — separate testprojekter, offline-fixtures, live-testene gjort
+   passive, derefter CI. En round-trip-test af flerlinjet tekst gennem `App.config` → datafil →
+   `App.config` ville have fanget §5.8, og der findes stadig intet sikkerhedsnet at refaktorere
+   med.
 
 ---
 
@@ -837,4 +915,4 @@ stadig artist, album og titel direkte ind i query-strengen. `UrlEncoded()` finde
 | §5.10 | Sikkerhed | Password og tokens ligger stadig i klartekst i datafilen |
 | §5.11 | Byggeopsætning | Uændret |
 | §5.12 | Øvrige code smells | Kun kommentaren i `Serialize.cs` er væk; resten står |
-| §6 | Testhuller | Uændret. `Serialize` og `CreateRequestUrl` er nu rettet uden et sikkerhedsnet under sig |
+| §6 | Testhuller | Uændret. `Serialize` og `CreateRequestUrl` er nu rettet uden et sikkerhedsnet under sig. Planen er samlet i §6.2 |

@@ -651,7 +651,7 @@ figcaption {
           <div class="finding__top"><span class="chip chip--md">Medium</span></div>
           <h3>No CI, no hermetic tests</h3>
           <p>All 28 tests hit live third-party websites and require the user's own data file with real API tokens.</p>
-          <p class="where"><a href="#s6">&sect;6</a> &middot; LyricServices/*/UnitTest.cs</p>
+          <p class="where"><a href="#s6-2">&sect;6.2</a> &middot; LyricServices/*/UnitTest.cs</p>
         </article>
 
       </div>
@@ -838,7 +838,7 @@ figcaption {
       <code>Microsoft.NET.Test.Sdk</code> → ApplicationInsights → Azure.Core → OpenTelemetry →
       <code>Microsoft.Extensions.*</code> 10.0.7 → MSAL. Roughly 60 packages per service project,
       all of it a consequence of unit tests living in the <em>same assembly</em> as the production
-      code.</p>
+      code. Separate test projects remove the tail &mdash; see <a href="#s6-2">&sect;6.2</a>.</p>
 
       <h3 id="s3-2"><span class="hnum">3.2</span>Central configuration</h3>
       <div class="tablewrap">
@@ -1295,7 +1295,8 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
         <li><strong><code>MediaCenter.sln</code> is broken</strong> — missing
           <code>ApiseedsService.csproj</code>.</li>
         <li><strong>No CI.</strong> <code>.github/</code> contains only
-          <code>ISSUE_TEMPLATE</code>.</li>
+          <code>ISSUE_TEMPLATE</code>. Hermetic tests are the prerequisite; the plan is in
+          <a href="#s6-2">&sect;6.2</a>.</li>
         <li><strong>Version inconsistency.</strong> <code>SharedAssemblyInfo.cs</code> = 1.3.7.0;
           <code>Setup.iss</code> <code>AppVersion</code> and the registry <code>Version</code> =
           hard-coded 1.0.0; <code>ReleaseNotes.html</code> tops out at v1.3.1; the latest commit is
@@ -1318,7 +1319,8 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
       <ul>
         <li><strong><code>LyricsFinderCore</code> is a prime candidate for splitting up</strong> —
           1369 + 1296 + 486 lines in one partial class that mixes UI, MCWS orchestration, file
-          system and business logic. This is the main reason no unit tests exist for the core.</li>
+          system and business logic. This is the main reason no unit tests exist for the core
+          (<a href="#s6-2">&sect;6.2</a>).</li>
         <li><strong><code>StackTrace</code> inside a property getter.</strong>
           <code>LyricsFinderCoreConfigurationSectionHandler.Instance</code> builds a
           <code>new StackTrace()</code> and reads <code>GetFrame(1).GetMethod().Name</code> on
@@ -1420,13 +1422,96 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
       </div>
 
       <div class="note">
-        <p><strong>Recommended order:</strong> (1) separate <code>*.Tests</code> projects per layer,
-        so MSTest leaves the production assemblies; (2) pure unit tests of <code>Utility</code>,
-        <code>McRestService.CreateRequestUrl</code> and <code>Serialize</code> — fast, hermetic, and
-        covering two of the suspected bugs above; (3) <code>LyricSearch</code> with in-memory fakes;
-        (4) move the existing network tests into a separate category that is disabled by
-        default.</p>
+        <p><strong>Recommended order</strong> now lives in <a href="#s6-2">&sect;6.2</a>, together
+        with the rest of the planned test work.</p>
       </div>
+
+      <h3 id="s6-2"><span class="hnum">6.2</span>An expanded test regime</h3>
+      <p><em>This is the single place where the planned test work is described. &sect;6.1 records
+      what is untested; everything below is what to do about it. Other sections point here rather
+      than repeating it.</em></p>
+
+      <p><strong>The order to build it in.</strong> (1) A separate <code>*.Tests</code> project per
+      layer, so MSTest leaves the production assemblies &mdash; that also sheds the ~60-package
+      transitive tail described in <a href="#s3-1">&sect;3.1</a>. (2) Pure unit tests of
+      <code>Utility</code>, <code>McRestService.CreateRequestUrl</code> and <code>Serialize</code>
+      &mdash; fast, hermetic, and covering two of the suspected bugs in <a href="#s5">&sect;5</a>.
+      (3) <code>LyricSearch</code> with in-memory fakes. (4) The existing network tests made
+      passive, see below. (5) CI, once (1)&ndash;(4) hold.</p>
+
+      <p><strong>Offline fixtures.</strong> The three out-of-process dependencies above trace back
+      to one missing piece: nothing can serve a lyric service&rsquo;s response except the lyric
+      service itself. The fix is a fake <code>HttpMessageHandler</code> injected into
+      <code>AbstractLyricService</code>, returning saved HTML/JSON fixtures instead of calling the
+      network. <code>HttpMessageHandler</code> is a BCL type, so this needs no new NuGet
+      package.</p>
+
+      <p>That makes the parser tests hermetic and fast, and it turns &ldquo;a lyric site changed
+      its markup&rdquo; into a failing <em>parser</em> test instead of today&rsquo;s failure, in
+      which network trouble and a code defect are indistinguishable.</p>
+
+      <p><strong>Capturing the fixtures is browser work.</strong> For each service, open a real
+      result page, save the exact response body to
+      <code>Tests/Fixtures/&lt;Service&gt;/&lt;artist&gt;-&lt;title&gt;.html</code>, and record the
+      source URL and capture date beside it. These files rot, and a stale fixture that quietly
+      disagrees with the live site is worse than no fixture at all.</p>
+
+      <p><strong>Use the same pass to settle the open <code>CA1309</code> cluster.</strong> The
+      analyzers flag 31 sites with &ldquo;use ordinal string comparison&rdquo;, and they split three
+      ways &mdash; only the first group is a browser question:</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Where</th><th class="right">Sites</th><th>How to decide</th></tr></thead>
+          <tbody>
+            <tr><td>Lyric-service parsers &mdash; <code>Stands4Service</code> 6, <code>AZLyricsService</code> 2, <code>LololyricsService</code> 1</td><td class="right num-col">9</td><td>From captured markup: casing, non-breaking spaces, en-dashes and accented artist names all change the answer</td></tr>
+            <tr><td><code>McWsProxy</code> response parsing &mdash; <code>McPlayListsResponse</code> 4, <code>McResponse</code>, <code>McResponseDescendents</code>, <code>McMplItem</code></td><td class="right num-col">7</td><td>MCWS field names are machine-generated ASCII; ordinal is almost certainly correct</td></tr>
+            <tr><td><code>LyricsFinderCore</code> internals &mdash; <code>DisplayProperty</code> 6, <code>LyricsFinderDataType</code> 2, <code>LyricServiceForm</code> 2, five others</td><td class="right num-col">15</td><td>Internal keys and enum names &mdash; decidable by reading the code, no capture needed</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The hard-coded test song already carries an en-dash (&ldquo;Bruce Daigrepont &ndash; La
+      Jalouserie&rdquo;), exactly the class of character that makes a culture-sensitive comparison
+      diverge from an ordinal one. The nine parser sites are worth deciding from real bytes rather
+      than from reading the call sites.</p>
+
+      <p><strong>Make the live tests passive.</strong> The 28 existing tests stay &mdash; only they
+      catch a lyric site changing its markup, which is precisely what fixtures cannot. But they must
+      stop running by accident, and they must be started deliberately from Visual Studio. Mark them
+      and exclude them by default:</p>
+
+      <pre>[TestClass]
+[TestCategory("Live")]          <span class="cmt">// on the class, so all its tests inherit it</span>
+public class UnitTest { … }</pre>
+
+      <pre><span class="cmt">&lt;!-- LyricsFinder.runsettings — select once via Test &gt; Configure Run Settings --&gt;</span>
+&lt;RunSettings&gt;
+  &lt;RunConfiguration&gt;
+    &lt;TestCaseFilter&gt;TestCategory!=Live&lt;/TestCaseFilter&gt;
+  &lt;/RunConfiguration&gt;
+&lt;/RunSettings&gt;</pre>
+
+      <p>Test Explorer&rsquo;s <strong>Run All</strong> then skips them. Running them is a
+      deliberate act: group by <strong>Traits</strong>, select <code>Live</code>, Run.
+      <code>vstest.console.exe</code> takes the same filter as
+      <code>/TestCaseFilter:"TestCategory!=Live"</code>. <code>[Ignore]</code> would also grey them
+      out, but it cannot be lifted without editing code, so it is the wrong tool for tests that are
+      meant to be runnable on demand.</p>
+
+      <div class="note">
+        <p><strong>Two things fall out of the same pass.</strong> (1) Dependency 2 above
+        disappears: <code>[TestInitialize]</code> reads the user&rsquo;s real
+        <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>; point it at a
+        checked-in fixture data file and the tests stop requiring a configured machine or real API
+        tokens. (2) CI becomes possible: <code>.github/</code> today holds only
+        <code>ISSUE_TEMPLATE</code> and no workflows (<a href="#s5-11">&sect;5.11</a>). A Windows
+        runner building on every push would stop compile breaks at the commit, and it runs on
+        GitHub&rsquo;s machine, so it never touches the local <code>Build\</code>,
+        <code>Output\</code> or <code>Release\</code> folders. Only the hermetic tests belong there
+        &mdash; the <code>Live</code> category stays excluded.</p>
+      </div>
+
     </section>
 
     <!-- ============ 7 ============ -->
@@ -1481,6 +1566,10 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
       network, an existing <code>LyricsFinder.xml</code>, and valid tokens for Stands4 and
       MusiXmatch. Tests in CI will fail.</p>
 
+      <p>These are the live integration tests. <a href="#s6-2">&sect;6.2</a> proposes marking them
+      <code>[TestCategory("Live")]</code> and excluding them by default, so they run only when
+      started deliberately from Test Explorer.</p>
+
       <h3 id="s7-4"><span class="hnum">7.4</span>Running</h3>
       <pre>LyricsFinder\LyricsFinderExe\bin\Debug\LyricsFinderExe.exe</pre>
       <p>The first start shows <code>OptionForm</code>, where the MCWS URL, Access Key, username and
@@ -1512,7 +1601,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
         <li><div><strong>Move multi-line settings out of XML attributes</strong><span>And repair the three <code>App.config</code> files whose line breaks have already been flattened. Attribute normalization is lossy on every read, and <code>CreditTextFormat</code> ends up in every saved lyric.</span></div></li>
         <li><div><strong>ConcurrentQueue and explicit UI marshalling</strong><span>In the search workers, so the code does not depend on an invisible contract.</span></div></li>
         <li><div><strong>Clean up the build</strong><span><code>vswhere</code> instead of <code>D:\</code> paths, fix the binding redirects, repair or remove <code>MediaCenter.sln</code>, delete <code>LyricServices.Old</code> and <code>McPlayControlForm.cs</code>.</span></div></li>
-        <li><div><strong>Separate test projects</strong><span>Plus unit tests of <code>Utility</code>, <code>CreateRequestUrl</code> and <code>Serialize</code>, so there is a safety net to refactor against. A round-trip test of multi-line text through <code>App.config</code> → data file → <code>App.config</code> would have caught the line-break bug.</span></div></li>
+        <li><div><strong>Build the test regime in <a href="#s6-2">&sect;6.2</a></strong><span>Separate test projects, offline fixtures, the live tests made passive, then CI. A round-trip test of multi-line text through <code>App.config</code> → data file → <code>App.config</code> would have caught the line-break bug, and there is still no safety net to refactor against.</span></div></li>
       </ol>
     </section>
 
@@ -1618,7 +1707,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
             <tr><td class="mono"><a href="#s5-10">&sect;5.10</a></td><td>Security</td><td>Password and tokens are still cleartext in the data file</td></tr>
             <tr><td class="mono"><a href="#s5-11">&sect;5.11</a></td><td>Build setup</td><td>Unchanged</td></tr>
             <tr><td class="mono"><a href="#s5-12">&sect;5.12</a></td><td>Other code smells</td><td>Only the <code>Serialize.cs</code> comment is gone; the rest stands</td></tr>
-            <tr><td class="mono"><a href="#s6">&sect;6</a></td><td>Test gaps</td><td>Unchanged. <code>Serialize</code> and <code>CreateRequestUrl</code> have now been changed with no safety net underneath them</td></tr>
+            <tr><td class="mono"><a href="#s6">&sect;6</a></td><td>Test gaps</td><td>Unchanged. <code>Serialize</code> and <code>CreateRequestUrl</code> have now been changed with no safety net underneath them. The plan is consolidated in <a href="#s6-2">&sect;6.2</a></td></tr>
           </tbody>
         </table>
       </div>
