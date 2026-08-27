@@ -1240,7 +1240,7 @@ namespace MediaCenter.LyricsFinder.Forms
 
             LyricFormStatusLabel.Text = $"{_foundLyricList.Count} {lyricStr} found total in {(end - begin).TotalSeconds:###,##0.} seconds";
 
-            if (lyricExceptions.Any())
+            if (lyricExceptions.Count > 0)
                 await ErrorHandling.ShowAndLogDetailedErrorHandlerAsync("A lyric service failed.", lyricExceptions.First());
         }
 

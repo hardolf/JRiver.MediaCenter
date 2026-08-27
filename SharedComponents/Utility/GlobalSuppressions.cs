@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "<Pending>", Scope = "module")]
 [assembly: SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.Utility.JoinTrimmedStrings(System.String,System.String[])~System.String")]
 [assembly: SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.Utility.Contains(System.String,System.Collections.Generic.IEnumerable{System.String})~System.Boolean")]
 [assembly: SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>", Scope = "member", Target = "~M:MediaCenter.SharedComponents.Serialize.PatchMissingNamespace(System.String)~System.String")]

@@ -1,4 +1,99 @@
-﻿[*.cs]
+﻿# EditorConfig for JRiver.MediaCenter
+#
+# Central home for analyzer severities. Applies to every project in
+# LyricsFinder.sln - the compiler receives this file as /analyzerconfig for all
+# of them, including the SharedComponents projects outside the LyricsFinder tree.
+#
+# Prefer adding a severity line here over a new [SuppressMessage] attribute:
+# one reviewed decision beats N machine-generated ones.
+
+root = true
+
+[*.cs]
+
+#-------------------------------------------------------------------------------
+# Rules kept ON deliberately
+#-------------------------------------------------------------------------------
 
 # CA2213: 'LyricsFinderCore' contains field '_mcControlForm' that is of IDisposable type 'McControlForm', but it is never disposed. Change the Dispose method on 'LyricsFinderCore' to call Close or Dispose on this field.
 dotnet_diagnostic.CA2213.severity = warning
+
+#-------------------------------------------------------------------------------
+# Codebase-wide policy
+#
+# These were already module-wide [SuppressMessage] attributes, repeated once per
+# project. Stating them here once is equivalent, and lets the per-project copies
+# be deleted.
+#-------------------------------------------------------------------------------
+
+# CA1303: Do not pass literals as localized parameters.
+# LyricsFinder does not localize log, exception or diagnostic strings.
+# Was: module-wide in 12 projects, plus 6 targeted suppressions elsewhere.
+dotnet_diagnostic.CA1303.severity = none
+
+# CA1031: Do not catch general exception types.
+# Deliberate: the lyric services and the top-level UI handlers catch Exception so
+# that one failing service cannot take down a batch run.
+# Was: module-wide in 11 projects, plus 1 targeted suppression.
+dotnet_diagnostic.CA1031.severity = none
+
+#-------------------------------------------------------------------------------
+# Opt-in candidates - each currently covered by targeted [SuppressMessage]
+# attributes. Uncomment to retire that whole group, then delete the attributes.
+# The count is how many attributes the line would replace.
+#
+# These are NOT equivalent swaps: a targeted suppression names one member, while
+# a line here silences the rule everywhere, including in code not yet written.
+# Decide per rule.
+#-------------------------------------------------------------------------------
+
+# --- Style / IDE rules (affect Visual Studio only; the command-line build does
+# --- not run the code-style analyzers, so these cannot be verified by a build).
+
+# IDE0059: Unnecessary assignment of a value. (58)
+#dotnet_diagnostic.IDE0059.severity = silent
+
+# IDE0019: Use pattern matching for 'as' + null check. (11)
+#dotnet_diagnostic.IDE0019.severity = silent
+
+# IDE0017: Use object initializers. (6)
+#dotnet_diagnostic.IDE0017.severity = silent
+
+# IDE0051 / IDE0052: Unused private member / unread private member. (3 + 3)
+# Worth keeping ON - these catch genuinely dead code.
+#dotnet_diagnostic.IDE0051.severity = suggestion
+#dotnet_diagnostic.IDE0052.severity = suggestion
+
+# IDE0060: Unused parameter. (2)
+#dotnet_diagnostic.IDE0060.severity = silent
+
+# --- Design / API-shape rules
+
+# CA1062: Validate arguments of public methods. (11)
+#dotnet_diagnostic.CA1062.severity = none
+
+# CA1054 / CA1056: URI parameters and properties should not be strings. (10 + 8)
+# LyricsFinder passes URLs as strings throughout the service layer.
+#dotnet_diagnostic.CA1054.severity = none
+#dotnet_diagnostic.CA1056.severity = none
+
+# CA2227: Collection properties should be read only. (8)
+# MjpCreator's types are XML-serialized, which needs settable collections.
+#dotnet_diagnostic.CA2227.severity = none
+
+# CA2235: Mark all non-serializable fields. (8)
+#dotnet_diagnostic.CA2235.severity = none
+
+# --- Correctness-adjacent: prefer fixing over silencing
+
+# CA1308: Normalize strings to uppercase. (10)
+# Deliberate ToLowerInvariant use; review before silencing.
+#dotnet_diagnostic.CA1308.severity = none
+
+# CA2000: Dispose objects before losing scope. (9)
+# Real leak-detection rule. Silence only after auditing the 9 sites.
+#dotnet_diagnostic.CA2000.severity = none
+
+# CA2007: Do not directly await a Task. (5)
+# Disabled by default; the codebase already uses ConfigureAwait consistently.
+#dotnet_diagnostic.CA2007.severity = none

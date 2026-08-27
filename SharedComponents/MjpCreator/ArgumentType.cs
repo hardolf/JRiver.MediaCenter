@@ -362,7 +362,7 @@ namespace MediaCenter.SharedComponents
             var argLen = args.Length;
             var argsLower = (string[])args.Clone();
 
-            argsLower = argsLower.Select(arg => arg.Trim().ToLower()).ToArray();
+            argsLower = argsLower.Select(arg => arg.Trim().ToLowerInvariant()).ToArray();
 
             // Check each input argument / value pair
             for (var i = 0; i < args.Length; i++)

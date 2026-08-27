@@ -237,7 +237,7 @@ namespace MediaCenter.LyricsFinder.Forms
 
                     foreach (var s in idNamePairs)
                     {
-                        playListIds.Add(int.Parse(s.Split(':').First()));
+                        playListIds.Add(int.Parse(s.Split(':').First(), CultureInfo.InvariantCulture));
                     }
                 }
             }

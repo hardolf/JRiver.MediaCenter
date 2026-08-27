@@ -164,7 +164,7 @@ namespace MediaCenter.McWs
 
                 await item.FillPropertiesFromFieldsAsync().ConfigureAwait(false);
 
-                if (!ret.Items.Keys.Contains(item.Key))
+                if (!ret.Items.ContainsKey(item.Key))
                     ret.Items.Add(item.Key, item);
             }
 

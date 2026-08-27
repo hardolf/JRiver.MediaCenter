@@ -73,7 +73,7 @@ namespace MediaCenter.SharedComponents
     /// </summary>
     public class StringWriterUTF8 : StringWriter
     {
-        public StringWriterUTF8(StringBuilder sb) : base(sb) { }
+        public StringWriterUTF8(StringBuilder sb) : base(sb, CultureInfo.InvariantCulture) { }
         public override Encoding Encoding => Encoding.UTF8;
     }
 

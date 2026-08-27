@@ -44,7 +44,7 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices.Test
                 var resultService = await _service.ProcessAsync(_item, cancellationTokenSource.Token).ConfigureAwait(false);
 
                 Assert.IsNotNull(resultService);
-                Assert.AreNotEqual(0, resultService.FoundLyricList.Count);
+                Assert.IsNotEmpty(resultService.FoundLyricList);
                 Assert.IsNotNull(resultService.FoundLyricList[0]);
                 Assert.IsNotNull(resultService.FoundLyricList[0].LyricText);
                 Assert.AreNotEqual(0, resultService.FoundLyricList[0].LyricText.Trim().Length);

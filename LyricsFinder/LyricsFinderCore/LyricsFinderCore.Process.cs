@@ -467,7 +467,7 @@ namespace MediaCenter.LyricsFinder
                             ? LyricsResultEnum.Found.ResultText()
                             : LyricsResultEnum.NotFound.ResultText();
 
-                        if (lyricExceptions.Any())
+                        if (lyricExceptions.Count > 0)
                             throw new Exception("A lyric service failed.", lyricExceptions.First());
                     }
                     else if (!OverwriteExistingLyricsMenuItem.Checked
