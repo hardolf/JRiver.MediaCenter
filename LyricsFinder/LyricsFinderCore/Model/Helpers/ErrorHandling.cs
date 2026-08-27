@@ -9,6 +9,7 @@ using System.Windows.Forms;
 
 using MediaCenter.LyricsFinder.Forms;
 using MediaCenter.LyricsFinder.Model.LyricServices;
+using MediaCenter.SharedComponents;
 
 
 namespace MediaCenter.LyricsFinder.Model.Helpers
@@ -91,11 +92,13 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
             sb.AppendLine($"Inner exceptions: ({((innerExceptionLevel == 0) ? "all" : $"only {innerExceptionLevel}")})");
 
             var cnt = 0;
-            var innerEx = exception.InnerException;
 
-            while ((innerEx != null)
-                && ((innerExceptionLevel < 1) || (cnt < innerExceptionLevel)))
+            // The chain is walked with InnerExceptionChain rather than InnerException, so that all the
+            // inner exceptions of an AggregateException are listed and not just the first one.
+            foreach (var innerEx in exception.InnerExceptionChain())
             {
+                if ((innerExceptionLevel > 0) && (cnt >= innerExceptionLevel)) break;
+
                 var msg = innerEx.Message.Trim(' ', '"');
 
                 cnt++;
@@ -119,7 +122,6 @@ namespace MediaCenter.LyricsFinder.Model.Helpers
                     sb.Append($"{indent}{msg}");
 
                 sb.AppendLine();
-                innerEx = innerEx.InnerException;
             }
 
             sb.AppendLine();

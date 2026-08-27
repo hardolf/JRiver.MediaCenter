@@ -352,6 +352,12 @@ namespace MediaCenter.LyricsFinder.Model.LyricServices
                 if (txt.ToUpperInvariant().Contains("<ERROR>DAILY USAGE EXCEEDED</ERROR>"))
                     QuotaError(mcItem, isGetAll);
 
+                // An empty response is not an XML document and XmlDeserializeFromString rejects it with an
+                // ArgumentNullException, which would abort the whole search instead of just this one item.
+                // base.ProcessAsync has already set LyricResult to NotFound.
+                if (txt.IsNullOrEmptyTrimmed())
+                    return this;
+
                 // Deserialize the returned JSON
                 var results = txt.XmlDeserializeFromString<StandsResultListType>();
 

@@ -1,4 +1,4 @@
-# LyricsFinder / JRiver.MediaCenter — arkitektur- og onboarding-rapport
+﻿# LyricsFinder / JRiver.MediaCenter — arkitektur- og onboarding-rapport
 
 Status: gennemgang pr. 2026-08-25 på branch `master`, statusopdateret 2026-08-26.
 §5.1, §5.4, §5.8 og §5.9 er rettet og testet; resten står i [afsnit 9](#9-udestående).
@@ -888,6 +888,11 @@ ikke `DailyQuota`. Indstillingen når derfor aldrig frem til propertyen. Effekte
 kvoteberegningen er slået fra med vilje (`ret = false;` med kommentar i `Stands4Service.cs:309-312`
 — tjenesten får lov at melde selv), men `DailyQuota`-kolonnen i service-formularen viser værdien.
 
+> **Præcisering 2026-08-27.** Konsekvensen er mindre end teksten antyder: propertyen
+> XML-serialiseres sammen med tjenesten og står derfor i datafilen, uafhængigt af `App.config`.
+> Beregningen i `IsQuotaExceededAsync` har altså en værdi at regne på — det er kun
+> `App.config`-vejen der ikke virker. Se §9.7.
+
 ### 9.4 `IsConfigurationFileUsed` er `static` (lav, ny)
 
 `AbstractLyricService.cs:98` erklærer den `public static bool`, men den tildeles pr. instans i
@@ -916,3 +921,63 @@ stadig artist, album og titel direkte ind i query-strengen. `UrlEncoded()` finde
 | §5.11 | Byggeopsætning | Uændret |
 | §5.12 | Øvrige code smells | Kun kommentaren i `Serialize.cs` er væk; resten står |
 | §6 | Testhuller | Uændret. `Serialize` og `CreateRequestUrl` er nu rettet uden et sikkerhedsnet under sig. Planen er samlet i §6.2 |
+
+### 9.7 STANDS4 ligger bag en AWS WAF-challenge — appen får 202 og tom body (høj, ny)
+
+Fundet 2026-08-27 under røgtesten af §5.6, på "Enya — Shepherd Moons — Angeles". Symptomet var
+`ArgumentNullException: Value cannot be null. Parameter name: xml` fra `Serialize.cs:232` via
+`Stands4Service.cs:356`, og hele "Search all" blev afbrudt.
+
+**Den bagvedliggende årsag er bekræftet ved at kalde appens eget HTTP-lag** (`Utility.dll` kørt via
+LPRun, altså samme statiske `HttpClient`, samme headere, samme `AutomaticDecompression`):
+
+```
+status = 202
+x-amzn-waf-action: challenge
+Server: awselb/2.0
+Content-Type: text/html; charset=UTF-8
+```
+
+Bodyen er en AWS WAF JavaScript-challenge — *"In order to continue, we need to verify that you're
+not a robot. This requires JavaScript."* En browser løser den og får en `aws-waf-token`-cookie;
+`HttpClient` kan ikke. Uden en `Accept: text/html`-header svarer WAF'en 202 med **tom** body, og det
+er den tomme streng der ender i `XmlDeserializeFromString`.
+
+**Det er ikke det jeg først skrev.** Hverken kvoten, belastning, søgeordet, credentials, URL-bygningen
+eller compression forklarer det. Målingerne:
+
+| Klient | Resultat |
+|---|---|
+| Firefox | 200, 11.988 bytes XML — første træffer er netop Enya – Angeles |
+| Python `urllib`, appens IE11-User-Agent | 200, `Content-Encoding: gzip`, 1.269 bytes |
+| .NET `HttpClient`, appens egen kode | **202**, 0 bytes — to gange i træk |
+| .NET `HttpClient`, Firefox-UA, TLS 1.2 pinnet, uden User-Agent, med/uden `Accept-Encoding` | **202**, 0 bytes i alle varianter |
+| .NET `HttpClient` + `Accept: text/html,…` | **202**, 1.979 bytes: selve challenge-siden |
+
+Ingen kombination af headere flytter noget. Forskellen ligger under HTTP-laget — sandsynligvis
+TLS-fingeraftrykket, hvor .NET Frameworks SChannel adskiller sig fra browserens NSS og Pythons
+OpenSSL. WAF-reglen ser desuden ud til at være omdømme- eller rate-baseret, hvilket forklarer at
+Python slap igennem tidligere på aftenen fra samme IP.
+
+**Konsekvensen er at tjenesten ikke kan levere noget.** Hver forespørgsel bliver mødt af
+challengen, så ingen søgning når frem til API'et. Datafilens tællere ville kunne vise hvor længe det
+har stået på, men de indgår ikke som dokumentation her: de er hverken korrekte (§9.1, §9.2) eller
+stabile — de nulstilles når datafilen genskabes.
+
+**To fejl i vores egen kode, som challengen blot afslørede:**
+
+* **Et tomt svar væltede hele kørslen.** Rettet 2026-08-27: en vagt i `Stands4Service.ProcessAsync`
+  mellem kvotetjekket og deserialiseringen returnerer `this`, så nummeret ender som "Not found".
+  `base.ProcessAsync` har allerede sat `LyricResult = NotFound`.
+* **Statuskoden kastes væk.** `Utility.HttpGetStringAsync` bruger `HttpClient.GetStringAsync`, som
+  kun kaster ved en *fejl*status. **202 er en succes-status**, så et challenge-svar er ikke til at
+  skelne fra et tomt, gyldigt svar. Appen kan hverken logge, rapportere eller reagere på det.
+  Ombygningen til `SendAsync(HttpRequestMessage, cancellationToken)` som §5.3 og §5.7 alligevel
+  kræver ville give adgang til både status og headere — og dermed muligheden for at melde
+  "tjenesten er blokeret af en bot-beskyttelse" i stedet for et tavst "Not found".
+
+**Den egentlige løsning ligger uden for koden.** En JavaScript-challenge kan ikke løses fra en
+`HttpClient`, og at genbruge en browsers `aws-waf-token` er både skrøbeligt og imod hensigten. En
+betalt API-nøgle burde ikke rammes af en bot-regel beregnet på websidetrafik; det rigtige er at
+kontakte STANDS4 og bede dem undtage `services/v2/`-endpointet fra WAF-reglen. Indtil da er
+tjenesten reelt ude af drift, uanset hvad koden gør.

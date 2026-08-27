@@ -45,22 +45,25 @@ namespace MediaCenter.LyricsFinder.Model
         /// <remarks>
         /// <para>We clone each active service before using the clone to the search.</para>
         /// <para>This is done in order to avoid duplicate lyrics during concurrent searches with the same service.</para>
+        /// <para>A failing service does not stop the search and does not throw: its exceptions are added to
+        /// <paramref name="exceptions"/>, the same way whether the services were called serially or in parallel.
+        /// Only the tasks that have completed when the search returns are inspected, so a service that is still
+        /// running when another one finds a lyric may fail unnoticed.</para>
         /// </remarks>
         public static async Task<List<AbstractLyricService>> SearchAsync(LyricsFinderDataType lyricsFinderData, McMplItem mcItem, IList<Exception> exceptions, CancellationToken cancellationToken, bool isGetAll = false)
         {
             var ret = new List<AbstractLyricService>(); // List of service clones
             var services = new List<AbstractLyricService>(); // List of services in LyricsFinderData
-            LyricServiceBaseException lyricServiceException = null;
+            var tasks = new List<Task<AbstractLyricService>>(); // One search task per service clone
+
+            // The arguments are checked before the try, because the finally block below uses them.
+            if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
+            if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
+            if (exceptions is null) throw new ArgumentNullException(nameof(exceptions));
 
             try
             {
-                if (lyricsFinderData == null) throw new ArgumentNullException(nameof(lyricsFinderData));
-                if (mcItem == null) throw new ArgumentNullException(nameof(mcItem));
-                if (exceptions is null) throw new ArgumentNullException(nameof(exceptions));
-
                 // Set up the tasks for the search
-                var tasks = new List<Task<AbstractLyricService>>();
-
                 foreach (var service in lyricsFinderData.ActiveLyricServices)
                 {
                     var serviceClone = service.Clone() as AbstractLyricService ?? throw new Exception($"Error cloning service {service.Credit.ServiceName}.");
@@ -80,9 +83,9 @@ namespace MediaCenter.LyricsFinder.Model
                         {
                             _ = await Task.WhenAll(tasks);
                         }
-                        catch (LyricServiceBaseException ex)
+                        catch (Exception)
                         {
-                            lyricServiceException = ex;
+                            // Every failure is collected from the tasks themselves in the finally block below.
                         }
                     else
                     {
@@ -90,35 +93,35 @@ namespace MediaCenter.LyricsFinder.Model
                         {
                             foreach (var task in tasks)
                             {
+                                AbstractLyricService result = null;
+
                                 try
                                 {
-                                    _ = await task;
+                                    result = await task;
                                 }
-                                catch (LyricServiceBaseException ex)
+                                catch (Exception)
                                 {
-                                    lyricServiceException = ex;
+                                    // Collected in the finally block below, exactly as in the parallel path.
                                 }
 
-                                if (task.Result.LyricResult == LyricsResultEnum.Found)
+                                if (cancellationToken.IsCancellationRequested)
+                                    break;
+
+                                if (result?.LyricResult == LyricsResultEnum.Found)
                                     break;
                             }
                         }
                         else
-                        {
-                            try
-                            {
-                                _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricsResultEnum.Found);
-                            }
-                            catch (LyricServiceBaseException ex)
-                            {
-                                lyricServiceException = ex;
-                            }
-                        }
+                            _ = await tasks.WhenAny(t => t.Result.LyricResult == LyricsResultEnum.Found);
                     }
                 }
             }
             finally
             {
+                // Collect the failures of every completed task, so that a failing service is reported the same
+                // way whether the search ran serially or in parallel.
+                _ = tasks.CollectExceptions(exceptions);
+
                 // Source: https://blog.cdemi.io/async-waiting-inside-c-sharp-locks/
                 await _semaphoreSlim.WaitAsync();
 
@@ -155,9 +158,6 @@ namespace MediaCenter.LyricsFinder.Model
                     }
                 }
             }
-
-            if (lyricServiceException != null)
-                exceptions.Add(lyricServiceException);
 
             return ret;
         }

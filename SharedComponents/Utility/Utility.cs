@@ -1215,6 +1215,66 @@ namespace MediaCenter.SharedComponents
                 : Uri.EscapeDataString(text);
         }
 
+
+        /// <summary>
+        /// Enumerates the inner exception chain of the exception, expanding any <see cref="AggregateException"/>
+        /// into all of its inner exceptions instead of just the first one.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <returns>The inner exceptions, outermost level first.</returns>
+        /// <exception cref="ArgumentNullException">exception</exception>
+        /// <remarks>
+        /// The exception itself is not returned, only the exceptions below it.
+        /// </remarks>
+        public static IEnumerable<Exception> InnerExceptionChain(this Exception exception)
+        {
+            if (exception is null) throw new ArgumentNullException(nameof(exception));
+
+            // The iteration is in a separate method, so that the argument is checked when this method is
+            // called and not when the caller starts enumerating the result.
+            return InnerExceptionChainIterator(exception);
+        }
+
+
+        /// <summary>
+        /// Iterates the inner exception chain of the exception.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <returns>The inner exceptions, outermost level first.</returns>
+        private static IEnumerable<Exception> InnerExceptionChainIterator(Exception exception)
+        {
+            var queue = new Queue<Exception>(NextExceptions(exception));
+
+            while (queue.Count > 0)
+            {
+                var ret = queue.Dequeue();
+
+                yield return ret;
+
+                foreach (var next in NextExceptions(ret))
+                {
+                    queue.Enqueue(next);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the exceptions immediately below the specified exception, i.e. all the inner exceptions
+        /// of an <see cref="AggregateException"/>, else the single inner exception, if any.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <returns>The exceptions immediately below the specified exception.</returns>
+        private static IEnumerable<Exception> NextExceptions(Exception exception)
+        {
+            if (exception is AggregateException aggregateException)
+                return aggregateException.Flatten().InnerExceptions;
+
+            return (exception.InnerException is null)
+                ? Enumerable.Empty<Exception>()
+                : new[] { exception.InnerException };
+        }
+
     }
 
 }

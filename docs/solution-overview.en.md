@@ -1,4 +1,4 @@
-# LyricsFinder / JRiver.MediaCenter — architecture and onboarding report
+﻿# LyricsFinder / JRiver.MediaCenter — architecture and onboarding report
 
 Status: reviewed 2026-08-25 on branch `master`, status updated 2026-08-26.
 §5.1, §5.4, §5.8 and §5.9 are fixed and tested; the rest is in [section 9](#9-outstanding).
@@ -892,6 +892,11 @@ quota calculation is deliberately disabled (`ret = false;` with a comment at
 `Stands4Service.cs:309-312` — the service is left to report it itself), but the `DailyQuota` column
 in the service form displays the value.
 
+> **Clarification 2026-08-27.** The consequence is smaller than the text suggests: the property is
+> XML-serialized along with the service and therefore sits in the data file, independently of
+> `App.config`. The calculation in `IsQuotaExceededAsync` does have a value to work with — only the
+> `App.config` route is broken. See §9.7.
+
 ### 9.4 `IsConfigurationFileUsed` is `static` (low, new)
 
 `AbstractLyricService.cs:98` declares it `public static bool`, yet it is assigned per instance in
@@ -920,3 +925,63 @@ interpolate artist, album and title straight into the query string. `UrlEncoded(
 | §5.11 | Build setup | Unchanged |
 | §5.12 | Other code smells | Only the `Serialize.cs` comment is gone; the rest stands |
 | §6 | Test gaps | Unchanged. `Serialize` and `CreateRequestUrl` have now been changed with no safety net underneath them. The plan is consolidated in §6.2 |
+
+### 9.7 STANDS4 sits behind an AWS WAF challenge — the app gets 202 and an empty body (high, new)
+
+Found 2026-08-27 while smoke testing §5.6, on "Enya — Shepherd Moons — Angeles". The symptom was
+`ArgumentNullException: Value cannot be null. Parameter name: xml` from `Serialize.cs:232` by way of
+`Stands4Service.cs:356`, and the whole "Search all" was aborted.
+
+**The underlying cause is confirmed by calling the application's own HTTP layer** (`Utility.dll` run
+through LPRun, so the same static `HttpClient`, the same headers, the same `AutomaticDecompression`):
+
+```
+status = 202
+x-amzn-waf-action: challenge
+Server: awselb/2.0
+Content-Type: text/html; charset=UTF-8
+```
+
+The body is an AWS WAF JavaScript challenge — *"In order to continue, we need to verify that you're
+not a robot. This requires JavaScript."* A browser solves it and receives an `aws-waf-token` cookie;
+`HttpClient` cannot. Without an `Accept: text/html` header the WAF answers 202 with an **empty**
+body, and that empty string is what ends up in `XmlDeserializeFromString`.
+
+**This is not what I first wrote.** Neither the quota, load, the search term, the credentials, the
+URL building nor compression explains it. The measurements:
+
+| Client | Result |
+|---|---|
+| Firefox | 200, 11,988 bytes of XML — the first hit is Enya – Angeles itself |
+| Python `urllib`, the app's IE11 User-Agent | 200, `Content-Encoding: gzip`, 1,269 bytes |
+| .NET `HttpClient`, the app's own code | **202**, 0 bytes — twice in a row |
+| .NET `HttpClient`, Firefox UA, TLS 1.2 pinned, no User-Agent, with/without `Accept-Encoding` | **202**, 0 bytes in every variant |
+| .NET `HttpClient` + `Accept: text/html,…` | **202**, 1,979 bytes: the challenge page itself |
+
+No combination of headers moves the needle. The difference lies below the HTTP layer — most likely
+the TLS fingerprint, where .NET Framework's SChannel differs from the browser's NSS and Python's
+OpenSSL. The WAF rule also appears to be reputation- or rate-based, which explains why Python got
+through earlier the same evening from the same IP.
+
+**The consequence is that the service cannot deliver anything.** Every request is met by the
+challenge, so no search reaches the API. The data file's counters could show how long this has been
+going on, but they are not used as evidence here: they are neither correct (§9.1, §9.2) nor stable —
+they reset whenever the data file is recreated.
+
+**Two defects in our own code, which the challenge merely exposed:**
+
+* **An empty response toppled the whole run.** Fixed 2026-08-27: a guard in
+  `Stands4Service.ProcessAsync` between the quota check and the deserialization returns `this`, so
+  the item ends up as "Not found". `base.ProcessAsync` has already set `LyricResult = NotFound`.
+* **The status code is thrown away.** `Utility.HttpGetStringAsync` uses `HttpClient.GetStringAsync`,
+  which only throws on an *error* status. **202 is a success status**, so a challenge response is
+  indistinguishable from an empty but valid one. The app can neither log, report nor react to it.
+  The move to `SendAsync(HttpRequestMessage, cancellationToken)` that §5.3 and §5.7 require anyway
+  would give access to both the status and the headers — and with it the ability to report "the
+  service is blocked by a bot protection" instead of a silent "Not found".
+
+**The real remedy lies outside the code.** A JavaScript challenge cannot be solved from an
+`HttpClient`, and reusing a browser's `aws-waf-token` is both fragile and against the intent. A paid
+API key should not be caught by a bot rule meant for web page traffic; the right move is to contact
+STANDS4 and ask them to exempt the `services/v2/` endpoint from the WAF rule. Until then the service
+is effectively out of order, whatever the code does.

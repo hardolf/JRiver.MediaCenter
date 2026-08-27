@@ -94,6 +94,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{566AC939-2B9
 		LyricsFinder\Lib\README.md = LyricsFinder\Lib\README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{588EC0E4-D759-4C69-A537-FB9A43C50B9A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LyricsFinder.Tests", "Tests\LyricsFinder.Tests\LyricsFinder.Tests.csproj", "{4487ACD4-9168-42D4-95F8-FAEA9DCD83B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,6 +164,10 @@ Global
 		{C8ABA056-783D-4D56-A693-07542ECEA396}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8ABA056-783D-4D56-A693-07542ECEA396}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8ABA056-783D-4D56-A693-07542ECEA396}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4487ACD4-9168-42D4-95F8-FAEA9DCD83B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4487ACD4-9168-42D4-95F8-FAEA9DCD83B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4487ACD4-9168-42D4-95F8-FAEA9DCD83B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4487ACD4-9168-42D4-95F8-FAEA9DCD83B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -183,6 +191,7 @@ Global
 		{C8ABA056-783D-4D56-A693-07542ECEA396} = {93B38887-18C2-4895-A8FD-D33B95D538D7}
 		{9DE6C736-9864-4A22-8C32-8EA8018ECE94} = {537C220C-259B-4DEE-9556-4B5D3D793A49}
 		{566AC939-2B97-4AD5-A2E9-FE5215819676} = {9D8C5AD1-8D02-4E45-9783-AD694B3BAB2F}
+		{4487ACD4-9168-42D4-95F8-FAEA9DCD83B0} = {588EC0E4-D759-4C69-A537-FB9A43C50B9A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C6AD8E8-9745-4BBC-928D-B3CC9DDD774A}

@@ -1,4 +1,4 @@
-<title>LyricsFinder Solution Review</title>
+﻿<title>LyricsFinder Solution Review</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
@@ -1643,6 +1643,13 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
         (<code>ret = false;</code> med kommentar i <code>Stands4Service.cs:309-312</code> — tjenesten
         får lov at melde selv), men <code>DailyQuota</code>-kolonnen i service-formularen viser
         værdien.</p>
+        <div class="note">
+          <p><strong>Præcisering 2026-08-27.</strong> Konsekvensen er mindre end teksten antyder:
+          propertyen XML-serialiseres sammen med tjenesten og står derfor i datafilen, uafhængigt
+          af <code>App.config</code>. Beregningen i <code>IsQuotaExceededAsync</code> har altså en
+          værdi at regne på — det er kun <code>App.config</code>-vejen der ikke virker.
+          Se <a href="#s9-7">&sect;9.7</a>.</p>
+        </div>
       </div>
 
       <div class="risk risk--lo">
@@ -1684,6 +1691,73 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
             <tr><td class="mono"><a href="#s6">&sect;6</a></td><td>Testhuller</td><td>Uændret. <code>Serialize</code> og <code>CreateRequestUrl</code> er nu rettet uden et sikkerhedsnet under sig. Planen er samlet i <a href="#s6-2">&sect;6.2</a></td></tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="risk risk--hi">
+        <h3 id="s9-7"><span class="hnum">9.7</span>STANDS4 ligger bag en AWS WAF-challenge — appen får 202 og tom body <span class="chip chip--hi">Høj · ny</span></h3>
+        <p>Fundet 2026-08-27 under røgtesten af <a href="#s5-6">&sect;5.6</a>, på “Enya — Shepherd
+        Moons — Angeles”. Symptomet var
+        <code>ArgumentNullException: Value cannot be null. Parameter name: xml</code> fra
+        <code>Serialize.cs:232</code> via <code>Stands4Service.cs:356</code>, og hele “Search all”
+        blev afbrudt.</p>
+        <p><strong>Den bagvedliggende årsag er bekræftet ved at kalde appens eget HTTP-lag</strong>
+        (<code>Utility.dll</code> kørt via LPRun, altså samme statiske <code>HttpClient</code>, samme
+        headere, samme <code>AutomaticDecompression</code>):</p>
+        <pre><code>status = 202
+x-amzn-waf-action: challenge
+Server: awselb/2.0
+Content-Type: text/html; charset=UTF-8</code></pre>
+        <p>Bodyen er en AWS WAF JavaScript-challenge — <em>“In order to continue, we need to verify
+        that you’re not a robot. This requires JavaScript.”</em> En browser løser den og får en
+        <code>aws-waf-token</code>-cookie; <code>HttpClient</code> kan ikke. Uden en
+        <code>Accept: text/html</code>-header svarer WAF’en 202 med <strong>tom</strong> body, og det
+        er den tomme streng der ender i <code>XmlDeserializeFromString</code>.</p>
+        <p><strong>Det er ikke det jeg først skrev.</strong> Hverken kvoten, belastning, søgeordet,
+        credentials, URL-bygningen eller compression forklarer det. Målingerne:</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Klient</th><th>Resultat</th></tr></thead>
+            <tbody>
+              <tr><td>Firefox</td><td>200, 11.988 bytes XML — første træffer er netop Enya – Angeles</td></tr>
+              <tr><td>Python <code>urllib</code>, appens IE11-User-Agent</td><td>200, <code>Content-Encoding: gzip</code>, 1.269 bytes</td></tr>
+              <tr><td>.NET <code>HttpClient</code>, appens egen kode</td><td><strong>202</strong>, 0 bytes — to gange i træk</td></tr>
+              <tr><td>.NET <code>HttpClient</code>, Firefox-UA, TLS 1.2 pinnet, uden User-Agent, med/uden <code>Accept-Encoding</code></td><td><strong>202</strong>, 0 bytes i alle varianter</td></tr>
+              <tr><td>.NET <code>HttpClient</code> + <code>Accept: text/html,…</code></td><td><strong>202</strong>, 1.979 bytes: selve challenge-siden</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Ingen kombination af headere flytter noget. Forskellen ligger under HTTP-laget —
+        sandsynligvis TLS-fingeraftrykket, hvor .NET Frameworks SChannel adskiller sig fra browserens
+        NSS og Pythons OpenSSL. WAF-reglen ser desuden ud til at være omdømme- eller rate-baseret,
+        hvilket forklarer at Python slap igennem tidligere på aftenen fra samme IP.</p>
+        <p><strong>Konsekvensen er at tjenesten ikke kan levere noget.</strong> Hver forespørgsel
+        bliver mødt af challengen, så ingen søgning når frem til API’et. Datafilens tællere ville
+        kunne vise hvor længe det har stået på, men de indgår ikke som dokumentation her: de er
+        hverken korrekte (<a href="#s9-1">&sect;9.1</a>, <a href="#s9-2">&sect;9.2</a>) eller
+        stabile — de nulstilles når datafilen genskabes.</p>
+        <p><strong>To fejl i vores egen kode, som challengen blot afslørede:</strong></p>
+        <ul>
+          <li><strong>Et tomt svar væltede hele kørslen.</strong> Rettet 2026-08-27: en vagt i
+          <code>Stands4Service.ProcessAsync</code> mellem kvotetjekket og deserialiseringen
+          returnerer <code>this</code>, så nummeret ender som “Not found”.
+          <code>base.ProcessAsync</code> har allerede sat <code>LyricResult = NotFound</code>.</li>
+          <li><strong>Statuskoden kastes væk.</strong> <code>Utility.HttpGetStringAsync</code> bruger
+          <code>HttpClient.GetStringAsync</code>, som kun kaster ved en <em>fejl</em>status.
+          <strong>202 er en succes-status</strong>, så et challenge-svar er ikke til at skelne fra et
+          tomt, gyldigt svar. Appen kan hverken logge, rapportere eller reagere på det. Ombygningen
+          til <code>SendAsync(HttpRequestMessage, cancellationToken)</code> som
+          <a href="#s5-3">&sect;5.3</a> og <a href="#s5-7">&sect;5.7</a> alligevel kræver ville give
+          adgang til både status og headere — og dermed muligheden for at melde “tjenesten er
+          blokeret af en bot-beskyttelse” i stedet for et tavst “Not found”.</li>
+        </ul>
+        <div class="note">
+          <p><strong>Den egentlige løsning ligger uden for koden.</strong> En JavaScript-challenge
+          kan ikke løses fra en <code>HttpClient</code>, og at genbruge en browsers
+          <code>aws-waf-token</code> er både skrøbeligt og imod hensigten. En betalt API-nøgle burde
+          ikke rammes af en bot-regel beregnet på websidetrafik; det rigtige er at kontakte STANDS4
+          og bede dem undtage <code>services/v2/</code>-endpointet fra WAF-reglen. Indtil da er
+          tjenesten reelt ude af drift, uanset hvad koden gør.</p>
+        </div>
       </div>
 
       <p class="colophon">

@@ -1,4 +1,4 @@
-<title>LyricsFinder Solution Review</title>
+﻿<title>LyricsFinder Solution Review</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
@@ -1670,6 +1670,13 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
         (<code>ret = false;</code> with a comment at <code>Stands4Service.cs:309-312</code> — the
         service is left to report it itself), but the <code>DailyQuota</code> column in the service
         form displays the value.</p>
+        <div class="note">
+          <p><strong>Clarification 2026-08-27.</strong> The consequence is smaller than the text
+          suggests: the property is XML-serialized along with the service and therefore sits in the
+          data file, independently of <code>App.config</code>. The calculation in
+          <code>IsQuotaExceededAsync</code> does have a value to work with — only the
+          <code>App.config</code> route is broken. See <a href="#s9-7">&sect;9.7</a>.</p>
+        </div>
       </div>
 
       <div class="risk risk--lo">
@@ -1710,6 +1717,73 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
             <tr><td class="mono"><a href="#s6">&sect;6</a></td><td>Test gaps</td><td>Unchanged. <code>Serialize</code> and <code>CreateRequestUrl</code> have now been changed with no safety net underneath them. The plan is consolidated in <a href="#s6-2">&sect;6.2</a></td></tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="risk risk--hi">
+        <h3 id="s9-7"><span class="hnum">9.7</span>STANDS4 sits behind an AWS WAF challenge — the app gets 202 and an empty body <span class="chip chip--hi">High · new</span></h3>
+        <p>Found 2026-08-27 while smoke testing <a href="#s5-6">&sect;5.6</a>, on “Enya — Shepherd
+        Moons — Angeles”. The symptom was
+        <code>ArgumentNullException: Value cannot be null. Parameter name: xml</code> from
+        <code>Serialize.cs:232</code> by way of <code>Stands4Service.cs:356</code>, and the whole
+        “Search all” was aborted.</p>
+        <p><strong>The underlying cause is confirmed by calling the application’s own HTTP
+        layer</strong> (<code>Utility.dll</code> run through LPRun, so the same static
+        <code>HttpClient</code>, the same headers, the same <code>AutomaticDecompression</code>):</p>
+        <pre><code>status = 202
+x-amzn-waf-action: challenge
+Server: awselb/2.0
+Content-Type: text/html; charset=UTF-8</code></pre>
+        <p>The body is an AWS WAF JavaScript challenge — <em>“In order to continue, we need to verify
+        that you’re not a robot. This requires JavaScript.”</em> A browser solves it and receives an
+        <code>aws-waf-token</code> cookie; <code>HttpClient</code> cannot. Without an
+        <code>Accept: text/html</code> header the WAF answers 202 with an <strong>empty</strong>
+        body, and that empty string is what ends up in <code>XmlDeserializeFromString</code>.</p>
+        <p><strong>This is not what I first wrote.</strong> Neither the quota, load, the search term,
+        the credentials, the URL building nor compression explains it. The measurements:</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Client</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td>Firefox</td><td>200, 11,988 bytes of XML — the first hit is Enya – Angeles itself</td></tr>
+              <tr><td>Python <code>urllib</code>, the app’s IE11 User-Agent</td><td>200, <code>Content-Encoding: gzip</code>, 1,269 bytes</td></tr>
+              <tr><td>.NET <code>HttpClient</code>, the app’s own code</td><td><strong>202</strong>, 0 bytes — twice in a row</td></tr>
+              <tr><td>.NET <code>HttpClient</code>, Firefox UA, TLS 1.2 pinned, no User-Agent, with/without <code>Accept-Encoding</code></td><td><strong>202</strong>, 0 bytes in every variant</td></tr>
+              <tr><td>.NET <code>HttpClient</code> + <code>Accept: text/html,…</code></td><td><strong>202</strong>, 1,979 bytes: the challenge page itself</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>No combination of headers moves the needle. The difference lies below the HTTP layer —
+        most likely the TLS fingerprint, where .NET Framework’s SChannel differs from the browser’s
+        NSS and Python’s OpenSSL. The WAF rule also appears to be reputation- or rate-based, which
+        explains why Python got through earlier the same evening from the same IP.</p>
+        <p><strong>The consequence is that the service cannot deliver anything.</strong> Every
+        request is met by the challenge, so no search reaches the API. The data file’s counters could
+        show how long this has been going on, but they are not used as evidence here: they are
+        neither correct (<a href="#s9-1">&sect;9.1</a>, <a href="#s9-2">&sect;9.2</a>) nor stable —
+        they reset whenever the data file is recreated.</p>
+        <p><strong>Two defects in our own code, which the challenge merely exposed:</strong></p>
+        <ul>
+          <li><strong>An empty response toppled the whole run.</strong> Fixed 2026-08-27: a guard in
+          <code>Stands4Service.ProcessAsync</code> between the quota check and the deserialization
+          returns <code>this</code>, so the item ends up as “Not found”.
+          <code>base.ProcessAsync</code> has already set <code>LyricResult = NotFound</code>.</li>
+          <li><strong>The status code is thrown away.</strong> <code>Utility.HttpGetStringAsync</code>
+          uses <code>HttpClient.GetStringAsync</code>, which only throws on an <em>error</em> status.
+          <strong>202 is a success status</strong>, so a challenge response is indistinguishable from
+          an empty but valid one. The app can neither log, report nor react to it. The move to
+          <code>SendAsync(HttpRequestMessage, cancellationToken)</code> that
+          <a href="#s5-3">&sect;5.3</a> and <a href="#s5-7">&sect;5.7</a> require anyway would give
+          access to both the status and the headers — and with it the ability to report “the service
+          is blocked by a bot protection” instead of a silent “Not found”.</li>
+        </ul>
+        <div class="note">
+          <p><strong>The real remedy lies outside the code.</strong> A JavaScript challenge cannot be
+          solved from an <code>HttpClient</code>, and reusing a browser’s <code>aws-waf-token</code>
+          is both fragile and against the intent. A paid API key should not be caught by a bot rule
+          meant for web page traffic; the right move is to contact STANDS4 and ask them to exempt the
+          <code>services/v2/</code> endpoint from the WAF rule. Until then the service is effectively
+          out of order, whatever the code does.</p>
+        </div>
       </div>
 
       <p class="colophon">

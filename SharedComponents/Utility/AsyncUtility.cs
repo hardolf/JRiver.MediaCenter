@@ -371,25 +371,79 @@ namespace MediaCenter.SharedComponents
         /// <typeparam name="T"></typeparam>
         /// <param name="tasks">The tasks.</param>
         /// <param name="condition">The condition.</param>
-        /// <returns>The first task that finishes with a result that fulfills the condition.</returns>
+        /// <returns>
+        /// The result of the first task that finishes with a result that fulfills the condition;
+        /// else the default value of the result type.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">tasks
+        /// or
+        /// condition</exception>
         /// <remarks>
-        /// Inspired by Sir Rufo's answer in https://stackoverflow.com/questions/38289158/how-to-implement-task-whenany-with-a-predicate.
+        /// <para>Inspired by Sir Rufo's answer in https://stackoverflow.com/questions/38289158/how-to-implement-task-whenany-with-a-predicate.</para>
+        /// <para>The condition is tested on successfully completed tasks only. Reading <c>Result</c> on a faulted
+        /// or canceled task throws an <see cref="AggregateException"/>, which would hide the original exception
+        /// type from the caller. Faulted and canceled tasks are therefore skipped silently; use
+        /// <see cref="CollectExceptions{T}(IEnumerable{Task{T}}, IList{Exception})"/> to inspect the failures.</para>
         /// </remarks>
         public static async Task<T> WhenAny<T>(this IEnumerable<Task<T>> tasks, Predicate<Task<T>> condition)
         {
+            if (tasks is null) throw new ArgumentNullException(nameof(tasks));
+            if (condition is null) throw new ArgumentNullException(nameof(condition));
+
             var taskList = tasks.ToList();
 
             while (taskList.Count > 0)
             {
                 var task = await Task.WhenAny(taskList).ConfigureAwait(false);
 
-                if (condition(task))
-                    return task.Result;
-
                 taskList.Remove(task);
+
+                if ((task.Status == TaskStatus.RanToCompletion) && condition(task))
+                    return task.Result;
             }
 
             return default;
+        }
+
+
+        /// <summary>
+        /// Adds the exception of each faulted task to the exception list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tasks">The tasks.</param>
+        /// <param name="exceptions">The exception list to add to.</param>
+        /// <returns>The number of exceptions added.</returns>
+        /// <exception cref="ArgumentNullException">tasks
+        /// or
+        /// exceptions</exception>
+        /// <remarks>
+        /// <para>Only completed tasks are inspected. Tasks that are still running are ignored, as are canceled
+        /// tasks, which carry no exception.</para>
+        /// <para>Each task's <see cref="AggregateException"/> is flattened and its inner exceptions are added
+        /// individually, so the caller gets the original exception types with their own inner exception chains
+        /// intact. Reading the exception also marks it as observed.</para>
+        /// </remarks>
+        public static int CollectExceptions<T>(this IEnumerable<Task<T>> tasks, IList<Exception> exceptions)
+        {
+            if (tasks is null) throw new ArgumentNullException(nameof(tasks));
+            if (exceptions is null) throw new ArgumentNullException(nameof(exceptions));
+
+            var ret = 0;
+
+            foreach (var task in tasks)
+            {
+                if (!task.IsFaulted) continue;
+
+                foreach (var exception in task.Exception.Flatten().InnerExceptions)
+                {
+                    if (exceptions.Contains(exception)) continue;
+
+                    exceptions.Add(exception);
+                    ret++;
+                }
+            }
+
+            return ret;
         }
 
 

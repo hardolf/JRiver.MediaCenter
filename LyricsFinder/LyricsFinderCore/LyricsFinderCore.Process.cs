@@ -468,7 +468,14 @@ namespace MediaCenter.LyricsFinder
                             : LyricsResultEnum.NotFound.ResultText();
 
                         if (lyricExceptions.Count > 0)
-                            throw new Exception("A lyric service failed.", lyricExceptions.First());
+                        {
+                            // All the failures are passed on, not just the first one.
+                            var lyricException = (lyricExceptions.Count == 1)
+                                ? lyricExceptions.First()
+                                : new AggregateException(lyricExceptions);
+
+                            throw new Exception("A lyric service failed.", lyricException);
+                        }
                     }
                     else if (!OverwriteExistingLyricsMenuItem.Checked
                         && !oldLyric.IsNullOrEmptyTrimmed())
