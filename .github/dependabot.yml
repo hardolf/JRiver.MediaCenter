@@ -1,0 +1,35 @@
+# Dependabot configuration.
+# See https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+version: 2
+
+updates:
+
+  # NuGet packages for LyricsFinder.sln and MediaCenter.sln, both of which sit in
+  # the repository root, so Dependabot discovers every project from "/".
+  #
+  # All projects still use packages.config, so a single version bump has to touch
+  # packages.config, the <Reference>/<HintPath> in the csproj and the binding
+  # redirects in App.config in step. Grouping every NuGet update into one pull
+  # request keeps those edits together and avoids a queue of individual PRs going
+  # stale - PR #42 sat open for four months while master had already moved past it.
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    groups:
+      nuget-dependencies:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "nuget"
+
+  # No workflows exist yet, so this does nothing today. It is here so that the
+  # action versions are kept current from the moment .github/workflows is added,
+  # without needing a second edit to this file.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "actions"

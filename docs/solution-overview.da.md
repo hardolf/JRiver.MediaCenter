@@ -349,10 +349,12 @@ forbedring.
 > og en `lyricService`-sektion med ét child-element pr. indstilling. Ved sammenstød vinder
 > elementformen. Det gamle `Settings`-par er bevaret for kompatibilitet.
 >
-> MusiXmatch var i forvejen korrekt og er referencen. `CreditTextFormat` er entitiseret igen i
-> AZLyrics, Cajun, ChartLyrics og Lololyrics, og `Comment` ligeledes i AZLyrics; alle fem har
-> fået en advarsel i header-kommentaren. **Stands4 er lagt om til elementformen**, så begge
-> veje afprøves i samme kørsel, og værdierne er verificeret byte-identiske med MusiXmatch'.
+> Begge former blev først afprøvet mod en kørende Media Center — Stands4 på elementformen, de
+> øvrige fem entitiserede. Derefter er **alle seks tjenester lagt om til elementformen**.
+> Attributformen læses stadig, men ingen konfigurationsfil bruger den længere; kun MusiXmatch
+> har en `appSettings` tilbage, med den ene `ClientSettingsProvider.ServiceUri` der hører til
+> .NET's eget maskineri. Hver eneste værdi er verificeret byte-identisk med den attributversion
+> den erstattede.
 >
 > Rettelse til teksten nedenfor: et dobbelt mellemrum er *ikke* signaturen på CR+LF. XML
 > normaliserer CR+LF til ét LF (§2.11) *før* attributnormaliseringen (§3.3.3), så ét linjeskift

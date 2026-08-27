@@ -351,11 +351,12 @@ appropriate", so this is a gap against the project's own rules and not merely an
 > form with `&#xD;&#xA;`, and a `lyricService` section with one child element per setting. On a
 > clash the element form wins. The old `Settings` pair is kept for compatibility.
 >
-> MusiXmatch was already correct and is the reference. `CreditTextFormat` was re-entitized in
-> AZLyrics, Cajun, ChartLyrics and Lololyrics, and `Comment` likewise in AZLyrics; all five
-> gained a warning in the header comment. **Stands4 was converted to the element form**, so both
-> routes are exercised in the same run, and the values are verified byte-identical to
-> MusiXmatch's.
+> Both forms were first exercised against a running Media Center — Stands4 on the element form,
+> the other five entitized. After that, **all six services were converted to the element form**.
+> The attribute form is still read, but no configuration file uses it any more; only MusiXmatch
+> keeps an `appSettings`, holding the single `ClientSettingsProvider.ServiceUri` that belongs to
+> .NET's own plumbing. Every single value was verified byte-identical to the attribute version
+> it replaced.
 >
 > Correction to the text below: a double space is *not* the signature of CR+LF. XML normalizes
 > CR+LF to a single LF (§2.11) *before* attribute-value normalization (§3.3.3), so one line
