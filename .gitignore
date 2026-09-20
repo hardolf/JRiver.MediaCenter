@@ -366,3 +366,6 @@ MessageInspection.xml
 
 # Exception: checked-in interop assembly generated from the JRiver Media Center type library
 !LyricsFinder/Lib/Interop.MediaCenter.dll
+
+# Exported PDF versions of files by the 'Markdown PDF' extension.
+pdf-export/
