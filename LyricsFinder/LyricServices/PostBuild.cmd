@@ -31,14 +31,8 @@ if "%_src_file%" equ "" (
 )
 
 :run
-set _cmd=xcopy /e /i /v /y "%_msg_inspect%" "%_src_dir%"
-echo.
-echo %_cmd%...
-%_cmd%
-set _cmd=xcopy /e /i /v /y "%_msg_inspect%" "%_src_dir%%_out_dir%"
-echo.
-echo %_cmd%...
-%_cmd%
+call :copy_dir "%_msg_inspect%" "%_src_dir%"
+call :copy_dir "%_msg_inspect%" "%_src_dir%%_out_dir%"
 for /d %%d in (%_tdirs%) do call :copy_dir "%_msg_inspect%" "%%d"
 
 :run_next
@@ -74,11 +68,20 @@ rem ***********************************************
 if %_exit_code% neq 0 exit /b %_exit_code%
 set _sfile=%~1
 set _tdir=%~2
+if not exist "%_sfile%" (
+    echo %_my_name%: source file not found: !_sfile!
+    set _exit_code=1
+    exit /b 1
+)
 if not exist "%_tdir%" md "%_tdir%"
 set _cmd=xcopy /e /i /v /y "%_sfile%" "%_tdir%"
 echo.
 echo %_cmd%...
 %_cmd%
+if errorlevel 1 (
+    echo %_my_name%: xcopy failed with exit code !errorlevel!: !_sfile!
+    set _exit_code=1
+)
 exit /b %_exit_code%
 
 rem ***********************************************

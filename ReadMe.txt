@@ -8,8 +8,8 @@ Development environment: Microsoft Visual Studio 2017, 2019, ... , C#
 
 Solutions
 ---------
-MediaCenter.sln          : Solution for all the projects.
 LyricsFinder.sln         : LyricsFinder solution.
+Visualizations.sln       : Visualizations solution.
 
 
 Relevant links, JRiver

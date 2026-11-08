@@ -4,7 +4,7 @@ version: 2
 
 updates:
 
-  # NuGet packages for LyricsFinder.sln and MediaCenter.sln, both of which sit in
+  # NuGet packages for LyricsFinder.sln and Visualizations.sln, both of which sit in
   # the repository root, so Dependabot discovers every project from "/".
   #
   # All projects still use packages.config, so a single version bump has to touch

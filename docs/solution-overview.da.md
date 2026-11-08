@@ -30,7 +30,7 @@ er den eneste reelle forskel (bl.a. hvilken log4net-konfiguration der læses).
 | Fil | Indhold |
 |---|---|
 | `LyricsFinder.sln` | **Den aktive solution.** 15 kodeprojekter. |
-| `MediaCenter.sln` | "Alt"-solution. **Er i øjeblikket brudt** — den peger på `LyricsFinder\LyricServices\ApiseedsService\ApiseedsService.csproj`, som er slettet (ligger nu kun i `LyricServices.Old`). Tilføjer desuden `Visualizations`. |
+| `Visualizations.sln` | Indeholder kun `Visualizations`-projektet. |
 
 Øvrige `.sln`-filer under `Lib/` og `C# Plugin Template/` er tredjeparts SDK-eksempler og
 skabeloner — ikke en del af produktet.
@@ -84,7 +84,7 @@ til NuGet. `Directory.Build.props` sætter kun én ting globalt: `LangVersion 13
 | `Installation` | Console-exe der **pakker release-zips**. Ejer også `SharedAssemblyInfo.cs` (delt version for alle assemblies) og `Setup.iss` (Inno Setup). |
 | `Documentation` | Tom `Main()`. Findes kun for at kopiere HTML-dokumentation til `Build/`. |
 | `MjpCreator` | Genererer MC `.mjp`-pakkefiler. **Ikke længere brugt** (kaldet er udkommenteret i `Installation/Program.cs` siden v1.3.1 — MC bruger RegSvr32, ikke RegAsm). |
-| `Visualizations` | ASP.NET-baseret; kun i `MediaCenter.sln`. Uafhængig af LyricsFinder. |
+| `Visualizations` | ASP.NET-baseret; kun i `Visualizations.sln`. Uafhængig af LyricsFinder. |
 
 ### 2.2 Vigtig arkitekturdetalje: lyric-services indlæses dynamisk
 
@@ -551,7 +551,6 @@ ikke gemt", men jeg har ikke verificeret hvilke felter der reelt afviger.
   redirect'er `Newtonsoft.Json` til `12.0.0.0`, mens `packages.config` har 13.0.4
   (assembly-version `13.0.0.0`). Tilsvarende for `System.Buffers` (`4.0.3.0` vs. pakke 4.6.1)
   og `System.Numerics.Vectors`. Kan give `FileLoadException` ved runtime.
-* **`MediaCenter.sln` er brudt** (manglende `ApiseedsService.csproj`, se §2).
 * **Ingen CI.** `.github/` indeholder kun `ISSUE_TEMPLATE`. Ingen workflows. Hermetiske tests
   er forudsætningen; planen står i §6.2.
 * **Versionsinkonsistens.** `SharedAssemblyInfo.cs` = 1.3.7.0; `Setup.iss` `AppVersion` og
@@ -834,8 +833,8 @@ Slet `LyricsFinder.xml` for at nulstille til fabriksindstillinger (services gens
    ved hver eneste læsning, og `CreditTextFormat` ender i hver gemt sangtekst.
 6. **`ConcurrentQueue` + eksplicit UI-marshalling** i søge-workerne (§5.5), så koden ikke
    afhænger af en usynlig kontrakt.
-7. **Ryd op i build**: `vswhere` i stedet for `D:\`-stier, ret binding redirects, reparér
-   eller fjern `MediaCenter.sln`, slet `LyricServices.Old` og `McPlayControlForm.cs`.
+7. **Ryd op i build**: `vswhere` i stedet for `D:\`-stier, ret binding redirects, slet
+   `LyricServices.Old` og `McPlayControlForm.cs`.
 8. **Byg test-regimet i §6.2** — separate testprojekter, offline-fixtures, live-testene gjort
    passive, derefter CI. En round-trip-test af flerlinjet tekst gennem `App.config` → datafil →
    `App.config` ville have fanget §5.8, og der findes stadig intet sikkerhedsnet at refaktorere

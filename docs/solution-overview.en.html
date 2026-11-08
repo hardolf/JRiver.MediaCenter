@@ -690,7 +690,7 @@ figcaption {
           <thead><tr><th>File</th><th>Contents</th></tr></thead>
           <tbody>
             <tr><td class="mono">LyricsFinder.sln</td><td><strong>The active solution.</strong> 15 code projects.</td></tr>
-            <tr><td class="mono">MediaCenter.sln</td><td>The “everything” solution. <strong>Currently broken</strong> — it points at <code>LyricServices\ApiseedsService\ApiseedsService.csproj</code>, which has been deleted and now only exists under <code>LyricServices.Old</code>. It also adds <code>Visualizations</code>.</td></tr>
+            <tr><td class="mono">Visualizations.sln</td><td>Contains only the <code>Visualizations</code> project.</td></tr>
           </tbody>
         </table>
       </div>
@@ -787,7 +787,7 @@ figcaption {
             <tr><td class="mono">Installation</td><td>Console exe that <strong>builds the release zips</strong>. Also owns <code>SharedAssemblyInfo.cs</code> (shared version for all assemblies) and <code>Setup.iss</code> (Inno Setup).</td></tr>
             <tr><td class="mono">Documentation</td><td>Empty <code>Main()</code>. Exists only to copy HTML documentation into <code>Build/</code>.</td></tr>
             <tr><td class="mono">MjpCreator</td><td>Generates MC <code>.mjp</code> package files. <strong>No longer used</strong> — the call has been commented out since v1.3.1, because MC uses RegSvr32 rather than RegAsm.</td></tr>
-            <tr><td class="mono">Visualizations</td><td>ASP.NET-based; only in <code>MediaCenter.sln</code>. Independent of LyricsFinder.</td></tr>
+            <tr><td class="mono">Visualizations</td><td>ASP.NET-based; only in <code>Visualizations.sln</code>. Independent of LyricsFinder.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1292,8 +1292,6 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
           <code>13.0.0.0</code>). Likewise for <code>System.Buffers</code> and
           <code>System.Numerics.Vectors</code>. Can produce a <code>FileLoadException</code> at
           runtime.</li>
-        <li><strong><code>MediaCenter.sln</code> is broken</strong> — missing
-          <code>ApiseedsService.csproj</code>.</li>
         <li><strong>No CI.</strong> <code>.github/</code> contains only
           <code>ISSUE_TEMPLATE</code>. Hermetic tests are the prerequisite; the plan is in
           <a href="#s6-2">&sect;6.2</a>.</li>
@@ -1600,7 +1598,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
         <li><div><strong>One static HttpClient</strong><span>With <code>HttpRequestMessage</code>-based auth instead of recreating the client per call. Thread <code>CancellationToken</code> all the way down through <code>HttpGetStringAsync</code> and <code>McWsProxy</code> at the same time — it is the same rework, because <code>GetStringAsync</code> on net48 has no token overload.</span></div></li>
         <li><div><strong>Move multi-line settings out of XML attributes</strong><span>And repair the three <code>App.config</code> files whose line breaks have already been flattened. Attribute normalization is lossy on every read, and <code>CreditTextFormat</code> ends up in every saved lyric.</span></div></li>
         <li><div><strong>ConcurrentQueue and explicit UI marshalling</strong><span>In the search workers, so the code does not depend on an invisible contract.</span></div></li>
-        <li><div><strong>Clean up the build</strong><span><code>vswhere</code> instead of <code>D:\</code> paths, fix the binding redirects, repair or remove <code>MediaCenter.sln</code>, delete <code>LyricServices.Old</code> and <code>McPlayControlForm.cs</code>.</span></div></li>
+        <li><div><strong>Clean up the build</strong><span><code>vswhere</code> instead of <code>D:\</code> paths, fix the binding redirects, delete <code>LyricServices.Old</code> and <code>McPlayControlForm.cs</code>.</span></div></li>
         <li><div><strong>Build the test regime in <a href="#s6-2">&sect;6.2</a></strong><span>Separate test projects, offline fixtures, the live tests made passive, then CI. A round-trip test of multi-line text through <code>App.config</code> → data file → <code>App.config</code> would have caught the line-break bug, and there is still no safety net to refactor against.</span></div></li>
       </ol>
     </section>

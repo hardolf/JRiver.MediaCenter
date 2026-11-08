@@ -31,7 +31,7 @@ which log4net configuration is read.
 | File | Contents |
 |---|---|
 | `LyricsFinder.sln` | **The active solution.** 15 code projects. |
-| `MediaCenter.sln` | The "everything" solution. **Currently broken** — it points at `LyricsFinder\LyricServices\ApiseedsService\ApiseedsService.csproj`, which has been deleted and now only exists under `LyricServices.Old`. It also adds `Visualizations`. |
+| `Visualizations.sln` | Contains only the `Visualizations` project. |
 
 The other `.sln` files under `Lib/` and `C# Plugin Template/` are third-party SDK samples and
 templates — not part of the product.
@@ -85,7 +85,7 @@ against .NET Framework 4.8, which is supported but brings no runtime features.
 | `Installation` | Console exe that **builds the release zips**. Also owns `SharedAssemblyInfo.cs` (shared version for all assemblies) and `Setup.iss` (Inno Setup). |
 | `Documentation` | Empty `Main()`. Exists only to copy HTML documentation into `Build/`. |
 | `MjpCreator` | Generates MC `.mjp` package files. **No longer used** — the call has been commented out in `Installation/Program.cs` since v1.3.1, because MC uses RegSvr32 rather than RegAsm. |
-| `Visualizations` | ASP.NET-based; only in `MediaCenter.sln`. Independent of LyricsFinder. |
+| `Visualizations` | ASP.NET-based; only in `Visualizations.sln`. Independent of LyricsFinder. |
 
 ### 2.2 Key architectural detail: lyric services are loaded dynamically
 
@@ -553,7 +553,6 @@ of "changes are not saved", but I have not verified which fields actually differ
   redirects `Newtonsoft.Json` to `12.0.0.0`, while `packages.config` has 13.0.4 (assembly
   version `13.0.0.0`). Likewise for `System.Buffers` (`4.0.3.0` vs. package 4.6.1) and
   `System.Numerics.Vectors`. Can produce a `FileLoadException` at runtime.
-* **`MediaCenter.sln` is broken** — missing `ApiseedsService.csproj`, see §2.
 * **No CI.** `.github/` contains only `ISSUE_TEMPLATE`. No workflows. Hermetic tests are the
   prerequisite; the plan is in §6.2.
 * **Version inconsistency.** `SharedAssemblyInfo.cs` = 1.3.7.0; `Setup.iss` `AppVersion` and
@@ -838,8 +837,8 @@ Delete `LyricsFinder.xml` to reset to factory settings — the services are recr
    every single read, and `CreditTextFormat` ends up in every saved lyric.
 6. **`ConcurrentQueue` plus explicit UI marshalling** in the search workers (§5.5), so the code
    does not depend on an invisible contract.
-7. **Clean up the build**: `vswhere` instead of `D:\` paths, fix the binding redirects, repair
-   or remove `MediaCenter.sln`, delete `LyricServices.Old` and `McPlayControlForm.cs`.
+7. **Clean up the build**: `vswhere` instead of `D:\` paths, fix the binding redirects, delete
+   `LyricServices.Old` and `McPlayControlForm.cs`.
 8. **Build the test regime in §6.2** — separate test projects, offline fixtures, the live tests
    made passive, then CI. A round-trip test of multi-line text through `App.config` → data file
    → `App.config` would have caught §5.8, and there is still no safety net to refactor against.

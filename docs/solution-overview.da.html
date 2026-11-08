@@ -689,7 +689,7 @@ figcaption {
           <thead><tr><th>Fil</th><th>Indhold</th></tr></thead>
           <tbody>
             <tr><td class="mono">LyricsFinder.sln</td><td><strong>Den aktive solution.</strong> 15 kodeprojekter.</td></tr>
-            <tr><td class="mono">MediaCenter.sln</td><td>“Alt”-solution. <strong>Er i øjeblikket brudt</strong> — peger på <code>LyricServices\ApiseedsService\ApiseedsService.csproj</code>, som er slettet og nu kun findes i <code>LyricServices.Old</code>. Tilføjer desuden <code>Visualizations</code>.</td></tr>
+            <tr><td class="mono">Visualizations.sln</td><td>Indeholder kun <code>Visualizations</code>-projektet.</td></tr>
           </tbody>
         </table>
       </div>
@@ -792,7 +792,7 @@ figcaption {
             <tr><td class="mono">Installation</td><td>Console-exe der <strong>pakker release-zips</strong>. Ejer også <code>SharedAssemblyInfo.cs</code> (delt version for alle assemblies) og <code>Setup.iss</code> (Inno Setup).</td></tr>
             <tr><td class="mono">Documentation</td><td>Tom <code>Main()</code>. Findes kun for at kopiere HTML-dokumentation til <code>Build/</code>.</td></tr>
             <tr><td class="mono">MjpCreator</td><td>Genererer MC <code>.mjp</code>-pakkefiler. <strong>Ikke længere brugt</strong> — kaldet er udkommenteret siden v1.3.1, fordi MC bruger RegSvr32 og ikke RegAsm.</td></tr>
-            <tr><td class="mono">Visualizations</td><td>ASP.NET-baseret; kun i <code>MediaCenter.sln</code>. Uafhængig af LyricsFinder.</td></tr>
+            <tr><td class="mono">Visualizations</td><td>ASP.NET-baseret; kun i <code>Visualizations.sln</code>. Uafhængig af LyricsFinder.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1280,7 +1280,6 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
           <code>12.0.0.0</code>, mens <code>packages.config</code> har 13.0.4 (assembly-version
           <code>13.0.0.0</code>). Tilsvarende for <code>System.Buffers</code> og
           <code>System.Numerics.Vectors</code>. Kan give <code>FileLoadException</code> ved runtime.</li>
-        <li><strong><code>MediaCenter.sln</code> er brudt</strong> — manglende <code>ApiseedsService.csproj</code>.</li>
         <li><strong>Ingen CI.</strong> <code>.github/</code> indeholder kun <code>ISSUE_TEMPLATE</code>.
           Hermetiske tests er forudsætningen; planen står i <a href="#s6-2">&sect;6.2</a>.</li>
         <li><strong>Versionsinkonsistens.</strong> <code>SharedAssemblyInfo.cs</code> = 1.3.7.0;
@@ -1573,7 +1572,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
         <li><div><strong>Én statisk HttpClient</strong><span>Med <code>HttpRequestMessage</code>-baseret auth i stedet for at genskabe klienten pr. kald. Før samtidig <code>CancellationToken</code> hele vejen ned gennem <code>HttpGetStringAsync</code> og <code>McWsProxy</code> — det er den samme ombygning, fordi <code>GetStringAsync</code> på net48 ikke har nogen token-overload.</span></div></li>
         <li><div><strong>Flyt flerlinjede indstillinger ud af XML-attributter</strong><span>Og reparér de tre <code>App.config</code>-filer hvis linjeskift allerede er fladet ud. Attributnormalisering er tabsgivende ved hver læsning, og <code>CreditTextFormat</code> ender i hver gemt sangtekst.</span></div></li>
         <li><div><strong>ConcurrentQueue og eksplicit UI-marshalling</strong><span>I søge-workerne, så koden ikke afhænger af en usynlig kontrakt.</span></div></li>
-        <li><div><strong>Ryd op i build</strong><span><code>vswhere</code> i stedet for <code>D:\</code>-stier, ret binding redirects, reparér eller fjern <code>MediaCenter.sln</code>, slet <code>LyricServices.Old</code> og <code>McPlayControlForm.cs</code>.</span></div></li>
+        <li><div><strong>Ryd op i build</strong><span><code>vswhere</code> i stedet for <code>D:\</code>-stier, ret binding redirects, slet <code>LyricServices.Old</code> og <code>McPlayControlForm.cs</code>.</span></div></li>
         <li><div><strong>Byg test-regimet i <a href="#s6-2">&sect;6.2</a></strong><span>Separate testprojekter, offline-fixtures, live-testene gjort passive, derefter CI. En round-trip-test af flerlinjet tekst gennem <code>App.config</code> → datafil → <code>App.config</code> ville have fanget linjeskift-fejlen, og der findes stadig intet sikkerhedsnet at refaktorere med.</span></div></li>
       </ol>
     </section>
