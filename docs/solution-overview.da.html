@@ -557,15 +557,15 @@ figcaption {
     </div>
     <h1>LyricsFinder<br><span>arkitektur &amp; onboarding</span></h1>
     <p class="standfirst">
-      En læsning af hele solutionen: hvordan de 15 projekter hænger sammen, hvor data løber hen,
-      og hvilke syv-otte ting der reelt er værd at rette først. Fire af dem er rettet og testet siden — resten står i afsnit 9.
+      En læsning af hele solutionen: hvordan de 16 projekter hænger sammen, hvor data løber hen,
+      og hvilke syv-otte ting der reelt er værd at rette først. Fem fund er rettet og testet siden — resten står i afsnit 9.
     </p>
     <dl class="factstrip">
       <div><dt>Gennemgået</dt><dd>25. aug. 2026</dd></div>
       <div><dt>Branch</dt><dd>master</dd></div>
-      <div><dt>Projekter</dt><dd>15 aktive</dd></div>
+      <div><dt>Projekter</dt><dd>16 aktive</dd></div>
       <div><dt>Target</dt><dd>net48 · C# 13</dd></div>
-      <div><dt>Tests</dt><dd>28, alle live</dd></div>
+      <div><dt>Tests</dt><dd>28 live · 16 hermetiske</dd></div>
     </dl>
   </div>
 </header>
@@ -649,8 +649,8 @@ figcaption {
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--md">Medium</span></div>
-          <h3>Ingen CI, ingen hermetiske tests</h3>
-          <p>Alle 28 tests rammer live tredjeparts-websites og kræver brugerens egen datafil med rigtige API-tokens.</p>
+          <h3>Ingen CI, få hermetiske tests</h3>
+          <p>De 28 service-tests rammer live tredjeparts-websites og kræver brugerens egen datafil med rigtige API-tokens. Kun <code>LyricsFinder.Tests</code> er hermetisk.</p>
           <p class="where"><a href="#s6-2">&sect;6.2</a> &middot; LyricServices/*/UnitTest.cs</p>
         </article>
 
@@ -688,7 +688,7 @@ figcaption {
         <table>
           <thead><tr><th>Fil</th><th>Indhold</th></tr></thead>
           <tbody>
-            <tr><td class="mono">LyricsFinder.sln</td><td><strong>Den aktive solution.</strong> 15 kodeprojekter.</td></tr>
+            <tr><td class="mono">LyricsFinder.sln</td><td><strong>Den aktive solution.</strong> 16 projekter inklusive <code>LyricsFinder.Tests</code>.</td></tr>
             <tr><td class="mono">Visualizations.sln</td><td>Indeholder kun <code>Visualizations</code>-projektet.</td></tr>
           </tbody>
         </table>
@@ -827,21 +827,21 @@ figcaption {
         <table>
           <thead><tr><th>Pakke</th><th class="mono">Version</th><th>Bruges af</th></tr></thead>
           <tbody>
-            <tr><td class="mono">log4net</td><td class="mono">3.3.1</td><td>Core</td></tr>
+            <tr><td class="mono">log4net</td><td class="mono">3.5.0</td><td>Core</td></tr>
             <tr><td class="mono">Newtonsoft.Json</td><td class="mono">13.0.4</td><td>Core, MusiXmatch</td></tr>
-            <tr><td class="mono">HtmlAgilityPack</td><td class="mono">1.12.4</td><td>AZLyrics, Lololyrics</td></tr>
-            <tr><td class="mono">System.ComponentModel.Annotations</td><td class="mono">5.0.0</td><td>Core</td></tr>
-            <tr><td class="mono">Microsoft.CodeAnalysis.NetAnalyzers</td><td class="mono">10.0.203</td><td>alle</td></tr>
-            <tr><td class="mono">MSTest + Microsoft.NET.Test.Sdk</td><td class="mono">4.2.1 / 18.4.0</td><td>de 6 service-projekter</td></tr>
+            <tr><td class="mono">HtmlAgilityPack</td><td class="mono">1.13.1</td><td>AZLyrics, Lololyrics</td></tr>
+            <tr><td class="mono">Microsoft.CodeAnalysis.NetAnalyzers</td><td class="mono">10.0.403</td><td>alle</td></tr>
+            <tr><td class="mono">MSTest + Microsoft.NET.Test.Sdk</td><td class="mono">4.5.2 / 18.11.0</td><td>de 6 service-projekter og <code>LyricsFinder.Tests</code></td></tr>
           </tbody>
         </table>
       </div>
 
-      <p>Service-projekterne trækker desuden en <strong>stor transitiv hale</strong> ind via
-      <code>Microsoft.NET.Test.Sdk</code> → ApplicationInsights → Azure.Core → OpenTelemetry →
-      <code>Microsoft.Extensions.*</code> 10.0.7 → MSAL. Cirka 60 pakker pr. serviceprojekt — alt
-      sammen konsekvens af at unit-tests bor i <em>samme assembly</em> som produktionskoden.
-      Separate testprojekter fjerner halen &mdash; se <a href="#s6-2">&sect;6.2</a>.</p>
+      <p>Service-projekterne og <code>LyricsFinder.Tests</code> trækker desuden omkring 20 transitive
+      pakker ind via testpakkerne. <code>Microsoft.ApplicationInsights</code> er låst til 2.x i
+      <code>packages.config</code> og <code>.github/dependabot.yml</code>, fordi 3.x trækker Azure,
+      OpenTelemetry og <code>Microsoft.Extensions.*</code> med, omkring 38 ubrugte pakker mere pr.
+      projekt. Testpakkerne følger af at unit-tests bor i <em>samme assembly</em> som produktionskoden
+      &mdash; se <a href="#s6-2">&sect;6.2</a>.</p>
 
       <h3 id="s3-2"><span class="hnum">3.2</span>Central konfiguration</h3>
       <div class="tablewrap">
@@ -1010,7 +1010,7 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
       </div>
 
       <div class="risk risk--md">
-        <h3 id="s5-6"><span class="hnum">5.6</span>WhenAny(predicate) sluger ikke undtagelser som forventet <span class="chip chip--md">Medium</span></h3>
+        <h3 id="s5-6"><span class="hnum">5.6</span>WhenAny(predicate) sluger ikke undtagelser som forventet <span class="chip chip--md">Medium</span> <span class="chip chip--done">Løst 2026-08-28</span></h3>
         <p><code>AsyncUtility.WhenAny</code> (<code>AsyncUtility.cs:378</code>) kalder
         <code>condition(task)</code>, og prædikatet i <code>LyricSearch</code> er
         <code>t =&gt; t.Result.LyricResult == …</code>. På en fejlet task kaster <code>.Result</code> en
@@ -1019,6 +1019,9 @@ GET /...?Token=…    <span class="cmt">alle øvrige kald sender token i query-s
         i <code>LyricSearch.cs:112</code> ikke, og en kvoteoverskridelse i den parallelle sti
         propagerer som en uventet undtagelsestype. Samme mønster i den serielle sti
         (<code>LyricSearch.cs:102</code>).</p>
+        <div class="note note--done">
+          <p><strong>Løst 2026-08-28.</strong> <code>AsyncUtility.WhenAny</code> anvender nu kun prædikatet på tasks med status <code>RanToCompletion</code>, så <code>.Result</code> ikke længere kan kaste <code>AggregateException</code>. Fejlede og annullerede tasks springes over, og <code>CollectExceptions</code> i <code>finally</code>-blokken i <code>LyricSearch</code> samler fejlene med deres oprindelige typer, både i den parallelle og den serielle sti. Dækket af hermetiske tests i <code>Tests/LyricsFinder.Tests</code>, som kørte grønt 2026-11-08.</p>
+        </div>
       </div>
 
       <div class="risk risk--md">
@@ -1280,7 +1283,8 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
           <code>12.0.0.0</code>, mens <code>packages.config</code> har 13.0.4 (assembly-version
           <code>13.0.0.0</code>). Tilsvarende for <code>System.Buffers</code> og
           <code>System.Numerics.Vectors</code>. Kan give <code>FileLoadException</code> ved runtime.</li>
-        <li><strong>Ingen CI.</strong> <code>.github/</code> indeholder kun <code>ISSUE_TEMPLATE</code>.
+        <li><strong>Rettet 2026-11-08.</strong> <code>LyricServices\PostBuild.cmd</code> får nu buildet til at fejle, når en kildefil mangler eller <code>xcopy</code> fejler. <code>MediaCenter.sln</code> er erstattet af <code>Visualizations.sln</code>.</li>
+        <li><strong>Ingen CI.</strong> <code>.github/</code> indeholder kun <code>ISSUE_TEMPLATE</code> og <code>dependabot.yml</code>.
           Hermetiske tests er forudsætningen; planen står i <a href="#s6-2">&sect;6.2</a>.</li>
         <li><strong>Versionsinkonsistens.</strong> <code>SharedAssemblyInfo.cs</code> = 1.3.7.0;
           <code>Setup.iss</code> <code>AppVersion</code> og registry-<code>Version</code> = hardkodet 1.0.0;
@@ -1348,6 +1352,10 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
     <section id="s6">
       <div class="sec-head"><span class="num">06</span><h2>Testhuller</h2></div>
 
+      <div class="note">
+        <p><strong>Opdatering 2026-11-08.</strong> <code>Tests/LyricsFinder.Tests</code> er kommet til med 16 hermetiske tests af dele af <code>Utility</code> og <code>AsyncUtility</code>. Resten af dette afsnit handler om live-testene i service-projekterne.</p>
+      </div>
+
       <p>Der findes i alt <strong>28 <code>[TestMethod]</code></strong> — alle i de seks
       lyric-service-projekter, og alle er <strong>integrationstests mod live
       tredjeparts-websites</strong>.</p>
@@ -1409,7 +1417,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
 
       <p><strong>Rækkefølgen at bygge det i.</strong> (1) Et separat <code>*.Tests</code>-projekt
       pr. lag, så MSTest ryger ud af produktions-assemblies &mdash; det fjerner samtidig den
-      ~60-pakkers transitive hale beskrevet i <a href="#s3-1">&sect;3.1</a>. (2) Rene enhedstests af
+      transitive hale beskrevet i <a href="#s3-1">&sect;3.1</a>. (2) Rene enhedstests af
       <code>Utility</code>, <code>McRestService.CreateRequestUrl</code> og <code>Serialize</code>
       &mdash; hurtige, hermetiske, og de dækker to af de mistænkte fejl i <a href="#s5">&sect;5</a>.
       (3) <code>LyricSearch</code> med in-memory-fakes. (4) De eksisterende netværkstests gjort
@@ -1481,8 +1489,7 @@ public class UnitTest { … }</pre>
         forsvinder: <code>[TestInitialize]</code> læser brugerens rigtige
         <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>; peg den mod en
         indtjekket fixture-datafil, og testene kræver ikke længere en konfigureret maskine eller
-        rigtige API-tokens. (2) CI bliver muligt: <code>.github/</code> indeholder i dag kun
-        <code>ISSUE_TEMPLATE</code> og ingen workflows (<a href="#s5-11">&sect;5.11</a>). En
+        rigtige API-tokens. (2) CI bliver muligt: <code>.github/</code> indeholder i dag kun <code>ISSUE_TEMPLATE</code> og <code>dependabot.yml</code> og ingen workflows (<a href="#s5-11">&sect;5.11</a>). En
         Windows-runner der bygger ved hvert push ville stoppe compile-brud allerede ved committet,
         og den kører på GitHubs maskine, så den rører aldrig de lokale <code>Build\</code>-,
         <code>Output\</code>- eller <code>Release\</code>-mapper. Kun de hermetiske tests hører til
@@ -1544,6 +1551,8 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
       <code>[TestCategory("Live")]</code> og udelade dem som standard, så de kun kører når de
       startes bevidst fra Test Explorer.</p>
 
+      <p>De hermetiske tests i <code>LyricsFinder.Tests</code> kræver hverken netværk eller tokens. Kør dem i Test Explorer ved at højreklikke på noden <code>LyricsFinder.Tests</code> og vælge <code>Run</code>. <code>Run All</code> ville også starte live-testene.</p>
+
       <h3 id="s7-4"><span class="hnum">7.4</span>Kørsel</h3>
       <pre>LyricsFinder\LyricsFinderExe\bin\Debug\LyricsFinderExe.exe</pre>
       <p>Første start viser <code>OptionForm</code>, hvor MCWS-URL, Access Key, brugernavn og password
@@ -1580,9 +1589,9 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
     <!-- ============ 9 ============ -->
     <section id="s9">
       <div class="sec-head"><span class="num">09</span><h2>Udestående</h2></div>
-      <p class="lead">Status pr. 26. august 2026. <a href="#s5-1">&sect;5.1</a>,
+      <p class="lead">Status pr. 8. november 2026. <a href="#s5-1">&sect;5.1</a>,
       <a href="#s5-4">&sect;5.4</a>, <a href="#s5-8">&sect;5.8</a> og <a href="#s5-9">&sect;5.9</a>
-      er rettet og testet mod en kørende Media Center. Herunder står det der er tilbage, inklusive
+      er rettet og testet mod en kørende Media Center, og <a href="#s5-6">&sect;5.6</a> er rettet og dækket af enhedstests. Herunder står det der er tilbage, inklusive
       tre forhold der først dukkede op under rettearbejdet.</p>
 
       <div class="risk risk--md">
@@ -1591,7 +1600,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
         <code>RequestCountToday</code> / <code>RequestCountTotal</code>:</p>
         <ul>
           <li><strong>Nulstillingen kapløber med det arbejde den skal gå forud for.</strong>
-            <code>LyricSearch.cs:67-69</code> starter <code>ProcessAsyncWrapper</code> og kalder
+            <code>LyricSearch.cs:70-72</code> starter <code>ProcessAsyncWrapper</code> og kalder
             <em>derefter</em> <code>serviceClone.ResetTotalCountersAsync()</code>. Klonens totaler
             er ment som en delta for netop denne sang, men klonen er allerede i gang.
             <code>IncrementRequestCountersAsync</code> ligger i <code>finally</code>’en i
@@ -1682,12 +1691,11 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
             <tr><td class="mono"><a href="#s5-2">&sect;5.2</a></td><td>Tællere gemmes muligvis aldrig</td><td>Præciseret i <a href="#s9-1">&sect;9.1</a> — ikke tabt, men gemningen pr. sang skriver aldrig</td></tr>
             <tr><td class="mono"><a href="#s5-3">&sect;5.3</a></td><td>HttpClient genskabes pr. kald</td><td>Uændret. Bør laves sammen med <a href="#s5-7">&sect;5.7</a></td></tr>
             <tr><td class="mono"><a href="#s5-5">&sect;5.5</a></td><td>Trådmodellen holder ved et tilfælde</td><td>Uændret</td></tr>
-            <tr><td class="mono"><a href="#s5-6">&sect;5.6</a></td><td>WhenAny(predicate) og AggregateException</td><td>Uændret</td></tr>
             <tr><td class="mono"><a href="#s5-7">&sect;5.7</a></td><td>CancellationToken når ikke HTTP-laget</td><td>Uændret</td></tr>
             <tr><td class="mono"><a href="#s5-10">&sect;5.10</a></td><td>Sikkerhed</td><td>Password og tokens ligger stadig i klartekst i datafilen</td></tr>
-            <tr><td class="mono"><a href="#s5-11">&sect;5.11</a></td><td>Byggeopsætning</td><td>Uændret</td></tr>
+            <tr><td class="mono"><a href="#s5-11">&sect;5.11</a></td><td>Byggeopsætning</td><td>Testpakkerne og <code>MediaCenter.sln</code> er ryddet op 2026-11-08; resten står</td></tr>
             <tr><td class="mono"><a href="#s5-12">&sect;5.12</a></td><td>Øvrige code smells</td><td>Kun kommentaren i <code>Serialize.cs</code> er væk; resten står</td></tr>
-            <tr><td class="mono"><a href="#s6">&sect;6</a></td><td>Testhuller</td><td>Uændret. <code>Serialize</code> og <code>CreateRequestUrl</code> er nu rettet uden et sikkerhedsnet under sig. Planen er samlet i <a href="#s6-2">&sect;6.2</a></td></tr>
+            <tr><td class="mono"><a href="#s6">&sect;6</a></td><td>Testhuller</td><td><code>LyricsFinder.Tests</code> dækker nu dele af <code>Utility</code> og <code>AsyncUtility</code>. <code>Serialize</code> og <code>CreateRequestUrl</code> har stadig intet sikkerhedsnet. Planen er samlet i <a href="#s6-2">&sect;6.2</a></td></tr>
           </tbody>
         </table>
       </div>
@@ -1761,7 +1769,7 @@ Content-Type: text/html; charset=UTF-8</code></pre>
 
       <p class="colophon">
         Gennemgang af <span style="color:var(--accent)">hardolf/JRiver.MediaCenter</span> @ master · 25. august 2026<br>
-        Statusopdateret 26. august 2026 — &sect;5.1, &sect;5.4, &sect;5.8 og &sect;5.9 er rettet og testet. Tekstversion: <code>docs/solution-overview.da.md</code><br>
+        Statusopdateret 8. november 2026 — &sect;5.1, &sect;5.4, &sect;5.6, &sect;5.8 og &sect;5.9 er rettet og testet. Tekstversion: <code>docs/solution-overview.da.md</code><br>
         English version: <a href="https://claude.ai/code/artifact/71d2a395-d46f-4d90-adfc-6c866dfe501f">solution-overview.en</a>
       </p>
     </section>

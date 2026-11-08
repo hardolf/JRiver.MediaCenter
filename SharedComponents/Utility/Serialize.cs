@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Authors: Bent, with Claude Opus 5 (Anthropic)
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;

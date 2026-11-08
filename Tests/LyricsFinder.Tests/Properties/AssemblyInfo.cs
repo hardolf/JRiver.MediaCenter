@@ -1,3 +1,4 @@
+// Authors: Bent, with Claude Opus 5 (Anthropic)
 using System.Reflection;
 using System.Runtime.InteropServices;
 

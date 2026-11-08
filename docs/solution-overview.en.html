@@ -557,15 +557,15 @@ figcaption {
     </div>
     <h1>LyricsFinder<br><span>architecture &amp; onboarding</span></h1>
     <p class="standfirst">
-      A reading of the whole solution: how the 15 projects fit together, where the data flows,
-      and which seven or eight things are actually worth fixing first. Four of them have been fixed and tested since — the rest is in section 9.
+      A reading of the whole solution: how the 16 projects fit together, where the data flows,
+      and which seven or eight things are actually worth fixing first. Five findings have been fixed and tested since — the rest is in section 9.
     </p>
     <dl class="factstrip">
       <div><dt>Reviewed</dt><dd>25 Aug 2026</dd></div>
       <div><dt>Branch</dt><dd>master</dd></div>
-      <div><dt>Projects</dt><dd>15 active</dd></div>
+      <div><dt>Projects</dt><dd>16 active</dd></div>
       <div><dt>Target</dt><dd>net48 · C# 13</dd></div>
-      <div><dt>Tests</dt><dd>28, all live</dd></div>
+      <div><dt>Tests</dt><dd>28 live · 16 hermetic</dd></div>
     </dl>
   </div>
 </header>
@@ -649,8 +649,8 @@ figcaption {
 
         <article class="finding">
           <div class="finding__top"><span class="chip chip--md">Medium</span></div>
-          <h3>No CI, no hermetic tests</h3>
-          <p>All 28 tests hit live third-party websites and require the user's own data file with real API tokens.</p>
+          <h3>No CI, few hermetic tests</h3>
+          <p>The 28 service tests hit live third-party websites and require the user's own data file with real API tokens. Only <code>LyricsFinder.Tests</code> is hermetic.</p>
           <p class="where"><a href="#s6-2">&sect;6.2</a> &middot; LyricServices/*/UnitTest.cs</p>
         </article>
 
@@ -689,7 +689,7 @@ figcaption {
         <table>
           <thead><tr><th>File</th><th>Contents</th></tr></thead>
           <tbody>
-            <tr><td class="mono">LyricsFinder.sln</td><td><strong>The active solution.</strong> 15 code projects.</td></tr>
+            <tr><td class="mono">LyricsFinder.sln</td><td><strong>The active solution.</strong> 16 projects including <code>LyricsFinder.Tests</code>.</td></tr>
             <tr><td class="mono">Visualizations.sln</td><td>Contains only the <code>Visualizations</code> project.</td></tr>
           </tbody>
         </table>
@@ -824,21 +824,21 @@ figcaption {
         <table>
           <thead><tr><th>Package</th><th class="mono">Version</th><th>Used by</th></tr></thead>
           <tbody>
-            <tr><td class="mono">log4net</td><td class="mono">3.3.1</td><td>Core</td></tr>
+            <tr><td class="mono">log4net</td><td class="mono">3.5.0</td><td>Core</td></tr>
             <tr><td class="mono">Newtonsoft.Json</td><td class="mono">13.0.4</td><td>Core, MusiXmatch</td></tr>
-            <tr><td class="mono">HtmlAgilityPack</td><td class="mono">1.12.4</td><td>AZLyrics, Lololyrics</td></tr>
-            <tr><td class="mono">System.ComponentModel.Annotations</td><td class="mono">5.0.0</td><td>Core</td></tr>
-            <tr><td class="mono">Microsoft.CodeAnalysis.NetAnalyzers</td><td class="mono">10.0.203</td><td>all</td></tr>
-            <tr><td class="mono">MSTest + Microsoft.NET.Test.Sdk</td><td class="mono">4.2.1 / 18.4.0</td><td>the 6 service projects</td></tr>
+            <tr><td class="mono">HtmlAgilityPack</td><td class="mono">1.13.1</td><td>AZLyrics, Lololyrics</td></tr>
+            <tr><td class="mono">Microsoft.CodeAnalysis.NetAnalyzers</td><td class="mono">10.0.403</td><td>all</td></tr>
+            <tr><td class="mono">MSTest + Microsoft.NET.Test.Sdk</td><td class="mono">4.5.2 / 18.11.0</td><td>the 6 service projects and <code>LyricsFinder.Tests</code></td></tr>
           </tbody>
         </table>
       </div>
 
-      <p>The service projects also drag in a <strong>large transitive tail</strong> via
-      <code>Microsoft.NET.Test.Sdk</code> → ApplicationInsights → Azure.Core → OpenTelemetry →
-      <code>Microsoft.Extensions.*</code> 10.0.7 → MSAL. Roughly 60 packages per service project,
-      all of it a consequence of unit tests living in the <em>same assembly</em> as the production
-      code. Separate test projects remove the tail &mdash; see <a href="#s6-2">&sect;6.2</a>.</p>
+      <p>The service projects and <code>LyricsFinder.Tests</code> also pull in about 20 transitive
+      packages through the test packages. <code>Microsoft.ApplicationInsights</code> is held at 2.x in
+      <code>packages.config</code> and <code>.github/dependabot.yml</code>, because 3.x brings Azure,
+      OpenTelemetry and <code>Microsoft.Extensions.*</code>, about 38 more unused packages per project.
+      The test packages are a consequence of unit tests living in the <em>same assembly</em> as the
+      production code &mdash; see <a href="#s6-2">&sect;6.2</a>.</p>
 
       <h3 id="s3-2"><span class="hnum">3.2</span>Central configuration</h3>
       <div class="tablewrap">
@@ -1011,7 +1011,7 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
       </div>
 
       <div class="risk risk--md">
-        <h3 id="s5-6"><span class="hnum">5.6</span>WhenAny(predicate) does not swallow exceptions as intended <span class="chip chip--md">Medium</span></h3>
+        <h3 id="s5-6"><span class="hnum">5.6</span>WhenAny(predicate) does not swallow exceptions as intended <span class="chip chip--md">Medium</span> <span class="chip chip--done">Fixed 2026-08-28</span></h3>
         <p><code>AsyncUtility.WhenAny</code> (<code>AsyncUtility.cs:378</code>) calls
         <code>condition(task)</code>, and the predicate in <code>LyricSearch</code> is
         <code>t =&gt; t.Result.LyricResult == …</code>. On a faulted task, <code>.Result</code>
@@ -1020,6 +1020,9 @@ GET /...?Token=…    <span class="cmt">every other call sends the token in the 
         <code>LyricSearch.cs:112</code> never fires, and a quota overrun on the parallel path
         propagates as an unexpected exception type. Same pattern on the serial path
         (<code>LyricSearch.cs:102</code>).</p>
+        <div class="note note--done">
+          <p><strong>Fixed 2026-08-28.</strong> <code>AsyncUtility.WhenAny</code> now applies the predicate only to tasks with status <code>RanToCompletion</code>, so <code>.Result</code> can no longer throw <code>AggregateException</code>. Faulted and canceled tasks are skipped, and <code>CollectExceptions</code> in the <code>finally</code> block of <code>LyricSearch</code> gathers the failures with their original types on both the parallel and the serial path. Covered by hermetic tests in <code>Tests/LyricsFinder.Tests</code>, which passed on 2026-11-08.</p>
+        </div>
       </div>
 
       <div class="risk risk--md">
@@ -1292,8 +1295,8 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
           <code>13.0.0.0</code>). Likewise for <code>System.Buffers</code> and
           <code>System.Numerics.Vectors</code>. Can produce a <code>FileLoadException</code> at
           runtime.</li>
-        <li><strong>No CI.</strong> <code>.github/</code> contains only
-          <code>ISSUE_TEMPLATE</code>. Hermetic tests are the prerequisite; the plan is in
+        <li><strong>Fixed 2026-11-08.</strong> <code>LyricServices\PostBuild.cmd</code> now fails the build when a source file is missing or <code>xcopy</code> fails. <code>MediaCenter.sln</code> has been replaced by <code>Visualizations.sln</code>.</li>
+        <li><strong>No CI.</strong> <code>.github/</code> contains only <code>ISSUE_TEMPLATE</code> and <code>dependabot.yml</code>. Hermetic tests are the prerequisite; the plan is in
           <a href="#s6-2">&sect;6.2</a>.</li>
         <li><strong>Version inconsistency.</strong> <code>SharedAssemblyInfo.cs</code> = 1.3.7.0;
           <code>Setup.iss</code> <code>AppVersion</code> and the registry <code>Version</code> =
@@ -1368,6 +1371,10 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
     <section id="s6">
       <div class="sec-head"><span class="num">06</span><h2>Test gaps</h2></div>
 
+      <div class="note">
+        <p><strong>Update 2026-11-08.</strong> <code>Tests/LyricsFinder.Tests</code> has been added, with 16 hermetic tests of parts of <code>Utility</code> and <code>AsyncUtility</code>. The rest of this section is about the live tests in the service projects.</p>
+      </div>
+
       <p>There are <strong>28 <code>[TestMethod]</code></strong> in total — all in the six lyric
       service projects, and all of them <strong>integration tests against live third-party
       websites</strong>.</p>
@@ -1430,7 +1437,7 @@ private static Dictionary&lt;string, string&gt; ReadServiceSettings(Type service
       than repeating it.</em></p>
 
       <p><strong>The order to build it in.</strong> (1) A separate <code>*.Tests</code> project per
-      layer, so MSTest leaves the production assemblies &mdash; that also sheds the ~60-package
+      layer, so MSTest leaves the production assemblies &mdash; that also sheds the
       transitive tail described in <a href="#s3-1">&sect;3.1</a>. (2) Pure unit tests of
       <code>Utility</code>, <code>McRestService.CreateRequestUrl</code> and <code>Serialize</code>
       &mdash; fast, hermetic, and covering two of the suspected bugs in <a href="#s5">&sect;5</a>.
@@ -1502,8 +1509,7 @@ public class UnitTest { … }</pre>
         disappears: <code>[TestInitialize]</code> reads the user&rsquo;s real
         <code>%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml</code>; point it at a
         checked-in fixture data file and the tests stop requiring a configured machine or real API
-        tokens. (2) CI becomes possible: <code>.github/</code> today holds only
-        <code>ISSUE_TEMPLATE</code> and no workflows (<a href="#s5-11">&sect;5.11</a>). A Windows
+        tokens. (2) CI becomes possible: <code>.github/</code> today holds only <code>ISSUE_TEMPLATE</code> and <code>dependabot.yml</code> and no workflows (<a href="#s5-11">&sect;5.11</a>). A Windows
         runner building on every push would stop compile breaks at the commit, and it runs on
         GitHub&rsquo;s machine, so it never touches the local <code>Build\</code>,
         <code>Output\</code> or <code>Release\</code> folders. Only the hermetic tests belong there
@@ -1568,6 +1574,8 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
       <code>[TestCategory("Live")]</code> and excluding them by default, so they run only when
       started deliberately from Test Explorer.</p>
 
+      <p>The hermetic tests in <code>LyricsFinder.Tests</code> need neither network nor tokens. Run them in Test Explorer by right-clicking the <code>LyricsFinder.Tests</code> node and choosing <code>Run</code>. <code>Run All</code> would start the live tests as well.</p>
+
       <h3 id="s7-4"><span class="hnum">7.4</span>Running</h3>
       <pre>LyricsFinder\LyricsFinderExe\bin\Debug\LyricsFinderExe.exe</pre>
       <p>The first start shows <code>OptionForm</code>, where the MCWS URL, Access Key, username and
@@ -1606,9 +1614,9 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
     <!-- ============ 9 ============ -->
     <section id="s9">
       <div class="sec-head"><span class="num">09</span><h2>Outstanding</h2></div>
-      <p class="lead">Status as of 26 August 2026. <a href="#s5-1">&sect;5.1</a>,
+      <p class="lead">Status as of 8 November 2026. <a href="#s5-1">&sect;5.1</a>,
       <a href="#s5-4">&sect;5.4</a>, <a href="#s5-8">&sect;5.8</a> and <a href="#s5-9">&sect;5.9</a>
-      are fixed and tested against a running Media Center. What follows is what is left, including
+      are fixed and tested against a running Media Center, and <a href="#s5-6">&sect;5.6</a> is fixed and covered by unit tests. What follows is what is left, including
       three things that only surfaced while doing the fixing.</p>
 
       <div class="risk risk--md">
@@ -1617,7 +1625,7 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
         <code>RequestCountToday</code> / <code>RequestCountTotal</code>:</p>
         <ul>
           <li><strong>The reset races the work it is supposed to precede.</strong>
-            <code>LyricSearch.cs:67-69</code> starts <code>ProcessAsyncWrapper</code> and only
+            <code>LyricSearch.cs:70-72</code> starts <code>ProcessAsyncWrapper</code> and only
             <em>then</em> calls <code>serviceClone.ResetTotalCountersAsync()</code>. The clone's
             totals are meant to act as a delta for this one song, but the clone is already running.
             <code>IncrementRequestCountersAsync</code> sits in the <code>finally</code> of
@@ -1707,12 +1715,11 @@ LyricsFinder\Installation\BuildAndInstallLyricsFinder.cmd    <span class="cmt">b
             <tr><td class="mono"><a href="#s5-2">&sect;5.2</a></td><td>Counters may never be saved</td><td>Refined in <a href="#s9-1">&sect;9.1</a> — not lost, but the per-song save never writes</td></tr>
             <tr><td class="mono"><a href="#s5-3">&sect;5.3</a></td><td>HttpClient recreated per call</td><td>Unchanged. Should be done together with <a href="#s5-7">&sect;5.7</a></td></tr>
             <tr><td class="mono"><a href="#s5-5">&sect;5.5</a></td><td>Threading model holds by accident</td><td>Unchanged</td></tr>
-            <tr><td class="mono"><a href="#s5-6">&sect;5.6</a></td><td>WhenAny(predicate) and AggregateException</td><td>Unchanged</td></tr>
             <tr><td class="mono"><a href="#s5-7">&sect;5.7</a></td><td>CancellationToken never reaches HTTP</td><td>Unchanged</td></tr>
             <tr><td class="mono"><a href="#s5-10">&sect;5.10</a></td><td>Security</td><td>Password and tokens are still cleartext in the data file</td></tr>
-            <tr><td class="mono"><a href="#s5-11">&sect;5.11</a></td><td>Build setup</td><td>Unchanged</td></tr>
+            <tr><td class="mono"><a href="#s5-11">&sect;5.11</a></td><td>Build setup</td><td>Test packages and <code>MediaCenter.sln</code> cleaned up 2026-11-08; the rest stands</td></tr>
             <tr><td class="mono"><a href="#s5-12">&sect;5.12</a></td><td>Other code smells</td><td>Only the <code>Serialize.cs</code> comment is gone; the rest stands</td></tr>
-            <tr><td class="mono"><a href="#s6">&sect;6</a></td><td>Test gaps</td><td>Unchanged. <code>Serialize</code> and <code>CreateRequestUrl</code> have now been changed with no safety net underneath them. The plan is consolidated in <a href="#s6-2">&sect;6.2</a></td></tr>
+            <tr><td class="mono"><a href="#s6">&sect;6</a></td><td>Test gaps</td><td><code>LyricsFinder.Tests</code> now covers parts of <code>Utility</code> and <code>AsyncUtility</code>. <code>Serialize</code> and <code>CreateRequestUrl</code> still have no safety net. The plan is consolidated in <a href="#s6-2">&sect;6.2</a></td></tr>
           </tbody>
         </table>
       </div>
@@ -1786,7 +1793,7 @@ Content-Type: text/html; charset=UTF-8</code></pre>
 
       <p class="colophon">
         Review of <span style="color:var(--accent)">hardolf/JRiver.MediaCenter</span> @ master · 25 August 2026<br>
-        Status updated 26 August 2026 — &sect;5.1, &sect;5.4, &sect;5.8 and &sect;5.9 are fixed and tested. Text version: <code>docs/solution-overview.en.md</code><br>
+        Status updated 8 November 2026 — &sect;5.1, &sect;5.4, &sect;5.6, &sect;5.8 and &sect;5.9 are fixed and tested. Text version: <code>docs/solution-overview.en.md</code><br>
         Danish original: <a href="https://claude.ai/code/artifact/f10cb9c3-d4ac-47b3-8d0b-b8867a0f8426">solution-overview.da</a>
       </p>
     </section>

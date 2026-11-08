@@ -1,7 +1,7 @@
 ﻿# LyricsFinder / JRiver.MediaCenter — arkitektur- og onboarding-rapport
 
-Status: gennemgang pr. 2026-08-25 på branch `master`, statusopdateret 2026-08-26.
-§5.1, §5.4, §5.8 og §5.9 er rettet og testet; resten står i [afsnit 9](#9-udestående).
+Status: gennemgang pr. 2026-08-25 på branch `master`, statusopdateret 2026-11-08.
+§5.1, §5.4, §5.6, §5.8 og §5.9 er rettet og testet; resten står i [afsnit 9](#9-udestående).
 
 > Dansk udgave. Den engelske oversættelse ligger i [`solution-overview.en.md`](solution-overview.en.md).
 
@@ -29,7 +29,7 @@ er den eneste reelle forskel (bl.a. hvilken log4net-konfiguration der læses).
 
 | Fil | Indhold |
 |---|---|
-| `LyricsFinder.sln` | **Den aktive solution.** 15 kodeprojekter. |
+| `LyricsFinder.sln` | **Den aktive solution.** 16 projekter inklusive `LyricsFinder.Tests`. |
 | `Visualizations.sln` | Indeholder kun `Visualizations`-projektet. |
 
 Øvrige `.sln`-filer under `Lib/` og `C# Plugin Template/` er tredjeparts SDK-eksempler og
@@ -113,18 +113,17 @@ i .sln-filen og de mange `xcopy`-post-build-events.
 
 | Pakke | Version | Bruges af |
 |---|---|---|
-| `log4net` | 3.3.1 | Core |
+| `log4net` | 3.5.0 | Core |
 | `Newtonsoft.Json` | 13.0.4 | Core, MusiXmatch |
-| `HtmlAgilityPack` | 1.12.4 | AZLyrics, Lololyrics |
-| `System.ComponentModel.Annotations` | 5.0.0 | Core |
-| `Microsoft.CodeAnalysis.NetAnalyzers` | 10.0.203 | alle |
-| MSTest 4.2.1 + `Microsoft.NET.Test.Sdk` 18.4.0 | | de 6 service-projekter |
+| `HtmlAgilityPack` | 1.13.1 | AZLyrics, Lololyrics |
+| `Microsoft.CodeAnalysis.NetAnalyzers` | 10.0.403 | alle |
+| MSTest 4.5.2 + `Microsoft.NET.Test.Sdk` 18.11.0 | | de 6 service-projekter og `LyricsFinder.Tests` |
 
-Service-projekterne trækker desuden en **stor transitiv hale** ind via
-`Microsoft.NET.Test.Sdk` → ApplicationInsights → Azure.Core → OpenTelemetry →
-`Microsoft.Extensions.*` 10.0.7 → MSAL. Ca. 60 pakker pr. serviceprojekt, alle sammen
-konsekvens af at unit-tests bor i **samme assembly** som produktionskoden. Separate
-testprojekter fjerner halen — se §6.2.
+Service-projekterne og `LyricsFinder.Tests` trækker desuden omkring 20 transitive pakker ind via
+testpakkerne. `Microsoft.ApplicationInsights` er låst til 2.x i `packages.config` og
+`.github/dependabot.yml`, fordi 3.x trækker Azure, OpenTelemetry og `Microsoft.Extensions.*` med,
+omkring 38 ubrugte pakker mere pr. projekt. Testpakkerne følger af at unit-tests bor i **samme
+assembly** som produktionskoden — se §6.2.
 
 ### 3.2 Central konfiguration
 
@@ -302,6 +301,8 @@ både køen og grid-adgangen.** Brug `ConcurrentQueue<int>.TryDequeue` og ekspli
 UI-marshalling i stedet for at stole på synkroniseringskonteksten.
 
 ### 5.6 `WhenAny(predicate)` sluger ikke undtagelser som forventet (medium)
+
+> <span style="color:#0A6E85">**&#10004; Løst 2026-08-28.**</span> `AsyncUtility.WhenAny` anvender nu kun prædikatet på tasks med status `RanToCompletion`, så `.Result` ikke længere kan kaste `AggregateException`. Fejlede og annullerede tasks springes over, og `CollectExceptions` i `finally`-blokken i `LyricSearch` samler fejlene med deres oprindelige typer, både i den parallelle og den serielle sti. Dækket af hermetiske tests i `Tests/LyricsFinder.Tests`, som kørte grønt 2026-11-08.
 
 `AsyncUtility.WhenAny` (`AsyncUtility.cs:378`) kalder `condition(task)`, og prædikatet i
 `LyricSearch` er `t => t.Result.LyricResult == …`. På en fejlet task kaster `.Result` en
@@ -551,7 +552,8 @@ ikke gemt", men jeg har ikke verificeret hvilke felter der reelt afviger.
   redirect'er `Newtonsoft.Json` til `12.0.0.0`, mens `packages.config` har 13.0.4
   (assembly-version `13.0.0.0`). Tilsvarende for `System.Buffers` (`4.0.3.0` vs. pakke 4.6.1)
   og `System.Numerics.Vectors`. Kan give `FileLoadException` ved runtime.
-* **Ingen CI.** `.github/` indeholder kun `ISSUE_TEMPLATE`. Ingen workflows. Hermetiske tests
+* **Rettet 2026-11-08.** `LyricServices\PostBuild.cmd` får nu buildet til at fejle, når en kildefil mangler eller `xcopy` fejler. `MediaCenter.sln` er erstattet af `Visualizations.sln`.
+* **Ingen CI.** `.github/` indeholder kun `ISSUE_TEMPLATE` og `dependabot.yml`. Ingen workflows. Hermetiske tests
   er forudsætningen; planen står i §6.2.
 * **Versionsinkonsistens.** `SharedAssemblyInfo.cs` = 1.3.7.0; `Setup.iss` `AppVersion` og
   registry-`Version` = hardkodet 1.0.0; `ReleaseNotes.html` topper ved v1.3.1; seneste commit
@@ -608,6 +610,8 @@ ikke gemt", men jeg har ikke verificeret hvilke felter der reelt afviger.
 
 ## 6. Testhuller
 
+> **Opdatering 2026-11-08.** `Tests/LyricsFinder.Tests` er kommet til med 16 hermetiske tests af dele af `Utility` og `AsyncUtility`. Resten af dette afsnit handler om live-testene i service-projekterne.
+
 Der findes i alt **28 `[TestMethod]`** — alle i de 6 lyric-service-projekter, og alle er
 **integrationstests mod live tredjeparts-websites**:
 
@@ -654,7 +658,7 @@ utestet; alt nedenfor er hvad der skal gøres ved det. Øvrige afsnit henviser h
 gentage det.*
 
 **Rækkefølgen at bygge det i.** (1) Et separat `*.Tests`-projekt pr. lag, så MSTest ryger ud af
-produktions-assemblies — det fjerner samtidig den ~60-pakkers transitive hale beskrevet i §3.1.
+produktions-assemblies — det fjerner samtidig den transitive hale beskrevet i §3.1.
 (2) Rene enhedstests af `Utility`, `McRestService.CreateRequestUrl` og `Serialize` — hurtige,
 hermetiske, og de dækker to af de mistænkte fejl i §5. (3) `LyricSearch` med in-memory-fakes.
 (4) De eksisterende netværkstests gjort passive, se nedenfor. (5) CI, når (1)–(4) er på plads.
@@ -717,8 +721,7 @@ behov.
 rigtige `%USERPROFILE%\Documents\LyricsFinder\LyricsFinder.xml`. Peg den mod en indtjekket
 fixture-datafil, og testene kræver ikke længere en konfigureret maskine eller rigtige API-tokens.
 
-**CI bliver muligt når ovenstående er på plads.** `.github/` indeholder i dag kun
-`ISSUE_TEMPLATE` og ingen workflows (§5.11). En Windows-runner der bygger solutionen ved hvert
+**CI bliver muligt når ovenstående er på plads.** `.github/` indeholder i dag kun `ISSUE_TEMPLATE` og `dependabot.yml` og ingen workflows (§5.11). En Windows-runner der bygger solutionen ved hvert
 push ville stoppe compile-brud allerede ved committet, og den kører på GitHubs maskine, så den
 rører aldrig de lokale `Build\`-, `Output\`- eller `Release\`-mapper. Kun de hermetiske tests
 hører til dér — `Live`-kategorien forbliver udeladt.
@@ -786,6 +789,8 @@ for Stands4 og MusiXmatch. Tests i CI vil fejle.
 Det er live-integrationstestene. §6.2 foreslår at markere dem `[TestCategory("Live")]` og
 udelade dem som standard, så de kun kører når de startes bevidst fra Test Explorer.
 
+De hermetiske tests i `LyricsFinder.Tests` kræver hverken netværk eller tokens. Kør dem i Test Explorer ved at højreklikke på noden `LyricsFinder.Tests` og vælge `Run`. `Run All` ville også starte live-testene.
+
 ### 7.4 Kørsel
 
 **Stand-alone:**
@@ -844,7 +849,7 @@ Slet `LyricsFinder.xml` for at nulstille til fabriksindstillinger (services gens
 
 ## 9. Udestående
 
-Status pr. 2026-08-26. §5.1, §5.4, §5.8 og §5.9 er rettet og testet mod en kørende Media Center.
+Status pr. 2026-11-08. §5.1, §5.4, §5.8 og §5.9 er rettet og testet mod en kørende Media Center, og §5.6 er rettet og dækket af enhedstests.
 Herunder står det der er tilbage, inklusive tre forhold der først dukkede op under rettearbejdet.
 
 ### 9.1 Tællerne vedligeholdes skævt i `LyricSearch` (medium, ny)
@@ -852,7 +857,7 @@ Herunder står det der er tilbage, inklusive tre forhold der først dukkede op u
 Tre selvstændige problemer i det samme stykke kode, alle omkring `RequestCountToday` /
 `RequestCountTotal`:
 
-* **Nulstillingen kapløber med det arbejde den skal gå forud for.** `LyricSearch.cs:67-69` starter
+* **Nulstillingen kapløber med det arbejde den skal gå forud for.** `LyricSearch.cs:70-72` starter
   `ProcessAsyncWrapper` og kalder *derefter* `serviceClone.ResetTotalCountersAsync()`. Klonens
   totaler er ment som en delta for netop denne sang, men klonen er allerede i gang.
   `IncrementRequestCountersAsync` ligger i `finally`'en i `HttpGetStringAsync`
@@ -914,12 +919,11 @@ stadig artist, album og titel direkte ind i query-strengen. `UrlEncoded()` finde
 | §5.2 | Tællere gemmes muligvis aldrig | Præciseret i §9.1 — ikke tabt, men gemningen pr. sang skriver aldrig |
 | §5.3 | HttpClient genskabes pr. kald | Uændret. Bør laves sammen med §5.7 |
 | §5.5 | Trådmodellen holder ved et tilfælde | Uændret |
-| §5.6 | `WhenAny(predicate)` og `AggregateException` | Uændret |
 | §5.7 | CancellationToken når ikke HTTP-laget | Uændret |
 | §5.10 | Sikkerhed | Password og tokens ligger stadig i klartekst i datafilen |
-| §5.11 | Byggeopsætning | Uændret |
+| §5.11 | Byggeopsætning | Testpakkerne og `MediaCenter.sln` er ryddet op 2026-11-08; resten står |
 | §5.12 | Øvrige code smells | Kun kommentaren i `Serialize.cs` er væk; resten står |
-| §6 | Testhuller | Uændret. `Serialize` og `CreateRequestUrl` er nu rettet uden et sikkerhedsnet under sig. Planen er samlet i §6.2 |
+| §6 | Testhuller | `LyricsFinder.Tests` dækker nu dele af `Utility` og `AsyncUtility`. `Serialize` og `CreateRequestUrl` har stadig intet sikkerhedsnet. Planen er samlet i §6.2 |
 
 ### 9.7 STANDS4 ligger bag en AWS WAF-challenge — appen får 202 og tom body (høj, ny)
 
