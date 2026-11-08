@@ -17,6 +17,11 @@ updates:
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 5
+    # ApplicationInsights is only a transitive test dependency. Version 3.x pulls in
+    # Azure, OpenTelemetry and Microsoft.Extensions, about 38 unused packages per project.
+    ignore:
+      - dependency-name: "Microsoft.ApplicationInsights"
+        versions: [">= 3.0.0"]
     groups:
       nuget-dependencies:
         patterns:
